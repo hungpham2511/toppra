@@ -7,7 +7,7 @@ from toppra import (qpOASESPPSolver,
                     compute_trajectory_gridpoints)
 
 import matplotlib.pyplot as plt
-from rave.Rave import (normalize, UnivariateSplineInterpolator)
+from toppra import (normalize, UnivariateSplineInterpolator)
 
 import pymanoid
 from pymanoid import PointMass, Stance, Contact

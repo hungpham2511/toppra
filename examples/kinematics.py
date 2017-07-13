@@ -3,7 +3,7 @@ from toppra import (create_velocity_path_constraint,
                     qpOASESPPSolver,
                     compute_trajectory_gridpoints,
                     interpolate_constraint)
-from rave.Rave import SplineInterpolator
+from toppra import SplineInterpolator
 import numpy as np
 import matplotlib.pyplot as plt
 import time

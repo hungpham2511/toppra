@@ -5,7 +5,7 @@ import toppra as fa
 import numpy as np
 import numpy.testing as npt
 import openravepy as orpy
-from rave.Rave import PolynomialInterpolator, SplineInterpolator, normalize
+from toppra import PolynomialInterpolator, SplineInterpolator, normalize
 import pytest
 from toppra import PathConstraintKind
 import cvxpy as cvx

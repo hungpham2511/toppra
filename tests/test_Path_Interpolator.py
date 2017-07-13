@@ -1,7 +1,7 @@
 import numpy as np
 import numpy.testing as npt
 
-from rave.Rave import PolynomialInterpolator, SplineInterpolator
+from toppra import PolynomialInterpolator, SplineInterpolator
 
 
 class Test_PolynomialInterpolator(object):

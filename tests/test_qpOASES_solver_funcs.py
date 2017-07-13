@@ -1,7 +1,7 @@
 import pytest
 import toppra as fa
 from toppra import qpOASESPPSolver
-from rave.Rave import SplineInterpolator
+from toppra import SplineInterpolator
 from testingUtils import canonical_to_TypeI
 import numpy as np
 import openravepy as orpy
