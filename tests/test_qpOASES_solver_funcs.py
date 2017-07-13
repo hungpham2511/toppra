@@ -1,6 +1,6 @@
 import pytest
-from topp import fastTOPP as fa
-from topp.fastTOPP import qpOASESPPSolver
+import toppra as fa
+from toppra import qpOASESPPSolver
 from rave.Rave import SplineInterpolator
 from testingUtils import canonical_to_TypeI
 import numpy as np
@@ -19,26 +19,27 @@ DEBUG = False
 def pp_fixture(request):
     """ Velocity & Acceleration Path Constraint
     """
-    dof = 6
+    env = orpy.Environment()
+    env.Load('robots/pumaarm.zae')
+    # env.SetViewer('qtosg')
+    robot = env.GetRobots()[0]
+    robot.SetDOFTorqueLimits(np.ones(robot.GetDOF()) * 100)
+    dof = robot.GetDOF()
     np.random.seed(1)  # Use the same randomly generated way pts
     way_pts = np.random.randn(4, dof) * 0.6
     N = 200
     pi = SplineInterpolator(np.linspace(0, 1, 4), way_pts)
     ss = np.linspace(0, 1, N + 1)
     # Velocity Constraint
-    vlim_ = np.array([1., 1.2, 3., 2., 3, 2]) * 12
+    vlim_ = np.random.rand(dof) * 10 + 10
     vlim = np.vstack((-vlim_, vlim_)).T
     pc_vel = fa.create_velocity_path_constraint(pi, ss, vlim)
     # Acceleration Constraints
-    alim_ = np.array([19.734, 16.845, 20.709, 20.966, 23.723, 33.51])
+    alim_ = np.random.rand(dof) * 10 + 100
     alim = np.vstack((-alim_, alim_)).T
     pc_acc = fa.create_acceleration_path_constraint(pi, ss, alim)
     # Torque constraints
-    env = orpy.Environment()
-    env.Load('../../rave/denso_vs060.dae')
-    # env.SetViewer('qtosg')
-    robot = env.GetRobots()[0]
-    robot.SetDOFTorqueLimits(np.ones(6) * 100)
+
     pc_torque = fa.create_rave_torque_path_constraint(pi, ss, robot)
     if request.param == 'vel_accel':
         pcs = [pc_vel, pc_acc]
@@ -96,11 +97,11 @@ class TestFunc_QpoasesPPsolver_micro(object):
                         )
             obj = cvx.Maximize(x)
             prob = cvx.Problem(obj, constraints)
-            prob.solve()
+            prob.solve(solver=cvx.CVXOPT)
             assert np.allclose(x.value, K_i_high)
             obj = cvx.Minimize(x)
             prob = cvx.Problem(obj, constraints)
-            prob.solve()
+            prob.solve(solver=cvx.CVXOPT)
             assert np.allclose(x.value, K_i_low)
 
     def test_micro_func_reach(self, pp_fixture):
@@ -137,11 +138,11 @@ class TestFunc_QpoasesPPsolver_micro(object):
                         )
             obj = cvx.Maximize(x + 2 * ds * u)
             prob = cvx.Problem(obj, constraints)
-            prob.solve()
+            prob.solve(solver=cvx.CVXOPT)
             assert np.allclose(x.value + 2 * ds * u.value, xmax_i)
             obj = cvx.Minimize(x + 2 * ds * u)
             prob = cvx.Problem(obj, constraints)
-            prob.solve()
+            prob.solve(solver=cvx.CVXOPT)
             assert np.allclose(x.value + 2 * ds * u.value, xmin_i)
 
     def test_micro_func_proj_x(self, pp_fixture):
@@ -177,11 +178,11 @@ class TestFunc_QpoasesPPsolver_micro(object):
                         )
             obj = cvx.Maximize(x)
             prob = cvx.Problem(obj, constraints)
-            prob.solve()
+            prob.solve(solver=cvx.CVXOPT)
             assert np.allclose(x.value, xmax_i)
             obj = cvx.Minimize(x)
             prob = cvx.Problem(obj, constraints)
-            prob.solve()
+            prob.solve(solver=cvx.CVXOPT)
             assert np.allclose(x.value, xmin_i)
 
     def test_topp_step(self, pp_fixture):
@@ -202,7 +203,7 @@ class TestFunc_QpoasesPPsolver_micro(object):
             reg = 0.
             for i in range(5, 10):
                 x_cur = 0.4
-                xmin = 0.3
+                xmin = 0.1
                 xmax = 0.5
                 init = (True if i == 5 else False)  # i = 6,...10, use hotstart
                 u_, x_ = pp.topp_step(i, x_cur, xmin, xmax, init=init, reg=reg)
@@ -231,7 +232,7 @@ class TestFunc_QpoasesPPsolver_micro(object):
 
                 obj = cvx.Maximize(obj_sum)
                 prob = cvx.Problem(obj, constraints)
-                prob.solve()
+                prob.solve(solver=cvx.CVXOPT)
                 assert np.allclose(u.value, u_)
                 x__ = x.value + 2 * ds * u.value
                 assert np.allclose(x__, x_)
@@ -272,8 +273,8 @@ class Test_QpoasesPPsolver_main_funcs(object):
         for i in range(solver.N+1):
             assert rch_sets[i, 1] >= rch_sets[i, 0] - TINY
             assert rch_sets[i, 0] >= - TINY
-        assert rch_sets[0, 0] >= I0[0]
-        assert rch_sets[0, 1] <= I0[1]
+        assert rch_sets[0, 0] >= I0[0] - TINY
+        assert rch_sets[0, 1] <= I0[1] + TINY
 
     def test_comp_topp(self, pp_fixture):
         pcs, solver = pp_fixture

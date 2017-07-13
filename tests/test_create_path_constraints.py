@@ -52,7 +52,7 @@ def create_velocity_pc_fixtures(request):
         way_pts = np.random.randn(10, 6)
         pi = SplineInterpolator(np.linspace(0, 1, 10), way_pts)
         ss = np.linspace(0, 1, N+1)
-        vlim_ = np.random.rand(6)
+        vlim_ = np.random.rand(6) * 10 + 2.
         vlim = np.vstack((-vlim_, vlim_)).T
         pc_vel = fa.create_velocity_path_constraint(pi, ss, vlim)
         data = (pi, ss, vlim)
@@ -120,10 +120,10 @@ class TestFunc_create_velocity_path_constraint(object):
             constraints = [u * pc.a[i] + x * pc.b[i] + pc.c[i] <= 0]
             obj = cvx.Maximize(x)
             prob = cvx.Problem(obj, constraints)
-            prob.solve()
+            prob.solve(solver=cvx.ECOS, abstol=1e-9)
             res_pcmax = np.array([u.value, x.value])
             prob = cvx.Problem(cvx.Minimize(x), constraints)
-            prob.solve()
+            prob.solve(solver=cvx.ECOS, abstol=1e-9)
             res_pcmin = np.array([u.value, x.value])
 
             # 2. Compute max sd from the data
@@ -131,10 +131,10 @@ class TestFunc_create_velocity_path_constraint(object):
                            qs[i] * sd >= vlim[:, 0],
                            sd >= 0]
             prob = cvx.Problem(cvx.Maximize(sd), constraints)
-            prob.solve()
+            prob.solve(solver=cvx.ECOS, abstol=1e-9)
             res_datamax = np.array([u.value, sd.value ** 2])
             prob = cvx.Problem(cvx.Minimize(sd), constraints)
-            prob.solve()
+            prob.solve(solver=cvx.ECOS, abstol=1e-9)
             res_datamin = np.array([u.value, sd.value ** 2])
 
             # 3. They should agree
@@ -246,7 +246,7 @@ class TestFunc_create_acceleration_path_constraint(object):
                 obj = cvx.Maximize(np.sin(float(j) / np.pi / 2) * u +
                                    np.sin(float(j) / np.pi / 2) * x)
                 prob = cvx.Problem(obj, constraints)
-                prob.solve()
+                prob.solve(solver=cvx.CVXOPT)
                 res_pc[j, :] = np.array([u.value, x.value])
 
             # Data
@@ -258,7 +258,7 @@ class TestFunc_create_acceleration_path_constraint(object):
                 obj = cvx.Maximize(np.sin(float(j) / np.pi / 2) * u +
                                    np.sin(float(j) / np.pi / 2) * x)
                 prob = cvx.Problem(obj, constraints)
-                prob.solve()
+                prob.solve(solver=cvx.CVXOPT)
                 res_data[j, :] = np.array([u.value, x.value])
             assert np.allclose(res_data, res_pc)
 
@@ -285,7 +285,7 @@ def create_rave_torque_pc_fixtures(request):
     """
     env = orpy.Environment()
     set_OpenRAVE_debug_warn()
-    env.Load('robots/barrettwam.robot.xml')
+    env.Load('robots/pumaarm.zae')
     # env.SetViewer('qtosg')
     robot = env.GetRobots()[0]
     dof = robot.GetDOF()
@@ -392,7 +392,7 @@ class TestFunc_create_rave_torque_path_constraint(object):
             obj = cvx.Maximize(np.sin(float(j) / np.pi / 2) * u +
                                np.sin(float(j) / np.pi / 2) * x)
             prob = cvx.Problem(obj, constraints)
-            prob.solve()
+            prob.solve(solver=cvx.CVXOPT)
             res_data[j, :] = np.array([u.value, x.value])
 
         # From PC
@@ -405,7 +405,7 @@ class TestFunc_create_rave_torque_path_constraint(object):
             obj = cvx.Maximize(np.sin(float(j) / np.pi / 2) * u +
                                np.sin(float(j) / np.pi / 2) * x)
             prob = cvx.Problem(obj, constraints)
-            prob.solve()
+            prob.solve(solver=cvx.CVXOPT)
             res_pc[j, :] = np.array([u.value, x.value])
 
         assert np.allclose(res_data, res_pc)
@@ -617,7 +617,7 @@ def pymanoid_fixture():
         sim.schedule_extra(com_sync)
         com_target.set_x(0)
         com_target.set_y(0)
-        robot.ik.solve()
+        robot.ik.solve(solver=cvx.CVXOPT)
         ts = np.arange(0, 7, sim.dt)
         ps = np.array(
             [com_target.p + np.r_[0.1, 0.1, 0] * t for t in np.sin(ts)])
@@ -709,7 +709,7 @@ class Test_ContactStability(object):
                 obj = cvx.Maximize(np.sin(float(j) / np.pi / 2) * u +
                                    np.sin(float(j) / np.pi / 2) * x)
                 prob = cvx.Problem(obj, constraints)
-                prob.solve()
+                prob.solve(solver=cvx.CVXOPT)
                 res_pc[j, :] = np.array([u.value, x.value])
 
             for u_, x_ in res_pc:

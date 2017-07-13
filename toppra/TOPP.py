@@ -6,9 +6,6 @@ from qpoases import (PyOptions as Options, PyPrintLevel as PrintLevel,
 from rave import Rave
 from rave.Rave import compute_jacobian_wrench
 from scipy.linalg import block_diag
-
-import pyximport
-pyximport.install()
 from _CythonUtils import _create_velocity_constraint
 
 SUCCESSFUL_RETURN = ReturnValue.SUCCESSFUL_RETURN
