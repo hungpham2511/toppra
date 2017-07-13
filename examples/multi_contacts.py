@@ -1,13 +1,13 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from toppra import (qpOASESPPSolver,
                     create_velocity_path_constraint,
                     create_full_contact_path_constraint,
                     paper_dir,
                     interpolate_constraint,
-                    compute_trajectory_gridpoints)
-
-import matplotlib.pyplot as plt
-from toppra import (normalize, UnivariateSplineInterpolator)
+                    compute_trajectory_gridpoints,
+                    normalize,
+                    UnivariateSplineInterpolator)
 
 import pymanoid
 from pymanoid import PointMass, Stance, Contact
@@ -17,7 +17,6 @@ com_height = 0.9  # [m]
 z_polygon = 2.
 VERBOSE = False
 N = 20
-SAVE_FIG = False
 
 
 def load_problem_data(load_viewer=True):
@@ -207,7 +206,7 @@ if __name__ == "__main__":
     plt.rcParams['legend.fontsize'] = 6
     plt.rcParams['xtick.labelsize'] = 6
     plt.rcParams['ytick.labelsize'] = 6
-    f, axs = plt.subplots(2, 1, figsize=[2.8, 2.6])
+    f, axs = plt.subplots(2, 1, figsize=[6, 6])
     axs[0].plot(pp.ss, np.sqrt(pp.K[:, 0]), '--', c='C3')
     axs[0].plot(pp.ss, np.sqrt(pp.K[:, 1]), '--', c='C3')
     axs[0].plot(pp.ss, np.sqrt(xs), "-")
@@ -217,12 +216,9 @@ if __name__ == "__main__":
     axs[1].plot(t[:-1], vs[:, [56, 57, 58]], '--', alpha=0.5)
     plt.legend(loc='upper right')
     plt.tight_layout()
-    if SAVE_FIG:
-        plt.savefig("{}/humanoid_swaying.pdf".format(paper_dir()))
-    else:
-        axs[0].set_title("Phase plane")
-        axs[1].set_title("Contact forces/Joint torques")
-        plt.show()
+    axs[0].set_title("Phase plane")
+    axs[1].set_title("Contact forces/Joint torques")
+    plt.show()
 
     # import time
     # for i in range(100):

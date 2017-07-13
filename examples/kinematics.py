@@ -13,8 +13,6 @@ np.set_printoptions(3)
 
 # REP: number of repetition
 REP = 1
-SAVE_FIG = False
-SHOW = True
 N = 100
 N_knot = 5
 SEED = 9
@@ -105,41 +103,40 @@ Total computation time
            t_intp_total, 1000 * t_intp_setup, 1e3 *
            t_intp_interpolate, 1000 * t_intp_solve)
 
-    if SHOW:
-        # plotting
-        f, axs = plt.subplots(3, 3, figsize=[9, 6])
-        axs[0, 0].plot(t, qd[:, [1, 2]])
-        axs[0, 0].plot(t, qd, alpha=0.2)
-        axs[1, 0].plot(t, qdd[:, [1, 2]])
-        axs[1, 0].plot(t, qdd, alpha=0.2)
-        axs[2, 0].plot(np.sqrt(pp.K[:, 0]), '--', c='C3')
-        axs[2, 0].plot(np.sqrt(pp.K[:, 1]), '--', c='C3')
-        axs[2, 0].plot(np.sqrt(xs))
-        axs[0, 1].plot(t_smth, qd_smth[:, [1, 2]])
-        axs[0, 1].plot(t_smth, qd_smth, alpha=0.2)
-        axs[1, 1].plot(t_smth, qdd_smth[:, [1, 2]])
-        axs[1, 1].plot(t_smth, qdd_smth, alpha=0.2)
-        axs[2, 1].plot(np.sqrt(pp.K[:, 0]), '--', c='C3')
-        axs[2, 1].plot(np.sqrt(pp.K[:, 1]), '--', c='C3')
-        axs[2, 1].plot(np.sqrt(xs_smth))
-        axs[0, 2].plot(t_intp, qd_intp[:, [1, 2]])
-        axs[0, 2].plot(t_intp, qd_intp, alpha=0.2)
-        axs[1, 2].plot(t_intp, qdd_intp[:, [1, 2]])
-        axs[1, 2].plot(t_intp, qdd_intp, alpha=0.2)
-        axs[2, 2].plot(np.sqrt(pp_intp.K[:, 0]), '--', c='C3')
-        axs[2, 2].plot(np.sqrt(pp_intp.K[:, 1]), '--', c='C3')
-        axs[2, 2].plot(np.sqrt(xs_intp))
-        axs[0, 0].set_title('(colloc.) velocity')
-        axs[1, 0].set_title('(colloc.) acceleration')
-        axs[2, 0].set_title('(colloc.) profile')
-        axs[0, 1].set_title('(smth colloc.) velocity')
-        axs[1, 1].set_title('(smth colloc.) acceleration')
-        axs[2, 1].set_title('(smth colloc.) profile')
-        axs[0, 2].set_title('(intp.) velocity')
-        axs[1, 2].set_title('(intp.) acceleration')
-        axs[2, 2].set_title('(intp.) profile')
-        plt.tight_layout()
-        plt.show()
+    # plotting
+    f, axs = plt.subplots(3, 3, figsize=[9, 6])
+    axs[0, 0].plot(t, qd[:, [1, 2]])
+    axs[0, 0].plot(t, qd, alpha=0.2)
+    axs[1, 0].plot(t, qdd[:, [1, 2]])
+    axs[1, 0].plot(t, qdd, alpha=0.2)
+    axs[2, 0].plot(np.sqrt(pp.K[:, 0]), '--', c='C3')
+    axs[2, 0].plot(np.sqrt(pp.K[:, 1]), '--', c='C3')
+    axs[2, 0].plot(np.sqrt(xs))
+    axs[0, 1].plot(t_smth, qd_smth[:, [1, 2]])
+    axs[0, 1].plot(t_smth, qd_smth, alpha=0.2)
+    axs[1, 1].plot(t_smth, qdd_smth[:, [1, 2]])
+    axs[1, 1].plot(t_smth, qdd_smth, alpha=0.2)
+    axs[2, 1].plot(np.sqrt(pp.K[:, 0]), '--', c='C3')
+    axs[2, 1].plot(np.sqrt(pp.K[:, 1]), '--', c='C3')
+    axs[2, 1].plot(np.sqrt(xs_smth))
+    axs[0, 2].plot(t_intp, qd_intp[:, [1, 2]])
+    axs[0, 2].plot(t_intp, qd_intp, alpha=0.2)
+    axs[1, 2].plot(t_intp, qdd_intp[:, [1, 2]])
+    axs[1, 2].plot(t_intp, qdd_intp, alpha=0.2)
+    axs[2, 2].plot(np.sqrt(pp_intp.K[:, 0]), '--', c='C3')
+    axs[2, 2].plot(np.sqrt(pp_intp.K[:, 1]), '--', c='C3')
+    axs[2, 2].plot(np.sqrt(xs_intp))
+    axs[0, 0].set_title('(colloc.) velocity')
+    axs[1, 0].set_title('(colloc.) acceleration')
+    axs[2, 0].set_title('(colloc.) profile')
+    axs[0, 1].set_title('(smth colloc.) velocity')
+    axs[1, 1].set_title('(smth colloc.) acceleration')
+    axs[2, 1].set_title('(smth colloc.) profile')
+    axs[0, 2].set_title('(intp.) velocity')
+    axs[1, 2].set_title('(intp.) acceleration')
+    axs[2, 2].set_title('(intp.) profile')
+    plt.tight_layout()
+    plt.show()
 
     import IPython
     if IPython.get_ipython() is None:
