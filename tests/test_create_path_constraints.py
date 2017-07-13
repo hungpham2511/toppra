@@ -7,7 +7,7 @@ import numpy.testing as npt
 import openravepy as orpy
 from rave.Rave import PolynomialInterpolator, SplineInterpolator, normalize
 import pytest
-from topp.fastTOPP import PathConstraintKind
+from toppra import PathConstraintKind
 import cvxpy as cvx
 
 TINY = 10e-8
@@ -266,23 +266,34 @@ class TestFunc_create_acceleration_path_constraint(object):
 @pytest.fixture(scope="class", params=['fixed', 1, 2, 6],
                 name='torque_pc_data')
 def create_rave_torque_pc_fixtures(request):
-    """ Parameterized Rave Torque path constraint.
+    """Parameterized Rave Torque path constraint.
 
     Returns:
     --------
-      data: A tuple. Contains path, ss, robot.
-      pc: A `PathConstraint`.
+        data: A tuple. Contains path, ss, robot.
+        pc: A `PathConstraint`.
+
+    Params:
+    -------
+
+        If `param` is an int, generate a random trajectory using `param`
+        as the random seed.
+
+        If `param` is "fixed", generate a trajectory with constant joint
+        values.
+
     """
     env = orpy.Environment()
     set_OpenRAVE_debug_warn()
-    env.Load('../../rave/denso_vs060.dae')
+    env.Load('robots/barrettwam.robot.xml')
     # env.SetViewer('qtosg')
     robot = env.GetRobots()[0]
-    robot.SetDOFTorqueLimits(np.ones(6) * 100)
+    dof = robot.GetDOF()
+    robot.SetDOFTorqueLimits(np.ones(dof) * 100)
 
     if type(request.param) is int:
         np.random.seed(request.param)
-        way_pts = np.random.randn(7, 6) * 0.5
+        way_pts = np.random.randn(7, dof) * 0.5
         pi = SplineInterpolator(np.linspace(0, 1, 7), way_pts)
         N = 100
         ss = np.linspace(0, 2, N+1)
@@ -293,7 +304,7 @@ def create_rave_torque_pc_fixtures(request):
 
     elif request.param == 'fixed':
         np.random.seed(1)
-        q_fixed = np.random.randn(6)
+        q_fixed = np.random.randn(dof)
         way_pts = [q_fixed for i in range(7)]
         pi = SplineInterpolator(np.linspace(0, 1, 7), way_pts)
         N = 100
@@ -360,8 +371,8 @@ class TestFunc_create_rave_torque_path_constraint(object):
         x = cvx.Variable()
 
         # Remove vel/accel limits during inversedynamic
-        robot.SetDOFAccelerationLimits(np.ones(6) * 100)
-        robot.SetDOFVelocityLimits(np.ones(6) * 100)
+        robot.SetDOFAccelerationLimits(np.ones(robot.GetDOF()) * 100)
+        robot.SetDOFVelocityLimits(np.ones(robot.GetDOF()) * 100)
         i = 0
         # From Data
         with robot:
@@ -406,13 +417,14 @@ def create_rave_re_torque_fixtures():
     """
     env = orpy.Environment()
     set_OpenRAVE_debug_warn()
-    env.Load('../../rave/denso_vs060.dae')
+    env.Load('robots/barrettwam.robot.xml')
     # env.SetViewer('qtosg')
     robot = env.GetRobots()[0]
-    robot.SetDOFTorqueLimits(np.ones(6) * 100)
+    dof = robot.GetDOF()
+    robot.SetDOFTorqueLimits(np.ones(dof) * 100)
 
     np.random.seed(1)
-    way_pts = np.random.randn(5, 6) * 0.5
+    way_pts = np.random.randn(5, dof) * 0.5
     pi = SplineInterpolator(np.linspace(0, 1, 5), way_pts)
     N = 20
     ss = np.linspace(0, 1, N+1)

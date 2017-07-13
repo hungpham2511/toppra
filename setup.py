@@ -2,22 +2,22 @@ from setuptools import setup, Extension
 from Cython.Distutils import build_ext
 import numpy as np
 
-NAME = "toppy"
+NAME = "toppra"
 VERSION = "0.1"
-DESCR = "An implementation of TOPP using Cython"
-URL = "http://www.google.com"
-REQUIRES = ['numpy', 'cython', 'matplotlib', 'cvxopt']
+DESCR = "An implementation of TOPP via Reachability Analysis (TOPP-RA)"
+URL = "nil"
+REQUIRES = ['numpy', 'cython']
 
-AUTHOR = "Pham Tien Hung"
+AUTHOR = "Hung Pham"
 EMAIL = "hungpham2511@gmail.com"
 
 LICENSE = "Apache 2.0"
 
-SRC_DIR = "toppy"
+SRC_DIR = "toppra"
 PACKAGES = [SRC_DIR]
 
-ext_1 = Extension(SRC_DIR + ".TOPP_cython",
-                  [SRC_DIR + "/TOPP_cython.pyx"],
+ext_1 = Extension(SRC_DIR + "._CythonUtils",
+                  [SRC_DIR + "/_CythonUtils.pyx"],
                   libraries=[],
                   include_dirs=[np.get_include()])
 
