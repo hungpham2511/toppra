@@ -3,8 +3,7 @@ import numpy as np
 from qpoases import (PyOptions as Options, PyPrintLevel as PrintLevel,
                      PyReturnValue as ReturnValue, PySQProblem as SQProblem)
 
-from rave import Rave
-from rave.Rave import compute_jacobian_wrench
+from utils import compute_jacobian_wrench, inv_dyn
 from scipy.linalg import block_diag
 from _CythonUtils import _create_velocity_constraint
 
@@ -342,8 +341,8 @@ def create_full_contact_path_constraint(path, ss, robot, stance):
 
     for i in range(N+1):
         # t1,t2,t3,t4 are coefficients of the Path-Torque formulae
-        t1, t3, t4 = Rave.inv_dyn(robot.rave, q[i], qs[i], qs[i])
-        t2, _, _ = Rave.inv_dyn(robot.rave, q[i], qs[i], qss[i])
+        t1, t3, t4 = inv_dyn(robot.rave, q[i], qs[i], qs[i])
+        t2, _, _ = inv_dyn(robot.rave, q[i], qs[i], qss[i])
         abar[i] = t1
         bbar[i] = t2 + t3
         cbar[i] = t4
@@ -474,8 +473,8 @@ def create_rave_re_torque_path_constraint(path, ss, robot, J_lc,
         D[i][:N.shape[1]] = N.T
 
         # t1,t2,t3,t4 are coefficients of the Path-Torque formulae
-        t1, t3, t4 = Rave.inv_dyn(robot, qi, qsi, qsi)
-        t2, _, _ = Rave.inv_dyn(robot, qi, qsi, qssi)
+        t1, t3, t4 = inv_dyn(robot, qi, qsi, qsi)
+        t2, _, _ = inv_dyn(robot, qi, qsi, qssi)
 
         a[i] = np.dot(D[i], t1)
         b[i] = np.dot(D[i], t2 + t3)
@@ -524,8 +523,8 @@ def create_rave_torque_path_constraint(path, ss, robot):
         qssi = qss[i]
 
         # t1,t2,t3,t4 are coefficients of the Path-Torque formulae
-        t1, t3, t4 = Rave.inv_dyn(robot, qi, qsi, qsi)
-        t2, _, _ = Rave.inv_dyn(robot, qi, qsi, qssi)
+        t1, t3, t4 = inv_dyn(robot, qi, qsi, qsi)
+        t2, _, _ = inv_dyn(robot, qi, qsi, qssi)
 
         a[i, :dof] = t1
         a[i, dof:] = -t1
