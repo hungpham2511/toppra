@@ -46,3 +46,59 @@ def inv_dyn(rave_robot, q, qd, qdd, forceslist=None, returncomponents=True):
     rave_robot.SetDOFVelocityLimits(vlim)
     rave_robot.SetDOFAccelerationLimits(alim)
     return res
+
+
+def smooth_singularities(pp, us, xs, vs=None):
+    """Smooth jitters due to singularities.
+
+    Solving TOPP for discrete problem generated from collocation
+    scheme tends to create jitters. This function finds and smooth
+    them.
+
+    Args:
+    ----
+    pp: PathParameterization
+    us: ndarray
+    xs: ndarray
+    vs: ndarray, optional
+
+    Returns:
+    -------
+    us_smth: ndarray,
+    xs_smth: ndarray,
+    vs_smth: ndarray,
+    """
+    # Find the indices
+    singular_indices = []
+    uds = np.diff(us, n=1)
+    for i in range(pp.N - 3):
+        if uds[i] < 0 and uds[i+1] > 0 and uds[i+2] < 0:
+            print "Potential peak at {:d}".format(i)
+            singular_indices.append(i)
+    print "Found singularities at {}".format(singular_indices)
+
+    # Smooth the singularities
+    xs_smth = np.copy(xs)
+    us_smth = np.copy(us)
+    if vs is not None:
+        vs_smth = np.copy(vs)
+    for index in singular_indices:
+        idstart = max(0, index)
+        idend = min(pp.N, index + 4)
+        xs_smth[range(idstart, idend + 1)] = (
+            xs_smth[idstart] + (xs_smth[idend] - xs_smth[idstart]) *
+            np.linspace(0, 1, idend + 1 - idstart))
+        if vs is not None:
+            data = [vs_smth[idstart] +
+                    (xs_smth[idend] - xs_smth[idstart]) * frac
+                    for frac in np.linspace(0, 1, idend + 1 - idstart)]
+            vs_smth[range(idstart, idend + 1)] = np.array(data)
+
+    for i in range(pp.N):
+        us_smth[i] = (xs_smth[i+1] - xs_smth[i]) / 2 / (pp.ss[i+1] - pp.ss[i])
+
+    if vs is not None:
+        return us_smth, xs_smth, vs_smth
+    else:
+        return us_smth, xs_smth
+

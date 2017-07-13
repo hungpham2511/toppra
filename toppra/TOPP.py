@@ -6,7 +6,9 @@ from qpoases import (PyOptions as Options, PyPrintLevel as PrintLevel,
 from utils import compute_jacobian_wrench, inv_dyn
 from scipy.linalg import block_diag
 from _CythonUtils import _create_velocity_constraint
+import logging
 
+logger = logging.getLogger(__name__)
 SUCCESSFUL_RETURN = ReturnValue.SUCCESSFUL_RETURN
 
 
@@ -807,12 +809,12 @@ Initialize Path Parameterization instance
 \t N                  : {:8d}
 \t No. of constraints : {:8d}
 \t No. of slack var   : {:8d}
+\t No. of can. ineq.  : {:8d}
 \t No. of equalities  : {:8d}
 \t No. of inequalities: {:8d}
 """.format(self.N, len(self.constraint_set),
-           self.nv, self.neq, self.niq)
-        if verbose:
-            print summary_msg
+           self.nv, self. nm, self.neq, self.niq)
+        logger.info(summary_msg)
 
     @property
     def K(self):
@@ -847,8 +849,10 @@ Initialize Path Parameterization instance
         # Setup solver
         options = Options()
         if verbose:
+            logger.debug("Set qpOASES print level to HIGH")
             options.printLevel = PrintLevel.HIGH
         else:
+            logger.debug("Set qpOASES print level to NONE")
             options.printLevel = PrintLevel.NONE
         self.solver_up = SQProblem(nV, nC)
         self.solver_up.setOptions(options)
@@ -961,7 +965,7 @@ Initialize Path Parameterization instance
         xmin, xmax = self.proj_x_admissible(self.N, self.IN[0],
                                             self.IN[1], init=True)
         if xmin is None:
-            print "Unable to project the interval IN back to feasible set."
+            logger.warn("Unable to project the interval IN back to feasible set.")
             return False
         else:
             self._K[self.N, 1] = xmax
@@ -974,7 +978,7 @@ Initialize Path Parameterization instance
             # Turn init off, use hotstart
             init = False
             if xmin_i is None:
-                print "Find controllable set K({:d}, IN failed".format(i)
+                logger.warn("Find controllable set K({:d}, IN failed".format(i))
                 return False
             else:
                 self._K[i, 1] = xmax_i - eps  # Buffer for numerical error
@@ -990,7 +994,7 @@ Initialize Path Parameterization instance
         xmin, xmax = self.proj_x_admissible(
             0, self.I0[0], self.I0[1], init=True)
         if xmin is None:
-            print "Unable to project the interval I0 back to feasibility"
+            logger.warn("Unable to project the interval I0 back to feasibility")
             return False
         else:
             self._L[0, 1] = xmax
@@ -1000,12 +1004,12 @@ Initialize Path Parameterization instance
             xmin_nx, xmax_nx = self.reach(  # Next step, unprojected
                 i, self._L[i, 0], self._L[i, 1], init=init)
             if xmin_nx is None:
-                print "Forward propagation from L{:d} failed ".format(i)
+                logger.warn("Forward propagation from L{:d} failed ".format(i))
                 return False
             xmin_pr, xmax_pr = self.proj_x_admissible(  # Projected
                 i + 1, xmin_nx, xmax_nx, init=init)
             if xmin_pr is None:
-                print "Projection for L{:d} failed".format(i)
+                logger.warn("Projection for L{:d} failed".format(i))
                 return False
             else:
                 self._L[i + 1, 1] = xmax_pr
@@ -1135,7 +1139,7 @@ Unable to parameterizes this path:
 
         # Check result
         if (res_up != SUCCESSFUL_RETURN) or (res_down != SUCCESSFUL_RETURN):
-            print """
+            logger.warn("""
 Computing one-step failed.
 
     INFO:
@@ -1146,7 +1150,7 @@ Computing one-step failed.
         warm_start            = {}
         upper LP solve status = {}
         lower LP solve status = {}
-""".format(i, xmin, xmax, init, res_up, res_down)
+""".format(i, xmin, xmax, init, res_up, res_down))
 
             return None, None
 
@@ -1203,7 +1207,7 @@ Computing one-step failed.
                 self.hA[i], nWSR_down)
 
         if (res_up != SUCCESSFUL_RETURN) or (res_down != SUCCESSFUL_RETURN):
-            print """
+            logger.warn("""
 Computing reach set failed.
 
     INFO:
@@ -1214,7 +1218,7 @@ Computing reach set failed.
         warm_start            = {}
         upper LP solve status = {}
         lower LP solve status = {}
-""".format(i, xmin, xmax, init, res_up, res_down)
+""".format(i, xmin, xmax, init, res_up, res_down))
             return None, None
 
         # extract solution
@@ -1258,7 +1262,7 @@ Computing reach set failed.
                 self.hA[i], nWSR_down)
 
         if (res_up != SUCCESSFUL_RETURN) or (res_down != SUCCESSFUL_RETURN):
-            print """
+            logger.warn("""
 Computing projection failed.
 
     INFO:
@@ -1269,7 +1273,7 @@ Computing projection failed.
         warm_start            = {}
         upper LP solve status = {}
         lower LP solve status = {}
-""".format(i, xmin, xmax, init, res_up, res_down)
+""".format(i, xmin, xmax, init, res_up, res_down))
             return None, None
 
         # extract solution
@@ -1312,7 +1316,7 @@ Computing projection failed.
                 self.hA[i], self.nWSR_topp[i])
 
         if (res_up != SUCCESSFUL_RETURN):
-            print "Non-optimal solution at i={0}. Returning default.".format(i)
+            logger.warn("Non-optimal solution at i={0}. Returning default.".format(i))
             return None, None
 
         # extract solution
