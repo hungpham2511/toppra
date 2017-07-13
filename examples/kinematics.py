@@ -2,19 +2,19 @@ from toppra import (create_velocity_path_constraint,
                     create_acceleration_path_constraint,
                     qpOASESPPSolver,
                     compute_trajectory_gridpoints,
+                    smooth_singularities,
                     interpolate_constraint)
 from toppra import SplineInterpolator
 import numpy as np
 import matplotlib.pyplot as plt
 import time
-from multi_contacts import smooth_singularities
+
+import coloredlogs
+coloredlogs.install(level='INFO')
 np.set_printoptions(3)
 
-
-# REP: number of repetition
-REP = 1
 N = 100
-N_knot = 5
+N_samples = 5
 SEED = 9
 dof = 7
 
@@ -33,7 +33,7 @@ def generate_n_dof_test_case(n, N):
         data: A tuple. Contains necessary data to recreate this instance.
     """
     np.random.seed(SEED)
-    way_pts = np.random.randn(N_knot, n)
+    way_pts = np.random.randn(N_samples, n)
     pi = SplineInterpolator(np.linspace(0, 1, 5), way_pts)
     ss = np.linspace(0, 1, N + 1)
     # Velocity Constraint
@@ -53,7 +53,7 @@ Generation:
    - velocity bounds: {1}
    - acceleration bounds: {2}
    - Number of discretized points (RA): {3}
-""".format(N_knot, vlim_, alim_, N)
+""".format(N_samples, vlim_, alim_, N)
     return constraints, pi, data
 
 

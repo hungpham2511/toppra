@@ -799,10 +799,6 @@ class qpOASESPPSolver(object):
         # Pre-processing: Compute shape and init zero coeff matrices
         self._init_matrices(constraint_set)
         self._fill_matrices()
-
-        # Setup solvers
-        self._init_qpoaes_solvers(verbose)
-
         summary_msg = """
 Initialize Path Parameterization instance
 ------------------------------
@@ -815,6 +811,9 @@ Initialize Path Parameterization instance
 """.format(self.N, len(self.constraint_set),
            self.nv, self. nm, self.neq, self.niq)
         logger.info(summary_msg)
+
+        # Setup solvers
+        self._init_qpoaes_solvers(verbose)
 
     @property
     def K(self):

@@ -1,4 +1,7 @@
 import numpy as np
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def compute_jacobian_wrench(robot, link, p):
@@ -73,9 +76,9 @@ def smooth_singularities(pp, us, xs, vs=None):
     uds = np.diff(us, n=1)
     for i in range(pp.N - 3):
         if uds[i] < 0 and uds[i+1] > 0 and uds[i+2] < 0:
-            print "Potential peak at {:d}".format(i)
+            logger.debug("Found potential singularity at {:d}".format(i))
             singular_indices.append(i)
-    print "Found singularities at {}".format(singular_indices)
+    logger.debug("All singularities found: {}".format(singular_indices))
 
     # Smooth the singularities
     xs_smth = np.copy(xs)
