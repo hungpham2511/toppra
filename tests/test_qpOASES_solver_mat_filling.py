@@ -1,9 +1,9 @@
 import pytest
 import numpy as np
 from scipy.linalg import block_diag
-from topp.fastTOPP import (PathConstraint,
-                           qpOASESPPSolver,
-                           INFTY)
+from toppra import (PathConstraint,
+                    qpOASESPPSolver,
+                    INFTY)
 
 
 def random_fill(arrays):

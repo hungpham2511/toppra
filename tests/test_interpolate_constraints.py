@@ -1,4 +1,4 @@
-from topp.fastTOPP import PathConstraint, interpolate_constraint
+from toppra import PathConstraint, interpolate_constraint
 from scipy.linalg import block_diag
 import numpy as np
 import pytest
