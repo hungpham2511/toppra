@@ -10,11 +10,6 @@ from _CythonUtils import _create_velocity_constraint
 SUCCESSFUL_RETURN = ReturnValue.SUCCESSFUL_RETURN
 
 
-# Paper directory
-def paper_dir():
-    return "/home/hung/git/hung/Papers/2016-TOPP-Stochastic/figures/"
-
-
 qpOASESReturnValueDict = {
     1: "SUCCESSFUL_RETURN",
     61: "HOTSTART_STOPPED_INFEASIBILITY",

@@ -1,15 +1,12 @@
 import pytest
 import toppra as fa
-from toppra import qpOASESPPSolver
-from toppra import SplineInterpolator
+from toppra import (qpOASESPPSolver, TINY, SplineInterpolator)
 from testingUtils import canonical_to_TypeI
 import numpy as np
 import openravepy as orpy
 import cvxpy as cvx
 # from test_Path_Constraints import pymanoid_fixture
 
-TINY = 10e-8
-SMALL = 10e-5
 VERBOSE = False
 DEBUG = False
 

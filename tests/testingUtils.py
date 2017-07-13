@@ -1,6 +1,12 @@
 import numpy as np
 from topp.fastTOPP import INFTY, PathConstraint
 
+# Functional constants
+U_LOWER = -1000
+U_HIGHER = 1000
+X_LOWER = -1000
+X_HIGHER = 1000
+
 
 def canonical_to_TypeI(pc):
     """ Convert a canonical pc to a Type I pc.
@@ -13,5 +19,4 @@ def canonical_to_TypeI(pc):
     hnew = np.zeros((pc.N + 1, pc.nm))
     return PathConstraint(abar=abarnew, bbar=bbarnew, cbar=cbarnew,
                           D=Dnew, l=lnew, h=hnew, ss=pc.ss)
-
 

@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 from toppra import (qpOASESPPSolver,
                     create_velocity_path_constraint,
                     create_full_contact_path_constraint,
-                    paper_dir,
                     interpolate_constraint,
                     compute_trajectory_gridpoints,
                     normalize,

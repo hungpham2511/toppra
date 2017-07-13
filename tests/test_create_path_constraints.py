@@ -5,21 +5,15 @@ import toppra as fa
 import numpy as np
 import numpy.testing as npt
 import openravepy as orpy
-from toppra import PolynomialInterpolator, SplineInterpolator, normalize
+from toppra import (PolynomialInterpolator, SplineInterpolator,
+                    normalize, PathConstraintKind, TINY, SMALL)
 import pytest
-from toppra import PathConstraintKind
 import cvxpy as cvx
+# some constants
+from testingUtils import (U_LOWER, U_HIGHER, X_LOWER, X_HIGHER)
 
-TINY = 10e-8
-SMALL = 10e-5
 VERBOSE = False
 DEBUG = False
-
-# Functional constants
-U_LOWER = -1000
-U_HIGHER = 1000
-X_LOWER = -1000
-X_HIGHER = 1000
 
 
 def set_OpenRAVE_debug_warn():
@@ -709,7 +703,7 @@ class Test_ContactStability(object):
                 obj = cvx.Maximize(np.sin(float(j) / np.pi / 2) * u +
                                    np.sin(float(j) / np.pi / 2) * x)
                 prob = cvx.Problem(obj, constraints)
-                prob.solve(solver=cvx.CVXOPT)
+                prob.solve(solver=cvx.ECOS, abstol=TINY)
                 res_pc[j, :] = np.array([u.value, x.value])
 
             for u_, x_ in res_pc:
