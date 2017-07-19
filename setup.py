@@ -5,13 +5,13 @@ import numpy as np
 NAME = "toppra"
 VERSION = "0.1"
 DESCR = "An implementation of TOPP via Reachability Analysis (TOPP-RA)"
-URL = "nil"
+URL = "https://github.com/hungpham2511/toppra"
 REQUIRES = ['numpy', 'cython']
 
 AUTHOR = "Hung Pham"
 EMAIL = "hungpham2511@gmail.com"
 
-LICENSE = "Apache 2.0"
+LICENSE = "MIT"
 
 SRC_DIR = "toppra"
 PACKAGES = [SRC_DIR]
