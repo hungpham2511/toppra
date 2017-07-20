@@ -6,7 +6,7 @@ NAME = "toppra"
 VERSION = "0.1"
 DESCR = "An implementation of TOPP via Reachability Analysis (TOPP-RA)"
 URL = "https://github.com/hungpham2511/toppra"
-REQUIRES = ['numpy', 'cython']
+REQUIRES = ['numpy', 'cython', 'coloredlogs', 'enum', 'scipy']
 
 AUTHOR = "Hung Pham"
 EMAIL = "hungpham2511@gmail.com"
