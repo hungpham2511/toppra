@@ -63,7 +63,7 @@ from toppra import (create_velocity_path_constraint,
                     qpOASESPPSolver,
                     compute_trajectory_gridpoints,
                     smooth_singularities,
-					SplineInterpolator,
+		    SplineInterpolator,
                     interpolate_constraint)
 import numpy as np
 ```
