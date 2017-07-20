@@ -46,7 +46,7 @@ To use these functionalities, the following libraries are needed:
 2. [pymanoid](https://github.com/stephane-caron/pymanoid)
 
 `openRAVE` can be tricky to install, a good instruction for installing
-`openRAVE` on Ubuntu 16.06 can be
+`openRAVE` on Ubuntu 16.04 can be
 found
 [here](https://scaron.info/teaching/installing-openrave-on-ubuntu-16.04.html).
 
