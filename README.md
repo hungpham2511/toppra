@@ -25,11 +25,13 @@ pip install matplotlib
 ```
 
 
-Install qpOASES, the numerical solver
-
+Install
+[qpOASES](https://projects.coin-or.org/qpOASES/wiki/QpoasesInstallation) by
+following steps given in the official site. Then, to install the
+python interface do
 ``` sh
-git clone https://github.com/stephane-caron/qpOASES
-cd qpOASES
+cd <install-dir>/interfaces/python
+pip setup.py install
 ```
 
 
