@@ -38,7 +38,7 @@ pip setup.py install
 Finall, install `toppra` with
 
 ``` sh
-sudo python setup.py install
+python setup.py install
 ```
 
 ## Multi-contact and torque bounds examples
