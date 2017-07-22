@@ -106,7 +106,6 @@ And finally solve with `toppra`.
 ```python
 pp = qpOASESSolver(constraints)
 us, xs = pp.solve_topp()
-us, xs = smooth_singularities(pp, us, xs)
 t, q, qd, qdd = compute_trajectory_gridpoints(path, pp.ss, us, xs)
 ```
 Plot the solution with `matplotlib`
@@ -123,9 +122,8 @@ axs[2].plot(np.sqrt(pp.K[:, 1]), '--', c='C3')
 axs[2].plot(np.sqrt(xs))
 plt.show()
 ```
-
-![basic usage figure][figure]
-[figure]: medias/basic_usage.png
+This figure should appear!
+![basic usage figure](medias/basic_usage.png)
 
 
 
