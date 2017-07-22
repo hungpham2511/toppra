@@ -1,7 +1,8 @@
-# toppra
+# `toppra`
 
 A library for computing path parameterizations for robots subject to
-constraints. The library can consider the following constraints:
+constraints. `toppra` can consider the following constraints on a
+robots:
 
 1. joint velocity and acceleration bounds;
 2. torque bound;
@@ -36,10 +37,17 @@ pip setup.py install
 
 
 Finall, install `toppra` with
-
 ``` sh
 python setup.py install
 ```
+after installation complete, run tests by doing
+``` sh
+cd <toppra-dir>/tests/
+pytest -v
+```
+if `pytest` is not installed, grab it from `pip`.
+
+
 
 ## Multi-contact and torque bounds examples
 To use these functionalities, the following libraries are needed:
@@ -51,6 +59,13 @@ To use these functionalities, the following libraries are needed:
 `openRAVE` on Ubuntu 16.04 can be
 found
 [here](https://scaron.info/teaching/installing-openrave-on-ubuntu-16.04.html).
+
+To install `pymanoid` locally, do the following
+``` sh
+mkdir git && cd git
+git clone <pymanoid-git-url>
+export PYTHONPATH=$PYTHONPATH:$HOME/git/pymanoid
+```
 
 
 # Basic usage

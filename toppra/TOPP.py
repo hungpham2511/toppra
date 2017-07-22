@@ -121,8 +121,9 @@ def compute_trajectory_points(path, sgrid, ugrid, xgrid, dt=1e-2):
 class qpOASESPPSolver(object):
     """Implementation of TOPP-RA using qpOASES solver.
 
-    This class translates a set of `PathConstraint` to the form needed
-    by qpOASES form.
+    This class first translates a set of `PathConstraint` to the form
+    needed by qpOASES form. Then it solve for the parameterization in
+    two passes as described in the paper.
 
     Attributes:
     ----------
@@ -135,26 +136,26 @@ class qpOASESPPSolver(object):
     neq: An Int. Dimension of the equalities on slack.
     nv: An Int. (qpOASES) Dimension of the optimization variable.
     nC: An Int. (qpOASES) Dimension of the constraint matrix.
+    A: ndarray. qpOASES coefficient matrix.
+    lA: ndarray. qpOASES coefficient matrix.
+    hA: ndarray. qpOASES coefficient matrix.
+    l: ndarray. qpOASES coefficient matrix.
+    h: ndarray. qpOASES coefficient matrix.
+    H: ndarray. qpOASES coefficient matrix.
+    g: ndarray. qpOASES coefficient matrix.
 
-    qpOASES matrices: coefficient matrices to be used with qpOASES solver.
-    ----------------
-            min     1/2 (u, x, v)^T H (u, x, v) + g^T (u, x, v)
-            s.t.    lA <= A (u, x, v) <= hA
-                    l  <=   (u, x, v) <= h
-    A: ndarray.
-    lA: ndarray.
-    hA: ndarray.
-    l: ndarray.
-    h: ndarray.
-    H: ndarray.
-    g: ndarray.
-
-    Matrices (lA, A, hA) is equivalent to all `PathConstraint(s)`'
-    constraint.
-
+    NOTE:
+    ----
     Note that the first `self.nop` row of A are all zeros. These are
     operational rows, used to specify additional constraints required
     for computing controllable/reachable sets.
+
+    The Coefficient matrices are to be input to the qpOASES solver as
+    follow
+
+            min     1/2 (u, x, v)^T H (u, x, v) + g^T (u, x, v)
+            s.t.    lA <= A (u, x, v) <= hA
+                    l  <=   (u, x, v) <= h
 
     More specifically, there are four sections in matrix A.
 
@@ -198,6 +199,7 @@ class qpOASESPPSolver(object):
         l[i]=| l1     | for v1 |, h[i]=| h1    | for v1 |
              | l2     |        |       | h2    |        |
              | l3     |        |       | h3    |        |
+
     """
     def __init__(self, constraint_set, verbose=False):
         """ Initialization.
