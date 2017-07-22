@@ -84,18 +84,23 @@ import numpy as np
 ```
 Then, we generate a random instance.
 ```python
-way_pts = np.random.randn(N_samples, n)
-pi = SplineInterpolator(np.linspace(0, 1, 5), way_pts)
+N = 100
+N_samples = 5
+dof = 7
+np.random.seed(1)
+way_pts = np.random.randn(N_samples, dof)
+path = SplineInterpolator(np.linspace(0, 1, N_samples), way_pts)
 ss = np.linspace(0, 1, N + 1)
 # Velocity Constraint
-vlim_ = np.random.rand(n) * 20
+vlim_ = np.random.rand(dof) * 20
 vlim = np.vstack((-vlim_, vlim_)).T
-pc_vel = create_velocity_path_constraint(pi, ss, vlim)
+pc_vel = create_velocity_path_constraint(path, ss, vlim)
 # Acceleration Constraints
-alim_ = np.random.rand(n) * 2
+alim_ = np.random.rand(dof) * 2
 alim = np.vstack((-alim_, alim_)).T
-pc_acc = create_acceleration_path_constraint(pi, ss, alim)
+pc_acc = create_acceleration_path_constraint(path, ss, alim)
 constraints = [pc_vel, pc_acc]
+constraints_intp = [interpolate_constraint(c) for c in constraints]
 ```
 And finally solve with `toppra`.
 ```python
@@ -104,6 +109,23 @@ us, xs = pp.solve_topp()
 us, xs = smooth_singularities(pp, us, xs)
 t, q, qd, qdd = compute_trajectory_gridpoints(path, pp.ss, us, xs)
 ```
+Plot the solution with `matplotlib`
+``` python
+# plotting
+import matplotlib.pyplot as plt
+f, axs = plt.subplots(3, 1, figsize=[3, 5])
+axs[0].plot(t, qd[:, [1, 2]])
+axs[0].plot(t, qd, alpha=0.2)
+axs[1].plot(t, qdd[:, [1, 2]])
+axs[1].plot(t, qdd, alpha=0.2)
+axs[2].plot(np.sqrt(pp.K[:, 0]), '--', c='C3')
+axs[2].plot(np.sqrt(pp.K[:, 1]), '--', c='C3')
+axs[2].plot(np.sqrt(xs))
+plt.show()
+```
+
+![basic usage figure][figure]
+[figure]: medias/basic_usage.png
 
 
 
