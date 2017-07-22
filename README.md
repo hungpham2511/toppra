@@ -70,7 +70,7 @@ export PYTHONPATH=$PYTHONPATH:$HOME/git/pymanoid
 
 # Basic usage
 
-The following shows basic usages of `toppra`. First, import necessary
+The following shows basic usage of `toppra`. First, we import necessary
 functions
 ```python
 from toppra import (create_velocity_path_constraint,
@@ -82,7 +82,7 @@ from toppra import (create_velocity_path_constraint,
                     interpolate_constraint)
 import numpy as np
 ```
-Then, we generate a random instance.
+Then, generate a random instance
 ```python
 N = 100
 N_samples = 5
@@ -102,7 +102,7 @@ pc_acc = create_acceleration_path_constraint(path, ss, alim)
 constraints = [pc_vel, pc_acc]
 constraints_intp = [interpolate_constraint(c) for c in constraints]
 ```
-And finally solve with `toppra`.
+and finally solve with `toppra`
 ```python
 pp = qpOASESSolver(constraints)
 us, xs = pp.solve_topp()
@@ -123,7 +123,8 @@ axs[2].plot(np.sqrt(xs))
 plt.show()
 ```
 This figure should appear!
+
 ![basic usage figure](medias/basic_usage.png)
 
-
+For more examples, see the /examples folder.
 
