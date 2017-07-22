@@ -1,5 +1,5 @@
 import numpy as np
-from topp.fastTOPP import INFTY, PathConstraint
+from toppra import INFTY, PathConstraint
 
 # Functional constants
 U_LOWER = -1000
