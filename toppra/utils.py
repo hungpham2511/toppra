@@ -1,11 +1,14 @@
-import numpy as np
+"""This module contains some utilities functions that are relevant to
+computing parametrizations of path.
+"""
 import logging
+import numpy as np
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
-def compute_jacobian_wrench(robot, link, p):
-    """ Compute the wrench Jacobian for link at point p.
+def compute_jacobian_wrench(robot, link, point):
+    """ Compute the wrench Jacobian for link at point point.
 
     We look for J_wrench such that
           J_wrench.T * wrench = J_trans.T * F + J_rot.T * tau
@@ -14,7 +17,7 @@ def compute_jacobian_wrench(robot, link, p):
     J_wrench is computed by stacking J_translation and J_rotation
 
     """
-    J_trans = robot.ComputeJacobianTranslation(link.GetIndex(), p)
+    J_trans = robot.ComputeJacobianTranslation(link.GetIndex(), point)
     J_rot = robot.ComputeJacobianAxisAngle(link.GetIndex())
     J_wrench = np.vstack((J_trans, J_rot))
     return J_wrench
@@ -76,9 +79,9 @@ def smooth_singularities(pp, us, xs, vs=None):
     uds = np.diff(us, n=1)
     for i in range(pp.N - 3):
         if uds[i] < 0 and uds[i+1] > 0 and uds[i+2] < 0:
-            logger.debug("Found potential singularity at {:d}".format(i))
+            LOGGER.debug("Found potential singularity at {:d}".format(i))
             singular_indices.append(i)
-    logger.debug("All singularities found: {}".format(singular_indices))
+    LOGGER.debug("All singularities found: %s", singular_indices)
 
     # Smooth the singularities
     xs_smth = np.copy(xs)
@@ -102,6 +105,4 @@ def smooth_singularities(pp, us, xs, vs=None):
 
     if vs is not None:
         return us_smth, xs_smth, vs_smth
-    else:
-        return us_smth, xs_smth
-
+    return us_smth, xs_smth
