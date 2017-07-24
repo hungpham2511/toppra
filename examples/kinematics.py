@@ -13,7 +13,7 @@ import coloredlogs
 coloredlogs.install(level='INFO')
 np.set_printoptions(3)
 
-N = 100
+N = 300
 N_samples = 5
 SEED = 9
 dof = 7
