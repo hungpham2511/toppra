@@ -1,7 +1,8 @@
-# toppra
+# `toppra`
 
 A library for computing path parameterizations for robots subject to
-constraints. The library can consider the following constraints:
+constraints. `toppra` can consider the following constraints on a
+robots:
 
 1. joint velocity and acceleration bounds;
 2. torque bound;
@@ -36,10 +37,17 @@ pip setup.py install
 
 
 Finall, install `toppra` with
-
 ``` sh
 python setup.py install
 ```
+after installation complete, run tests by doing
+``` sh
+cd <toppra-dir>/tests/
+pytest -v
+```
+if `pytest` is not installed, grab it from `pip`.
+
+
 
 ## Multi-contact and torque bounds examples
 To use these functionalities, the following libraries are needed:
@@ -52,10 +60,17 @@ To use these functionalities, the following libraries are needed:
 found
 [here](https://scaron.info/teaching/installing-openrave-on-ubuntu-16.04.html).
 
+To install `pymanoid` locally, do the following
+``` sh
+mkdir git && cd git
+git clone <pymanoid-git-url>
+export PYTHONPATH=$PYTHONPATH:$HOME/git/pymanoid
+```
+
 
 # Basic usage
 
-The following shows basic usages of `toppra`. First, import necessary
+The following shows basic usage of `toppra`. First, we import necessary
 functions
 ```python
 from toppra import (create_velocity_path_constraint,
@@ -67,28 +82,49 @@ from toppra import (create_velocity_path_constraint,
                     interpolate_constraint)
 import numpy as np
 ```
-Then, we generate a random instance.
+Then, generate a random instance
 ```python
-way_pts = np.random.randn(N_samples, n)
-pi = SplineInterpolator(np.linspace(0, 1, 5), way_pts)
+N = 100
+N_samples = 5
+dof = 7
+np.random.seed(1)
+way_pts = np.random.randn(N_samples, dof)
+path = SplineInterpolator(np.linspace(0, 1, N_samples), way_pts)
 ss = np.linspace(0, 1, N + 1)
 # Velocity Constraint
-vlim_ = np.random.rand(n) * 20
+vlim_ = np.random.rand(dof) * 20
 vlim = np.vstack((-vlim_, vlim_)).T
-pc_vel = create_velocity_path_constraint(pi, ss, vlim)
+pc_vel = create_velocity_path_constraint(path, ss, vlim)
 # Acceleration Constraints
-alim_ = np.random.rand(n) * 2
+alim_ = np.random.rand(dof) * 2
 alim = np.vstack((-alim_, alim_)).T
-pc_acc = create_acceleration_path_constraint(pi, ss, alim)
+pc_acc = create_acceleration_path_constraint(path, ss, alim)
 constraints = [pc_vel, pc_acc]
+constraints_intp = [interpolate_constraint(c) for c in constraints]
 ```
-And finally solve with `toppra`.
+and finally solve with `toppra`
 ```python
 pp = qpOASESSolver(constraints)
 us, xs = pp.solve_topp()
-us, xs = smooth_singularities(pp, us, xs)
 t, q, qd, qdd = compute_trajectory_gridpoints(path, pp.ss, us, xs)
 ```
+Plot the solution with `matplotlib`
+``` python
+# plotting
+import matplotlib.pyplot as plt
+f, axs = plt.subplots(3, 1, figsize=[3, 5])
+axs[0].plot(t, qd[:, [1, 2]])
+axs[0].plot(t, qd, alpha=0.2)
+axs[1].plot(t, qdd[:, [1, 2]])
+axs[1].plot(t, qdd, alpha=0.2)
+axs[2].plot(np.sqrt(pp.K[:, 0]), '--', c='C3')
+axs[2].plot(np.sqrt(pp.K[:, 1]), '--', c='C3')
+axs[2].plot(np.sqrt(xs))
+plt.show()
+```
+This figure should appear!
 
+![basic usage figure](medias/basic_usage.png)
 
+For more examples, see the /examples folder.
 
