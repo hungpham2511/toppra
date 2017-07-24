@@ -660,7 +660,7 @@ def compute_trajectory_points(path, sgrid, ugrid, xgrid, dt=1e-2):
     N = sgrid.shape[0] - 1
     sdgrid = np.sqrt(xgrid)
     for i in range(N):
-        tgrid[i+1] = (sdgrid[i+1] - sdgrid[i]) / ugrid[i] + tgrid[i]
+        tgrid[i+1] = (sgrid[i+1] - sgrid[i]) / (sdgrid[i] + sdgrid[i+1]) * 2 + tgrid[i]
     # sampled points on trajectory
     tsample = np.arange(tgrid[0], tgrid[-1], dt)
     ssample = np.zeros_like(tsample)
