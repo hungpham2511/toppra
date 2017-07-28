@@ -1,13 +1,13 @@
 # `toppra`
 
-A library for computing path parameterizations for robots subject to
-constraints. `toppra` can consider the following constraints on a
-robots:
+TOPP-RA is the latest theoretical development for solving the Time-Optimal Path Parameterization (TOPP) problem. TOPP-RA achieves 100% success rate while being faster than the state-of-the-art implementation of the classic Bobrow algorithm. The current implementation of TOPP-RA supports the following constraints :
 
 1. joint velocity and acceleration bounds;
 2. torque bound;
 3. contact stability;
 4. full rigid-body dynamics with linearized friction cone constraints.
+
+Refer to the accompanying paper [A new approach to Time-Optimal Path Parameterization based on Reachability Analysis](https://arxiv.org/abs/1707.07239) for more details.
 
 
 # Installation
