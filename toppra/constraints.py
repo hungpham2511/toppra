@@ -8,6 +8,9 @@ from utils import inv_dyn, compute_jacobian_wrench
 from _CythonUtils import _create_velocity_constraint
 from scipy.linalg import block_diag
 from TOPP import INFTY
+import logging
+logger = logging.getLogger(__name__)
+
 
 
 class PathConstraintKind(Enum):
@@ -19,6 +22,35 @@ class PathConstraintKind(Enum):
 class PathConstraint(object):
     """Discretized constraint on a path.
 
+    Parameters
+    ----------
+    a     : (N+1, neq)     ndarray or None, optional
+    b     : (N+1, neq)     ndarray or None, optional
+    c     : (N+1, neq)     ndarray or None, optional
+    abar  : (N+1, neq)     ndarray or None, optional
+    bbar  : (N+1, neq)     ndarray or None, optional
+    cbar  : (N+1, neq)     ndarray or None, optional
+    lG    : (N+1, niq)     ndarray or None, optional
+    hG    : (N+1, niq)     ndarray or None, optional
+    G     : (N+1, niq, nv) ndarray or None, optional
+    l     : (N+1, nv)      ndarray or None, optional
+    h     : (N+1, nv)      ndarray or None, optional
+    name : String.
+           Represents the name of the constraint.
+
+    Attributes:
+    -----------
+    _nm : Int.
+          Dimension of non-redundant inequalities.
+    _nv : Int.
+          Dimension of slack variable.
+    _neq : Int.
+           Dimension of equality constraint.
+    _niq : Int.
+           Dimension of inequality constraint.
+
+    Notes
+    -----
     Generally, at position s, we consider the following constraints:
 
                 a(s) u    + b(s) x    + c(s)    <= 0
@@ -38,20 +70,6 @@ class PathConstraint(object):
     needs to use the function `interpolate_constraint`.
 
     The Attribute `ss` stores the sampled positions.
-
-    Attributes:
-    -----------
-      _nm : An Int. Dimension of non-redundant inequalities.
-      _nv : An Int. Dimension of slack variable.
-      _neq : An Int. Dimension of equality constraint
-      _niq : An Int. Dimension of inequality constraint
-
-      a, b, c: Three ndarray(s). Shaped (N+1, nm).
-      abar, bbar, cbar: Three ndarray(s). Shaped (N+1, neq).
-      D: An ndarray. Shaped (N+1, neq, nv)
-      lG, hG: Two ndarray(s). Shaped (N+1, niq).
-      l, h: Two ndarray(s). Shaped (N+1, nv).
-      G: A ndarray. Shaped (N+1, nv, neq)
     """
 
     def __repr__(self):
@@ -70,22 +88,6 @@ class PathConstraint(object):
 
         A matrix if None will be set to an empty ndarray.
 
-        Args:
-        -----
-        a     : An (N+1, neq)     ndarray.
-                        See above for definition.
-        b     : An (N+1, neq)     ndarray.
-        c     : An (N+1, neq)     ndarray.
-        abar  : An (N+1, neq)     ndarray.
-                        See above for definition.
-        bbar  : An (N+1, neq)     ndarray.
-        cbar  : An (N+1, neq)     ndarray.
-        lG    : An (N+1, niq)     ndarray or None.
-        hG    : An (N+1, niq)     ndarray or None.
-        G     : An (N+1, niq, nv) ndarray or None.
-        l     : An (N+1, nv)      ndarray or None.
-        h     : An (N+1, nv)      ndarray or None.
-        name : A String. Represents the name of the constraint.
         """
         self.N = ss.shape[0] - 1  # number of intervals
         # store constraints matrices
@@ -467,6 +469,8 @@ def create_rave_re_torque_path_constraint(path, ss, robot, J_lc,
 def create_rave_torque_path_constraint(path, ss, robot):
     """Torque bounds for an OpenRAVE robot.
 
+    Notes
+    -----
     Path-Torque constraint has the form
 
             sdd * M(q) qs(s)
@@ -478,14 +482,20 @@ def create_rave_torque_path_constraint(path, ss, robot):
     As canonical constraint.
             sdd * Ai + sd^2 Bi + Ci <= 0
 
-    Args:
-       path: An Interpolator.
-       ss: A np.ndarray.
-               Contains discretized positions.
-       robot: An OpenRAVE robot.
+    Parameters
+    ----------
+    path: toppra's Interpolator
+          Represents the underlying geometric path.
+    ss: ndarray
+        Discretization gridpoints.
+    robot: OpenRAVE robot
+           the robot model to obtain dynamics matrices
 
-    Returns:
-       _: A PathConstraint.
+
+    Returns
+    -------
+    out: PathConstraint
+         The equivalnet path constraint
     """
     N = len(ss) - 1
     q = path.eval(ss)
@@ -513,6 +523,7 @@ def create_rave_torque_path_constraint(path, ss, robot):
         c[i, :dof] = t4 - tau_bnd
         c[i, dof:] = -t4 - tau_bnd
 
+    logger.info("Torque bounds for OpenRAVE robot generated.")
     return PathConstraint(a, b, c, name="TorqueBounds", ss=ss)
 
 

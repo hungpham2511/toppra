@@ -51,26 +51,34 @@ def normalize(ss):
 
 
 class SplineInterpolator(object):
-    """Wrapper over scipy.CubicSpline class
-
-    Expose scipy.CubicSpline functionalities to the Interpolator interface.
+    """
+    Intepolate the given waypoint by spline.
 
     Parameters
     ---------
-    ss: ndarray, shaped (N+1)
-        Interpolated path position.
-    qs: ndarray, shaped (N+1)xdof
-        Knotpoints jointvalues.
+    ss: ndarray, shaped (N+1,)
+        Position of Waypoints.
+    qs: ndarray, shaped (N+1, dof)
+        Waypoints.
 
     Attributes
     ----------
+    dof: int
+         output dimension of the function
     cspl: scipy.CubicSpline
-          The CubicSpline representing the underlying path/function
+          the CubicSpline representing the underlying path/function
     cspld: scipy.CubicSpline
-           The CubicSpline representing the underlying path/function *derviative*
+           the CubicSpline representing the underlying path/function
+           *derviative*
     cspldd: scipy.CubicSpline
-            The CubicSpline representing the underlying path/function
+            the CubicSpline representing the underlying path/function
             *second derivative*
+
+    Notes
+    -----
+
+    This class is a swrapper over scipy.CubicSpline class
+
     """
 
     def __init__(self, ss, qs):
