@@ -1,13 +1,12 @@
 # `toppra`
 
-A library for computing path parameterizations for robots subject to
-constraints. `toppra` can consider the following constraints on a
-robots:
+TOPP-RA is the latest theoretical development for solving the Time-Optimal Path Parameterization (TOPP) problem. TOPP-RA achieves 100% success rate while being faster than the state-of-the-art implementation of the [classic Bobrow algorithm](https://github.com/quangounet/TOPP). The current implementation of TOPP-RA supports the following constraints :
 
 1. joint velocity and acceleration bounds;
-2. torque bound;
-3. contact stability;
-4. full rigid-body dynamics with linearized friction cone constraints.
+2. torque bounds (including redundantly-actuated manipulators);
+3. contact stability for legged robots.
+
+Refer to the accompanying paper [A new approach to Time-Optimal Path Parameterization based on Reachability Analysis](https://arxiv.org/abs/1707.07239) for more details.
 
 
 # Installation
@@ -70,7 +69,7 @@ export PYTHONPATH=$PYTHONPATH:$HOME/git/pymanoid
 
 # Basic usage
 
-The following shows basic usages of `toppra`. First, import necessary
+The following shows basic usage of `toppra`. First, we import necessary
 functions
 ```python
 from toppra import (create_velocity_path_constraint,
@@ -82,7 +81,7 @@ from toppra import (create_velocity_path_constraint,
                     interpolate_constraint)
 import numpy as np
 ```
-Then, we generate a random instance.
+Then, generate a random instance
 ```python
 N = 100
 N_samples = 5
@@ -102,11 +101,10 @@ pc_acc = create_acceleration_path_constraint(path, ss, alim)
 constraints = [pc_vel, pc_acc]
 constraints_intp = [interpolate_constraint(c) for c in constraints]
 ```
-And finally solve with `toppra`.
+and finally solve with `toppra`
 ```python
 pp = qpOASESSolver(constraints)
 us, xs = pp.solve_topp()
-us, xs = smooth_singularities(pp, us, xs)
 t, q, qd, qdd = compute_trajectory_gridpoints(path, pp.ss, us, xs)
 ```
 Plot the solution with `matplotlib`
@@ -123,9 +121,9 @@ axs[2].plot(np.sqrt(pp.K[:, 1]), '--', c='C3')
 axs[2].plot(np.sqrt(xs))
 plt.show()
 ```
+This figure should appear!
 
-![basic usage figure][figure]
-[figure]: medias/basic_usage.png
+![basic usage figure](medias/basic_usage.png)
 
-
+For more examples, see the /examples folder.
 

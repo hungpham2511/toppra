@@ -28,38 +28,40 @@ INFTY = 1e8
 ###############################################################################
 
 
-def compute_trajectory_gridpoints(path, ss, us, xs):
+def compute_trajectory_gridpoints(path, sgrid, ugrid, xgrid):
     """ Convert grid points to a trajectory.
 
     Args:
     -----
     path: An Interpolator.
-    ss: A (N+1,) ndarray. Array of gridpoints.
-    us: A (N,) ndarray. Array of controls.
-    xs: A (N+1,) ndarray. Array of squared velocities.
+    sgrid: A (N+1,) ndarray. Array of gridpoints.
+    ugrid: A (N,) ndarray. Array of controls.
+    xgrid: A (N+1,) ndarray. Array of squared velocities.
 
 
     Returns:
     --------
-    ts: A (N+1, ) ndarray. Time at each gridpoints.
+    tgrid: A (N+1, ) ndarray. Time at each gridpoints.
     q: A (N+1, dof) ndarray. Joint positions at each gridpoints.
     qd: A (N+1, dof) ndarray. Joint velocities at each gridpoints.
     qdd: A (N+1, dof) ndarray. Joint accelerations at each gridpoints.
     """
-    ts = np.zeros_like(ss)
-    N = ss.shape[0] - 1
-    sd = np.sqrt(xs)
-    sdd = np.hstack((us, us[-1]))
+    tgrid = np.zeros_like(sgrid)
+    N = sgrid.shape[0] - 1
+    sdgrid = np.sqrt(xgrid)
     for i in range(N):
-        ts[i+1] = (sd[i+1] - sd[i]) / us[i] + ts[i]
-    q = path.eval(ss)
-    qs = path.evald(ss)  # derivative w.r.t [path position] s
-    qss = path.evaldd(ss)
+        tgrid[i+1] = (sgrid[i+1] - sgrid[i]) / (sdgrid[i] + sdgrid[i+1]) * 2 + tgrid[i]
+    sddgrid = np.hstack((ugrid, ugrid[-1]))
+    for i in range(N):
+        tgrid[i+1] = (sdgrid[i+1] - sdgrid[i]) / ugrid[i] + tgrid[i]
+    q = path.eval(sgrid)
+    qs = path.evald(sgrid)  # derivative w.r.t [path position] s
+    qss = path.evaldd(sgrid)
     array_mul = lambda v_arr, s_arr: np.array(
         [v_arr[i] * s_arr[i] for i in range(N+1)])
-    qd = array_mul(qs, sd)
-    qdd = array_mul(qs, sdd) + array_mul(qss, sd ** 2)
-    return ts, q, qd, qdd
+    qd = array_mul(qs, sdgrid)
+    qdd = array_mul(qs, sddgrid) + array_mul(qss, sdgrid ** 2)
+    return tgrid, q, qd, qdd
 
 
 def compute_trajectory_points(path, sgrid, ugrid, xgrid, dt=1e-2):
@@ -85,7 +87,7 @@ def compute_trajectory_points(path, sgrid, ugrid, xgrid, dt=1e-2):
     N = sgrid.shape[0] - 1
     sdgrid = np.sqrt(xgrid)
     for i in range(N):
-        tgrid[i+1] = (sdgrid[i+1] - sdgrid[i]) / ugrid[i] + tgrid[i]
+        tgrid[i+1] = (sgrid[i+1] - sgrid[i]) / (sdgrid[i] + sdgrid[i+1]) * 2 + tgrid[i]
     # sampled points on trajectory
     tsample = np.arange(tgrid[0], tgrid[-1], dt)
     ssample = np.zeros_like(tsample)
