@@ -51,33 +51,27 @@ def normalize(ss):
 
 
 class SplineInterpolator(object):
-    """
-    Intepolate the given waypoint by spline.
+    """Interpolate the given waypoints by spline.
+
+    This is a simple wrapper over scipy.CubicSpline class.
 
     Parameters
-    ---------
+    ----------
     ss: ndarray, shaped (N+1,)
-        Position of Waypoints.
+        Path positions of the waypoints.
     qs: ndarray, shaped (N+1, dof)
-        Waypoints.
+        The waypoints.
 
     Attributes
     ----------
-    dof: int
-         output dimension of the function
-    cspl: scipy.CubicSpline
-          the CubicSpline representing the underlying path/function
-    cspld: scipy.CubicSpline
-           the CubicSpline representing the underlying path/function
-           *derviative*
-    cspldd: scipy.CubicSpline
-            the CubicSpline representing the underlying path/function
-            *second derivative*
-
-    Notes
-    -----
-
-    This class is a swrapper over scipy.CubicSpline class
+    dof : int
+        Output dimension of the function
+    cspl : scipy.CubicSpline
+        The CubicSpline representing the underlying path.
+    cspld : scipy.CubicSpline
+        The CubicSpline representing the underlying path's *derviative*.
+    cspldd : scipy.CubicSpline
+        the CubicSpline representing the underlying path's 2nd *derivative.
 
     """
 
@@ -103,11 +97,28 @@ class SplineInterpolator(object):
 
 
 class UnivariateSplineInterpolator(object):
-    """A smoother, not interpolator.
+    """ Smooth given wayspoints by a cubic spline.
 
-    This class does not interpolate via points, it smooths the input
-    way points.
+    This is a simple wrapper over scipy.UnivariateSplineInterpolator
+    class.
 
+    Parameters
+    ----------
+    ss: ndarray, shaped (N+1,)
+        Path positions of the waypoints.
+    qs: ndarray, shaped (N+1, dof)
+        The waypoints.
+
+    Attributes
+    ----------
+    dof : int
+        Output dimension of the function
+    cspl : scipy.CubicSpline
+        The CubicSpline representing the underlying path.
+    cspld : scipy.CubicSpline
+        The CubicSpline representing the underlying path's *derviative*.
+    cspldd : scipy.CubicSpline
+        the CubicSpline representing the underlying path's 2nd *derivative.
     """
     def __init__(self, ss, qs):
         """ All arguments are simiar to SplineInterpolator.

@@ -48,10 +48,14 @@ class PathConstraint(object):
            Dimension of equality constraint.
     _niq : Int.
            Dimension of inequality constraint.
+    N : Int.
+        Number of discretization segments.
 
     Notes
     -----
-    Generally, at position s, we consider the following constraints:
+
+    In the most general setting, a PathConstraint object describes the
+    following constraints:
 
                 a(s) u    + b(s) x    + c(s)    <= 0
                 abar(s) u + bbar(s) x + cbar(s)  = D(s) v
@@ -59,9 +63,20 @@ class PathConstraint(object):
                 lG(s) <=     G(s) v             <= hG(s)
                 l(s)  <=          v             <= h(s)
 
-    where u is the acceleration, x is the squared velocity, v a slack
-    variable whose physical meanings depend on the nature of the
-    constraint.
+    where u is the path acceleration, x is the squared path velocity
+    and v is a slack variable whose physical meanings depend on the
+    nature of the constraint.
+
+    In practice, a PathConstraint object takes one in three following
+    states
+
+    1. *Canonical*: Only matrices a, b, c are not None. All other
+       matrices are None.
+    2. *Non-Canonical Type I*: Matrices abar, bbar, cbar, D, l, h are
+       not None. All other matrices are None.
+    3. *Non-Canonical Type II*: Matrices abar, bbar, cbar, D, l, h,
+       lG, G, hG are not None. All other matrices, which are a, b, c
+       are None.
 
     The PathConstraint object can represent both the collocated
     constraints and the interpolated constraints. Note that the
@@ -69,7 +84,6 @@ class PathConstraint(object):
     collocated version. To create a interpolated PathConstraint, one
     needs to use the function `interpolate_constraint`.
 
-    The Attribute `ss` stores the sampled positions.
     """
 
     def __repr__(self):
@@ -84,11 +98,6 @@ class PathConstraint(object):
                  D=None, l=None, h=None,
                  lG=None, G=None, hG=None,
                  name=None, ss=None):
-        """Initizale with coefficient matrices.
-
-        A matrix if None will be set to an empty ndarray.
-
-        """
         self.N = ss.shape[0] - 1  # number of intervals
         # store constraints matrices
         if a is None:
