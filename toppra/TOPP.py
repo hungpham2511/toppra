@@ -31,16 +31,16 @@ INFTY = 1e8
 def compute_trajectory_gridpoints(path, sgrid, ugrid, xgrid):
     """ Convert grid points to a trajectory.
 
-    Args:
-    -----
+    Parameters
+    ----------
     path: An Interpolator.
     sgrid: A (N+1,) ndarray. Array of gridpoints.
     ugrid: A (N,) ndarray. Array of controls.
     xgrid: A (N+1,) ndarray. Array of squared velocities.
 
 
-    Returns:
-    --------
+    Returns
+    -------
     tgrid: A (N+1, ) ndarray. Time at each gridpoints.
     q: A (N+1, dof) ndarray. Joint positions at each gridpoints.
     qd: A (N+1, dof) ndarray. Joint velocities at each gridpoints.
@@ -52,8 +52,6 @@ def compute_trajectory_gridpoints(path, sgrid, ugrid, xgrid):
     for i in range(N):
         tgrid[i+1] = (sgrid[i+1] - sgrid[i]) / (sdgrid[i] + sdgrid[i+1]) * 2 + tgrid[i]
     sddgrid = np.hstack((ugrid, ugrid[-1]))
-    for i in range(N):
-        tgrid[i+1] = (sdgrid[i+1] - sdgrid[i]) / ugrid[i] + tgrid[i]
     q = path.eval(sgrid)
     qs = path.evald(sgrid)  # derivative w.r.t [path position] s
     qss = path.evaldd(sgrid)
@@ -259,12 +257,22 @@ Initialize Path Parameterization instance
         return self._L[reachable_subsets]
 
     def set_start_interval(self, I0):
-        """ Starting interval at s_0
+        """ Set the starting squared velocity interval.
+
+        Parameters
+        ----------
+        I0: (2, ) float tuple.
+            Starting (x_lower, x_higher) squared path velocities.
         """
         self.I0 = I0
 
     def set_goal_interval(self, IN):
-        """ Desired goal interval at s_N
+        """ Set the goal squared velocity interval.
+
+        Parameters
+        ----------
+        IN: (2, ) float tuple.
+            Starting (x_lower, x_higher) squared path velocities.
         """
         self.IN = IN
 
@@ -376,16 +384,17 @@ Initialize Path Parameterization instance
         s=s_i for which there exists at least a sequence of admissible
         controls that drives it to IN.
 
-        Args:
-        ----
+        Parameters
+        ----------
+        eps: float, optional
+             The safety margin guarded againts numerical error. This
+             number needs not be too high.
 
-        eps: A Float. The safety margin guarded againts numerical
-                  error. This number needs not be too high.
-
-        Returns:
+        Returns
         -------
-
-        controllable: A Bool. True if K(0, IN) is not empty.
+        out: bool.
+             True if K(0, IN) is not empty.
+        
         """
         self._reset_operational_matrices()
         self.nWSR_up = np.ones((self.N+1, 1), dtype=int) * self.nWSR_cnst
@@ -508,6 +517,11 @@ Unable to parameterizes this path:
         return self._xfulls[:, 2:]
 
     def _reset_operational_matrices(self):
+        """Reset the operational rows of coefficient matrices to zeros.
+
+        When all coefficient matrices are zeros, the operational rows
+        are not activated.
+        """
         # reset all rows
         self.A[:, :self.nop] = 0
         self.lA[:, :self.nop] = 0
@@ -655,10 +669,32 @@ Computing reach set failed.
         return xmin_i, xmax_i
 
     def proj_x_admissible(self, i, xmin, xmax, init=False):
-        """Project [xmin, xmax] back to Omega_i.
+        """Project the interval [xmin, xmax] back to the feasible set.
 
-        If the projection is not feasible (for example when xmin >
-        xmax), then return None, None.
+        Parameters
+        ----------
+        i: int
+           Index of the path position where the project is at.
+        xmin: float
+              Lower bound of the interval to be projected
+        xmax: float
+              Upper bound of the interval to be projected
+        init: bool, optional
+              If True, use qpOASES without hotstart.
+              If False, use hotstart.
+
+        Notes
+        -----
+        If the projection is infeasible, for example when xmin > xmax
+        or when the infeasible set if empty, then return None, None.
+
+        If one find unreasonable results such as (0, 0) constantly
+        appear, it is a good ideal to try reseting the internal
+        operational matrices using this function
+
+            self._reset_operational_matrices()
+
+        One should now see correct results appearing.
         """
 
         self.A[i, 0, 1] = 1
@@ -702,6 +738,10 @@ Computing projection failed.
         upper LP solve status = {}
         lower LP solve status = {}
 """.format(i, xmin, xmax, init, res_up, res_down))
+            logger.warn(
+                "qpOASES error code {:d} is {}".format(
+                    res_up,
+                    qpOASESReturnValueDict[res_up]))
             return None, None
 
         # extract solution

@@ -24,31 +24,33 @@ class PathConstraint(object):
 
     Parameters
     ----------
-    a     : (N+1, neq)     ndarray or None, optional
-    b     : (N+1, neq)     ndarray or None, optional
-    c     : (N+1, neq)     ndarray or None, optional
-    abar  : (N+1, neq)     ndarray or None, optional
-    bbar  : (N+1, neq)     ndarray or None, optional
-    cbar  : (N+1, neq)     ndarray or None, optional
-    lG    : (N+1, niq)     ndarray or None, optional
-    hG    : (N+1, niq)     ndarray or None, optional
-    G     : (N+1, niq, nv) ndarray or None, optional
-    l     : (N+1, nv)      ndarray or None, optional
-    h     : (N+1, nv)      ndarray or None, optional
+    a : (N+1, neq) ndarray, optional
+    b : (N+1, neq) ndarray, optional
+    c : (N+1, neq) ndarray, optional
+    abar : (N+1, neq) ndarray, optional
+    bbar : (N+1, neq) ndarray, optional
+    cbar : (N+1, neq) ndarray, optional
+    lG : (N+1, niq) ndarray, optional
+    hG : (N+1, niq) ndarray, optional
+    G : (N+1, niq, nv) ndarray, optional
+    l : (N+1, nv) ndarray, optional
+    h : (N+1, nv) ndarray, optional
     name : String.
-           Represents the name of the constraint.
+        Name of the constraint.
+    ss : ndarray, shape (N+1,)
+        Array of discretized gridpoints.
 
-    Attributes:
+    Attributes
     -----------
-    _nm : Int.
-          Dimension of non-redundant inequalities.
-    _nv : Int.
-          Dimension of slack variable.
-    _neq : Int.
-           Dimension of equality constraint.
-    _niq : Int.
-           Dimension of inequality constraint.
-    N : Int.
+    nm : int
+        Dimension of non-redundant inequalities.
+    nv : int
+        Dimension of slack variable.
+    neq : int
+        Dimension of equality constraint.
+    niq : int
+        Dimension of inequality constraint.
+    N : int
         Number of discretization segments.
 
     Notes
@@ -70,13 +72,17 @@ class PathConstraint(object):
     In practice, a PathConstraint object takes one in three following
     states
 
-    1. *Canonical*: Only matrices a, b, c are not None. All other
-       matrices are None.
-    2. *Non-Canonical Type I*: Matrices abar, bbar, cbar, D, l, h are
-       not None. All other matrices are None.
-    3. *Non-Canonical Type II*: Matrices abar, bbar, cbar, D, l, h,
-       lG, G, hG are not None. All other matrices, which are a, b, c
-       are None.
+    1. *Canonical*:
+       - Matrices a, b, c have numerical values.
+       - All other matrices are Empty.
+
+    2. *Non-Canonical Type I*:
+       - Matrices abar, bbar, cbar, D, l, h have numerical values.
+       - All other matrices are Empty.
+
+    3. *Non-Canonical Type II*:
+       - Matrices abar, bbar, cbar, D, l, h, lG, G, hG have numerical values.
+       - Vectors a, b, c are empty.
 
     The PathConstraint object can represent both the collocated
     constraints and the interpolated constraints. Note that the
@@ -195,13 +201,18 @@ class PathConstraint(object):
 
 
 def interpolate_constraint(pc):
-    """Produce a first-order interpolation discrete constraint.
+    """Produce a first-order interpolation discrete constraint from a
+    collocated constraint.
 
-    Args:
-         pc: A PathConstraint. This is the original collocation constraint.
+    Parameters
+    ----------
+    pc: PathConstraint.
+        The original collocated constraint.
 
-    Returns:
-         pc_intp: A PathConstraint. The interpolated constraint.
+    Returns
+    -------
+    out: PathConstraint.
+         The new interpolated constraint.
     """
     N = pc.N
     Ds = pc.ss[1:] - pc.ss[:N]
@@ -493,17 +504,17 @@ def create_rave_torque_path_constraint(path, ss, robot):
 
     Parameters
     ----------
-    path: toppra's Interpolator
+    path : toppra.Interpolator
           Represents the underlying geometric path.
-    ss: ndarray
+    ss : ndarray
         Discretization gridpoints.
-    robot: OpenRAVE robot
+    robot : OpenRAVE robot
            the robot model to obtain dynamics matrices
 
 
     Returns
     -------
-    out: PathConstraint
+    out : PathConstraint
          The equivalnet path constraint
     """
     N = len(ss) - 1

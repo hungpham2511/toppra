@@ -24,10 +24,32 @@ def compute_jacobian_wrench(robot, link, point):
 
 
 def inv_dyn(rave_robot, q, qd, qdd, forceslist=None, returncomponents=True):
-    """Simple wrapper around OpenRAVE's ComputeInverseDynamics function.
+    """Inverse dynamics equation.
 
-    M(q) qdd + C(q, qd) qd + g(q) = tau
+    Simple wrapper around OpenRAVE's ComputeInverseDynamics
+    function. Return the numerical values of the components of the
+    inverse dynamics equation.
 
+          M(q) qdd + C(q, qd) qd + g(q)
+        = t1 + t2 + t3
+
+    Parameters
+    ----------
+    rave_robot : OpenRAVE.robot
+    q : (N, ) ndarray
+        Joint position.
+    qd : (N, ) ndarray
+        Joint velocity.
+    qdd : (N, ) ndarray
+        Joint acceleration.
+    returncomponents : Bool
+        If True, return the list [t1, t2, t3]
+        If False, return t1 + t2 + t3
+
+    Returns
+    -------
+    res : (3, ) List, or ndarray
+        See returncomponents parameter.
     """
     if np.isscalar(q):  # Scalar case
         q_ = [q]
@@ -38,17 +60,18 @@ def inv_dyn(rave_robot, q, qd, qdd, forceslist=None, returncomponents=True):
         qd_ = qd
         qdd_ = qdd
 
-    # Temporary remove velocity Limits
+    # Temporary remove kinematic Limits
     vlim = rave_robot.GetDOFVelocityLimits()
     alim = rave_robot.GetDOFAccelerationLimits()
     rave_robot.SetDOFVelocityLimits(100 * vlim)
     rave_robot.SetDOFAccelerationLimits(100 * alim)
+    # Do computation
     with rave_robot:
         rave_robot.SetDOFValues(q_)
         rave_robot.SetDOFVelocities(qd_)
         res = rave_robot.ComputeInverseDynamics(
             qdd_, forceslist, returncomponents=returncomponents)
-
+    # Restore kinematic limits
     rave_robot.SetDOFVelocityLimits(vlim)
     rave_robot.SetDOFAccelerationLimits(alim)
     return res
@@ -58,21 +81,21 @@ def smooth_singularities(pp, us, xs, vs=None):
     """Smooth jitters due to singularities.
 
     Solving TOPP for discrete problem generated from collocation
-    scheme tends to create jitters. This function finds and smooth
+    scheme tends to create jitters. This function finds and smooths
     them.
 
-    Args:
-    ----
+    Parameters
+    ----------
     pp: PathParameterization
     us: ndarray
     xs: ndarray
     vs: ndarray, optional
 
-    Returns:
+    Returns
     -------
-    us_smth: ndarray,
-    xs_smth: ndarray,
-    vs_smth: ndarray,
+    us_smth: ndarray, shaped (N, )
+    xs_smth: ndarray, shaped (N+1, )
+    vs_smth: ndarray, shaped (N+1, m)
     """
     # Find the indices
     singular_indices = []
