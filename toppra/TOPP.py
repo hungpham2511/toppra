@@ -33,18 +33,24 @@ def compute_trajectory_gridpoints(path, sgrid, ugrid, xgrid):
 
     Parameters
     ----------
-    path: An Interpolator.
-    sgrid: A (N+1,) ndarray. Array of gridpoints.
-    ugrid: A (N,) ndarray. Array of controls.
-    xgrid: A (N+1,) ndarray. Array of squared velocities.
-
+    path : interpolator
+    sgrid : ndarray, shape (N+1,)
+        Array of gridpoints.
+    ugrid : ndarray, shape (N,)
+        Array of controls.
+    xgrid : ndarray, shape (N+1,)
+        Array of squared velocities.
 
     Returns
     -------
-    tgrid: A (N+1, ) ndarray. Time at each gridpoints.
-    q: A (N+1, dof) ndarray. Joint positions at each gridpoints.
-    qd: A (N+1, dof) ndarray. Joint velocities at each gridpoints.
-    qdd: A (N+1, dof) ndarray. Joint accelerations at each gridpoints.
+    tgrid : ndarray, shape (N+1)
+        Time at each gridpoints.
+    q : ndarray, shape (N+1, dof)
+        Joint positions at each gridpoints.
+    qd : ndarray, shape (N+1, dof)
+        Joint velocities at each gridpoints.
+    qdd : ndarray, shape (N+1, dof)
+        Joint accelerations at each gridpoints.
     """
     tgrid = np.zeros_like(sgrid)
     N = sgrid.shape[0] - 1
@@ -65,21 +71,28 @@ def compute_trajectory_gridpoints(path, sgrid, ugrid, xgrid):
 def compute_trajectory_points(path, sgrid, ugrid, xgrid, dt=1e-2):
     """ Compute trajectory with uniform time-spacing.
 
-    Args:
-    -----
-    path: An Interpolator.
-    sgrid: A (N+1,) ndarray. Array of gridpoints.
-    ugrid: A (N,) ndarray. Array of controls.
-    xgrid: A (N+1,) ndarray. Array of squared velocities.
-    dt: A float. Spacing between subsequent time step.
+    Parameters
+    ----------
+    path : interpolator
+    sgrid : ndarray, shape (N+1,)
+        Array of gridpoints.
+    ugrid : ndarray, shape (N,)
+        Array of controls.
+    xgrid : ndarray, shape (N+1,)
+        Array of squared velocities.
+    dt : float, optional
+        Sampling time step.
 
-
-    Returns:
-    --------
-    tsample: A (N+1, ) ndarray. Trajectory time stamps.
-    q: A (N+1, dof) ndarray.
-    qd: A (N+1, dof) ndarray.
-    qdd: A (N+1, dof) ndarray.
+    Returns
+    -------
+    tgrid : ndarray, shape (M)
+        Time at each gridpoints.
+    q : ndarray, shape (M, dof)
+        Joint positions at each gridpoints.
+    qd : ndarray, shape (M, dof)
+        Joint velocities at each gridpoints.
+    qdd : ndarray, shape (M, dof)
+        Joint accelerations at each gridpoints.
     """
     tgrid = np.zeros_like(sgrid)
     N = sgrid.shape[0] - 1
