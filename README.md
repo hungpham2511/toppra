@@ -35,7 +35,7 @@ pip setup.py install
 ```
 
 
-Finall, install `toppra` with
+Finally, install `toppra` with
 ``` sh
 python setup.py install
 ```
@@ -49,7 +49,7 @@ if `pytest` is not installed, grab it from `pip`.
 
 
 ## Multi-contact and torque bounds examples
-To use these functionalities, the following libraries are needed:
+To use these functionality, the following libraries are needed:
 
 1. [openRAVE](https://github.com/rdiankov/openrave)
 2. [pymanoid](https://github.com/stephane-caron/pymanoid)
@@ -69,8 +69,13 @@ export PYTHONPATH=$PYTHONPATH:$HOME/git/pymanoid
 
 # Basic usage
 
-The following shows basic usage of `toppra`. First, we import necessary
-functions
+The following code snippets shows basic usage of `toppra`. We will
+first define the constraints, which in this case are kinematic
+constraints, and second generate a random geometric path. Finally, we
+parametrize the path using `toppra.
+
+
+First, import necessary functions
 ```python
 from toppra import (create_velocity_path_constraint,
                     create_acceleration_path_constraint,
@@ -101,13 +106,13 @@ pc_acc = create_acceleration_path_constraint(path, ss, alim)
 constraints = [pc_vel, pc_acc]
 constraints_intp = [interpolate_constraint(c) for c in constraints]
 ```
-and finally solve with `toppra`
+Finally, solve with `toppra`
 ```python
 pp = qpOASESSolver(constraints)
 us, xs = pp.solve_topp()
 t, q, qd, qdd = compute_trajectory_gridpoints(path, pp.ss, us, xs)
 ```
-Plot the solution with `matplotlib`
+We can now plot the solution with `matplotlib`
 ``` python
 # plotting
 import matplotlib.pyplot as plt
