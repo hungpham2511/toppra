@@ -75,12 +75,22 @@ def compute_trajectory_points(path, sgrid,
                               smooth_eps=1e-4):
     """Compute trajectory with uniform sampling time.
 
+    Note
+    ----
     Additionally, if `smooth` is True, the return trajectory is smooth
     using least-square technique. The return trajectory, also
     satisfies the discrete transition relation. That is
 
     q[i+1] = q[i] + qd[i] * dt + qdd[i] * dt ^ 2 / 2
     qd[i+1] = qd[i] + qdd[i] * dt
+
+    If one finds that the function takes too much time to terminate,
+    then it is very likely that the most time-consuming part is
+    least-square. In this case, there are several options that one
+    might take.
+    1. Set `smooth` to False. This might return badly conditioned
+    trajectory.
+    2. Reduce `dt`. This is the recommended option.
 
     Parameters
     ----------
@@ -149,8 +159,8 @@ def compute_trajectory_points(path, sgrid,
 
     if not smooth:
         return tsample, q, qd, qdd
-
     else:
+        logger.debug("Compute trajectory with least-square smoothing.")
         dof = q.shape[1]
         # Still slow, I will now try QP with quadprog
         A = np.array([[1., dt], [0, 1.]])
