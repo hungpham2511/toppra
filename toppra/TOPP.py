@@ -187,7 +187,7 @@ def compute_trajectory_points(path, sgrid,
             Xsol = np.dot(Phi, sol) + np.dot(Beta, x0)
             Xsol = Xsol.reshape(-1, 2)
             q[1:, k] = Xsol[:, 0]
-            qd[1:, k] = Xsol[:, 0]
+            qd[1:, k] = Xsol[:, 1]
             qdd[:-1, k] = sol
             qdd[-1, k] = sol[-1]
 
