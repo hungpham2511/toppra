@@ -5,8 +5,8 @@
 import numpy as np
 from qpoases import (PyOptions as Options, PyPrintLevel as PrintLevel,
                      PyReturnValue as ReturnValue, PySQProblem as SQProblem)
-
 import logging
+import quadprog
 
 logger = logging.getLogger(__name__)
 SUCCESSFUL_RETURN = ReturnValue.SUCCESSFUL_RETURN
@@ -56,7 +56,8 @@ def compute_trajectory_gridpoints(path, sgrid, ugrid, xgrid):
     N = sgrid.shape[0] - 1
     sdgrid = np.sqrt(xgrid)
     for i in range(N):
-        tgrid[i+1] = (sgrid[i+1] - sgrid[i]) / (sdgrid[i] + sdgrid[i+1]) * 2 + tgrid[i]
+        tgrid[i+1] = ((sgrid[i+1] - sgrid[i]) / (sdgrid[i] + sdgrid[i+1]) * 2
+                      + tgrid[i])
     sddgrid = np.hstack((ugrid, ugrid[-1]))
     q = path.eval(sgrid)
     qs = path.evald(sgrid)  # derivative w.r.t [path position] s
@@ -68,8 +69,18 @@ def compute_trajectory_gridpoints(path, sgrid, ugrid, xgrid):
     return tgrid, q, qd, qdd
 
 
-def compute_trajectory_points(path, sgrid, ugrid, xgrid, dt=1e-2):
-    """ Compute trajectory with uniform time-spacing.
+def compute_trajectory_points(path, sgrid,
+                              ugrid, xgrid,
+                              dt=1e-2, smooth=True,
+                              smooth_eps=1e-4):
+    """Compute trajectory with uniform sampling time.
+
+    Additionally, if `smooth` is True, the return trajectory is smooth
+    using least-square technique. The return trajectory, also
+    satisfies the discrete transition relation. That is
+
+    q[i+1] = q[i] + qd[i] * dt + qdd[i] * dt ^ 2 / 2
+    qd[i+1] = qd[i] + qdd[i] * dt
 
     Parameters
     ----------
@@ -82,6 +93,10 @@ def compute_trajectory_points(path, sgrid, ugrid, xgrid, dt=1e-2):
         Array of squared velocities.
     dt : float, optional
         Sampling time step.
+    smooth : bool, optional
+        If True, do least-square smoothing. See above for more details.
+    smooth_eps : float, optional
+        Relative gain of minimizing variations of joint accelerations.
 
     Returns
     -------
@@ -93,23 +108,24 @@ def compute_trajectory_points(path, sgrid, ugrid, xgrid, dt=1e-2):
         Joint velocities at each gridpoints.
     qdd : ndarray, shape (M, dof)
         Joint accelerations at each gridpoints.
+
     """
-    tgrid = np.zeros_like(sgrid)
+    tgrid = np.zeros_like(sgrid)  # Array of time at each gridpoint
     N = sgrid.shape[0] - 1
     sdgrid = np.sqrt(xgrid)
     for i in range(N):
-        tgrid[i+1] = (sgrid[i+1] - sgrid[i]) / (sdgrid[i] + sdgrid[i+1]) * 2 + tgrid[i]
-    # sampled points on trajectory
+        tgrid[i+1] = ((sgrid[i+1] - sgrid[i]) / (sdgrid[i] + sdgrid[i+1]) * 2
+                      + tgrid[i])
+    # shape (M+1,) array of sampled time
     tsample = np.arange(tgrid[0], tgrid[-1], dt)
-    ssample = np.zeros_like(tsample)
-    xsample = np.zeros_like(tsample)
-    sdsample = np.zeros_like(tsample)
-    usample = np.zeros_like(tsample)
+    ssample = np.zeros_like(tsample)  # sampled position
+    xsample = np.zeros_like(tsample)  # sampled velocity squared
+    sdsample = np.zeros_like(tsample)  # sampled velocity
+    usample = np.zeros_like(tsample)  # sampled path acceleration
     igrid = 0
     for i, t in enumerate(tsample):
         while t > tgrid[igrid + 1]:
             igrid += 1
-
         usample[i] = ugrid[igrid]
         sdsample[i] = sdgrid[igrid] + (t - tgrid[igrid]) * usample[i]
         xsample[i] = sdsample[i] ** 2
@@ -121,6 +137,8 @@ def compute_trajectory_points(path, sgrid, ugrid, xgrid, dt=1e-2):
     qss = path.evaldd(ssample)
 
     def array_mul(vectors, scalars):
+        # given array of vectors and array of scalars
+        # multiply each vector with each scalar
         res = np.zeros_like(vectors)
         for i in range(scalars.shape[0]):
             res[i] = vectors[i] * scalars[i]
@@ -128,36 +146,101 @@ def compute_trajectory_points(path, sgrid, ugrid, xgrid, dt=1e-2):
 
     qd = array_mul(qs, sdsample)
     qdd = array_mul(qs, usample) + array_mul(qss, sdsample ** 2)
-    return tsample, q, qd, qdd
+
+    if not smooth:
+        return tsample, q, qd, qdd
+
+    else:
+        dof = q.shape[1]
+        # Still slow, I will now try QP with quadprog
+        A = np.array([[1., dt], [0, 1.]])
+        B = np.array([dt ** 2 / 2, dt])
+        M = tsample.shape[0] - 1
+        Phi = np.zeros((2 * M, M))
+        for i in range(M):  # Block diagonal
+            Phi[2 * i: 2 * i + 2, i] = B
+        for i in range(1, M):  # First column
+            Phi[2 * i: 2 * i + 2, 0] = np.dot(A, Phi[2 * i - 2: 2 * i, 0])
+        for i in range(1, M):  # Next column
+            Phi[2 * i:, i] = Phi[2 * i - 2: 2 * M - 2, i - 1]
+
+        Beta = np.zeros((2 * M, 2))
+        Beta[0: 2, :] = A
+        for i in range(1, M):
+            Beta[2 * i: 2 * i + 2, :] = np.dot(A, Beta[2 * i - 2: 2 * i, :])
+
+        Delta = np.zeros((M - 1, M))
+        for i in range(M-1):
+            Delta[i, i] = 1
+            Delta[i, i + 1] = - 1
+
+        for k in range(dof):
+            Xd = np.vstack((q[1:, k], qd[1:, k])).T.flatten()  # numpy magic
+            x0 = np.r_[q[0, k], qd[0, k]]
+            xM = np.r_[q[-1, k], qd[-1, k]]
+
+            G = np.dot(Phi.T, Phi) + np.dot(Delta.T, Delta) * smooth_eps
+            a = - np.dot(Phi.T, Beta.dot(x0) - Xd)
+            C = Phi[2 * M - 2:].T
+            b = xM - Beta[2 * M - 2:].dot(x0)
+            sol = quadprog.solve_qp(G, a, C, b, meq=2)[0]
+            Xsol = np.dot(Phi, sol) + np.dot(Beta, x0)
+            Xsol = Xsol.reshape(-1, 2)
+            q[1:, k] = Xsol[:, 0]
+            qd[1:, k] = Xsol[:, 0]
+            qdd[:-1, k] = sol
+            qdd[-1, k] = sol[-1]
+
+        return tsample, q, qd, qdd
 
 
 class qpOASESPPSolver(object):
-    """Implementation of TOPP-RA using qpOASES solver.
+    """Parametrize geometric path using TOPP-RA.
 
     This class first translates a set of `PathConstraint` to the form
     needed by qpOASES form. Then it solve for the parameterization in
     two passes as described in the paper.
 
-    Attributes:
+    Parameters
     ----------
-    I0: ndarray.
-    IN: ndarray.
-    ss: ndarray. Discretized path positions.
-    nm: An Int. Dimension of the canonical constraint part.
-    nv: An Int. Dimension of the combined slack.
-    niq: An Int. Dimension of the inequalities on slack.
-    neq: An Int. Dimension of the equalities on slack.
-    nv: An Int. (qpOASES) Dimension of the optimization variable.
-    nC: An Int. (qpOASES) Dimension of the constraint matrix.
-    A: ndarray. qpOASES coefficient matrix.
-    lA: ndarray. qpOASES coefficient matrix.
-    hA: ndarray. qpOASES coefficient matrix.
-    l: ndarray. qpOASES coefficient matrix.
-    h: ndarray. qpOASES coefficient matrix.
-    H: ndarray. qpOASES coefficient matrix.
-    g: ndarray. qpOASES coefficient matrix.
+    constraint_set : list
+        A list of PathConstraint.
 
-    NOTE:
+    Attributes
+    ----------
+    Ks : ndarray, shape (N+1, 2)
+        Controllable sets/intervals.
+    I0 : ndarray
+    IN : ndarray
+    ss : ndarray. Discretized path positions.
+    nm : int
+        Dimension of the canonical constraint part.
+    nv : int
+        Dimension of the combined slack.
+    niq : int
+        Dimension of the inequalities on slack.
+    neq : int
+        Dimension of the equalities on slack.
+    nv : int
+        Dimension of the (qpOASES) optimization variable.
+    nC : int
+        Dimension of the (qpOASES) constraint matrix.
+    A : ndarray
+        qpOASES coefficient matrix.
+    lA : ndarray,
+        qpOASES coefficient matrix.
+    hA : ndarray
+        qpOASES coefficient matrix.
+    l : ndarray
+        qpOASES coefficient matrix.
+    h : ndarray
+        qpOASES coefficient matrix.
+    H : ndarray
+        qpOASES coefficient matrix.
+    g : ndarray
+        qpOASES coefficient matrix.
+
+    NOTE
     ----
     Note that the first `self.nop` row of A are all zeros. These are
     operational rows, used to specify additional constraints required
@@ -212,15 +295,8 @@ class qpOASESPPSolver(object):
         l[i]=| l1     | for v1 |, h[i]=| h1    | for v1 |
              | l2     |        |       | h2    |        |
              | l3     |        |       | h3    |        |
-
     """
     def __init__(self, constraint_set, verbose=False):
-        """ Initialization.
-
-        Args:
-        -----
-        constraint_set:   A list of PathConstraint.
-        """
         self.I0 = np.r_[0, 1e-4]  # Start and end velocity interval
         self.IN = np.r_[0, 1e-4]
         self.ss = constraint_set[0].ss
@@ -407,7 +483,7 @@ Initialize Path Parameterization instance
         -------
         out: bool.
              True if K(0, IN) is not empty.
-        
+
         """
         self._reset_operational_matrices()
         self.nWSR_up = np.ones((self.N+1, 1), dtype=int) * self.nWSR_cnst
@@ -415,7 +491,7 @@ Initialize Path Parameterization instance
         xmin, xmax = self.proj_x_admissible(self.N, self.IN[0],
                                             self.IN[1], init=True)
         if xmin is None:
-            logger.warn("Unable to project the interval IN back to feasible set.")
+            logger.warn("Fail to project the interval IN to feasibility")
             return False
         else:
             self._K[self.N, 1] = xmax
@@ -444,7 +520,7 @@ Initialize Path Parameterization instance
         xmin, xmax = self.proj_x_admissible(
             0, self.I0[0], self.I0[1], init=True)
         if xmin is None:
-            logger.warn("Unable to project the interval I0 back to feasibility")
+            logger.warn("Fail to project the interval I0 to feasibility")
             return False
         else:
             self._L[0, 1] = xmax
@@ -469,24 +545,27 @@ Initialize Path Parameterization instance
     def solve_topp(self, save_solutions=False, reg=0.):
         """Solve for the time-optimal path-parameterization
 
-        Args:
-        ----
-        save_solutions: A Bool. Save solutions of each step.
-        reg: A Float. Regularization gain.
+        Parameters
+        ----------
+        save_solutions: bool
+            Save solutions of each step.
+        reg: float
+            Regularization gain.
 
-
-        Returns:
+        Returns
         -------
-        us: An ndarray. Contains the TOPP's controls.
-        Xs: An ndarray. Contains the TOPP's squared velocities.
+        us: ndarray, shape (N,)
+            Contains the TOPP's controls.
+        xs: ndarray, shape (N+1,)
+            Contains the TOPP's squared velocities.
 
         """
         if save_solutions:
             self._xfulls = np.empty((self.N, self.nV))
             self._yfulls = np.empty((self.N, self.nC))
         # Backward pass
-        controllable = self.solve_controllable_sets()  # Check controllability
-        # Check for solvability
+        controllable = self.solve_controllable_sets()
+        # Check controllability
         infeasible = (self._K[0, 1] < self.I0[0] or self._K[0, 0] > self.I0[1])
 
         if not controllable or infeasible:
