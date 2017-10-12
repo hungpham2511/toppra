@@ -27,9 +27,9 @@ cd <install-dir>/interfaces/python
 python setup.py install
 ```
 
-
 Finally, install `toppra` with
 ``` sh
+cd <toppra-dir>
 python setup.py install
 ```
 after installation complete, run tests by doing
