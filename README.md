@@ -12,18 +12,11 @@ Refer to the accompanying paper [A new approach to Time-Optimal Path Parameteriz
 # Installation
 ## Basic
 
-From pip
+There are some perquisites.
 
 ``` sh
-pip install Cython numpy coloredlogs enum scipy
+pip install Cython numpy coloredlogs enum scipy quadprog cvxpy cvxopt matplotlib
 ```
-
-to run the examples, you need in addition
-
-``` sh
-pip install matplotlib
-```
-
 
 Install
 [qpOASES](https://projects.coin-or.org/qpOASES/wiki/QpoasesInstallation) by
@@ -31,7 +24,7 @@ following steps given in the official site. Then, to install the
 python interface do
 ``` sh
 cd <install-dir>/interfaces/python
-pip setup.py install
+python setup.py install
 ```
 
 
