@@ -56,8 +56,10 @@ To install `pymanoid` locally, do the following
 ``` sh
 mkdir git && cd git
 git clone <pymanoid-git-url>
+git checkout 54299cf
 export PYTHONPATH=$PYTHONPATH:$HOME/git/pymanoid
 ```
+
 
 
 # Basic usage
