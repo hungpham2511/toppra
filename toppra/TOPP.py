@@ -213,7 +213,7 @@ class qpOASESPPSolver(object):
 
     Parameters
     ----------
-    constraint_set : list
+    constraint_set : A List,
         A list of PathConstraint.
 
     Attributes
@@ -256,7 +256,7 @@ class qpOASESPPSolver(object):
     operational rows, used to specify additional constraints required
     for computing controllable/reachable sets.
 
-    The Coefficient matrices are to be input to the qpOASES solver as
+    The coefficient matrices are to be input to the qpOASES solver as
     follow
 
             min     1/2 (u, x, v)^T H (u, x, v) + g^T (u, x, v)

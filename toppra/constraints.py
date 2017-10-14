@@ -19,7 +19,7 @@ class PathConstraintKind(Enum):
 
 
 class PathConstraint(object):
-    """Discretized constraint on a path.
+    """ A discretization of a path parametrization constraint.
 
     Parameters
     ----------
@@ -59,10 +59,11 @@ class PathConstraint(object):
     following constraints:
 
                 a(s) u    + b(s) x    + c(s)    <= 0
+
                 abar(s) u + bbar(s) x + cbar(s)  = D(s) v
+                l(s)  <=          v             <= h(s)
 
                 lG(s) <=     G(s) v             <= hG(s)
-                l(s)  <=          v             <= h(s)
 
     where u is the path acceleration, x is the squared path velocity
     and v is a slack variable whose physical meanings depend on the
@@ -72,16 +73,19 @@ class PathConstraint(object):
     states
 
     1. *Canonical*:
-       - Matrices a, b, c have numerical values.
+       - Matrices a, b, c are non-nil.
        - All other matrices are Empty.
+       - Input: (a, b, c, ss)
 
     2. *Non-Canonical Type I*:
        - Matrices abar, bbar, cbar, D, l, h have numerical values.
        - All other matrices are Empty.
+       - Input: (abar, bbar, cbar, D, l, h, ss)
 
     3. *Non-Canonical Type II*:
        - Matrices abar, bbar, cbar, D, l, h, lG, G, hG have numerical values.
        - Vectors a, b, c are empty.
+       - Input: (abar, bbar, cbar, D, l, h, lG, hG, ss)
 
     The PathConstraint object can represent both the collocated
     constraints and the interpolated constraints. Note that the
