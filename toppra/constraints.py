@@ -591,8 +591,8 @@ def create_acceleration_path_constraint(path, ss, alim):
                 qs(si) ui + qss(si) sdi ^ 2 - qdmax <= 0
                -qs(si) ui - qss(si) sdi ^ 2 + qdmin <= 0
 
-    Parameter
-    ---------
+    Parameters:
+    -----------
     path: Interpolator
     alim: ndarray, shaped (dof, 2)
         Joint acceleration limits.

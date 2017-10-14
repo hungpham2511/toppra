@@ -619,10 +619,11 @@ Unable to parameterizes this path:
         return self._xfulls[:, 2:]
 
     def _reset_operational_matrices(self):
-        """Reset the operational rows of coefficient matrices to zeros.
+        """Reset the coefficient matrix.
 
-        When all coefficient matrices are zeros, the operational rows
-        are not activated.
+        It is important to use this function whenever starting a new
+        operation. For instance, computing the MVC.
+
         """
         # reset all rows
         self.A[:, :self.nop] = 0
@@ -636,6 +637,19 @@ Unable to parameterizes this path:
     ###########################################################################
     def one_step(self, i, xmin, xmax, init=False):
         """Compute the one-step set for the interval [xmin, xmax]
+        
+        Parameters
+        ----------
+        i: int
+        xmin: float
+        xmax: float
+        init: bool, optional
+            Use qpOASES with hotstart.
+
+        Returns
+        -------
+        xmin_i: float
+        xmax_i: float
 
         Definition:
         ----------
@@ -708,6 +722,19 @@ Computing one-step failed.
     def reach(self, i, xmin, xmax, init=False):
         """Compute the reach set from [xmin, xmax] at stage i.
 
+        Parameters
+        ----------
+        i: int
+        xmin: float
+        xmax: float
+        init: bool, optional
+            Use qpOASES with hotstart.
+
+        Returns
+        -------
+        xmin_i: float
+        xmax_i: float
+
         Definition:
         -----------
 
@@ -778,12 +805,17 @@ Computing reach set failed.
         i: int
            Index of the path position where the project is at.
         xmin: float
-              Lower bound of the interval to be projected
+            Lower bound of the interval to be projected
         xmax: float
-              Upper bound of the interval to be projected
+            Upper bound of the interval to be projected
         init: bool, optional
-              If True, use qpOASES without hotstart.
-              If False, use hotstart.
+            If True, use qpOASES without hotstart.
+            If False, use hotstart.
+
+        Returns
+        -------
+        xmin_i: float
+        xmax_i: float
 
         Notes
         -----
