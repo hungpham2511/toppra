@@ -92,6 +92,7 @@ def compute_trajectory_points(path, sgrid,
     trajectory.
     2. Reduce `dt`. This is the recommended option.
 
+
     Parameters
     ----------
     path : interpolator
@@ -537,13 +538,11 @@ Initialize Path Parameterization instance
             self._L[0, 0] = xmin
         for i in range(self.N):
             init = (True if i <= 1 else False)
-            xmin_nx, xmax_nx = self.reach(  # Next step, unprojected
-                i, self._L[i, 0], self._L[i, 1], init=init)
+            xmin_nx, xmax_nx = self.reach(i, self._L[i, 0], self._L[i, 1], init=init)
             if xmin_nx is None:
                 logger.warn("Forward propagation from L%d failed ", i)
                 return False
-            xmin_pr, xmax_pr = self.proj_x_admissible(  # Projected
-                i + 1, xmin_nx, xmax_nx, init=init)
+            xmin_pr, xmax_pr = self.proj_x_admissible(i + 1, xmin_nx, xmax_nx, init=init)
             if xmin_pr is None:
                 logger.warn("Projection for L{:d} failed".format(i))
                 return False

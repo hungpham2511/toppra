@@ -11,7 +11,6 @@ from TOPP import INFTY
 import logging
 logger = logging.getLogger(__name__)
 
-
 class PathConstraintKind(Enum):
     Canonical = 0
     TypeI = 1
@@ -19,7 +18,9 @@ class PathConstraintKind(Enum):
 
 
 class PathConstraint(object):
-    """ A discretization of a path parametrization constraint.
+    """ A discrete path constraint.
+
+    This class should not be generated manually, but via the factory functions.
 
     Parameters
     ----------
@@ -40,7 +41,8 @@ class PathConstraint(object):
         Discretization gridpoints.
 
     Attributes
-    -----------
+    ----------
+
     nm : int
         Dimension of non-redundant inequalities.
     nv : int
@@ -209,13 +211,13 @@ def interpolate_constraint(pc):
 
     Parameters
     ----------
-    pc: PathConstraint.
+    pc : PathConstraint.
         The original collocated constraint.
 
     Returns
     -------
-    out: PathConstraint.
-         The new interpolated constraint.
+    out : PathConstraint.
+        The new interpolated constraint.
     """
     N = pc.N
     Ds = pc.ss[1:] - pc.ss[:N]
@@ -298,7 +300,7 @@ def interpolate_constraint(pc):
 def create_full_contact_path_constraint(path, ss, robot, stance):
     """ Rigid-body dynamics + Colomb frictional model.
 
-    Parameter
+    Parameters
     ---------
     path : Interpolator
     ss : ndarray.

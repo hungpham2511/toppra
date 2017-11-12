@@ -8,7 +8,6 @@ from toppra import SplineInterpolator
 import numpy as np
 import matplotlib.pyplot as plt
 import time
-
 import coloredlogs
 coloredlogs.install(level='INFO')
 np.set_printoptions(3)
