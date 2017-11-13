@@ -1,6 +1,12 @@
-# `toppra`
+# The Reachability-based Time-Optimal Path Parametrization Solver
 
-TOPP-RA is the latest theoretical development for solving the Time-Optimal Path Parameterization (TOPP) problem. TOPP-RA achieves 100% success rate while being faster than the state-of-the-art implementation of the [classic Bobrow algorithm](https://github.com/quangounet/TOPP). The current implementation of TOPP-RA supports the following constraints :
+
+TOPP-RA is the latest theoretical development for solving the
+Time-Optimal Path Parameterization (TOPP) problem. TOPP-RA achieves
+100% success rate while being faster than the state-of-the-art
+implementation of the [classic Bobrow
+algorithm](https://github.com/quangounet/TOPP). The current
+implementation of TOPP-RA supports the following constraints :
 
 1. joint velocity and acceleration bounds;
 2. torque bounds (including redundantly-actuated manipulators);
