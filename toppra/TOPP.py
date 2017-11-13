@@ -71,7 +71,7 @@ def compute_trajectory_gridpoints(path, sgrid, ugrid, xgrid):
 
 def compute_trajectory_points(path, sgrid,
                               ugrid, xgrid,
-                              dt=1e-2, smooth=True,
+                              dt=1e-2, smooth=False,
                               smooth_eps=1e-4):
     """Compute trajectory with uniform sampling time.
 
