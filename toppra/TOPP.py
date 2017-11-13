@@ -837,6 +837,7 @@ Computing reach set failed.
 
         # upper bound
         nWSR_up = np.array([self.nWSR_cnst])
+        self.g[0] = 0.
         self.g[1] = -1.
         if init:
             res_up = self.solver_up.init(
@@ -848,6 +849,7 @@ Computing reach set failed.
                 self.hA[i], nWSR_up)
 
         nWSR_down = np.array([self.nWSR_cnst])
+        self.g[0] = 0.
         self.g[1] = 1.
         if init:
             res_down = self.solver_down.init(
