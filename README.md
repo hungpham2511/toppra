@@ -26,12 +26,18 @@ pip install Cython numpy coloredlogs enum scipy quadprog cvxpy cvxopt matplotlib
 
 Install
 [qpOASES](https://projects.coin-or.org/qpOASES/wiki/QpoasesInstallation) by
-following steps given in the official site. Then, to install the
-python interface do
+following steps given in the official site. In particular, 
+``` shell
+svn co https://projects.coin-or.org/svn/qpOASES/stable/3.2 qpOASES
+cd <install-dir>
+make
+```
+Then, to install the python interface do
 ``` sh
 cd <install-dir>/interfaces/python
 python setup.py install
 ```
+
 
 Finally, install `toppra` with
 ``` sh

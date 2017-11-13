@@ -129,16 +129,3 @@ def smooth_singularities(pp, us, xs, vs=None):
     if vs is not None:
         return us_smth, xs_smth, vs_smth
     return us_smth, xs_smth
-
-def compute_projected_polygon(pp):
-    """ Compute the projected polygons.
-
-Parameters
-----------
-pp : a qpOASESPPSolver object.
-
-Returns
--------
-out : a list of vertices
-    """
-    
