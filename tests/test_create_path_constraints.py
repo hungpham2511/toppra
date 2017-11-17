@@ -1,3 +1,6 @@
+from os.path import expanduser
+import sys
+sys.path.insert(0, expanduser('~/git/pymanoid'))
 ##########################################################################
 # This file contains test suites for `PathConstraint` factory functions. #
 ##########################################################################
@@ -45,7 +48,7 @@ def create_velocity_pc_fixtures(request):
         N = 100
         way_pts = np.random.randn(10, 6)
         pi = SplineInterpolator(np.linspace(0, 1, 10), way_pts)
-        ss = np.linspace(0, 1, N+1)
+        ss = np.linspace(0, 1, N + 1)
         vlim_ = np.random.rand(6) * 10 + 2.
         vlim = np.vstack((-vlim_, vlim_)).T
         pc_vel = fa.create_velocity_path_constraint(pi, ss, vlim)
@@ -89,9 +92,9 @@ class TestFunc_create_velocity_path_constraint(object):
         assert pc.niq == 0
         assert pc.nv == 0
 
-        assert pc.a.shape == (pc.N+1, 2)
-        assert pc.b.shape == (pc.N+1, 2)
-        assert pc.c.shape == (pc.N+1, 2)
+        assert pc.a.shape == (pc.N + 1, 2)
+        assert pc.b.shape == (pc.N + 1, 2)
+        assert pc.c.shape == (pc.N + 1, 2)
         assert pc.kind == PathConstraintKind.Canonical
 
     def test_constraint_satisfaction(self, velocity_pc_data):
@@ -109,7 +112,7 @@ class TestFunc_create_velocity_path_constraint(object):
         x = cvx.Variable()
         sd = cvx.Variable()
 
-        for i in range(0, pc.N+1):
+        for i in range(0, pc.N + 1):
             # 1. Compute max sd from the constraint
             constraints = [u * pc.a[i] + x * pc.b[i] + pc.c[i] <= 0]
             obj = cvx.Maximize(x)
@@ -167,7 +170,7 @@ def create_acceleration_pc_fixtures(request):
         N = 20
         way_pts = np.random.randn(10, 6)
         pi = SplineInterpolator(np.linspace(0, 1, 10), way_pts)
-        ss = np.linspace(0, 1, N+1)
+        ss = np.linspace(0, 1, N + 1)
         vlim_ = np.random.rand(6)
         alim = np.vstack((-vlim_, vlim_)).T
         pc_vel = fa.create_acceleration_path_constraint(pi, ss, alim)
@@ -211,9 +214,9 @@ class TestFunc_create_acceleration_path_constraint(object):
         assert pc.niq == 0
         assert pc.nv == 0
 
-        assert pc.a.shape == (pc.N+1, path.dof * 2)
-        assert pc.b.shape == (pc.N+1, path.dof * 2)
-        assert pc.c.shape == (pc.N+1, path.dof * 2)
+        assert pc.a.shape == (pc.N + 1, path.dof * 2)
+        assert pc.b.shape == (pc.N + 1, path.dof * 2)
+        assert pc.c.shape == (pc.N + 1, path.dof * 2)
         assert pc.kind == PathConstraintKind.Canonical
 
     def test_constraint_satisfaction(self, acceleration_pc_data):
@@ -229,7 +232,7 @@ class TestFunc_create_acceleration_path_constraint(object):
         u = cvx.Variable()
         x = cvx.Variable()
 
-        for i in range(0, pc.N+1):
+        for i in range(0, pc.N + 1):
             # Path Constraint
             constraints = [u * pc.a[i] + x * pc.b[i] + pc.c[i] <= 0,
                            x >= 0,
@@ -290,7 +293,7 @@ def create_rave_torque_pc_fixtures(request):
         way_pts = np.random.randn(7, dof) * 0.5
         pi = SplineInterpolator(np.linspace(0, 1, 7), way_pts)
         N = 100
-        ss = np.linspace(0, 2, N+1)
+        ss = np.linspace(0, 2, N + 1)
 
         pc = fa.create_rave_torque_path_constraint(pi, ss, robot)
         yield (pi, ss, robot), pc
@@ -302,7 +305,7 @@ def create_rave_torque_pc_fixtures(request):
         way_pts = [q_fixed for i in range(7)]
         pi = SplineInterpolator(np.linspace(0, 1, 7), way_pts)
         N = 100
-        ss = np.linspace(0, 2, N+1)
+        ss = np.linspace(0, 2, N + 1)
         pc = fa.create_rave_torque_path_constraint(pi, ss, robot)
         yield (pi, ss, robot), pc
         orpy.RaveDestroy()
@@ -344,9 +347,9 @@ class TestFunc_create_rave_torque_path_constraint(object):
         assert pc.niq == 0
         assert pc.nv == 0
 
-        assert pc.a.shape == (pc.N+1, path.dof * 2)
-        assert pc.b.shape == (pc.N+1, path.dof * 2)
-        assert pc.c.shape == (pc.N+1, path.dof * 2)
+        assert pc.a.shape == (pc.N + 1, path.dof * 2)
+        assert pc.b.shape == (pc.N + 1, path.dof * 2)
+        assert pc.c.shape == (pc.N + 1, path.dof * 2)
         assert pc.kind == PathConstraintKind.Canonical
 
     def test_constraint_satisfaction(self, torque_pc_data):
@@ -421,7 +424,7 @@ def create_rave_re_torque_fixtures():
     way_pts = np.random.randn(5, dof) * 0.5
     pi = SplineInterpolator(np.linspace(0, 1, 5), way_pts)
     N = 20
-    ss = np.linspace(0, 1, N+1)
+    ss = np.linspace(0, 1, N + 1)
 
     # loop closure Jacobian
     def J_lp(q):
@@ -470,9 +473,9 @@ class TestFunc_create_rave_re_torque_path_constraint(object):
         assert pc.niq == 0
         assert pc.nv == path.dof
 
-        assert pc.abar.shape == (pc.N+1, path.dof)
-        assert pc.bbar.shape == (pc.N+1, path.dof)
-        assert pc.cbar.shape == (pc.N+1, path.dof)
+        assert pc.abar.shape == (pc.N + 1, path.dof)
+        assert pc.bbar.shape == (pc.N + 1, path.dof)
+        assert pc.cbar.shape == (pc.N + 1, path.dof)
         assert pc.kind == PathConstraintKind.TypeI
 
     def test_slack_bounds(self, rave_re_torque_data):
@@ -495,7 +498,7 @@ class TestFunc_create_rave_re_torque_path_constraint(object):
 
         # Assert nullspace matrix at s index = 0
         q = pi.eval(ss)
-        for i in range(pc.N+1):
+        for i in range(pc.N + 1):
             Nmat = pc.D[i].T
             qi = q[i]
             nr, nc = Nmat.shape
@@ -536,30 +539,30 @@ def pymanoid_fixture():
     if DEBUG:
         sim.set_viewer()
         sim.viewer.SetCamera([
-            [0.60587192, -0.36596244,  0.70639274, -2.4904027],
-            [-0.79126787, -0.36933163,  0.48732874, -1.6965636],
-            [0.08254916, -0.85420468, -0.51334199,  2.79584694],
-            [0.,  0.,  0.,  1.]])
+            [0.60587192, -0.36596244, 0.70639274, -2.4904027],
+            [-0.79126787, -0.36933163, 0.48732874, -1.6965636],
+            [0.08254916, -0.85420468, -0.51334199, 2.79584694],
+            [0., 0., 0., 1.]])
 
     robot.set_transparency(0.25)
     robot.set_dof_values([
-        3.53863816e-02,   2.57657518e-02,   7.75586039e-02,
-        6.35909636e-01,   7.38580762e-02,  -5.34226902e-01,
-        -7.91656626e-01,   1.64846093e-01,  -2.13252247e-01,
-        1.12500819e+00,  -1.91496369e-01,  -2.06646315e-01,
-        1.39579597e-01,  -1.33333598e-01,  -8.72664626e-01,
-        0.00000000e+00,  -9.81307787e-15,   0.00000000e+00,
-        -8.66484961e-02,  -1.78097540e-01,  -1.68940240e-03,
-        -5.31698601e-01,  -1.00166891e-04,  -6.74394930e-04,
-        -1.01552628e-04,  -5.71121132e-15,  -4.18037117e-15,
-        0.00000000e+00,   0.00000000e+00,   0.00000000e+00,
-        0.00000000e+00,  -7.06534763e-01,   1.67723830e-01,
-        2.40289101e-01,  -1.11674923e+00,   6.23384177e-01,
-        -8.45611535e-01,   1.39994759e-02,   1.17756934e-16,
-        3.14018492e-16,  -3.17943723e-15,  -6.28036983e-16,
-        -3.17943723e-15,  -6.28036983e-16,  -6.88979202e-02,
-        -4.90099381e-02,   8.17415141e-01,  -8.71841480e-02,
-        -1.36966665e-01,  -4.26226421e-02])
+        3.53863816e-02, 2.57657518e-02, 7.75586039e-02,
+        6.35909636e-01, 7.38580762e-02, -5.34226902e-01,
+        -7.91656626e-01, 1.64846093e-01, -2.13252247e-01,
+        1.12500819e+00, -1.91496369e-01, -2.06646315e-01,
+        1.39579597e-01, -1.33333598e-01, -8.72664626e-01,
+        0.00000000e+00, -9.81307787e-15, 0.00000000e+00,
+        -8.66484961e-02, -1.78097540e-01, -1.68940240e-03,
+        -5.31698601e-01, -1.00166891e-04, -6.74394930e-04,
+        -1.01552628e-04, -5.71121132e-15, -4.18037117e-15,
+        0.00000000e+00, 0.00000000e+00, 0.00000000e+00,
+        0.00000000e+00, -7.06534763e-01, 1.67723830e-01,
+        2.40289101e-01, -1.11674923e+00, 6.23384177e-01,
+        -8.45611535e-01, 1.39994759e-02, 1.17756934e-16,
+        3.14018492e-16, -3.17943723e-15, -6.28036983e-16,
+        -3.17943723e-15, -6.28036983e-16, -6.88979202e-02,
+        -4.90099381e-02, 8.17415141e-01, -8.71841480e-02,
+        -1.36966665e-01, -4.26226421e-02])
 
     com_target = PointMass(
         pos=[0., 0., com_height], mass=robot.mass, color='b', visible=False)
@@ -611,7 +614,7 @@ def pymanoid_fixture():
         sim.schedule_extra(com_sync)
         com_target.set_x(0)
         com_target.set_y(0)
-        robot.ik.solve(solver=cvx.CVXOPT)
+        robot.ik.solve()
         ts = np.arange(0, 7, sim.dt)
         ps = np.array(
             [com_target.p + np.r_[0.1, 0.1, 0] * t for t in np.sin(ts)])
@@ -630,7 +633,7 @@ Generated and saved at {}""".format("_temp_test_{}.npy".format(__name__))
     path = SplineInterpolator(normalize(ts), qs)
     # Return
     N = 20
-    ss = np.linspace(0, 1, N+1)
+    ss = np.linspace(0, 1, N + 1)
     pc_contact = fa.create_pymanoid_contact_stability_path_constraint(
         path, ss, robot, stance, sim.gravity)
     yield (path, ss, robot, stance, sim.gravity), pc_contact
@@ -663,9 +666,9 @@ class Test_ContactStability(object):
         assert np.allclose(pc_contact.l, np.empty((pc_contact.N + 1, 0)))
         assert np.allclose(pc_contact.h, np.empty((pc_contact.N + 1, 0)))
 
-        assert pc_contact.a.shape == (pc_contact.N+1, m)
-        assert pc_contact.b.shape == (pc_contact.N+1, m)
-        assert pc_contact.c.shape == (pc_contact.N+1, m)
+        assert pc_contact.a.shape == (pc_contact.N + 1, m)
+        assert pc_contact.b.shape == (pc_contact.N + 1, m)
+        assert pc_contact.c.shape == (pc_contact.N + 1, m)
 
         assert pc_contact.kind == PathConstraintKind.Canonical
 
@@ -675,9 +678,14 @@ class Test_ContactStability(object):
         assert pc_contact.nv == 0
 
     def test_feasible_wrenches(self, pymanoid_fixture):
-        """(u, x) pair that satisfies `pc_contact` must also return a
+        """Check consistency with `pymanoid`.
+
+        The pair `(u, x)` satisfyng `pc_contact` must also return a
         feasible wrench from pymanoid.
 
+        Parameters
+        ----------
+        pymanoid_fixture : A Fixture. Data for this test case.
         """
         data, pc_contact = pymanoid_fixture
         path, ss, humanoid, stance, g = data
@@ -691,9 +699,9 @@ class Test_ContactStability(object):
 
         u = cvx.Variable()
         x = cvx.Variable()
-        for i in range(pc_contact.N+1):
-            constraints = [(pc_contact.a[i] * u + pc_contact.b[i] * x +
-                            pc_contact.c[i] <= 0), x > TINY]
+        for i in range(pc_contact.N + 1):
+            constraints = [(pc_contact.a[i] * u + pc_contact.b[i] * x + pc_contact.c[i] <= 0),
+                           x >= TINY]
             res_pc = np.zeros((10, 2))
 
             humanoid.set_dof_values(q[i])
