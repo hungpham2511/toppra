@@ -1,9 +1,9 @@
-from os.path import expanduser
-import sys
-sys.path.insert(0, expanduser('~/git/pymanoid'))
 ##########################################################################
 # This file contains test suites for `PathConstraint` factory functions. #
 ##########################################################################
+from os.path import expanduser
+import sys
+sys.path.insert(0, expanduser('~/git/pymanoid'))
 import toppra as fa
 import numpy as np
 import numpy.testing as npt
@@ -108,8 +108,8 @@ class TestFunc_create_velocity_path_constraint(object):
 
         qs = path.evald(ss)
 
-        u = cvx.Variable()
-        x = cvx.Variable()
+        u = cvx.Variable(1)
+        x = cvx.Variable(1)
         sd = cvx.Variable()
 
         for i in range(0, pc.N + 1):
@@ -133,7 +133,6 @@ class TestFunc_create_velocity_path_constraint(object):
             prob = cvx.Problem(cvx.Minimize(sd), constraints)
             prob.solve(solver=cvx.ECOS, abstol=1e-9)
             res_datamin = np.array([u.value, sd.value ** 2])
-
             # 3. They should agree
             assert np.allclose(res_datamax, res_pcmax)
             assert np.allclose(res_datamin, res_pcmin)

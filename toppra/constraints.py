@@ -110,6 +110,7 @@ class PathConstraint(object):
                  lG=None, G=None, hG=None,
                  name=None, ss=None):
         self.N = ss.shape[0] - 1  # number of intervals
+        self.sparse = False  # TODO: this feature is not completely implemented
         # store constraints matrices
         if a is None:
             self.a = np.empty((self.N + 1, 0))
