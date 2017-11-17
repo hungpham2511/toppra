@@ -1,3 +1,7 @@
+"""
+This module contains several interfaces for interpolated path.
+Most are simple wrappers over scipy.interpolators.
+"""
 import numpy as np
 from scipy.interpolate import UnivariateSpline, CubicSpline
 
@@ -87,12 +91,51 @@ class SplineInterpolator(object):
             self.dof = qs[0].shape[0]
 
     def eval(self, ss_sam):
+        """
+        Evaluate the spline.
+
+        Parameters
+        ----------
+        ss_sam : array
+            Shape (m, ). Positions to sample at.
+
+        Returns
+        -------
+        out : array
+            Shape (m, dof). Evaluated values at position.
+        """
         return self.cspl(ss_sam)
 
     def evald(self, ss_sam):
+        """
+        Evaluate the spline.
+
+        Parameters
+        ----------
+        ss_sam : array
+            Shape (m, ). Positions to sample at.
+
+        Returns
+        -------
+        out : array
+            Shape (m, dof). Evaluated values at position.
+        """
         return self.cspld(ss_sam)
 
     def evaldd(self, ss_sam):
+        """
+        Evaluate the spline.
+
+        Parameters
+        ----------
+        ss_sam : array
+            Shape (m, ). Positions to sample at.
+
+        Returns
+        -------
+        out : array
+            Shape (m, dof). Evaluated values at position.
+        """
         return self.cspldd(ss_sam)
 
 

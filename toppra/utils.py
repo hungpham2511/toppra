@@ -1,5 +1,6 @@
-"""This module contains some utilities functions that are relevant to
-computing parametrizations of path.
+"""
+Some utility functions need to generate PathConstraints. Most are
+specific to different scenarios.
 """
 import logging
 import numpy as np

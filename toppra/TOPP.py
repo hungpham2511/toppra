@@ -1,7 +1,13 @@
-"""This module constraints the main Path Parameterization solver.
-
 """
+Path Parameterization Algorithm: TOPP-RA
+========================================
 
+Notes
+-----
+
+Currently there is only one implematation using `qpOASES`. More will
+be added in future.
+"""
 import numpy as np
 from qpoases import (PyOptions as Options, PyPrintLevel as PrintLevel,
                      PyReturnValue as ReturnValue, PySQProblem as SQProblem)
@@ -29,35 +35,36 @@ INFTY = 1e8
 
 
 def compute_trajectory_gridpoints(path, sgrid, ugrid, xgrid):
-    """ Convert grid points to a trajectory.
+    """
+    Convert grid points to a trajectory.
 
     Parameters
     ----------
     path : interpolator
-    sgrid : ndarray, shape (N+1,)
-        Array of gridpoints.
-    ugrid : ndarray, shape (N,)
-        Array of controls.
-    xgrid : ndarray, shape (N+1,)
-        Array of squared velocities.
+    sgrid : array
+        Shape (N+1,). Array of gridpoints.
+    ugrid : array
+        Shape (N,). Array of controls.
+    xgrid : array
+        Shape (N+1,). Array of squared velocities.
 
     Returns
     -------
-    tgrid : ndarray, shape (N+1)
-        Time at each gridpoints.
-    q : ndarray, shape (N+1, dof)
-        Joint positions at each gridpoints.
-    qd : ndarray, shape (N+1, dof)
-        Joint velocities at each gridpoints.
-    qdd : ndarray, shape (N+1, dof)
-        Joint accelerations at each gridpoints.
+    tgrid : array
+        Shape (N+1). Time at each gridpoints.
+    q : array
+        Shape (N+1, dof). Joint positions at each gridpoints.
+    qd : array
+        Shape (N+1, dof). Joint velocities at each gridpoints.
+    qdd : array
+        Shape (N+1, dof). Joint accelerations at each gridpoints.
     """
     tgrid = np.zeros_like(sgrid)
     N = sgrid.shape[0] - 1
     sdgrid = np.sqrt(xgrid)
     for i in range(N):
-        tgrid[i+1] = ((sgrid[i+1] - sgrid[i]) / (sdgrid[i] + sdgrid[i+1]) * 2
-                      + tgrid[i])
+        tgrid[i + 1] = ((sgrid[i + 1] - sgrid[i]) / (sdgrid[i] + sdgrid[i + 1]) * 2
+                        + tgrid[i])
     sddgrid = np.hstack((ugrid, ugrid[-1]))
     q = path.eval(sgrid)
     qs = path.evald(sgrid)  # derivative w.r.t [path position] s
@@ -96,12 +103,12 @@ def compute_trajectory_points(path, sgrid,
     Parameters
     ----------
     path : interpolator
-    sgrid : ndarray, shape (N+1,)
-        Array of gridpoints.
-    ugrid : ndarray, shape (N,)
-        Array of controls.
-    xgrid : ndarray, shape (N+1,)
-        Array of squared velocities.
+    sgrid : array
+        Shape (N+1,). Array of gridpoints.
+    ugrid : array
+        Shape (N,). Array of controls.
+    xgrid : array
+        Shape (N+1,). Array of squared velocities.
     dt : float, optional
         Sampling time step.
     smooth : bool, optional
@@ -111,15 +118,14 @@ def compute_trajectory_points(path, sgrid,
 
     Returns
     -------
-    tgrid : ndarray, shape (M)
-        Time at each gridpoints.
-    q : ndarray, shape (M, dof)
-        Joint positions at each gridpoints.
-    qd : ndarray, shape (M, dof)
-        Joint velocities at each gridpoints.
-    qdd : ndarray, shape (M, dof)
-        Joint accelerations at each gridpoints.
-
+    tgrid : array
+        Shape (M). Time at each gridpoints.
+    q : array
+        Shape (M, dof). Joint positions at each gridpoints.
+    qd : array
+        Shape (M, dof). Joint velocities at each gridpoints.
+    qdd : array
+        Shape (M, dof). Joint accelerations at each gridpoints.
     """
     tgrid = np.zeros_like(sgrid)  # Array of time at each gridpoint
     N = sgrid.shape[0] - 1
@@ -219,11 +225,11 @@ class qpOASESPPSolver(object):
 
     Attributes
     ----------
-    Ks : ndarray, shape (N+1, 2)
+    Ks : array, shape (N+1, 2)
         Controllable sets/intervals.
-    I0 : ndarray
-    IN : ndarray
-    ss : ndarray. Discretized path positions.
+    I0 : array
+    IN : array
+    ss : array. Discretized path positions.
     nm : int
         Dimension of the canonical constraint part.
     nv : int
@@ -236,23 +242,23 @@ class qpOASESPPSolver(object):
         Dimension of the (qpOASES) optimization variable.
     nC : int
         Dimension of the (qpOASES) constraint matrix.
-    A : ndarray
+    A : array
         qpOASES coefficient matrix.
-    lA : ndarray,
+    lA : array,
         qpOASES coefficient matrix.
-    hA : ndarray
+    hA : array
         qpOASES coefficient matrix.
-    l : ndarray
+    l : array
         qpOASES coefficient matrix.
-    h : ndarray
+    h : array
         qpOASES coefficient matrix.
-    H : ndarray
+    H : array
         qpOASES coefficient matrix.
-    g : ndarray
+    g : array
         qpOASES coefficient matrix.
 
-    NOTE
-    ----
+    Notes
+    -----
     Note that the first `self.nop` row of A are all zeros. These are
     operational rows, used to specify additional constraints required
     for computing controllable/reachable sets.
@@ -556,18 +562,17 @@ Initialize Path Parameterization instance
 
         Parameters
         ----------
-        save_solutions: bool
+        save_solutions : bool
             Save solutions of each step.
-        reg: float
+        reg : float
             Regularization gain.
 
         Returns
         -------
-        us: ndarray, shape (N,)
-            Contains the TOPP's controls.
-        xs: ndarray, shape (N+1,)
-            Contains the TOPP's squared velocities.
-
+        us : array
+            Shape (N,). Contains the TOPP's controls.
+        xs : array
+            Shape (N+1,). Contains the TOPP's squared velocities.
         """
         if save_solutions:
             self._xfulls = np.empty((self.N, self.nV))
@@ -622,7 +627,6 @@ Unable to parameterizes this path:
 
         It is important to use this function whenever starting a new
         operation. For instance, computing the MVC.
-
         """
         # reset all rows
         self.A[:, :self.nop] = 0
@@ -636,31 +640,30 @@ Unable to parameterizes this path:
     ###########################################################################
     def one_step(self, i, xmin, xmax, init=False):
         """Compute the one-step set for the interval [xmin, xmax]
-        
+
+        Notes
+        -----
+
+        The one-step set $\calQ(i, \bbI)$ is the largest set of states
+            in stage $i$ for which there exists an admissible control
+            that steers the system to a state in $\bbI$.
+
+        - self.nWSR_up and self.nWSR_down need to be initialized prior.
+        - If the projection is not feasible (for example when xmin >
+        xmax), then return None, None.
+
         Parameters
         ----------
-        i: int
-        xmin: float
-        xmax: float
-        init: bool, optional
+        i : int
+        xmin : float
+        xmax : float
+        init : bool, optional
             Use qpOASES with hotstart.
 
         Returns
         -------
-        xmin_i: float
-        xmax_i: float
-
-        Definition:
-        ----------
-
-            The one-step set $\calQ(i, \bbI)$ is the largest set of
-            states in stage $i$ for which there exists an admissible
-            control that steers the system to a state in $\bbI$.
-
-        NOTE:
-        - self.nWSR_up and self.nWSR_down need to be initialized prior.
-        - If the projection is not feasible (for example when xmin >
-        xmax), then return None, None.
+        xmin_i : float
+        xmax_i : float
 
         """
         # Set constraint: xmin <= 2 ds u + x <= xmax
@@ -723,8 +726,8 @@ Computing one-step failed.
 
         Parameters
         ----------
-        i: int
-        xmin: float
+        i : int
+        xmin : float
         xmax: float
         init: bool, optional
             Use qpOASES with hotstart.
