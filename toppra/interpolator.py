@@ -61,21 +61,21 @@ class SplineInterpolator(object):
 
     Parameters
     ----------
-    ss: ndarray, shaped (N+1,)
-        Path positions of the waypoints.
-    qs: ndarray, shaped (N+1, dof)
-        The waypoints.
+    ss: array
+        Shaped (N+1,). Path positions of the waypoints.
+    qs: array
+        Shaped (N+1, dof). Waypoints.
 
     Attributes
     ----------
     dof : int
         Output dimension of the function
-    cspl : scipy.CubicSpline
-        The CubicSpline representing the underlying path.
-    cspld : scipy.CubicSpline
-        The CubicSpline representing the underlying path's *derviative*.
-    cspldd : scipy.CubicSpline
-        the CubicSpline representing the underlying path's 2nd *derivative.
+    cspl : :class:`scipy.interpolate.CubicSpline`
+        The path.
+    cspld : :class:`scipy.interpolate.CubicSpline`
+        The path 1st derivative.
+    cspldd : :class:`scipy.interpolate.CubicSpline`
+        The path 2nd derivative.
 
     """
 
@@ -91,24 +91,23 @@ class SplineInterpolator(object):
             self.dof = qs[0].shape[0]
 
     def eval(self, ss_sam):
-        """
-        Evaluate the spline.
+        """ Evaluate positions.
 
         Parameters
         ----------
-        ss_sam : array
+        ss_sam : array, or float
             Shape (m, ). Positions to sample at.
 
         Returns
         -------
         out : array
             Shape (m, dof). Evaluated values at position.
+            Shape (dof,) if `ss_sam` is a float.
         """
         return self.cspl(ss_sam)
 
     def evald(self, ss_sam):
-        """
-        Evaluate the spline.
+        """ Evaluate 1st derivative.
 
         Parameters
         ----------
@@ -123,8 +122,7 @@ class SplineInterpolator(object):
         return self.cspld(ss_sam)
 
     def evaldd(self, ss_sam):
-        """
-        Evaluate the spline.
+        """ Evaluate 2nd derivative.
 
         Parameters
         ----------

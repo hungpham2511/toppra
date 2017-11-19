@@ -35,12 +35,14 @@ INFTY = 1e8
 
 
 def compute_trajectory_gridpoints(path, sgrid, ugrid, xgrid):
-    """
-    Convert grid points to a trajectory.
+    """ Compute a trajectory sampled at gridpoints.
 
     Parameters
     ----------
-    path : interpolator
+    path : :class:`.SplineInterpolator`
+        The geometric path to parametrize. Can also be
+        :class:`.PolynomialInterpolator` or
+        :class:`.UnivariateSplineInterpolator`.
     sgrid : array
         Shape (N+1,). Array of gridpoints.
     ugrid : array
@@ -76,43 +78,50 @@ def compute_trajectory_gridpoints(path, sgrid, ugrid, xgrid):
     return tgrid, q, qd, qdd
 
 
-def compute_trajectory_points(path, sgrid,
-                              ugrid, xgrid,
-                              dt=1e-2, smooth=False,
-                              smooth_eps=1e-4):
+def compute_trajectory_points(path, sgrid, ugrid, xgrid, dt=1e-2, smooth=False, smooth_eps=1e-4):
     """Compute trajectory with uniform sampling time.
 
-    Note
-    ----
-    Additionally, if `smooth` is True, the return trajectory is smooth
-    using least-square technique. The return trajectory, also
+    Notes
+    -----
+    If ``smooth`` is True, the return trajectory is smooth using
+    least-square. The return trajectory is computed such that it
     satisfies the discrete transition relation. That is
 
-    q[i+1] = q[i] + qd[i] * dt + qdd[i] * dt ^ 2 / 2
-    qd[i+1] = qd[i] + qdd[i] * dt
+    .. math::
+
+        q[i+1] = q[i] + qd[i] dt + qdd[i] dt ^ 2 / 2
+
+        qd[i+1] = qd[i] + qdd[i] dt
+
+    while minimizing the difference with the original non-smooth
+    trajectory computed with TOPP.
 
     If one finds that the function takes too much time to terminate,
     then it is very likely that the most time-consuming part is
     least-square. In this case, there are several options that one
     might take.
-    1. Set `smooth` to False. This might return badly conditioned
-    trajectory.
-    2. Reduce `dt`. This is the recommended option.
 
+    1. Set ``smooth`` to False. This might return badly conditioned trajectory.
+    2. Reduce ``dt``. This is the recommended option.
+
+    TODO: A better (**and more importantly, faster**) method to smoothing.
 
     Parameters
     ----------
-    path : interpolator
+    path : :class:`.SplineInterpolator`
+        The geometric path to parametrize. Can also be
+        :class:`.PolynomialInterpolator` or
+        :class:`.UnivariateSplineInterpolator`.
     sgrid : array
-        Shape (N+1,). Array of gridpoints.
+        Shape (N+1,). Grid points.
     ugrid : array
-        Shape (N,). Array of controls.
+        Shape (N,). Controls.
     xgrid : array
-        Shape (N+1,). Array of squared velocities.
+        Shape (N+1,). Squared velocities.
     dt : float, optional
         Sampling time step.
     smooth : bool, optional
-        If True, do least-square smoothing. See above for more details.
+        If True, do least-square smoothing. See note for more details.
     smooth_eps : float, optional
         Relative gain of minimizing variations of joint accelerations.
 
@@ -126,6 +135,7 @@ def compute_trajectory_points(path, sgrid,
         Shape (M, dof). Joint velocities at each gridpoints.
     qdd : array
         Shape (M, dof). Joint accelerations at each gridpoints.
+
     """
     tgrid = np.zeros_like(sgrid)  # Array of time at each gridpoint
     N = sgrid.shape[0] - 1
@@ -167,9 +177,9 @@ def compute_trajectory_points(path, sgrid,
     if not smooth:
         return tsample, q, qd, qdd
     else:
+        # Least square smoothing
         logger.debug("Compute trajectory with least-square smoothing.")
         dof = q.shape[1]
-        # Still slow, I will now try QP with quadprog
         A = np.array([[1., dt], [0, 1.]])
         B = np.array([dt ** 2 / 2, dt])
         M = tsample.shape[0] - 1
@@ -212,16 +222,14 @@ def compute_trajectory_points(path, sgrid,
 
 
 class qpOASESPPSolver(object):
-    """Parametrize geometric path using TOPP-RA.
-
-    This class first translates a set of `PathConstraint` to the form
-    needed by qpOASES form. Then it solve for the parameterization in
-    two passes as described in the paper.
+    """ An implementation of TOPP-RA using the QP solver ``qpOASES``.
 
     Parameters
     ----------
-    constraint_set : A List,
-        A list of PathConstraint.
+    constraint_set : list
+        A list of  :class:`.PathConstraint`
+    verbose : bool
+        More verbose output.
 
     Attributes
     ----------
@@ -229,7 +237,8 @@ class qpOASESPPSolver(object):
         Controllable sets/intervals.
     I0 : array
     IN : array
-    ss : array. Discretized path positions.
+    ss : array
+        Discretized path positions.
     nm : int
         Dimension of the canonical constraint part.
     nv : int
@@ -312,6 +321,7 @@ class qpOASESPPSolver(object):
         l[i]=| l1     | for v1 |, h[i]=| h1    | for v1 |
              | l2     |        |       | h2    |        |
              | l3     |        |       | h3    |        |
+
     """
     def __init__(self, constraint_set, verbose=False):
         self.I0 = np.r_[0, 1e-4]  # Start and end velocity interval
@@ -484,27 +494,40 @@ Initialize Path Parameterization instance
             row += c.nv
 
     def solve_controllable_sets(self, eps=1e-8):
-        """Solve for controllable sets K(i, IN).
+        """Solve for controllable sets :math:`\mathcal{K}_i(I_{\mathrm{goal}})`.
 
-        The i-th controllable set K(i, IN) is the set of states at
-        s=s_i for which there exists at least a sequence of admissible
-        controls that drives it to IN.
+        The i-th controllable set :math:`\mathcal{K}_i(I_{\mathrm{goal}})`
+        is the set of states at stage :math:`i` such that there exists
+        at least a sequence of admissible controls
+        :math:`(u_i,\dots,u_{N-1})` that drives it to
+        :math:`\mathcal{I}_{\mathrm{goal}}`.
+
+        Notes
+        -----
+        The interval computed with `one_step` is **not** the true
+        optimal solution. They differ by some small tolerance. This is
+        due to numerical errors with the the QP solver
+        ``qpOASES``. Thus it might happen that the end point of
+        the interval is not actually controllable.
+
+        Setting ``eps`` to non-zero slight restrict the controllable
+        set, and thus address this problem.
 
         Parameters
         ----------
         eps: float, optional
-             The safety margin guarded againts numerical error. This
-             number needs not be too high.
+             A small margin to guard againts accumulating numerical
+             error while computing the one-step sets.
 
         Returns
         -------
         out: bool.
-             True if K(0, IN) is not empty.
+             True if :math:`\mathcal{K}_0(I_{\mathrm{goal}})` is not empty.
 
         """
         self._reset_operational_matrices()
-        self.nWSR_up = np.ones((self.N+1, 1), dtype=int) * self.nWSR_cnst
-        self.nWSR_down = np.ones((self.N+1, 1), dtype=int) * self.nWSR_cnst
+        self.nWSR_up = np.ones((self.N + 1, 1), dtype=int) * self.nWSR_cnst
+        self.nWSR_down = np.ones((self.N + 1, 1), dtype=int) * self.nWSR_cnst
         xmin, xmax = self.proj_x_admissible(self.N, self.IN[0],
                                             self.IN[1], init=True)
         if xmin is None:
@@ -521,7 +544,7 @@ Initialize Path Parameterization instance
             # Turn init off, use hotstart
             init = False
             if xmin_i is None:
-                logger.warn("Find controllable set K(%d, IN failed", i)
+                logger.warn("Find controllable set K(%d) fails!", i)
                 return False
             else:
                 self._K[i, 1] = xmax_i - eps  # Buffer for numerical error
@@ -530,8 +553,13 @@ Initialize Path Parameterization instance
         return True
 
     def solve_reachable_sets(self):
-        """Solve for reachable sets L(i, I0).
+        """Solve for reachable sets :math:`\mathcal{L}_i(I_{init})`.
 
+        Returns
+        -------
+        out: bool.
+             True if :math:`\mathcal{L}_0(I_{init})` is not empty.
+             False otherwise.
         """
         self._reset_operational_matrices()
         xmin, xmax = self.proj_x_admissible(
