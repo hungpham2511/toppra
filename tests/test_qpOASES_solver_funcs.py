@@ -65,7 +65,7 @@ class TestFunc_QpoasesPPsolver_micro(object):
 
         x = cvx.Variable()
         u = cvx.Variable()
-        pp._reset_operational_matrices()  # A single reset should suffice
+        pp.reset_operational_rows()  # A single reset should suffice
         pp.nWSR_up = np.ones((pp.N+1, 1), dtype=int) * pp.nWSR_cnst
         pp.nWSR_down = np.ones((pp.N+1, 1), dtype=int) * pp.nWSR_cnst
         for i in range(5, 10):
@@ -109,7 +109,7 @@ class TestFunc_QpoasesPPsolver_micro(object):
         x = cvx.Variable()
         u = cvx.Variable()
 
-        pp._reset_operational_matrices()  # A single reset should suffice
+        pp.reset_operational_rows()  # A single reset should suffice
         for i in range(5, 10):
             ds = pp.ss[i+1] - pp.ss[i]
             xmin = 0
@@ -150,7 +150,7 @@ class TestFunc_QpoasesPPsolver_micro(object):
         x = cvx.Variable()
         u = cvx.Variable()
 
-        pp._reset_operational_matrices()  # A single reset should suffice
+        pp.reset_operational_rows()  # A single reset should suffice
         for i in range(5, 10):
             xmin = 0
             xmax = 1
@@ -191,12 +191,12 @@ class TestFunc_QpoasesPPsolver_micro(object):
         x = cvx.Variable()
         # Setup matrices
         for reg in np.linspace(0, 1., 4):
-            pp._reset_operational_matrices()  # A single reset should suffice
+            pp.reset_operational_rows()  # A single reset should suffice
             pp.A[:, 0, 1] = 1.
             pp.A[:, 0, 0] = 0.
             pp.A[:, 1, 1] = 1.
             pp.A[:pp.N, 1, 0] = 2 * (pp.ss[1:] - pp.ss[:-1])
-            pp.nWSR_topp = np.ones((pp.N+1, 1), dtype=int) * pp.nWSR_cnst
+            pp.nWSR_topp = np.ones((pp.N + 1, 1), dtype=int) * pp.nWSR_cnst
             reg = 0.
             for i in range(5, 10):
                 x_cur = 0.4
@@ -204,7 +204,7 @@ class TestFunc_QpoasesPPsolver_micro(object):
                 xmax = 0.5
                 init = (True if i == 5 else False)  # i = 6,...10, use hotstart
                 u_, x_ = pp.topp_step(i, x_cur, xmin, xmax, init=init, reg=reg)
-                ds = pp.ss[i+1] - pp.ss[i]
+                ds = pp.ss[i + 1] - pp.ss[i]
 
                 constraints = [x + 2 * ds * u >= xmin,
                                x + 2 * ds * u <= xmax,

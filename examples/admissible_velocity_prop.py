@@ -46,7 +46,7 @@ Ls = np.copy(solver.L)  # Reachable sets
 
 # Compute MVC
 MVC = []
-solver._reset_operational_matrices()
+solver.reset_operational_rows()
 for i in range(N + 1):
     xmin, xmax = solver.proj_x_admissible(i, -10, 10, init=True)
     MVC.append(xmax)

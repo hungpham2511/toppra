@@ -72,7 +72,7 @@ def compute_trajectory_gridpoints(path, sgrid, ugrid, xgrid):
     qs = path.evald(sgrid)  # derivative w.r.t [path position] s
     qss = path.evaldd(sgrid)
     array_mul = lambda v_arr, s_arr: np.array(
-        [v_arr[i] * s_arr[i] for i in range(N+1)])
+        [v_arr[i] * s_arr[i] for i in range(N + 1)])
     qd = array_mul(qs, sdgrid)
     qdd = array_mul(qs, sddgrid) + array_mul(qss, sdgrid ** 2)
     return tgrid, q, qd, qdd
@@ -141,8 +141,8 @@ def compute_trajectory_points(path, sgrid, ugrid, xgrid, dt=1e-2, smooth=False, 
     N = sgrid.shape[0] - 1
     sdgrid = np.sqrt(xgrid)
     for i in range(N):
-        tgrid[i+1] = ((sgrid[i+1] - sgrid[i]) / (sdgrid[i] + sdgrid[i+1]) * 2
-                      + tgrid[i])
+        tgrid[i + 1] = ((sgrid[i + 1] - sgrid[i]) / (sdgrid[i] + sdgrid[i + 1]) * 2
+                        + tgrid[i])
     # shape (M+1,) array of sampled time
     tsample = np.arange(tgrid[0], tgrid[-1], dt)
     ssample = np.zeros_like(tsample)  # sampled position
@@ -197,7 +197,7 @@ def compute_trajectory_points(path, sgrid, ugrid, xgrid, dt=1e-2, smooth=False, 
             Beta[2 * i: 2 * i + 2, :] = np.dot(A, Beta[2 * i - 2: 2 * i, :])
 
         Delta = np.zeros((M - 1, M))
-        for i in range(M-1):
+        for i in range(M - 1):
             Delta[i, i] = 1
             Delta[i, i + 1] = - 1
 
@@ -222,7 +222,7 @@ def compute_trajectory_points(path, sgrid, ugrid, xgrid, dt=1e-2, smooth=False, 
 
 
 class qpOASESPPSolver(object):
-    """ An implementation of TOPP-RA using the QP solver ``qpOASES``.
+    """An implementation of TOPP-RA using the QP solver ``qpOASES``.
 
     Parameters
     ----------
@@ -247,80 +247,59 @@ class qpOASESPPSolver(object):
         Dimension of the inequalities on slack.
     neq : int
         Dimension of the equalities on slack.
-    nv : int
-        Dimension of the (qpOASES) optimization variable.
+    nV : int
+        Dimension of the optimization variable.
     nC : int
-        Dimension of the (qpOASES) constraint matrix.
+        (``qpOASES``) Number of constraints .
     A : array
-        qpOASES coefficient matrix.
-    lA : array,
-        qpOASES coefficient matrix.
+        (``qpOASES``) Shape (N+1, nC, nV).
+    lA : array
+        (``qpOASES``) Shape (N+1, nC).
     hA : array
-        qpOASES coefficient matrix.
+        (``qpOASES``) Shape (N+1, nC).
     l : array
-        qpOASES coefficient matrix.
+        (``qpOASES``) Shape (N+1, nV).
     h : array
-        qpOASES coefficient matrix.
+        (``qpOASES``) Shape (N+1, nV).
     H : array
-        qpOASES coefficient matrix.
+        (``qpOASES``) Shape (nV, nV).
     g : array
-        qpOASES coefficient matrix.
+        (``qpOASES``) Shape (nV,).
 
     Notes
     -----
-    Note that the first `self.nop` row of A are all zeros. These are
-    operational rows, used to specify additional constraints required
-    for computing controllable/reachable sets.
 
-    The coefficient matrices are to be input to the qpOASES solver as
-    follow
+    Attributes tagged with (``qpOASES``) are interval variable for
+    solving with ``qpOASES`` solver. For details on their
+    construction, see belows.
 
-            min     1/2 (u, x, v)^T H (u, x, v) + g^T (u, x, v)
-            s.t.    lA <= A (u, x, v) <= hA
-                    l  <=   (u, x, v) <= h
+    The first ``nop`` rows of ``A`` are operational rows. They are
+    reserved to specify additional constraints in computing
 
-    More specifically, there are four sections in matrix A.
+    1. the controllable sets; TODO
+    2. the reachable sets; TODO
 
+    ``qpOASES`` solves QPs of the form
 
-             | 0     | 0     |   0 |   0 |   0 |      Openration
-             | 0     | 0     |   0 |   0 |   0 |      ----------
-             |-------+-------+-----+-----+-----+
-             | a1    | b1    |   0 |   0 |   0 |      Canonical
-             | a2    | b2    |   0 |   0 |   0 |      ---------
-             | a3    | b3    |   0 |   0 |   0 |
-        A[i]=|-------+-------+-----+-----+-----+
-             | abar1 | bbar1 | -D1 |   0 |   0 |      Equality
-             | abar2 | bbar2 |   0 | -D2 |   0 |      --------
-             | abar3 | bbar3 |   0 |   0 | -D3 |
-             |-------+-------+-----+-----+-----+
-             | 0     | 0     |  G1 |     |     |      Inequality
-             | 0     | 0     |     |  G2 |     |      ----------
-             | 0     | 0     |     |     |  G3 |
+    .. math::
+            min  \quad   & 0.5 (u, x, v^T) \mathbf{H} (u, x, v^T)^T + \mathbf{g}^T (u, x, v^T)^T \\\\
+            s.t. \quad   & \mathbf{l_A} \leq \mathbf{A} (u, x, v^T)^T \leq \mathbf{h_A} \\\\
+                         & \mathbf{l}  \leq   (u, x, v^T)^T \leq \mathbf{h}
 
-    And correspondingly, four sections in matrices lA[i], hA[i]
+    The matrices :math:`A[i], l_A[i], h_A[i]` are all
+    constructed from four sections, each spanning a number of
+    rows. The four sections are:
 
-             | 0      |         | 0      |      Openration
-             | 0      |         | 0      |      ----------
-             |--------+         |--------+
-             | -infty |         | 0      |      Canonical
-             | -infty |         | 0      |      ---------
-             | -infty |         | 0      |
-       lA[i]=|--------+    hA = |--------+
-             | -cbar1 |         | -cbar1 |      Equality
-             | -cbar2 |         | -cbar2 |      --------
-             | -cbar3 |         | -cbar3 |
-             |--------+         |--------+
-             | lG1    |         | hG1    |      Inequality
-             | lG2    |         | hG2    |      ----------
-             | lG3    |         | hG3    |
+    1. operational: see above;
+    2. canonical;
+    3. non-canonical;
+    4. non-canonical hard-bound.
 
-    Finally, bound vectors l, h are given as:
+    For more details on the last three sections, see
+    :class:`.PathConstraint`'s docstring.
 
-             | -INFTY | for u  |       | INFTY | for u  |
-             | 0.     | for x  |       | INFTY | for x  |
-        l[i]=| l1     | for v1 |, h[i]=| h1    | for v1 |
-             | l2     |        |       | h2    |        |
-             | l3     |        |       | h3    |        |
+    The vectors :math:`l[i], h[i]` contain hard-bounds on :math:`u, x,
+    \mathbf{v}` respectively.
 
     """
     def __init__(self, constraint_set, verbose=False):
@@ -412,7 +391,12 @@ Initialize Path Parameterization instance
         self.solver_down.setOptions(options)
 
     def _init_matrices(self, constraint_set):
-        """ Initialize coefficient matrices for qpOASES.
+        """ Initialize coefficient matrices.
+
+        Parameters
+        ----------
+        constraint_set : list
+            A list of  :class:`.PathConstraint`
         """
         self.nm = sum([c.nm for c in constraint_set])
         self.niq = sum([c.niq for c in constraint_set])
@@ -424,25 +408,19 @@ Initialize Path Parameterization instance
         self.H = np.zeros((self.nV, self.nV))
         self.g = np.zeros(self.nV)
         # fixed bounds
-        self.l = np.zeros((self.N+1, self.nV))
-        self.h = np.zeros((self.N+1, self.nV))
+        self.l = np.zeros((self.N + 1, self.nV))
+        self.h = np.zeros((self.N + 1, self.nV))
         # lA, A, hA constraints
-        self.lA = np.zeros((self.N+1, self.nC))
-        self.hA = np.zeros((self.N+1, self.nC))
-        self.A = np.zeros((self.N+1, self.nC, self.nV))
+        self.lA = np.zeros((self.N + 1, self.nC))
+        self.hA = np.zeros((self.N + 1, self.nC))
+        self.A = np.zeros((self.N + 1, self.nC, self.nV))
         self._xfull = np.zeros(self.nV)  # interval vector, store primal
         self._yfull = np.zeros(self.nC)  # interval vector, store dual
 
     def _fill_matrices(self):
         """Fill coefficient matrices.
 
-        See the qpOASESPPSolver's class description for more details
-        regarding the matrices.
-
-        Args:
-        ----
-        i: An Int. An positive index, less than or equal to N.
-
+        For more details, see the class docstring.
         """
         self.g.fill(0)
         self.H.fill(0)
@@ -525,7 +503,7 @@ Initialize Path Parameterization instance
              True if :math:`\mathcal{K}_0(I_{\mathrm{goal}})` is not empty.
 
         """
-        self._reset_operational_matrices()
+        self.reset_operational_rows()
         self.nWSR_up = np.ones((self.N + 1, 1), dtype=int) * self.nWSR_cnst
         self.nWSR_down = np.ones((self.N + 1, 1), dtype=int) * self.nWSR_cnst
         xmin, xmax = self.proj_x_admissible(self.N, self.IN[0],
@@ -561,7 +539,7 @@ Initialize Path Parameterization instance
              True if :math:`\mathcal{L}_0(I_{init})` is not empty.
              False otherwise.
         """
-        self._reset_operational_matrices()
+        self.reset_operational_rows()
         xmin, xmax = self.proj_x_admissible(
             0, self.I0[0], self.I0[1], init=True)
         if xmin is None:
@@ -620,14 +598,14 @@ Unable to parameterizes this path:
 
         # Forward pass
         # Setup matrices
-        self._reset_operational_matrices()
+        self.reset_operational_rows()
         # Enforce x == xs[i]
         self.A[:, 0, 1] = 1.
         self.A[:, 0, 0] = 0.
         # Enfore Kmin <= x + 2 ds u <= Kmax
         self.A[:, 1, 1] = 1.
         self.A[:self.N, 1, 0] = 2 * self.Ds
-        self.nWSR_topp = np.ones((self.N+1, 1), dtype=int) * self.nWSR_cnst
+        self.nWSR_topp = np.ones((self.N + 1, 1), dtype=int) * self.nWSR_cnst
         # Setup matrices finished
         xs = np.zeros(self.N + 1)
         us = np.zeros(self.N)
@@ -635,9 +613,9 @@ Unable to parameterizes this path:
         _, _ = self.topp_step(0, xs[0], self._K[1, 0], self._K[1, 1],
                               init=True, reg=reg)  # Warm start
         for i in range(self.N):
-            u_, x_ = self.topp_step(i, xs[i], self._K[i+1, 0], self._K[i+1, 1],
+            u_, x_ = self.topp_step(i, xs[i], self._K[i + 1, 0], self._K[i + 1, 1],
                                     init=False, reg=reg)
-            xs[i+1] = x_
+            xs[i + 1] = x_
             us[i] = u_
             if save_solutions:
                 self._xfulls[i] = self._xfull.copy()
@@ -650,11 +628,20 @@ Unable to parameterizes this path:
         """
         return self._xfulls[:, 2:]
 
-    def _reset_operational_matrices(self):
-        """Reset the coefficient matrix.
+    def reset_operational_rows(self):
+        """Zero operational rows.
 
-        It is important to use this function whenever starting a new
-        operation. For instance, computing the MVC.
+        It is important to use this function whenever the next
+        operation is of different *kind*.
+
+        In fact this routine is very cheap, thus when in doubt always
+        use it.
+
+        Example:
+
+        >>> solver.one_step(0, 1)
+        >>> solver.reset_operational_rows()
+        >>> solver.reach(0, 1)
         """
         # reset all rows
         self.A[:, :self.nop] = 0
@@ -671,14 +658,12 @@ Unable to parameterizes this path:
 
         Notes
         -----
-
         The one-step set $\calQ(i, \bbI)$ is the largest set of states
             in stage $i$ for which there exists an admissible control
             that steers the system to a state in $\bbI$.
 
         - self.nWSR_up and self.nWSR_down need to be initialized prior.
-        - If the projection is not feasible (for example when xmin >
-        xmax), then return None, None.
+        - If the projection is not feasible (for example when xmin > xmax), then return None, None.
 
         Parameters
         ----------
@@ -686,7 +671,7 @@ Unable to parameterizes this path:
         xmin : float
         xmax : float
         init : bool, optional
-            Use qpOASES with hotstart.
+            If true, coldstart. Else, hotstart.
 
         Returns
         -------
@@ -856,7 +841,7 @@ Computing reach set failed.
         appear, it is a good ideal to try reseting the internal
         operational matrices using this function
 
-            self._reset_operational_matrices()
+            self.reset_operational_rows()
 
         One should now see correct results appearing.
         """
