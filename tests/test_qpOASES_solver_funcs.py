@@ -182,7 +182,7 @@ class TestFunc_QpoasesPPsolver_micro(object):
             prob.solve(solver=cvx.CVXOPT)
             assert np.allclose(x.value, xmin_i)
 
-    def test_topp_step(self, pp_fixture):
+    def test_greedy_step(self, pp_fixture):
         """ test get_u_max function
         """
         pcs, pp = pp_fixture
@@ -203,7 +203,7 @@ class TestFunc_QpoasesPPsolver_micro(object):
                 xmin = 0.1
                 xmax = 0.5
                 init = (True if i == 5 else False)  # i = 6,...10, use hotstart
-                u_, x_ = pp.topp_step(i, x_cur, xmin, xmax, init=init, reg=reg)
+                u_, x_ = pp.greedy_step(i, x_cur, xmin, xmax, init=init, reg=reg)
                 ds = pp.ss[i + 1] - pp.ss[i]
 
                 constraints = [x + 2 * ds * u >= xmin,

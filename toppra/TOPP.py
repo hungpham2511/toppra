@@ -25,6 +25,7 @@ qpOASESReturnValueDict = {
 }
 
 # Constants
+SUPERTINY = 1e-16
 TINY = 1e-8
 SMALL = 1e-5
 INFTY = 1e8
@@ -382,6 +383,14 @@ Initialize Path Parameterization instance
         IN: (2, ) float tuple.
             Starting (x_lower, x_higher) squared path velocities.
         """
+        IN = np.r_[IN].astype(float)
+        if IN.shape[0] == 1:
+            IN = np.array([IN[0], IN[0]])
+        elif IN.shape[0] > 2:
+            raise ValueError('Input IN has wrong dimension: {}'.format(IN.shape))
+        assert IN[1] >= IN[0], "Illegal input: non-increase end-points."
+        assert IN[0] >= 0, "Illegal input: negative lower end-point."
+
         self.IN = IN
 
     def _init_qpoaes_solvers(self, verbose):
@@ -484,7 +493,7 @@ Initialize Path Parameterization instance
             self.h[:, row: row + c.nv] = c.h
             row += c.nv
 
-    def solve_controllable_sets(self, eps=1e-8):
+    def solve_controllable_sets(self, eps=1e-14):
         """Solve for controllable sets :math:`\mathcal{K}_i(I_{\mathrm{goal}})`.
 
         The i-th controllable set :math:`\mathcal{K}_i(I_{\mathrm{goal}})`
@@ -623,10 +632,10 @@ Unable to parameterizes this path:
         xs = np.zeros(self.N + 1)
         us = np.zeros(self.N)
         xs[0] = min(self._K[0, 1], self.I0[1])
-        _, _ = self.topp_step(0, xs[0], self._K[1, 0], self._K[1, 1],
+        _, _ = self.greedy_step(0, xs[0], self._K[1, 0], self._K[1, 1],
                               init=True, reg=reg)  # Warm start
         for i in range(self.N):
-            u_, x_ = self.topp_step(i, xs[i], self._K[i + 1, 0], self._K[i + 1, 1],
+            u_, x_ = self.greedy_step(i, xs[i], self._K[i + 1, 0], self._K[i + 1, 1],
                                     init=False, reg=reg)
             xs[i + 1] = x_
             us[i] = u_
@@ -913,17 +922,41 @@ Computing projection failed.
         xmax_i = self._xfull[1]
         self.solver_down.getPrimalSolution(self._xfull)
         xmin_i = self._xfull[1]
-        assert xmin_i <= xmax_i, "Numerical error inside `proj_x_admissible`."
+        assert xmin_i <= xmax_i + SUPERTINY, "i:= {:d}, xmin:= {:f}, xmax:={:f}".format(i, xmin_i, xmax_i)
+        if xmin_i > xmax_i:  # a problematic condition when xmin_i essentially equals xmax_i
+            xmax_i = xmin_i
         return xmin_i, xmax_i
 
-    def topp_step(self, i, x, xmin, xmax, init=False, reg=0.):
-        """ Find max u such that xmin <= x + 2 ds u <= xmax.
+    def greedy_step(self, i, x, xmin, xmax, init=False, reg=0.):
+        """Find max u such that xmin <= x + 2 ds u <= xmax.
 
-        If the projection is not feasible (for example when xmin >
-        xmax), then return None, None.
+        If the projection is infeasible (for example when `xmin` >
+        `xmax`), then `(None, None)` is returned.
 
-        NOTE:
-        - self.nWSR_topp need to be initialized prior.
+        If the function terminates successfully, `x_greedy` is
+        guaranteed to be positive.
+
+        Note
+        ----
+        `self.nWSR_topp` need to be initialized prior to using this
+        function.
+
+        Parameters
+        ----------
+        i: int
+        x: float
+        x_min: float
+        x_max: float
+        init: bool
+        reg: float
+
+        Returns
+        -------
+        u_greedy: float
+            If infeasible, returns None.
+        x_greedy: float
+            If infeasible, returns None.
+
         """
         # Constraint 1: x = x
         self.lA[i, 0] = x
@@ -954,5 +987,9 @@ Computing projection failed.
         # extract solution
         self.solver_up.getPrimalSolution(self._xfull)
         # self.solver_up.getDualSolution(self._yfull)  # cause failure
-        u_topp = self._xfull[0]
-        return u_topp, x + 2 * self.Ds[i] * u_topp
+        u_greedy = self._xfull[0]
+        x_greedy = x + 2 * self.Ds[i] * u_greedy
+        assert x_greedy + SUPERTINY >= 0, "Negative state (forward pass):={:f}".format(x_greedy)
+        if x_greedy < 0:
+            x_greedy = x_greedy + SUPERTINY
+        return u_greedy, x_greedy

@@ -44,6 +44,8 @@ cset = [pc_vel, pc_acc]
 t_ = time.time()
 pp = qpOASESPPSolver(cset)
 t_setup = time.time() - t_
+pp.set_start_interval(0)
+pp.set_goal_interval(0)
 us, xs = pp.solve_topp(save_solutions=False)
 t_solve = time.time() - t_ - t_setup
 t, q, qd, qdd = compute_trajectory_gridpoints(path, pp.ss, us, xs)
@@ -59,6 +61,8 @@ t_ = time.time()
 cset_intp = [interpolate_constraint(pc) for pc in cset]
 t_intp_interpolate = time.time() - t_
 pp_intp = qpOASESPPSolver(cset_intp)
+pp_intp.set_start_interval(0)
+pp_intp.set_goal_interval(0)
 t_intp_setup = time.time() - t_
 us_intp, xs_intp = pp_intp.solve_topp()
 t_intp_solve = time.time() - t_ - t_intp_setup
