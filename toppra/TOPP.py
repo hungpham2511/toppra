@@ -352,13 +352,26 @@ Initialize Path Parameterization instance
         return self._L[reachable_subsets]
 
     def set_start_interval(self, I0):
-        """ Set the starting squared velocity interval.
+        """Set the starting squared velocity interval.
+
+        Raise `AssertionError` if negative values are given or given
+        interval is improper (x_low > x_high).
 
         Parameters
         ----------
-        I0: (2, ) float tuple.
-            Starting (x_lower, x_higher) squared path velocities.
+        I0: array, or float
+            (2, 0) array, the interval of starting squared path velocities.
+            Can also be a float.
+
         """
+        I0 = np.r_[I0].astype(float)
+        if I0.shape[0] == 1:
+            I0 = np.array([I0[0], I0[0]])
+        elif I0.shape[0] > 2:
+            raise ValueError('Input I0 has wrong dimension: {}'.format(I0.shape))
+        assert I0[1] >= I0[0], "Illegal input: non-increase end-points."
+        assert I0[0] >= 0, "Illegal input: negative lower end-point."
+
         self.I0 = I0
 
     def set_goal_interval(self, IN):
@@ -526,7 +539,7 @@ Initialize Path Parameterization instance
                 return False
             else:
                 self._K[i, 1] = xmax_i - eps  # Buffer for numerical error
-                self._K[i, 0] = xmin_i + eps
+                self._K[i, 0] = max(xmin_i, 0.0)  # Negative end-point not allowed.
 
         return True
 
