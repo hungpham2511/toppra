@@ -85,27 +85,42 @@ def smooth_singularities(pp, us, xs, vs=None):
     scheme tends to create jitters. This function finds and smooths
     them.
 
+    Notes
+    -----
+    (`us_smth`, `xs_smth`) is a *valid* path-parameterization. They
+    satisfy the linear continuity condition :math:`x_{i+1} = x_i + 2
+    \Delta_i u_i`.
+
+    This function is safe: it will always return a solution.
+
     Parameters
     ----------
-    pp: PathParameterization
-    us: ndarray
-    xs: ndarray
-    vs: ndarray, optional
+    pp: :class:`.qpOASESPPSolver`
+    us: array
+        Shape (N, ). Controls.
+    xs: array
+        Shape (N+1, ). Squared velocities.
+    vs: array, optional
+        If not given, `vs_smth` will not be returned.
 
     Returns
     -------
-    us_smth: ndarray, shaped (N, )
-    xs_smth: ndarray, shaped (N+1, )
-    vs_smth: ndarray, shaped (N+1, m)
+    us_smth: array
+        Shape (N, ). Smoothed controls.
+    xs_smth: array
+        Shape (N+1, ). Smoothed squared velocities.
+    vs_smth: array
+        If `vs` is not given, `vs_smth` will not be returned.
+
     """
     # Find the indices
     singular_indices = []
     uds = np.diff(us, n=1)
     for i in range(pp.N - 3):
-        if uds[i] < 0 and uds[i+1] > 0 and uds[i+2] < 0:
+        if uds[i] < 0 and uds[i + 1] > 0 and uds[i + 2] < 0:
             LOGGER.debug("Found potential singularity at {:d}".format(i))
             singular_indices.append(i)
-    LOGGER.debug("All singularities found: %s", singular_indices)
+    LOGGER.debug("Found singularities at %s", singular_indices)
 
     # Smooth the singularities
     xs_smth = np.copy(xs)
@@ -125,7 +140,7 @@ def smooth_singularities(pp, us, xs, vs=None):
             vs_smth[range(idstart, idend + 1)] = np.array(data)
 
     for i in range(pp.N):
-        us_smth[i] = (xs_smth[i+1] - xs_smth[i]) / 2 / (pp.ss[i+1] - pp.ss[i])
+        us_smth[i] = (xs_smth[i + 1] - xs_smth[i]) / 2 / (pp.ss[i + 1] - pp.ss[i])
 
     if vs is not None:
         return us_smth, xs_smth, vs_smth

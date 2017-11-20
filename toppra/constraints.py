@@ -19,86 +19,94 @@ class PathConstraintKind(Enum):
 
 
 class PathConstraint(object):
-    """A discrete path constraint.
-
-    Notes
-    -----
-    This class should not be generated manually, but via the factory
-    functions.
+    """Discretized path constraint.
 
     Parameters
     ----------
-    a : ndarray, shape (N+1, neq), optional
-    b : ndarray, shape (N+1, neq), optional
-    c : ndarray, shape (N+1, neq), optional
-    abar : (N+1, neq) ndarray, optional
-    bbar : (N+1, neq) ndarray, optional
-    cbar : (N+1, neq) ndarray, optional
-    lG : (N+1, niq) ndarray, optional
-    hG : (N+1, niq) ndarray, optional
-    G : (N+1, niq, nv) ndarray, optional
-    l : (N+1, nv) ndarray, optional
-    h : (N+1, nv) ndarray, optional
-    name : String.
+    name : str, optional
         Name of the constraint.
-    ss : ndarray, shape (N+1,)
-        Discretization gridpoints.
+    ss : array, optional
+        Shape (N+1,). Grid points.
+    a : array, optional
+        Shape (N+1, neq). Coeff; Canonical.
+    b : array, optional
+        Shape (N+1, neq). Coeff; Canonical.
+    c : array, optional
+        Shape (N+1, neq). Coeff; Canonical.
+    abar : array, optional
+        Shape (N+1, neq). Coeff; Type I.
+    bbar : array, optional
+        Shape (N+1, neq). Coeff; Type I.
+    cbar : array, optional
+        Shape (N+1, neq). Coeff; Type I.
+    l : array, optional
+        Shape (N+1, nv). Bounds for `v`.
+    h : array, optional
+        Shape (N+1, nv). Bounds for `v`.
+    G : array, optional
+        Shape (N+1, niq, nv). Coeff; Type II.
+    lG : array, optional
+        Shape (N+1, niq). Bounds; Type II.
+    hG : array, optional
+        Shape (N+1, niq). Bounds; Type II.
 
     Attributes
     ----------
-
     nm : int
-        Dimension of non-redundant inequalities.
+        Dimension of non-canonical inequalities.
     nv : int
         Dimension of slack variable.
     neq : int
         Dimension of equality constraint.
     niq : int
-        Dimension of inequality constraint.
+        Dimension of non-canonical inequality constraint.
     N : int
         Number of discretization segments.
 
     Notes
     -----
 
-    In the most general setting, a PathConstraint object describes the
-    following constraints:
-
-                a(s) u    + b(s) x    + c(s)    <= 0
-
-                abar(s) u + bbar(s) x + cbar(s)  = D(s) v
-                l(s)  <=          v             <= h(s)
-
-                lG(s) <=     G(s) v             <= hG(s)
-
-    where u is the path acceleration, x is the squared path velocity
-    and v is a slack variable whose physical meanings depend on the
-    nature of the constraint.
-
-    In practice, a PathConstraint object takes one in three following
-    states
+    In the most general setting, a :class:`PathConstraint` object
+    candescribes **one** of the following kind:
 
     1. *Canonical*:
-       - Matrices a, b, c are non-nil.
-       - All other matrices are Empty.
-       - Input: (a, b, c, ss)
 
-    2. *Non-Canonical Type I*:
-       - Matrices abar, bbar, cbar, D, l, h have numerical values.
-       - All other matrices are Empty.
-       - Input: (abar, bbar, cbar, D, l, h, ss)
+    .. math:: \mathbf a[i] u    + \mathbf b[i] x    + \mathbf c[i]    \leq 0
 
-    3. *Non-Canonical Type II*:
-       - Matrices abar, bbar, cbar, D, l, h, lG, G, hG have numerical values.
-       - Vectors a, b, c are empty.
-       - Input: (abar, bbar, cbar, D, l, h, lG, hG, ss)
+    2. Non-canonical *Type I*:
 
-    The PathConstraint object can represent both the collocated
-    constraints and the interpolated constraints. Note that the
-    factory functions `create_[..]_path_constraint` only return the
-    collocated version. To create a interpolated PathConstraint, one
-    needs to use the function `interpolate_constraint`.
+    .. math::
+                & \mathbf{abar}[i] u + \mathbf{bbar}[i] x + \mathbf{cbar}[i]  = \mathbf{D}[i] v \\\\
+                & \mathbf{l}[i]  \leq          v             \leq \mathbf{h}[i]
 
+    3. Non-canonical *Type II*, in addition to 2.
+
+    .. math::
+                \mathbf{lG}(s) \leq     \mathbf{G}(s) v             \leq \mathbf{hG}(s)
+
+    where `u` is the path acceleration, `x` is the squared path velocity
+    and `v` is a slack variable whose physical meanings depend on the
+    nature of the constraint.
+
+    Depending on the constraint, corresponding keyword arguments are
+    to be given as numerical arrays during initialization.
+
+    Note that there is no actual problem in allowing a constraint to
+    have both canonical and non-canonical parts.
+
+    Example
+    -------
+
+    Create a canonical constraint
+
+    >>> a = np.random.randn(N+1, 5)
+    >>> b = np.random.randn(N+1, 5)
+    >>> c = np.random.randn(N+1, 5)
+    >>> pc = PathConstraint(a=a, b=b, c=c, ss=np.linspace(0, 1, N+1))
+
+    then, create a first-order interpolation
+
+    >>> pc = interpolate_constraint(pc)
     """
 
     def __repr__(self):
@@ -115,7 +123,8 @@ class PathConstraint(object):
                  name=None, ss=None):
         self.N = ss.shape[0] - 1  # number of intervals
         self.sparse = False  # TODO: this feature is not completely implemented
-        # store constraints matrices
+
+        # canonical
         if a is None:
             self.a = np.empty((self.N + 1, 0))
             self.b = np.empty((self.N + 1, 0))
@@ -126,6 +135,7 @@ class PathConstraint(object):
             self.c = c
         self._nm = self.a.shape[1]
 
+        # Type I
         if D is None:
             self.abar = np.empty((self.N + 1, 0))
             self.bbar = np.empty((self.N + 1, 0))
@@ -146,6 +156,7 @@ class PathConstraint(object):
             self.l = l
             self.h = h
 
+        # Type II
         if lG is None:
             self.lG = np.empty((self.N + 1, 0))
             self.G = np.empty((self.N + 1, 0, self.nv))
@@ -159,7 +170,7 @@ class PathConstraint(object):
         self.name = name
         self._ss = ss
 
-        # Assert kind
+        # Store constraint cat
         if self.nm != 0:
             self._kind = PathConstraintKind.Canonical
         elif self.niq == 0:
@@ -169,43 +180,39 @@ class PathConstraint(object):
 
     @property
     def kind(self):
-        """ The kind of Path Constraint.
+        """ Kind of Path Constraint.
         """
         return self._kind
 
     @property
     def ss(self):
-        """ Discretization grid points.
+        """ Grid points.
         """
         return self._ss
 
     @property
     def nm(self):
-        """Dimension of canonical constraints (inequalities)
-
-        A canonical constraint has this form:
-
-              a[i] * u + b[i] * x + c[i] <= 0,
-
-        where a[i] is a `nm`-dimensional vector.
+        """Dimension of canonical constraint.
         """
         return self._nm
 
     @property
     def neq(self):
-        """Dimension of redundant constraints (equalities).
+        """Dimension of non-canonical equality.
+
         """
         return self._neq
 
     @property
     def niq(self):
-        """Dimension (number of) inequalities on the slack variable v.
+        """Dimension of non-canonical inequality.
+
         """
         return self._niq
 
     @property
     def nv(self):
-        """Dimension (number of) of the slack variable.
+        """Dimension of the slack variable.
         """
         return self._nv
 
