@@ -78,15 +78,15 @@ def compute_trajectory_points(path, sgrid, ugrid, xgrid, dt=1e-2, smooth=False, 
 
     Notes
     -----
-    If ``smooth`` is True, the return trajectory is smooth using
-    least-square. The return trajectory is computed such that it
-    satisfies the discrete transition relation. That is
+    
+    If `smooth` is True, the return trajectory is smoothed with
+    least-square technique. The return trajectory is guaranteed to
+    satisfy the discrete transition relation. That is
 
     .. math::
 
-        q[i+1] = q[i] + qd[i] dt + qdd[i] dt ^ 2 / 2
-
-        qd[i+1] = qd[i] + qdd[i] dt
+        \mathbf{q}[i+1] & = \mathbf{q}[i] + \dot{\mathbf{q}}[i] dt + \ddot{\mathbf{q}}[i] dt ^ 2 / 2 \\\\
+        \dot{\mathbf{q}}[i+1] & = \dot{\mathbf{q}}[i] + \ddot{\mathbf{q}}[i] dt
 
     while minimizing the difference with the original non-smooth
     trajectory computed with TOPP.
@@ -96,10 +96,11 @@ def compute_trajectory_points(path, sgrid, ugrid, xgrid, dt=1e-2, smooth=False, 
     least-square. In this case, there are several options that one
     might take.
 
-    1. Set ``smooth`` to False. This might return badly conditioned trajectory.
-    2. Reduce ``dt``. This is the recommended option.
+    1. Set `smooth` to False. This might return badly conditioned trajectory.
+    2. Reduce `dt`. This is the recommended option.
 
-    TODO: A better (**and more importantly, faster**) method to smoothing.
+    TODO: Implement a better *and more importantly, faster,* method to
+    smoothing.
 
     Parameters
     ----------
@@ -370,12 +371,14 @@ Initialize Path Parameterization instance
         self.I0 = I0
 
     def set_goal_interval(self, IN):
-        """ Set the goal squared velocity interval.
+        """Set the goal squared velocity interval.
 
         Parameters
         ----------
-        IN: (2, ) float tuple.
-            Starting (x_lower, x_higher) squared path velocities.
+        IN: array or float
+            A single float, or (2, ) array setting the goal `(x_lower,
+            x_higher)` squared path velocities.
+
         """
         IN = np.r_[IN].astype(float)
         if IN.shape[0] == 1:
@@ -388,7 +391,15 @@ Initialize Path Parameterization instance
         self.IN = IN
 
     def _init_qpoaes_solvers(self, verbose):
-        """Setup two qpoases solvers following warm-up strategy.
+        """Initialize two `qpOASES` solvers.
+
+        One solver is used for solving the upper bounds. The other
+        solver is used for solving the lower bound.
+
+        Parameters
+        ----------
+        verbose: bool
+            Set verbose output for the `qpOASES` solvers.
         """
         # Max Number of working set change.
         self.nWSR_cnst = 1000
@@ -407,12 +418,15 @@ Initialize Path Parameterization instance
         self.solver_down.setOptions(options)
 
     def _init_matrices(self, constraint_set):
-        """ Initialize coefficient matrices.
+        """Initialize coefficient matrices.
+
+        See matrices marked with (`qpOASES`) in the class docstring.
 
         Parameters
         ----------
         constraint_set : list
             A list of  :class:`.PathConstraint`
+
         """
         self.nm = sum([c.nm for c in constraint_set])
         self.niq = sum([c.niq for c in constraint_set])
@@ -434,9 +448,10 @@ Initialize Path Parameterization instance
         self._yfull = np.zeros(self.nC)  # interval vector, store dual
 
     def _fill_matrices(self):
-        """Fill coefficient matrices.
+        """Fill coefficient matrices with input constraints.
 
         For more details, see the class docstring.
+
         """
         self.g.fill(0)
         self.H.fill(0)
@@ -551,7 +566,7 @@ Initialize Path Parameterization instance
 
         Returns
         -------
-        out: bool.
+        out: bool
              True if :math:`\mathcal{L}_0(I_{init})` is not empty.
              False otherwise.
         """
@@ -674,9 +689,11 @@ Unable to parameterizes this path:
 
         Notes
         -----
-        The one-step set $\calQ(i, \bbI)$ is the largest set of states
-            in stage $i$ for which there exists an admissible control
-            that steers the system to a state in $\bbI$.
+        - The one-step set $\calQ(i, \bbI)$ is the largest set of states
+          in stage $i$ for which there exists an admissible control that
+          steers the system to a state in $\bbI$.
+          .. math::
+
 
         - self.nWSR_up and self.nWSR_down need to be initialized prior.
         - If the projection is not feasible (for example when xmin > xmax), then return None, None.
