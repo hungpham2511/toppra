@@ -1,6 +1,7 @@
-"""This module constains `PathConstraint`, the unifying interface
-to constraints on geometric path. It also contains routines for creating
+"""This module constains `PathConstraint`, the unifying interface to
+constraints on geometric path. It also contains routines for creating
 the `PathConstraint`.
+
 """
 import numpy as np
 from enum import Enum
@@ -218,18 +219,19 @@ class PathConstraint(object):
 
 
 def interpolate_constraint(pc):
-    """Produce a first-order interpolation discrete constraint from a
-    collocated constraint.
+    """Produce a discretized :class:`PathConstraint` by first-order
+    interpolation.
 
     Parameters
     ----------
-    pc : PathConstraint.
-        The original collocated constraint.
+    pc : :class:`PathConstraint`
+        The original constraint.
 
     Returns
     -------
-    out : PathConstraint.
-        The new interpolated constraint.
+    out : :class:`PathConstraint`
+        The interpolated constraint.
+
     """
     N = pc.N
     Ds = pc.ss[1:] - pc.ss[:N]

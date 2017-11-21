@@ -173,18 +173,55 @@ class UnivariateSplineInterpolator(object):
         self.uspldd = [spl.derivative() for spl in self.uspld]
 
     def eval(self, ss):
+        """ Evaluate positions.
+
+        Parameters
+        ----------
+        ss_sam : array, or float
+            Shape (m, ). Positions to sample at.
+
+        Returns
+        -------
+        out : array
+            Shape (m, dof). Evaluated values at position.
+            Shape (dof,) if `ss_sam` is a float.
+        """
         data = []
         for spl in self.uspl:
             data.append(spl(ss))
         return np.array(data).T
 
     def evald(self, ss):
+        """ Evaluate 1st derivative.
+
+        Parameters
+        ----------
+        ss_sam : array
+            Shape (m, ). Positions to sample at.
+
+        Returns
+        -------
+        out : array
+            Shape (m, dof). Evaluated values at position.
+        """
         data = []
         for spl in self.uspld:
             data.append(spl(ss))
         return np.array(data).T
 
     def evaldd(self, ss):
+        """ Evaluate 2nd derivative.
+
+        Parameters
+        ----------
+        ss_sam : array
+            Shape (m, ). Positions to sample at.
+
+        Returns
+        -------
+        out : array
+            Shape (m, dof). Evaluated values at position.
+        """
         data = []
         for spl in self.uspldd:
             data.append(spl(ss))

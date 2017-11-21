@@ -1,12 +1,6 @@
-"""
-Path Parameterization Algorithm: TOPP-RA
-========================================
+"""The TOPP-RA package currently is implemented using `qpOASES`.
 
-Notes
------
-
-Currently there is only one implematation using `qpOASES`. More will
-be added in future.
+Interfaces to other solvers will be added in the future.
 """
 import numpy as np
 from qpoases import (PyOptions as Options, PyPrintLevel as PrintLevel,
