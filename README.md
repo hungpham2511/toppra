@@ -72,7 +72,14 @@ git checkout 54299cf
 export PYTHONPATH=$PYTHONPATH:$HOME/git/pymanoid
 ```
 
-
+## Building docs
+To build and view the documentation, install
+[sphinx](http://www.sphinx-doc.org/en/stable/index.html) then do
+``` shell
+cd <toppra-dir>/docs/
+make clean && make html
+<google-chrome> build/index.html
+```
 
 # Basic usage
 
