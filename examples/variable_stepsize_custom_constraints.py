@@ -73,8 +73,7 @@ u, x, s = sympy.symbols('u x s')
 expressions = [
     - 0.2 * (0.5 - s) * u + 3 * x - 1 <= 0,
     x >= 0,
-    u <= 1, u >= -1
-]
+    u <= 1, u >= -1]
 a, b, c = evaluate_constraint(expressions, ss)
 
 path_constraint = ta.PathConstraint(a=a, b=b, c=c, ss=ss)

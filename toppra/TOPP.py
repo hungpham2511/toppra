@@ -685,32 +685,34 @@ Unable to parameterizes this path:
     #                    Main Set Projection Functions                        #
     ###########################################################################
     def one_step(self, i, xmin, xmax, init=False):
-        """Compute the one-step set for the interval [xmin, xmax]
+        """Compute the one-step set :math:`\mathcal{Q}_i` for the interval (`xmin`, `xmax`).
 
-        Notes
+        If the projection is not feasible (for example when `xmin` >
+        `xmax`), then return (`None`, `None`).
+
+        Note
         -----
-        - The one-step set $\calQ(i, \bbI)$ is the largest set of states
-          in stage $i$ for which there exists an admissible control that
-          steers the system to a state in $\bbI$.
-          .. math::
-
-
-        - self.nWSR_up and self.nWSR_down need to be initialized prior.
-        - If the projection is not feasible (for example when xmin > xmax), then return None, None.
+        The variables `self.nWSR_up` and `self.nWSR_down` need to be
+        initialized prior to using this function. See
+        :func:`qpOASESPPSolver.solve_controllable_sets` for more details.
 
         Parameters
         ----------
         i : int
+            Index to compute the controllable set.
         xmin : float
+            Maximum target state.
         xmax : float
+            Minimum target state.
         init : bool, optional
-            If true, coldstart. Else, hotstart.
+            If `True`, coldstart. Else, hotstart.
 
         Returns
         -------
         xmin_i : float
+            Lower end-point of :math:`\mathcal{Q}_i`.
         xmax_i : float
-
+            Higher end-point of :math:`\mathcal{Q}_i`.
         """
         # Set constraint: xmin <= 2 ds u + x <= xmax
         self.A[i, 0, 1] = 1
@@ -770,6 +772,9 @@ Computing one-step failed.
     def reach(self, i, xmin, xmax, init=False):
         """Compute the reach set from [xmin, xmax] at stage i.
 
+        If the projection is not feasible (for example when xmin >
+        xmax), then return None, None.
+
         Parameters
         ----------
         i : int
@@ -782,17 +787,6 @@ Computing one-step failed.
         -------
         xmin_i: float
         xmax_i: float
-
-        Definition:
-        -----------
-
-            The reach set $\calR(i, \bbI)$ is the set of states in $\bbR$
-            to which the system will evolve given any admissible states
-            in $\bbI$ and any admissible controls in the $i$-th stage.
-
-
-        If the projection is not feasible (for example when xmin >
-        xmax), then return None, None.
         """
 
         self.A[i, 0, 1] = 1
@@ -848,6 +842,9 @@ Computing reach set failed.
     def proj_x_admissible(self, i, xmin, xmax, init=False):
         """Project the interval [xmin, xmax] back to the feasible set.
 
+        If the projection is infeasible, for example when xmin > xmax
+        or when the infeasible set if empty, then return None, None.
+
         Parameters
         ----------
         i: int
@@ -865,18 +862,14 @@ Computing reach set failed.
         xmin_i: float
         xmax_i: float
 
-        Notes
+        Note
         -----
-        If the projection is infeasible, for example when xmin > xmax
-        or when the infeasible set if empty, then return None, None.
 
         If one find unreasonable results such as (0, 0) constantly
-        appear, it is a good ideal to try reseting the internal
-        operational matrices using this function
+        appear, then it is a good idea to reset the internal
+        operational matrices using :func:`qpOASESPPSolver.reset_operational_rows`.
 
-            self.reset_operational_rows()
 
-        One should now see correct results appearing.
         """
 
         self.A[i, 0, 1] = 1
