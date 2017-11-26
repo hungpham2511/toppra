@@ -348,16 +348,19 @@ Initialize Path Parameterization instance
         return self._L[reachable_subsets]
 
     def set_start_interval(self, I0):
-        """Set the starting squared velocity interval.
+        """Set starting *squared* velocities interval.
 
-        Raise `AssertionError` if negative values are given or given
-        interval is improper (x_low > x_high).
 
         Parameters
         ----------
         I0: array, or float
             (2, 0) array, the interval of starting squared path velocities.
             Can also be a float.
+
+        Raises
+        ------
+        AssertionError
+            If `I0` is a single, negative float. Or if `I0[0] > I0[1]`.
 
         """
         I0 = np.r_[I0].astype(float)
@@ -376,8 +379,13 @@ Initialize Path Parameterization instance
         Parameters
         ----------
         IN: array or float
-            A single float, or (2, ) array setting the goal `(x_lower,
-            x_higher)` squared path velocities.
+            A single float, or a (2, ) array setting the goal
+            `(x_lower, x_higher)` squared path velocities.
+
+        Raises
+        ------
+        AssertionError
+            If `IN` is a single, negative float. Or if `IN[0] > IN[1]`.
 
         """
         IN = np.r_[IN].astype(float)

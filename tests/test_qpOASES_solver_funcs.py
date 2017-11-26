@@ -66,10 +66,10 @@ class TestFunc_QpoasesPPsolver_micro(object):
         x = cvx.Variable()
         u = cvx.Variable()
         pp.reset_operational_rows()  # A single reset should suffice
-        pp.nWSR_up = np.ones((pp.N+1, 1), dtype=int) * pp.nWSR_cnst
-        pp.nWSR_down = np.ones((pp.N+1, 1), dtype=int) * pp.nWSR_cnst
+        pp.nWSR_up = np.ones((pp.N + 1, 1), dtype=int) * pp.nWSR_cnst
+        pp.nWSR_down = np.ones((pp.N + 1, 1), dtype=int) * pp.nWSR_cnst
         for i in range(5, 10):
-            ds = pp.ss[i+1] - pp.ss[i]
+            ds = pp.ss[i + 1] - pp.ss[i]
             xmin = 0
             xmax = 1
             init = (True if i == 5 else False)  # i = 6,...10, use hotstart
@@ -295,5 +295,33 @@ class Test_QpoasesPPsolver_main_funcs(object):
                 if c.nm != 0:
                     assert np.all(
                         c.a[i] * us[i] + c.b[i] * xs[i] + c.c[i] <= TINY)
+
+    def test_comp_topp_single_float(self, pp_fixture):
+        """Test :func:`solve_topp` when starting and goal velocities are
+        floats.
+
+        """
+        pcs, solver = pp_fixture
+        x_init = 0
+        x_goal = 0.1
+        solver.set_start_interval(x_init)
+        solver.set_goal_interval(x_goal)
+        us, xs = solver.solve_topp(reg=0)
+
+        # Proper parameteriation
+        assert xs[0] <= x_init + TINY and xs[0] >= x_init - TINY
+        assert xs[-1] <= x_goal + TINY and xs[-1] >= x_goal - TINY
+        assert np.all(xs >= 0)
+        for i in range(solver.N):
+            Delta_i = solver.ss[i + 1] - solver.ss[i]
+            assert np.allclose(xs[i + 1], xs[i] + 2 * us[i] * Delta_i)
+
+        # Constraint satisfy-ability
+        for i in range(solver.N):
+            for c in pcs:
+                if c.nm != 0:
+                    assert np.all(
+                        c.a[i] * us[i] + c.b[i] * xs[i] + c.c[i] <= TINY)
+
 
 
