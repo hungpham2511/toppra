@@ -3,35 +3,52 @@ import quadprog
 from scipy.interpolate import PPoly
 
 
-def smooth_velocity_profile(ss, xs, m=5, k=3, eps=1e-6):
-    """ Return a smoothed velocity profile.
-    FIXME
+def smooth_velocity_profile(ss, xs, m=50, k=3, eps=1e-6):
+    """Compute a piecewise polynomial approximating the velocity profile.
 
-    Optimization problem to solve:
-          min     |GC - X|
-          s.t.    g_0' x == x_0
-                  g_N' x == x_N
-                      HC == 0
-                      GC >= 0
+    From the output of :class:`.qpOAsesppsolver`, which are two arrays
+    `us` and `xs`, this function output a piecewise polynomial
+    approximating the function :math:`\dot s(s)`.
 
-    G is composed from Vandemonde matrices. C is the stacked coefficients
-    of the piecewise polynomial.
+    Various options are available. See belows for more details.
 
     Parameters
     ----------
-    ss : 
-        FIXME
-    xs : 
-        FIXME
-    m : , optional
-        FIXME
-    k : , optional
-        FIXME
+    ss : array
+        Shaped (N+1, ). Grid points used to solve the TOPP proble.
+    xs : array
+        Shaped (N+1, ). Squared velocities at each grid point. Obtain
+        from TOPP-RA.
+    m : int, optional
+        Number of polynomials.
+        The polynomials' domains are equally spaced intervals over
+        the line :math:`[s_0, s_N]`.
+    k : int, optional
+        Order of the polynomial.
+    eps : float, optional
+        Regularization weight.
 
     Returns
     -------
-    out :
+    out : :class:`scipy.interpolate.PPoly`
         FIXME
+
+    Notes
+    -----
+
+    To find the coefficients of the polynomials, we formulate and
+    solve a quadratic program. The variables are concatenated
+    coefficients of the polynomials. The objective is MSE with `xs`.
+    We consider different constraints:
+
+    - end-points conditions;
+    - C0 and C1 continuity;
+    - positivity at knot points.
+
+    The optimization problem is solved with `quadprog`.
+
+    TODO: Solve with `qpOASES` instead of `quadprog` to reduce
+    dependency.
     """
     N = ss.shape[0] - 1
     x_p = np.linspace(ss[0], ss[-1], m + 1)  # Break points
