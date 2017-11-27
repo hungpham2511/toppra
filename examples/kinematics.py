@@ -1,10 +1,4 @@
-from toppra import (create_velocity_path_constraint,
-                    create_acceleration_path_constraint,
-                    qpOASESPPSolver,
-                    compute_trajectory_gridpoints,
-                    smooth_singularities,
-                    interpolate_constraint)
-from toppra import SplineInterpolator
+import toppra as ta
 import numpy as np
 import matplotlib.pyplot as plt
 import time
@@ -22,18 +16,18 @@ dof = 7
 # obtain a random geometric path.
 np.random.seed(SEED)
 way_pts = np.random.randn(N_samples, dof)
-path = SplineInterpolator(np.linspace(0, 1, 5), way_pts)
+path = ta.SplineInterpolator(np.linspace(0, 1, 5), way_pts)
 ss = np.linspace(0, 1, N + 1)
 
 # Create velocity bounds, then velocity constraint object
 vlim_ = np.random.rand(dof) * 20
 vlim = np.vstack((-vlim_, vlim_)).T
-pc_vel = create_velocity_path_constraint(path, ss, vlim)
+pc_vel = ta.create_velocity_path_constraint(path, ss, vlim)
 
 # Create acceleration bounds, then acceleration constraint object
 alim_ = np.random.rand(dof) * 2
 alim = np.vstack((-alim_, alim_)).T
-pc_acc = create_acceleration_path_constraint(path, ss, alim)
+pc_acc = ta.create_acceleration_path_constraint(path, ss, alim)
 cset = [pc_vel, pc_acc]
 
 # There are two possible choices. The first is to TOPP with
@@ -42,31 +36,31 @@ cset = [pc_vel, pc_acc]
 # show the first choice.
 
 t_ = time.time()
-pp = qpOASESPPSolver(cset)
+pp = ta.qpOASESPPSolver(cset)
 t_setup = time.time() - t_
 pp.set_start_interval(0)
 pp.set_goal_interval(0)
 us, xs = pp.solve_topp(save_solutions=False)
 t_solve = time.time() - t_ - t_setup
-t, q, qd, qdd = compute_trajectory_gridpoints(path, pp.ss, us, xs)
+t, q, qd, qdd = ta.compute_trajectory_gridpoints(path, pp.ss, us, xs)
 t_total = time.time() - t_
 
 # Smooth the result.
-us_smth, xs_smth = smooth_singularities(pp, us, xs)
-t_smth, q_smth, qd_smth, qdd_smth = compute_trajectory_gridpoints(
+us_smth, xs_smth = ta.smooth_singularities(pp, us, xs)
+t_smth, q_smth, qd_smth, qdd_smth = ta.compute_trajectory_gridpoints(
     path, pp.ss, us_smth, xs_smth)
 
 # The below show first-order interpolation strategq.
 t_ = time.time()
-cset_intp = [interpolate_constraint(pc) for pc in cset]
+cset_intp = [ta.interpolate_constraint(pc) for pc in cset]
 t_intp_interpolate = time.time() - t_
-pp_intp = qpOASESPPSolver(cset_intp)
+pp_intp = ta.qpOASESPPSolver(cset_intp)
 pp_intp.set_start_interval(0)
 pp_intp.set_goal_interval(0)
 t_intp_setup = time.time() - t_
 us_intp, xs_intp = pp_intp.solve_topp()
 t_intp_solve = time.time() - t_ - t_intp_setup
-t_intp, q_intp, qd_intp, qdd_intp = compute_trajectory_gridpoints(
+t_intp, q_intp, qd_intp, qdd_intp = ta.compute_trajectory_gridpoints(
     path, pp_intp.ss, us_intp, xs_intp)
 t_intp_total = time.time() - t_
 
