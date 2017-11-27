@@ -409,7 +409,10 @@ Initialize Path Parameterization instance
         verbose: bool
             Set verbose output for the `qpOASES` solvers.
         """
-        # Max Number of working set change.
+        # `nWSR` stands for number of Working Set Recalculation. When
+        # solving problems with `qpOASES`, the maximum nWSR is to be
+        # input to the algorithm. After solving finished, the variable
+        # become the number of Working Set Recalculation carried out.
         self.nWSR_cnst = 1000
         _, nC, nV = self.A.shape
         # Setup solver
@@ -1005,3 +1008,68 @@ Computing projection failed.
         if x_greedy < 0:
             x_greedy = x_greedy + SUPERTINY
         return u_greedy, x_greedy
+
+    def least_greedy_step(self, i, x, xmin, xmax, init=False, reg=0.):
+        """Find min u such that xmin <= x + 2 ds u <= xmax.
+
+        If the projection is infeasible (for example when `xmin` >
+        `xmax`), then `(None, None)` is returned.
+
+        If the function terminates successfully, `x_least_greedy` is
+        guaranteed to be positive.
+
+        Parameters
+        ----------
+        i: int
+        x: float
+        x_min: float
+        x_max: float
+        init: bool
+        reg: float
+
+        Returns
+        -------
+        u_greedy: float
+            If infeasible, returns None.
+        x_greedy: float
+            If infeasible, returns None.
+
+        """
+        # Setup
+        self.reset_operational_rows()
+        nWSR_max = int(self.nWSR_cnst)
+        # Constraint 1: x = x
+        self.lA[i, 0] = x
+        self.hA[i, 0] = x
+        # Constraint 2: xmin <= 2 ds u + x <= xmax
+        self.lA[i, 1] = xmin
+        self.hA[i, 1] = xmax
+
+        # Objective
+        # max  u + reg ||v||_2^2
+        self.g[0] = 1.
+        if self.nv != 0:
+            self.H[2:, 2:] += np.eye(self.nv) * reg
+
+        if init:
+            res_up = self.solver_up.init(
+                self.H, self.g, self.A[i], self.l[i], self.h[i], self.lA[i],
+                self.hA[i], nWSR_max)
+        else:
+            res_up = self.solver_up.hotstart(
+                self.H, self.g, self.A[i], self.l[i], self.h[i], self.lA[i],
+                self.hA[i], nWSR_max)
+
+        if (res_up != SUCCESSFUL_RETURN):
+            logger.warn("Non-optimal solution at i=%d. Returning (None, None).", i)
+            return None, None
+
+        # extract solution
+        self.solver_up.getPrimalSolution(self._xfull)
+        # self.solver_up.getDualSolution(self._yfull)  # cause failure
+        u_least_greedy = self._xfull[0]
+        x_least_greedy = x + 2 * self.Ds[i] * u_least_greedy
+        assert x_least_greedy + SUPERTINY >= 0, "Negative state (forward pass):={:f}".format(x_least_greedy)
+        if x_least_greedy < 0:
+            x_least_greedy = x_least_greedy + SUPERTINY
+        return u_least_greedy, x_least_greedy
