@@ -653,10 +653,10 @@ Unable to parameterizes this path:
         us = np.zeros(self.N)
         xs[0] = min(self._K[0, 1], self.I0[1])
         _, _ = self.greedy_step(0, xs[0], self._K[1, 0], self._K[1, 1],
-                              init=True, reg=reg)  # Warm start
+                                init=True, reg=reg)  # Warm start
         for i in range(self.N):
             u_, x_ = self.greedy_step(i, xs[i], self._K[i + 1, 0], self._K[i + 1, 1],
-                                    init=False, reg=reg)
+                                      init=False, reg=reg)
             xs[i + 1] = x_
             us[i] = u_
             if save_solutions:
@@ -1039,9 +1039,11 @@ Computing projection failed.
         self.reset_operational_rows()
         nWSR_max = int(self.nWSR_cnst)
         # Constraint 1: x = x
+        self.A[i, 0] = [0, 1]
         self.lA[i, 0] = x
         self.hA[i, 0] = x
         # Constraint 2: xmin <= 2 ds u + x <= xmax
+        self.A[i, 1] = [2 * self.Ds[i], 1]
         self.lA[i, 1] = xmin
         self.hA[i, 1] = xmax
 
