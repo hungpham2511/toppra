@@ -1,9 +1,16 @@
 ##########################################################################
 # This file contains test suites for `PathConstraint` factory functions. #
 ##########################################################################
-from os.path import expanduser
-import sys
-sys.path.insert(0, expanduser('~/git/pymanoid'))
+try:
+    from os.path import expanduser
+    import sys
+    sys.path.insert(0, expanduser('~/git/pymanoid'))
+    import pymanoid
+    skip_pymanoid_tests = False
+except ImportError:
+    skip_pymanoid_tests = True
+
+
 import toppra as fa
 import numpy as np
 import numpy.testing as npt
@@ -641,12 +648,18 @@ Generated and saved at {}""".format("_temp_test_{}.npy".format(__name__))
     print "\n ----> Destroy pymanoid's fixture"
 
 
+@pytest.mark.skipif(skip_pymanoid_tests, reason="`Pymanoid` library not found!")
 class Test_ContactStability(object):
-    """Test suite for create_pymanoid_contact_stability_path_constraint.
+    """Test suite for :func:`create_pymanoid_contact_stability_path_constraint`
 
+    This suite will be skipped if the library `pymanoid` is not found.
     """
     def test_syntax(self, pymanoid_fixture):
-        """
+        """ Check for syntactic errors.
+
+        Parameters
+        ----------
+        pymanoid_fixture : A Fixture. Data for this test case.
         """
         data, pc_contact = pymanoid_fixture
         path, ss, humanoid, stance, g = data
@@ -677,7 +690,7 @@ class Test_ContactStability(object):
         assert pc_contact.nv == 0
 
     def test_feasible_wrenches(self, pymanoid_fixture):
-        """Check consistency with `pymanoid`.
+        """Verify consistency with `pymanoid`.
 
         The pair `(u, x)` satisfyng `pc_contact` must also return a
         feasible wrench from pymanoid.
