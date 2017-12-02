@@ -350,7 +350,22 @@ def create_full_contact_path_constraint(path, ss, robot, stance):
     - :math:`\mathbf{p}_i`: the origin of the wrench w_i.
     - :math:`\mathbf{J}_i`: the wrench Jacobian at p_i of the link w_i acts on.
 
-    The slack variable is given by :math:`\mathbf{v} := [\\tau', \mathbf{w}_1', \mathbf{w}_2', ...]'`.
+    According to the linearized Colomb friction model, the sets of
+    feasible contact wrenches are characterized by linear inequalities such as
+
+    .. math:: \{\mathbf{w}_i \mid \mathbf{F}_i \mathbf{w}_i \leq 0\}
+
+    Define the slack variable :math:`\mathbf{v} := [\\tau',
+    \mathbf{w}_1', \mathbf{w}_2', ...]'` and note that the left-hand
+    side of the dynamic equation can be written in the "abc" form, the
+    path constraint is finally given by
+
+    .. math:: 
+       & \mathbf{a}(s) u + \mathbf{b}(s) x + \mathbf{c}(s) = \mathbf{D}(s) \mathbf{v} \\\\
+       & \mathbf{l}(s) \leq \mathbf{v} \leq \mathbf{h}(s) \\\\
+       & \mathbf{l}_G(s) \leq \mathbf{G}(s) \mathbf{v} \leq \mathbf{h}_G(s)
+    
+    which is a non-canonical Type II :class:`PathConstraint`.
 
     """
     N = len(ss) - 1
@@ -631,7 +646,7 @@ def create_acceleration_path_constraint(path, ss, alim):
     Returns
     -------
     pc : PathConstraint
-        
+
 
     """
     N = len(ss) - 1
@@ -655,5 +670,3 @@ def create_acceleration_path_constraint(path, ss, alim):
         c[:, 1] = alim[:, 0]
 
     return PathConstraint(a, b, c, name="Acceleration", ss=ss)
-
-
