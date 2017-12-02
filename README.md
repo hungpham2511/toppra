@@ -76,6 +76,7 @@ export PYTHONPATH=$PYTHONPATH:$HOME/git/pymanoid
 To build and view the documentation, install
 [sphinx](http://www.sphinx-doc.org/en/stable/index.html) then do
 ``` shell
+pip install sphinx_rtd_theme
 cd <toppra-dir>/docs/
 make clean && make html
 <google-chrome> build/index.html
