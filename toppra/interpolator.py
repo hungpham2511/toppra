@@ -171,8 +171,8 @@ class UnivariateSplineInterpolator(Interpolator):
     qs: ndarray, shaped (N+1, dof)
         The waypoints.
     """
-    def __init__(self, ss, qs):
-        super(UnivariateSplineInterpolator, self).__init__(ss, qs)
+    def __init__(self, ss_waypoints, waypoints):
+        super(UnivariateSplineInterpolator, self).__init__(ss_waypoints, waypoints)
         self.uspl = []
         for i in range(self.dof):
             self.uspl.append(UnivariateSpline(self.ss_waypoints, self.waypoints[:, i]))
