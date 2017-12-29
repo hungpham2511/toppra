@@ -2,12 +2,14 @@ import numpy as np
 import quadprog
 from scipy.interpolate import PPoly
 
+# def poly_trajectory()
 
-def smooth_velocity_profile(ss, xs, m=50, k=3, eps=1e-6):
+
+def poly_velocity_profile(ss, sds, m=50, k=3, eps=1e-6):
     """Compute a piecewise polynomial approximating the velocity profile.
 
     From the output of :class:`.qpOAsesppsolver`, which are two arrays
-    `us` and `xs`, this function output a piecewise polynomial
+    `us` and `sds`, this function output a piecewise polynomial
     approximating the function :math:`\dot s(s)`.
 
     Various options are available. See belows for more details.
@@ -16,8 +18,8 @@ def smooth_velocity_profile(ss, xs, m=50, k=3, eps=1e-6):
     ----------
     ss : array
         Shaped (N+1, ). Grid points used to solve the TOPP proble.
-    xs : array
-        Shaped (N+1, ). Squared velocities at each grid point. Obtain
+    sds : array
+        Shaped (N+1, ). Velocities at each grid point. Obtain
         from TOPP-RA.
     m : int, optional
         Number of polynomials.
@@ -38,7 +40,7 @@ def smooth_velocity_profile(ss, xs, m=50, k=3, eps=1e-6):
 
     To find the coefficients of the polynomials, we formulate and
     solve a quadratic program. The variables are concatenated
-    coefficients of the polynomials. The objective is MSE with `xs`.
+    coefficients of the polynomials. The objective is MSE with `sds`.
     We consider different constraints:
 
     - end-points conditions;
@@ -49,6 +51,7 @@ def smooth_velocity_profile(ss, xs, m=50, k=3, eps=1e-6):
 
     TODO: Solve with `qpOASES` instead of `quadprog` to reduce
     dependency.
+
     """
     N = ss.shape[0] - 1
     x_p = np.linspace(ss[0], ss[-1], m + 1)  # Break points
@@ -93,13 +96,13 @@ def smooth_velocity_profile(ss, xs, m=50, k=3, eps=1e-6):
 
     # Form a quadratic problem and solve with quadprog
     C_qp = np.vstack((g_0.reshape(1, -1), g_N.reshape(1, -1), H0, H1, G)).T
-    b_qp = np.r_[xs[0], xs[N],
+    b_qp = np.r_[sds[0], sds[N],
                  np.zeros(H0.shape[0]),
                  np.zeros(H1.shape[0]),
                  np.zeros(G.shape[0])]
     meq_qp = 1 + 1 + H0.shape[0] + H1.shape[0]
     G_qp = G.T.dot(G) + np.eye(n_col) * eps
-    a_qp = xs.dot(G)
+    a_qp = sds.dot(G)
     res = quadprog.solve_qp(G_qp, a_qp, C_qp, b_qp, meq_qp)
 
     # Verify with scipy.PPoly

@@ -9,5 +9,5 @@ using the algorithm `TOPP-RA`.
 from TOPP import *
 from interpolator import *
 from constraints import *
-from utils import smooth_singularities
-import postprocess
+from .utils import smooth_singularities
+from . import postprocess

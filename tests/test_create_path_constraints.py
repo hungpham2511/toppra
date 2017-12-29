@@ -15,7 +15,7 @@ import toppra as fa
 import numpy as np
 import numpy.testing as npt
 import openravepy as orpy
-from toppra import (PolynomialInterpolator, SplineInterpolator,
+from toppra import (PolyPath, SplineInterpolator,
                     normalize, PathConstraintKind, TINY, SMALL)
 import pytest
 import cvxpy as cvx
@@ -43,7 +43,7 @@ def create_velocity_pc_fixtures(request):
     """
     if request.param == 2:
         coeff = [[1., 2, 3], [-2., -3., 4., 5.]]
-        pi = PolynomialInterpolator(coeff)
+        pi = PolyPath(coeff)
         ss = np.linspace(0, 0.75, 4)
         vlim = np.array([[-1., 2], [-2., 2]])
         pc_vel = fa.create_velocity_path_constraint(pi, ss, vlim)
@@ -155,7 +155,7 @@ def create_acceleration_pc_fixtures(request):
       pc: A `PathConstraint`.
     """
     if request.param == 1:  # Scalar
-        pi = PolynomialInterpolator([1, 2, 3])  # 1 + 2s + 3s^2
+        pi = PolyPath([1, 2, 3])  # 1 + 2s + 3s^2
         ss = np.linspace(0, 1, 3)
         alim = (np.r_[-1., 1]).reshape(1, 2)  # Scalar case
         pc_vel = fa.create_acceleration_path_constraint(pi, ss, alim)
@@ -164,7 +164,7 @@ def create_acceleration_pc_fixtures(request):
 
     if request.param == 2:
         coeff = [[1., 2, 3], [-2., -3., 4., 5.]]
-        pi = PolynomialInterpolator(coeff)
+        pi = PolyPath(coeff)
         ss = np.linspace(0, 0.75, 4)
         alim = np.array([[-1., 2], [-2., 2]])
         pc_vel = fa.create_acceleration_path_constraint(pi, ss, alim)

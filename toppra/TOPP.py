@@ -726,6 +726,9 @@ Unable to parameterizes this path:
             Higher end-point of :math:`\mathcal{Q}_i`.
         """
         # Set constraint: xmin <= 2 ds u + x <= xmax
+        self.reset_operational_rows()
+        nWSR_up = np.array([self.nWSR_cnst])
+        nWSR_down = np.array([self.nWSR_cnst])
         self.A[i, 0, 1] = 1
         self.A[i, 0, 0] = 2 * (self.ss[i + 1] - self.ss[i])
         self.lA[i, 0] = xmin
@@ -736,25 +739,25 @@ Unable to parameterizes this path:
             self.g[1] = -1.
             res_up = self.solver_up.init(
                 self.H, self.g, self.A[i], self.l[i], self.h[i], self.lA[i],
-                self.hA[i], self.nWSR_up[i])
+                self.hA[i], nWSR_up)
 
             # lower solver solves for min x
             self.g[1] = 1.
             res_down = self.solver_down.init(
                 self.H, self.g, self.A[i], self.l[i], self.h[i], self.lA[i],
-                self.hA[i], self.nWSR_down[i])
+                self.hA[i], nWSR_down)
         else:
             # upper solver solves for max x
             self.g[1] = -1.
             res_up = self.solver_up.hotstart(
                 self.H, self.g, self.A[i], self.l[i], self.h[i], self.lA[i],
-                self.hA[i], self.nWSR_up[i])
+                self.hA[i], nWSR_up)
 
             # lower bound
             self.g[1] = 1.
             res_down = self.solver_down.hotstart(
                 self.H, self.g, self.A[i], self.l[i], self.h[i],
-                self.lA[i], self.hA[i], self.nWSR_down[i])
+                self.lA[i], self.hA[i], nWSR_down)
 
         # Check result
         if (res_up != SUCCESSFUL_RETURN) or (res_down != SUCCESSFUL_RETURN):
