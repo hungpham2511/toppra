@@ -19,7 +19,7 @@ def _find_left_index(ss_waypoints, s):
     for i in range(1, len(ss_waypoints)):
         if ss_waypoints[i - 1] <= s and s < ss_waypoints[i]:
             return i - 1
-    return len(ss_waypoints) - 1
+    return len(ss_waypoints) - 2
 
 
 class Interpolator(object):

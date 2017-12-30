@@ -19,10 +19,12 @@ qpOASESReturnValueDict = {
 }
 
 # Constants
-SUPERTINY = 1e-16
+SUPERTINY = 1e-10
 TINY = 1e-8
 SMALL = 1e-5
 INFTY = 1e8
+MAXU = 100  # Max limit for `u`
+MAXX = 100  # Max limit for `x`
 
 ###############################################################################
 #                   PathParameterization Algorithms/Objects                   #
@@ -315,10 +317,10 @@ Initialize Path Parameterization instance
             col += c.nv
 
         # bounds on var
-        self.l[:, 0] = - INFTY  # - infty <= u <= infty
-        self.h[:, 0] = INFTY
+        self.l[:, 0] = - MAXU  # - infty <= u <= infty
+        self.h[:, 0] = MAXU
         self.l[:, 1] = 0  # 0 <= x <= infty
-        self.h[:, 1] = INFTY
+        self.h[:, 1] = MAXX
         row = 2
         for c in filter(lambda c: c.nv != 0, self.constraint_set):
             self.l[:, row: row + c.nv] = c.l
