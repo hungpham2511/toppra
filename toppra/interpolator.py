@@ -12,6 +12,16 @@ def normalize(ss):
     return np.array(ss) / ss[-1]
 
 
+def _find_left_index(ss_waypoints, s):
+    """Return the index of the largest entry in `ss_waypoints` that is
+    larger or equal `s`.
+    """
+    for i in range(1, len(ss_waypoints)):
+        if ss_waypoints[i - 1] <= s and s < ss_waypoints[i]:
+            return i - 1
+    return len(ss_waypoints) - 1
+
+
 class Interpolator(object):
     """ Abstract class for interpolators.
     """
@@ -31,7 +41,7 @@ class Interpolator(object):
         return self.dof
 
     def get_path_interval(self):
-        return np.array([self.ss_waypoints[0], self.ss_waypoints[1]])
+        return np.array([self.ss_waypoints[0], self.ss_waypoints[-1]])
 
     def eval(self, ss_sam):
         """ Evaluate positions.
@@ -78,6 +88,94 @@ class Interpolator(object):
             Shape (m, dof). Evaluated values at position.
         """
         raise NotImplementedError
+
+
+class RaveTrajectoryInterpolator(Interpolator):
+    """ A wrapper over OpenRAVE's :class:`GenericTrajectory`.
+
+    Parameters
+    ----------
+    traj: :class:`openravepy.GenericTrajectory`
+        An OpenRAVE joint trajectory using quadratic interpolation.
+    robot: :class:`openravepy.GenericRobot`
+    """
+    def __init__(self, traj, robot):
+        self.traj = traj
+        self.spec = traj.GetConfigurationSpecification()
+        self.dof = robot.GetActiveDOF()
+
+        assert self.spec.GetGroupFromName('joint').interpolation == 'quadratic', "This class only handle trajectory with quadratic interpolation"
+
+        self.n_waypoints = traj.GetNumWaypoints()
+        dt_waypoints = [self.spec.ExtractDeltaTime(traj.GetWaypoint(i))
+                        for i in range(self.n_waypoints)]
+        self.ss_waypoints = np.array(dt_waypoints)
+        for i in range(1, self.n_waypoints):
+            self.ss_waypoints[i] = dt_waypoints[i] + self.ss_waypoints[i - 1]
+
+        self.waypoints = [self.spec.ExtractJointValues(traj.GetWaypoint(i), robot, robot.GetActiveDOFIndices())
+                          for i in range(self.n_waypoints)]
+        self.waypoints_deriv = [self.spec.ExtractJointValues(traj.GetWaypoint(i), robot, robot.GetActiveDOFIndices(), 1)
+                                for i in range(self.n_waypoints)]
+        self.waypoints_dderiv = []
+        for i in range(self.n_waypoints - 1):
+            qdd = ((self.waypoints_deriv[i + 1] - self.waypoints_deriv[i])
+                   / dt_waypoints[i + 1])
+            self.waypoints_dderiv.append(qdd)
+
+    def eval(self, ss_sam):
+        if np.isscalar(ss_sam):
+            index = _find_left_index(self.ss_waypoints, ss_sam)
+            qdd_left = self.waypoints_dderiv[index]
+            qd_left = self.waypoints_deriv[index]
+            q_left = self.waypoints[index]
+            deltat = (ss_sam - self.ss_waypoints[index])
+            q = q_left + qd_left * deltat + qdd_left * deltat ** 2 / 2
+            return q
+        else:
+            qs = []
+            for s in ss_sam:
+                index = _find_left_index(self.ss_waypoints, s)
+                qdd_left = self.waypoints_dderiv[index]
+                qd_left = self.waypoints_deriv[index]
+                q_left = self.waypoints[index]
+                deltat = (s - self.ss_waypoints[index])
+                q = q_left + qd_left * deltat + qdd_left * deltat ** 2 / 2
+                qs.append(q)
+            return np.array(qs)
+
+    def evald(self, ss_sam):
+        if np.isscalar(ss_sam):
+            index = _find_left_index(self.ss_waypoints, ss_sam)
+            qdd_left = self.waypoints_dderiv[index]
+            qd_left = self.waypoints_deriv[index]
+            deltat = (ss_sam - self.ss_waypoints[index])
+            qd = qd_left + qdd_left * deltat
+            return qd
+        else:
+            qds = []
+            for s in ss_sam:
+                index = _find_left_index(self.ss_waypoints, s)
+                qdd_left = self.waypoints_dderiv[index]
+                qd_left = self.waypoints_deriv[index]
+                deltat = (s - self.ss_waypoints[index])
+                qd = qd_left + qdd_left * deltat
+                qds.append(qd)
+            return np.array(qds)
+
+    def evaldd(self, ss_sam):
+        if np.isscalar(ss_sam):
+            index = _find_left_index(self.ss_waypoints, ss_sam)
+            qdd_left = self.waypoints_dderiv[index]
+            return qdd_left
+        else:
+            qdds = []
+            for s in ss_sam:
+                index = _find_left_index(self.ss_waypoints, s)
+                qdd_left = self.waypoints_dderiv[index]
+                qdds.append(qdd_left)
+            return np.array(qdds)
+
 
 
 class SplineInterpolator(Interpolator):
@@ -273,4 +371,3 @@ class PolyPath(object):
             return np.array(res).flatten()
         else:
             return np.array(res).T
-
