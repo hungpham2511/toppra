@@ -91,13 +91,37 @@ class Interpolator(object):
 
 
 class RaveTrajectoryInterpolator(Interpolator):
-    """ A wrapper over OpenRAVE's :class:`GenericTrajectory`.
+    """A wrapper over OpenRAVE's :class:`GenericTrajectory`.
+
+    Note: Only trajectories using quadratic interpolation is
+    supported. Supports for other kinds will be added in the future.
+
+    Attributes
+    ----------
+    traj: :class:`openravepy.GenericTrajectory`
+        An OpenRAVE joint trajectory using quadratic interpolation.
+    spec: :class:`openravepy.ConfigurationSpecification`
+        The specification of `traj`.
+    dof: int
+        The robot degree-of-freedom.
+    n_waypoints: int
+        Number of waypoints.
+    ss_waypoints: array
+        Shape (n_waypoints,). Path positions.
+    waypoints: array
+        Shape (n_waypoint, dof). Waypoints.
+    waypoints_deriv: array
+        Shape (n_waypoint, dof). First-order derivatives at waypoints.
+    waypoints_dderiv: array
+        Shape (n_waypoint, dof). Second-order derivatives at waypoints.
+
 
     Parameters
     ----------
     traj: :class:`openravepy.GenericTrajectory`
         An OpenRAVE joint trajectory using quadratic interpolation.
     robot: :class:`openravepy.GenericRobot`
+
     """
     def __init__(self, traj, robot):
         self.traj = traj
@@ -124,13 +148,15 @@ class RaveTrajectoryInterpolator(Interpolator):
             self.waypoints_dderiv.append(qdd)
 
     def eval(self, ss_sam):
+        """ Evaluate joint values at path positions.
+        """
         if np.isscalar(ss_sam):
             index = _find_left_index(self.ss_waypoints, ss_sam)
             qdd_left = self.waypoints_dderiv[index]
             qd_left = self.waypoints_deriv[index]
             q_left = self.waypoints[index]
-            deltat = (ss_sam - self.ss_waypoints[index])
-            q = q_left + qd_left * deltat + qdd_left * deltat ** 2 / 2
+            ds = (ss_sam - self.ss_waypoints[index])
+            q = q_left + qd_left * ds + qdd_left * ds ** 2 / 2
             return q
         else:
             qs = []
@@ -139,12 +165,14 @@ class RaveTrajectoryInterpolator(Interpolator):
                 qdd_left = self.waypoints_dderiv[index]
                 qd_left = self.waypoints_deriv[index]
                 q_left = self.waypoints[index]
-                deltat = (s - self.ss_waypoints[index])
-                q = q_left + qd_left * deltat + qdd_left * deltat ** 2 / 2
+                ds = (s - self.ss_waypoints[index])
+                q = q_left + qd_left * ds + qdd_left * ds ** 2 / 2
                 qs.append(q)
             return np.array(qs)
 
     def evald(self, ss_sam):
+        """ Evaluate joint first-derivatives at path positions.
+        """
         if np.isscalar(ss_sam):
             index = _find_left_index(self.ss_waypoints, ss_sam)
             qdd_left = self.waypoints_dderiv[index]
@@ -164,6 +192,8 @@ class RaveTrajectoryInterpolator(Interpolator):
             return np.array(qds)
 
     def evaldd(self, ss_sam):
+        """ Evaluate joint second-derivatives at path positions.
+        """
         if np.isscalar(ss_sam):
             index = _find_left_index(self.ss_waypoints, ss_sam)
             qdd_left = self.waypoints_dderiv[index]
@@ -175,7 +205,6 @@ class RaveTrajectoryInterpolator(Interpolator):
                 qdd_left = self.waypoints_dderiv[index]
                 qdds.append(qdd_left)
             return np.array(qdds)
-
 
 
 class SplineInterpolator(Interpolator):
@@ -264,9 +293,9 @@ class UnivariateSplineInterpolator(Interpolator):
 
     Parameters
     ----------
-    ss: ndarray, shaped (N+1,)
+    ss_waypoints: ndarray, shaped (N+1,)
         Path positions of the waypoints.
-    qs: ndarray, shaped (N+1, dof)
+    waypoints: ndarray, shaped (N+1, dof)
         The waypoints.
     """
     def __init__(self, ss_waypoints, waypoints):
@@ -282,7 +311,7 @@ class UnivariateSplineInterpolator(Interpolator):
 
         Parameters
         ----------
-        ss_sam : array, or float
+        ss : array, or float
             Shape (m, ). Positions to sample at.
 
         Returns
@@ -301,7 +330,7 @@ class UnivariateSplineInterpolator(Interpolator):
 
         Parameters
         ----------
-        ss_sam : array
+        ss : array
             Shape (m, ). Positions to sample at.
 
         Returns
@@ -319,7 +348,7 @@ class UnivariateSplineInterpolator(Interpolator):
 
         Parameters
         ----------
-        ss_sam : array
+        ss : array
             Shape (m, ). Positions to sample at.
 
         Returns
@@ -334,7 +363,12 @@ class UnivariateSplineInterpolator(Interpolator):
 
 
 class PolyPath(object):
-    """ A Polynomial Path class.
+    """ A class for representing polynominal paths.
+
+    Parameters
+    ----------
+    coeff : array
+        Coefficients of the polynomials.
     """
     def __init__(self, coeff):
         self.coeff = np.array(coeff)

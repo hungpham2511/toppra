@@ -11,3 +11,4 @@ from interpolator import *
 from constraints import *
 from .utils import smooth_singularities
 from . import postprocess
+from .postprocess import compute_trajectory_gridpoints, compute_trajectory_uniform
