@@ -131,9 +131,9 @@ class PathConstraint(object):
             self.b = np.empty((self.N + 1, 0))
             self.c = np.empty((self.N + 1, 0))
         else:
-            self.a = a
-            self.b = b
-            self.c = c
+            self.a = np.array(a)
+            self.b = np.array(b)
+            self.c = np.array(c)
         self._nm = self.a.shape[1]
 
         # Type I
@@ -339,7 +339,7 @@ def create_full_contact_path_constraint(path, ss, robot, stance):
     .. math:: \mathbf{M}(\mathbf{q}) \ddot{\mathbf{q}}+
             \mathbf{C}(\mathbf{q}, \dot{\mathbf{q}})+
             \mathbf{g}(\mathbf{q}) = \mathbf{\\tau} +
-            \sum_i\mathbf{J}_i(\mathbf{q}, \mathbf{p}_i)^T
+            \sum_i\mathbf{J}_i(\mathbf{q}, \mathbf{pos_endlink}_i)^T
             \mathbf{w}_i,
 
     where
@@ -347,7 +347,7 @@ def create_full_contact_path_constraint(path, ss, robot, stance):
     - :math:`\mathbf{q}, \dot{\mathbf{q}}, \ddot{\mathbf{q}}`: robot joint position, velocity and acceleration.
     - :math:`\\tau`: robot joint torque.
     - :math:`\mathbf{w}_i`: the i-th local contact wrench acting on a link on the robot.
-    - :math:`\mathbf{p}_i`: the origin of the wrench w_i.
+    - :math:`\mathbf{pos_endlink}_i`: the origin of the wrench w_i.
     - :math:`\mathbf{J}_i`: the wrench Jacobian at p_i of the link w_i acts on.
 
     According to the linearized Colomb friction model, the sets of
@@ -603,17 +603,22 @@ def create_rave_torque_path_constraint(path, ss, robot):
 
 
 def create_velocity_path_constraint(path, ss, vlim):
-    """ Return joint velocities bound.
+    """ Create a :class:`PathConstraint` object to represent joint velocity constraint.
 
-    Velocity constraint has the form:
-                0 * ui +  1 * xi - sdmax^2 <= 0
-                0      + -1      + sdmin^2 <= 0
+    Note that a joint velocity constraint leads to two scalar path constraints.
+
+    .. math ::
+                x[i] - sd_{max}[i]^2 \leq 0
+
+            -x[i]  + sd_{min}[i]^2 \leq 0
 
     Parameters
     ----------
     path : Interpolator
+        The geometric path.
     vlim : ndarray, shaped (dof, 2)
         Joint velocity limits.
+        vlim[i] is a tuple containing the miminum and maximum velocity.
     ss : ndarray, shaped (N+1,)
         Discretization gridpoints.
 
@@ -628,25 +633,28 @@ def create_velocity_path_constraint(path, ss, vlim):
 
 
 def create_acceleration_path_constraint(path, ss, alim):
-    """ Joint accelerations bound.
+    """ Create a :class:`PathConstraint` object to represent joint accelerations constraint.
 
-    Acceleration constraint form:
+    A joint acceleration constraint leads to 2n path constraints:
 
-                qs(si) ui + qss(si) sdi ^ 2 - qdmax <= 0
-               -qs(si) ui - qss(si) sdi ^ 2 + qdmin <= 0
+    .. math ::
+                q'(s[i]) u[i] + q''(s[i]) x[i] - qd_{max} \leq 0
+
+               -q'(s[i]) u[i] - q''(s[i]) x[i] + qd_{min} \leq 0
 
     Parameters
     ----------
     path : Interpolator
+        The geometric path.
     alim : ndarray, shaped (dof, 2)
         Joint acceleration limits.
+        alim[i] is a tuple containing the minimum and maximum acceleration of joint i.
     ss : ndarray, shaped (N+1,)
         Discretization gridpoints.
 
     Returns
     -------
     pc : PathConstraint
-
 
     """
     N = len(ss) - 1

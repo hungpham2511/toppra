@@ -6,7 +6,7 @@ try:
     import sys
     sys.path.insert(0, expanduser('~/git/pymanoid'))
     import pymanoid
-    skip_pymanoid_tests = False
+    skip_pymanoid_tests = True  # Alway skip this test
 except ImportError:
     skip_pymanoid_tests = True
 

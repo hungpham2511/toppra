@@ -79,26 +79,25 @@ class qpOASESPPSolver(object):
     Notes
     -----
 
-    Attributes tagged with (``qpOASES``) are interval variable for
-    solving with ``qpOASES`` solver. For details on their
-    construction, see belows.
+    Attributes tagged with (``qpOASES``) are internal variables used with
+    the ``qpOASES`` solver. For details on their construction, see belows.
 
     The first ``nop`` rows of ``A`` are operational rows. They are
-    reserved to specify additional constraints in computing
+    reserved to specify additional constraints. For example, to specify the constraints
+    that the next stage state must lie inside the target set.
 
     1. the controllable sets; TODO
     2. the reachable sets; TODO
 
-    ``qpOASES`` solves QPs of the form
+    This class uses ``qpOASES`` to solve Quadratic Programs of the form
 
     .. math::
             min  \quad   & 0.5 (u, x, v^T) \mathbf{H} (u, x, v^T)^T + \mathbf{g}^T (u, x, v^T)^T \\\\
-            s.t. \quad   & \mathbf{l_A} \leq \mathbf{A} (u, x, v^T)^T \leq \mathbf{h_A} \\\\
-                         & \mathbf{l}  \leq   (u, x, v^T)^T \leq \mathbf{h}
+            s.t. \quad   & \mathbf{l_A}[i] \leq \mathbf{A}[i] (u, x, v^T)^T \leq \mathbf{h_A}[i] \\\\
+                         & \mathbf{l}[i]  \leq   (u, x, v^T)^T \leq \mathbf{h}[i]
 
-    The matrices :math:`A[i], l_A[i], h_A[i]` are all
-    constructed from four sections, each spanning a number of
-    rows. The four sections are:
+    The matrices :math:`A[i], l_A[i], h_A[i]` consist of
+    four row sections. The four sections are:
 
     1. operational: see above;
     2. canonical;

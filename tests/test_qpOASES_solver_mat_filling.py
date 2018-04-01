@@ -4,6 +4,7 @@ from scipy.linalg import block_diag
 from toppra import (PathConstraint,
                     qpOASESPPSolver,
                     INFTY)
+from toppra.TOPP import MAXU, MAXX
 
 
 def random_fill(arrays):
@@ -193,10 +194,10 @@ class TestClass_qpOASES_solver_matrices(object):
         random_fill([pp.l, pp.h])
         pp._fill_matrices()
         for i in range(pp.N+1):
-            assert pp.l[i, 0] == -INFTY
-            assert pp.l[i, 1] == 0
-            assert pp.h[i, 0] == INFTY
-            assert pp.h[i, 1] == INFTY
+            assert pp.l[i, 0] == - MAXU
+            assert pp.l[i, 1] == 0.0
+            assert pp.h[i, 0] == MAXU
+            assert pp.h[i, 1] == MAXX
 
             l_expected = np.hstack(map(lambda pc: pc.l[i], pcs))
             h_expected = np.hstack(map(lambda pc: pc.h[i], pcs))
