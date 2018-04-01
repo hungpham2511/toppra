@@ -452,16 +452,6 @@ Unable to parameterizes this path:
             raise ValueError(msg)
 
         # Forward pass
-        # Setup matrices
-        self.reset_operational_rows()
-        # Enforce x == xs[i]
-        self.A[:, 0, 1] = 1.
-        self.A[:, 0, 0] = 0.
-        # Enfore Kmin <= x + 2 ds u <= Kmax
-        self.A[:, 1, 1] = 1.
-        self.A[:self.N, 1, 0] = 2 * self.Ds
-        self.nWSR_topp = np.ones((self.N + 1, 1), dtype=int) * self.nWSR_cnst
-        # Setup matrices finished
         xs = np.zeros(self.N + 1)
         us = np.zeros(self.N)
         xs[0] = min(self._K[0, 1], self.I0[1])
@@ -469,12 +459,11 @@ Unable to parameterizes this path:
                                 init=True, reg=reg)  # Warm start
         for i in range(self.N):
             u_, x_ = self.greedy_step(i, xs[i], self._K[i + 1, 0], self._K[i + 1, 1],
-                                      init=False, reg=reg)
+                                      init=False, reg=reg)  # Hot start
             xs[i + 1] = x_
             us[i] = u_
             if save_solutions:
                 self._xfulls[i] = self._xfull.copy()
-                # self._yfulls[i] = self._yfull.copy()
         return us, xs
 
     @property
@@ -759,18 +748,13 @@ Computing projection failed.
         return xmin_i, xmax_i
 
     def greedy_step(self, i, x, xmin, xmax, init=False, reg=0.):
-        """Find max u such that xmin <= x + 2 ds u <= xmax.
+        """ Take a forward greedy step from position s[i], state x.
 
         If the projection is infeasible (for example when `xmin` >
         `xmax`), then `(None, None)` is returned.
 
         If the function terminates successfully, `x_greedy` is
         guaranteed to be positive.
-
-        Note
-        ----
-        `self.nWSR_topp` need to be initialized prior to using this
-        function.
 
         Parameters
         ----------
@@ -789,13 +773,20 @@ Computing projection failed.
             If infeasible, returns None.
 
         """
-        # Constraint 1: x = x
+        self.reset_operational_rows()
+
+        # Enforce x == xs[i]
+        self.A[i, 0, 1] = 1.
+        self.A[i, 0, 0] = 0.
         self.lA[i, 0] = x
         self.hA[i, 0] = x
         # Constraint 2: xmin <= 2 ds u + x <= xmax
         self.lA[i, 1] = xmin
         self.hA[i, 1] = xmax
+        self.A[i, 1, 1] = 1.
+        self.A[i, 1, 0] = 2 * self.Ds[i]
 
+        nWSR_topp = np.array([self.nWSR_cnst])  # The number of "constraint flipping"
         # Objective
         # max  u + reg ||v||_2^2
         self.g[0] = -1.
@@ -805,11 +796,11 @@ Computing projection failed.
         if init:
             res_up = self.solver_up.init(
                 self.H, self.g, self.A[i], self.l[i], self.h[i], self.lA[i],
-                self.hA[i], self.nWSR_topp[i])
+                self.hA[i], nWSR_topp)
         else:
             res_up = self.solver_up.hotstart(
                 self.H, self.g, self.A[i], self.l[i], self.h[i], self.lA[i],
-                self.hA[i], self.nWSR_topp[i])
+                self.hA[i], nWSR_topp)
 
         if (res_up != SUCCESSFUL_RETURN):
             logger.warn("Non-optimal solution at i=%d. Returning default.", i)
