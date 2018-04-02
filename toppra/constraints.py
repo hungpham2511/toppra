@@ -95,8 +95,8 @@ class PathConstraint(object):
     Note that there is no actual problem in allowing a constraint to
     have both canonical and non-canonical parts.
 
-    Example
-    -------
+    Examples
+    --------
 
     Create a canonical constraint
 
