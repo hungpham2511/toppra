@@ -5,10 +5,12 @@ the `PathConstraint`.
 """
 import numpy as np
 from enum import Enum
-from utils import inv_dyn, compute_jacobian_wrench
-from _CythonUtils import _create_velocity_constraint
 from scipy.linalg import block_diag
-from TOPP import INFTY
+
+from .utils import inv_dyn, compute_jacobian_wrench
+from ._CythonUtils import _create_velocity_constraint
+from .constants import INFTY
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -618,7 +620,7 @@ def create_velocity_path_constraint(path, ss, vlim):
         The geometric path.
     vlim : ndarray, shaped (dof, 2)
         Joint velocity limits.
-        vlim[i] is a tuple containing the miminum and maximum velocity.
+        alim[i] is a tuple containing the miminum and maximum velocity.
     ss : ndarray, shaped (N+1,)
         Discretization gridpoints.
 
