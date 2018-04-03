@@ -56,7 +56,7 @@ class Interpolator(object):
             self.dof = waypoints[0].shape[0]
         assert self.ss_waypoints.shape[0] == self.waypoints.shape[0]
         self.s_start = self.ss_waypoints[0]
-        self.s_end = self.ss_waypoints[1]
+        self.s_end = self.ss_waypoints[-1]
 
     def get_dof(self):
         """ Return the degree-of-freedom of the path.
@@ -301,7 +301,7 @@ class UnivariateSplineInterpolator(Interpolator):
         return np.array(data).T
 
 
-class PolyPath(object):
+class PolynomialPath(Interpolator):
     """ A class representing polynominal paths.
 
     If coeff is a 1d array, the polynomial's equation is given by

@@ -1,7 +1,7 @@
 import numpy as np
 import numpy.testing as npt
 
-from toppra import PolyPath, SplineInterpolator
+from toppra import PolynomialPath, SplineInterpolator
 
 
 class Test_PolynomialInterpolator(object):
@@ -9,14 +9,15 @@ class Test_PolynomialInterpolator(object):
     """
 
     def test_scalar(self):
-        pi = PolyPath([1, 2, 3])  # 1 + 2s + 3s^2
+        pi = PolynomialPath([1, 2, 3], s_start=0, s_end=2)  # 1 + 2s + 3s^2
         assert pi.dof == 1
         npt.assert_allclose(pi.eval([0, 0.5, 1]), [1, 2.75, 6])
         npt.assert_allclose(pi.evald([0, 0.5, 1]), [2, 5, 8])
         npt.assert_allclose(pi.evaldd([0, 0.5, 1]), [6, 6, 6])
+        npt.assert_allclose(pi.get_path_interval(), np.r_[0, 2])
 
     def test_2_dof(self):
-        pi = PolyPath([[1, 2, 3], [-2, 3, 4, 5]])
+        pi = PolynomialPath([[1, 2, 3], [-2, 3, 4, 5]])
         # [1 + 2s + 3s^2]
         # [-2 + 3s + 4s^2 + 5s^3]
         assert pi.dof == 2
@@ -32,14 +33,14 @@ class Test_SplineInterpolator(object):
     """
 
     def test_scalar(self):
-        pi = SplineInterpolator(np.linspace(0, 1, 3), [1, 2,
-                                                       0])  # 1 + 2s + 3s^2
+        pi = SplineInterpolator(np.linspace(0, 1, 3), [1, 2,0])  # 1 + 2s + 3s^2
 
         ss = np.linspace(0, 1, 10)
         assert pi.dof == 1
         assert pi.eval(ss).shape == (10, )
         assert pi.evald(ss).shape == (10, )
         assert pi.evaldd(ss).shape == (10, )
+        npt.assert_allclose(pi.get_path_interval(), np.r_[0, 1])
 
     def test_5_dof(self):
 
@@ -52,3 +53,6 @@ class Test_SplineInterpolator(object):
         assert pi.eval(ss).shape == (10, 5)
         assert pi.evald(ss).shape == (10, 5)
         assert pi.evaldd(ss).shape == (10, 5)
+        npt.assert_allclose(pi.get_path_interval(), np.r_[0, 1])
+
+
