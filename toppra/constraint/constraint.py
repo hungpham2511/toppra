@@ -17,7 +17,7 @@ class Constraint(object):
     def __repr__(self):
         string = self.__class__.__name__ + '(\n'
         string += '    Type: {:}'.format(self.get_constraint_type()) + '\n'
-        string += self._format_string + '\n'
+        string += self._format_string
         string += ')'
         return string
 

@@ -4,7 +4,7 @@ import numpy as np
 import numpy.testing as npt
 import toppra as ta
 import toppra.constraint as constraint
-from toppra import TINY
+from toppra.constants import TINY
 
 
 @pytest.fixture(scope="class", params=[2, 6], name='velocity_pc_data')
