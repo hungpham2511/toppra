@@ -42,10 +42,12 @@ class CanonicalLinearConstraint(Constraint):
         The general canonical linear constraint has this form
 
         .. math::
-        a[i] u + b[i] x + c[i] = v,
-        F[i] v \leq b[i],
-        xbound[i, 0] \leq x \leq xbound[i, 1],
-        ubound[i, 0] \leq u \leq ubound[i, 1].
+
+            a[i] u_1 + b[i] x + c[i] &= v, \\\\
+            F[i] v &\\leq b[i], \\\\
+            xbound[i, 0] \\leq x \\leq xbound[i, 1], \\\\
+            ubound[i, 0] \\leq u \\leq ubound[i, 1].
+
         """
         raise NotImplementedError
 
@@ -73,4 +75,4 @@ class JointVelocityConstraint(CanonicalLinearConstraint):
         xbound = np.array(xbound_)
         xbound[:, 0] = xbound_[:, 1]
         xbound[:, 1] = - xbound_[:, 0]
-        return None, None, None, None, None, xbound, None
+        return None, None, None, None, None, None, xbound
