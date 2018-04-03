@@ -29,11 +29,13 @@ class JointAccelerationConstraint(CanonicalLinearConstraint):
 
     """
     def __init__(self, alim):
+        super(JointAccelerationConstraint, self).__init__()
         self.alim = np.array(alim)
         assert self.alim.shape[1] == 2, "Wrong input shape."
         self._format_string = "    Acceleration limit: \n"
         for i in range(self.alim.shape[0]):
             self._format_string += "      J{:d}: {:}".format(i + 1, self.alim[i]) + "\n"
+
 
     def compute_constraint_params(self, path, ss):
         ps = path.evald(ss)
@@ -51,4 +53,4 @@ class JointAccelerationConstraint(CanonicalLinearConstraint):
         ubound[:, 0] = - MAXU
         ubound[:, 1] = MAXU
 
-        return ps, pss, None, F, g, ubound, None
+        return ps, pss, np.zeros_like(ps), F, g, ubound, None

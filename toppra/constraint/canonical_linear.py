@@ -17,9 +17,9 @@ class CanonicalLinearConstraint(Constraint):
     Derived classes should implement the method
     - compute_constraint_params(): tuple
     """
-
-    def get_constraint_type(self):
-        return ConstraintType.CanonicalLinear
+    def __init__(self):
+        super(CanonicalLinearConstraint, self).__init__()
+        self.constraint_type = ConstraintType.CanonicalLinear
 
     def compute_constraint_params(self, path, ss):
         """ Return constraint parameter for Canonical Linear Constraints.
