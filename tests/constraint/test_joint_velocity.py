@@ -63,7 +63,7 @@ class TestClass_JointVelocityConstraint(object):
         data, pc = velocity_pc_data
         path, ss, vlim = data
 
-        constraint_param = pc.get_constraint_params(path, ss)
+        constraint_param = pc.compute_constraint_params(path, ss)
         _, _, _, _, _, _, xlimit = constraint_param
 
         qs = path.evald(ss)

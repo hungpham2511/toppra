@@ -1,9 +1,5 @@
-import numpy as np
-
 from .constraint import Constraint
 from .constraint import ConstraintType
-
-from ..constants import MAXX, MAXU, TINY, SUPERTINY
 
 
 class CanonicalLinearConstraint(Constraint):
@@ -14,7 +10,7 @@ class CanonicalLinearConstraint(Constraint):
     .. math::
 
         a[i] u + b[i] x + c[i] &= v, \\\\
-        F[i] v &\\leq g[i], \\\\
+        F[i] v &\\leq h[i], \\\\
         xbound[i, 0] \\leq x \\leq xbound[i, 1], \\\\
         ubound[i, 0] \\leq u \\leq ubound[i, 1].
 
@@ -25,7 +21,7 @@ class CanonicalLinearConstraint(Constraint):
     def get_constraint_type(self):
         return ConstraintType.CanonicalLinear
 
-    def get_constraint_params(self, path, ss):
+    def compute_constraint_params(self, path, ss):
         """ Return constraint parameter for Canonical Linear Constraints.
 
         Parameters
@@ -65,5 +61,3 @@ class CanonicalLinearConstraint(Constraint):
 
         """
         raise NotImplementedError
-
-

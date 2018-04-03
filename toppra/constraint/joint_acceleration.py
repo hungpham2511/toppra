@@ -35,7 +35,7 @@ class JointAccelerationConstraint(CanonicalLinearConstraint):
         for i in range(self.alim.shape[0]):
             self._format_string += "      J{:d}: {:}".format(i + 1, self.alim[i]) + "\n"
 
-    def get_constraint_params(self, path, ss):
+    def compute_constraint_params(self, path, ss):
         ps = path.evald(ss)
         pss = path.evaldd(ss)
         N = ss.shape[0] - 1

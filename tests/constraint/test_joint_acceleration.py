@@ -70,7 +70,7 @@ class TestClass_JointAccelerationConstraint(object):
         path, ss, alim = data
 
         # An user of the class
-        a, b, c, F, g, ubound, xbound = constraint.get_constraint_params(path, ss)
+        a, b, c, F, g, ubound, xbound = constraint.compute_constraint_params(path, ss)
 
         assert c is None
         assert xbound is None

@@ -1,4 +1,4 @@
-from  .canonical_linear import  CanonicalLinearConstraint
+from .canonical_linear import CanonicalLinearConstraint
 from .._CythonUtils import _create_velocity_constraint
 import numpy as np
 
@@ -21,9 +21,8 @@ class JointVelocityConstraint(CanonicalLinearConstraint):
         for i in range(self.vlim.shape[0]):
             self._format_string += "      J{:d}: {:}".format(i + 1, self.vlim[i]) + "\n"
 
-    def get_constraint_params(self, path, ss):
+    def compute_constraint_params(self, path, ss):
         qs = path.evald(ss)
-        # Return resulti from cython version
         _, _, xbound_ = _create_velocity_constraint(qs, self.vlim)
         xbound = np.array(xbound_)
         xbound[:, 0] = xbound_[:, 1]
