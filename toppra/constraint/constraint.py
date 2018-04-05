@@ -16,10 +16,12 @@ class DiscretizationType(Enum):
 class Constraint(object):
     """ Base class for all parameterization constraints.
 
-    A derived class should implement two methods:
+    A derived class should implement the following methods:
 
     - get_constraint_type(): ConstraintType
+    - get_discretization_type(): DiscretizationType
     - compute_constraint_params(): tuple
+
     """
     def __init__(self):
         self.constraint_type = ConstraintType.Unknown
@@ -41,3 +43,6 @@ class Constraint(object):
 
     def compute_constraint_params(self):
         raise NotImplementedError
+
+    def get_no_extra_vars(self):
+        return self.n_extra_vars

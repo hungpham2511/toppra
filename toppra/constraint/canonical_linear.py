@@ -20,9 +20,11 @@ class CanonicalLinearConstraint(Constraint):
     def __init__(self):
         super(CanonicalLinearConstraint, self).__init__()
         self.constraint_type = ConstraintType.CanonicalLinear
+        self.n_extra_vars = 0
 
     def compute_constraint_params(self, path, ss):
         """ Return constraint parameter for Canonical Linear Constraints.
+
 
         Parameters
         ----------
@@ -59,5 +61,6 @@ class CanonicalLinearConstraint(Constraint):
             xbound[i, 0] \\leq x \\leq xbound[i, 1], \\\\
             ubound[i, 0] \\leq u \\leq ubound[i, 1].
 
+        Secondly, this function generates parameters that account for discretization scheme.
         """
         raise NotImplementedError

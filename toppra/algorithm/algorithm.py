@@ -21,11 +21,13 @@ class ParameterizationAlgorithm(object):
     ----------
     constraint_list: list of `Constraint`
     path: `Interpolator`
-    path_discretization: array
+    path_discretization: array, optional
 
     """
 
-    def __init__(self, constraint_list, path, path_discretization):
+    def __init__(self, constraint_list, path, path_discretization=None):
+        if path_discretization is None:
+            path_discretization = np.linspace(0, path.get_duration(), 100)
         self.N = len(path_discretization) - 1  # Number of stages. Number of point is N + 1
         self.path = path
         self.constraints = constraint_list
@@ -38,7 +40,7 @@ class ParameterizationAlgorithm(object):
     def compute_parameterization(self, sd_start, sd_end):
         raise NotImplementedError
 
-    def compute_trajectory_grid(self, sd_start, sd_end):
+    def compute_trajectory(self, sd_start, sd_end):
         """ Return a trajectory sampled at the grid points.
 
         Parameters
@@ -85,49 +87,6 @@ class ParameterizationAlgorithm(object):
             t_grid[i] = t_grid[i - 1] + delta_t
 
         q_grid = self.path.eval(self.path_discretization)
-        ps = self.path.evald(self.path_discretization)
-        pss = self.path.evaldd(self.path_discretization)
 
-        qd_vec = ps * sd_grid
-        qdd_vec = ps * sdd_grid + pss * sd_grid ** 2
-        return t_grid, q_grid, qd_vec, qdd_vec
-
-    def compute_trajectory_uniform(self, sd_start, sd_end, dt):
-        """ Return a trajectory sampled uniformly with sampling duration `dt`.
-
-        Parameters
-        ----------
-        sd_start: float
-            Starting path velocity.
-        sd_end: float
-            Goal path velocity.
-        dt: float
-            Sampling duration.
-
-        Returns
-        -------
-        t_vec: array
-            Time instances.
-        q_vec: array
-            Joint positions.
-        qd_vec: array
-            Joint velocities.
-        qdd_vec: array
-            Joint accelerations.
-
-        """
-        t_grid, q_grid, _, _ = self.compute_trajectory_grid(sd_start, sd_end)
         traj_spline = SplineInterpolator(t_grid, q_grid)
-
-        t_vec = np.arange(t_grid[0], t_grid[-1], dt)
-        q_vec = traj_spline.eval(t_vec)
-        qd_vec = traj_spline.evald(t_vec)
-        qdd_vec = traj_spline.evaldd(t_vec)
-
-        return t_vec, q_vec, qd_vec, qdd_vec
-
-    def compute_trajectory_rave(self, sd_start, sd_end):
-        raise NotImplementedError
-
-    def compute_trajectory_ros(self, sd_start, sd_end):
-        raise NotImplementedError
+        return traj_spline

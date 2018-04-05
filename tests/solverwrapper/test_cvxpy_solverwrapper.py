@@ -10,7 +10,10 @@ from toppra.constants import TINY
 
 @pytest.fixture(scope='class', params=['vel_accel'])
 def pp_fixture(request):
-    """ Velocity & Acceleration Path Constraint
+    """ Velocity & Acceleration Path Constraint.
+
+    This test case has only two constraints, one velocity constraint
+    and one acceleration constraint.
     """
     dof = 6
     np.random.seed(1)  # Use the same randomly generated way pts
@@ -33,39 +36,52 @@ def pp_fixture(request):
     print "\n [TearDown] Finish PP Fixture"
 
 def test_basic_init(pp_fixture):
-    constraints, path, path_discretization, vlim, alim = pp_fixture
+    """ A basic test case for wrappers.
 
+    Notice that the input fixture `pp_fixture` is known to have two constraints,
+    one velocity and one acceleration. Hence, in this test, I directly formulate
+    an optimization with cvxpy to test the result.
+
+    Parameters
+    ----------
+    pp_fixture: a fixture with only two constraints, one velocity and
+        one acceleration constraint.
+
+    """
+    constraints, path, path_discretization, vlim, alim = pp_fixture
     solver = cvxpyWrapper(constraints, path, path_discretization)
 
-    i = 0
-    # H = np.zeros((2, 2))
-    H = np.eye(2)
-    g = np.array([0, -1])
-    xmin = -1
-    xmax = 1
-    xnext_min = 0
-    xnext_max = 1
+    i_totest = [0, 10, 50]
+    H_totest = [np.eye(2), np.zeros((2, 2))]
+    g_totest = [np.array([0, -1]), np.array([0, 1]), np.array([1, 1])]
 
-    result = solver.solve_stagewise_optim(i, H, g, xmin, xmax, xnext_min, xnext_max)
+    for i in i_totest:
+        for H in H_totest:
+            for g in g_totest:
+                xmin = -1
+                xmax = 1
+                xnext_min = 0
+                xnext_max = 1
 
-    # Compute actual result. This code "knows" the actual input constraints, so it is most likely
-    # correct.
-    ux = cvxpy.Variable(2)
-    a, b, c, F, h, ubound, _ = solver.params[1]
-    _, _, _, _, _, _, xbound = solver.params[0]
-    cvxpy_constraints = [
-        ux[0] <= ubound[i, 1],
-        ux[0] >= ubound[i, 0],
-        ux[1] <= xbound[i, 1],
-        ux[1] >= xbound[i, 0],
-        F[i] * (a[i] * ux[0] + b[i] * ux[1] + c[i]) <= h[i]
-        ]
-    objective = cvxpy.Minimize(cvxpy.quad_form(ux, H) * 0.5 + g * ux)
-    problem = cvxpy.Problem(objective, cvxpy_constraints)
-    problem.solve()
-    actual = np.array(ux.value)
+                result = solver.solve_stagewise_optim(i, H, g, xmin, xmax, xnext_min, xnext_max)
 
-    # Assertion
+                # Compute actual result.
+                ux = cvxpy.Variable(2)
+                a, b, c, F, h, ubound, _ = solver.params[1]
+                _, _, _, _, _, _, xbound = solver.params[0]
+                cvxpy_constraints = [
+                    ux[0] <= ubound[i, 1],
+                    ux[0] >= ubound[i, 0],
+                    ux[1] <= xbound[i, 1],
+                    ux[1] >= xbound[i, 0],
+                    F[i] * (a[i] * ux[0] + b[i] * ux[1] + c[i]) <= h[i]
+                    ]
+                objective = cvxpy.Minimize(cvxpy.quad_form(ux, H) * 0.5 + g * ux)
+                problem = cvxpy.Problem(objective, cvxpy_constraints)
+        problem.solve()
+        actual = np.array(ux.value)
+
+        # Assertion
     npt.assert_allclose(result, actual, atol=TINY)
 
 

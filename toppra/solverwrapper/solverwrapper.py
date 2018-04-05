@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class SolverWrapper(object):
     """ Base class for all solver wrappers.
 
@@ -13,6 +14,7 @@ class SolverWrapper(object):
         self.path = path
         self.constraints = constraint_list
         self.path_discretization = np.array(path_discretization)
+        self.deltas = self.path_discretization[1:] - self.path_discretization[:-1]
         assert path.get_path_interval()[0] == path_discretization[0]
         assert path.get_path_interval()[1] == path_discretization[-1]
         for i in range(self.N):
@@ -20,6 +22,22 @@ class SolverWrapper(object):
 
         self.params = [c.compute_constraint_params(self.path, self.path_discretization)
                        for c in self.constraints]
+        self.nV = 2 + sum([c.get_no_extra_vars() for c in self.constraints])
+
+    def get_no_stages(self):
+        """ Return the number of stages.
+
+        The number of gridpoints equals N + 1, where N is the number of stages.
+        """
+        return self.N
+
+    def get_no_vars(self):
+        """ Return total number of variables, including u, x.
+        """
+        return self.nV
+
+    def get_deltas(self):
+        return self.deltas
 
     def solve_stagewise_optim(self, i, H, g, x_min, x_max, x_next_min, x_next_max):
         """ Solve a stage-wise quadratic optimization.

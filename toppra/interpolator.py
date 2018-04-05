@@ -59,7 +59,7 @@ class Interpolator(object):
         out: int
             Degree-of-freedom of the path.
         """
-        raise NotImplementedError
+        return self.dof
 
     def get_duration(self):
         """
