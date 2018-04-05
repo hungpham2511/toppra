@@ -45,6 +45,8 @@ t_solve = time.time() - t_ - t_setup
 t, q, qd, qdd = ta.compute_trajectory_gridpoints(path, pp.ss, us, xs)
 t_total = time.time() - t_
 
+pp.K
+
 # Smooth the result.
 us_smth, xs_smth = ta.smooth_singularities(pp, us, xs)
 t_smth, q_smth, qd_smth, qdd_smth = ta.compute_trajectory_gridpoints(

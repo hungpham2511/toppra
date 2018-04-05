@@ -32,6 +32,19 @@ class cvxpyWrapper(SolverWrapper):
         u = ux[0]
         x = ux[1]
         cvxpy_constraints = []
+
+        if x_min is not None:
+            cvxpy_constraints.append(x_min <= x)
+        if x_max is not None:
+            cvxpy_constraints.append(x <= x_max)
+
+        if i < self.N:
+            delta = self.get_deltas()[i]
+            if x_next_min is not None:
+                cvxpy_constraints.append(x_next_min <= x + 2 * delta * u)
+            if x_next_max is not None:
+                cvxpy_constraints.append(x + 2 * delta * u <= x_next_max)
+
         for j in range(len(self.constraints)):
             a, b, c, F, h, ubound, xbound = self.params[j]
 
@@ -47,6 +60,9 @@ class cvxpyWrapper(SolverWrapper):
             if xbound is not None:
                 cvxpy_constraints.append(xbound[i, 0] <= x)
                 cvxpy_constraints.append(x <= xbound[i, 1])
+
+        if H is None:
+            H = np.zeros((self.get_no_vars(), self.get_no_vars()))
 
         objective = cvxpy.Minimize(0.5 * cvxpy.quad_form(ux, H) + g * ux)
 

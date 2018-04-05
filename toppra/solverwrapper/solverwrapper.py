@@ -45,19 +45,20 @@ class SolverWrapper(object):
         Parameters
         ----------
         i: int
-            For the meaning of the parameters, see notes.
-        H: array
+            The stage index.
+        H: array or None
+            If is None, use the zero matrix.
         g: array
-        x_min: float
-        x_max: float
-        x_next_min: float
-        x_next_max: float
+        x_min: float or None
+        x_max: float or None
+        x_next_min: float or None
+        x_next_max: float or None
 
         Returns
         -------
         array or None
              If the optimization successes, return an array containing the optimal variable.
-             Otherwise, return None.
+             Otherwise, a list of None that has the same shape as the variable.
 
         Notes
         -----
