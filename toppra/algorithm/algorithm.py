@@ -21,10 +21,10 @@ class ParameterizationAlgorithm(object):
     ----------
     constraint_list: list of `Constraint`
     path: `Interpolator`
+        The geometric path, or the trajectory to parameterize.
     path_discretization: array, optional
-
+        If not given, automatically generate a grid with 100 steps.
     """
-
     def __init__(self, constraint_list, path, path_discretization=None):
         if path_discretization is None:
             path_discretization = np.linspace(0, path.get_duration(), 100)
@@ -38,10 +38,29 @@ class ParameterizationAlgorithm(object):
             assert path_discretization[i + 1] > path_discretization[i]
 
     def compute_parameterization(self, sd_start, sd_end):
+        """ Compute a valid parameterization.
+
+        Parameters
+        ----------
+        sd_start: float
+            Starting path velocity. Must be positive.
+        sd_end: float
+            Goal path velocity. Must be positive.
+
+        Returns
+        -------
+        sd_vec: (N+1,) array or None
+            Path velocities.
+        sdd_vec: (N,) array or None
+            Path accelerations.
+        v_vec: (N,) array or None
+            Auxilliary variables.
+
+        """
         raise NotImplementedError
 
     def compute_trajectory(self, sd_start, sd_end):
-        """ Return a trajectory sampled at the grid points.
+        """ Return the time-parameterized joint trajectory and auxilliary trajectory.
 
         Parameters
         ----------
@@ -52,28 +71,15 @@ class ParameterizationAlgorithm(object):
 
         Returns
         -------
-        t_grid: array
-            Time instances.
-        q_grid: array
-            Joint positions.
-        qd_vec: array
-            Joint velocities.
-        qdd_vec: array
-            Joint accelerations.
-
-        Notes
-        -----
-        Result contains the time instance, joint position, velocity and acceleration at
-        each point of the path discretization grid. The following formula are used:
-
-        t[i] = t[i-1] + 2 * (s[i] - s[i-1]) / (sd[i] + sd[i+1])
-        q[i] = p[i]
-        qd[i] = ps[i] * sd[i]
-        qdd[i] = ps[i] * sdd[i] + pss[i] * sd[i] ^ 2
+        Interpolator or None
+            Time-parameterized joint position trajectory. If unable to parameterize, return None.
+        Interpolator or None
+            Time-parameterized auxiliary variable trajectory. If unable to
+            parameterize or if there is no auxiliary variable, return None.
         """
-        sd_grid, sdd_grid = self.compute_parameterization(sd_start, sd_end)
+        sd_grid, sdd_grid, v_grid = self.compute_parameterization(sd_start, sd_end)
         if sd_grid is None:
-            return None, None, None, None
+            return None, None
 
         # Gridpoint time instances
         t_grid = np.zeros(self.N + 1)
@@ -87,6 +93,14 @@ class ParameterizationAlgorithm(object):
             t_grid[i] = t_grid[i - 1] + delta_t
 
         q_grid = self.path.eval(self.path_discretization)
-
         traj_spline = SplineInterpolator(t_grid, q_grid)
-        return traj_spline
+
+        if v_grid is None:
+            v_spline = None
+        else:
+            v_grid_ = np.zeros((v_grid.shape[0] + 1, v_grid.shape[1]))
+            v_grid_[:-1] = v_grid
+            v_grid_[-1] = v_grid[-1]
+            v_spline = SplineInterpolator(t_grid, v_grid_)
+
+        return traj_spline, v_spline

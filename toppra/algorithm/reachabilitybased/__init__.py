@@ -1,1 +1,1 @@
-from .reachability_based import ReachabilityAlgorithm
+from .reachability_algorithm import ReachabilityAlgorithm
