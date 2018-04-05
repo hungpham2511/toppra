@@ -47,16 +47,9 @@ def _find_left_index(ss_waypoints, s):
 class Interpolator(object):
     """ Abstract class for interpolators.
     """
-    def __init__(self, ss_waypoints, waypoints):
-        self.ss_waypoints = np.array(ss_waypoints)
-        self.waypoints = np.array(waypoints)
-        if np.isscalar(waypoints[0]):
-            self.dof = 1
-        else:
-            self.dof = waypoints[0].shape[0]
-        assert self.ss_waypoints.shape[0] == self.waypoints.shape[0]
-        self.s_start = self.ss_waypoints[0]
-        self.s_end = self.ss_waypoints[-1]
+    def __init__(self):
+        self.dof = None
+        self.duration = None
 
     def get_dof(self):
         """ Return the degree-of-freedom of the path.
@@ -66,7 +59,16 @@ class Interpolator(object):
         out: int
             Degree-of-freedom of the path.
         """
-        return self.dof
+        raise NotImplementedError
+
+    def get_duration(self):
+        """
+
+        Returns
+        -------
+
+        """
+        raise NotImplementedError
 
     def get_path_interval(self):
         """ Return the starting and ending path positions.
@@ -96,7 +98,7 @@ class Interpolator(object):
         raise NotImplementedError
 
     def evald(self, ss_sam):
-        """ Evaluate the first derivative of the geometric path.
+        position__ = """ Evaluate the first derivative of the geometric path.
 
         Parameters
         ----------
@@ -124,6 +126,13 @@ class Interpolator(object):
             Shape (m, dof). Evaluated values at position.
         """
         raise NotImplementedError
+
+    def serialize_rave(self):
+        raise NotImplementedError
+
+    def serialize_ros(self):
+        raise NotImplementedError
+
 
 class RaveTrajectoryWrapper(Interpolator):
     """A wrapper over OpenRAVE's :class:`GenericTrajectory`.
@@ -245,11 +254,25 @@ class SplineInterpolator(Interpolator):
 
     """
     def __init__(self, ss_waypoints, waypoints):
-        super(SplineInterpolator, self).__init__(ss_waypoints, waypoints)
+        super(SplineInterpolator, self).__init__()
+        assert ss_waypoints[0] == 0, "First index must equals zero."
+        self.ss_waypoints = np.array(ss_waypoints)
+        self.waypoints = np.array(waypoints)
+        if np.isscalar(waypoints[0]):
+            self.dof = 1
+        else:
+            self.dof = waypoints[0].shape[0]
+        self.duration = ss_waypoints[-1]
+        assert self.ss_waypoints.shape[0] == self.waypoints.shape[0]
+        self.s_start = self.ss_waypoints[0]
+        self.s_end = self.ss_waypoints[-1]
 
         self.cspl = CubicSpline(ss_waypoints, waypoints)
         self.cspld = self.cspl.derivative()
         self.cspldd = self.cspld.derivative()
+
+    def get_duration(self):
+        return self.duration
 
     def eval(self, ss_sam):
         return self.cspl(ss_sam)
@@ -275,7 +298,19 @@ class UnivariateSplineInterpolator(Interpolator):
         The waypoints.
     """
     def __init__(self, ss_waypoints, waypoints):
-        super(UnivariateSplineInterpolator, self).__init__(ss_waypoints, waypoints)
+        super(UnivariateSplineInterpolator, self).__init__()
+        assert ss_waypoints[0] == 0, "First index must equals zero."
+        self.ss_waypoints = np.array(ss_waypoints)
+        self.waypoints = np.array(waypoints)
+        if np.isscalar(waypoints[0]):
+            self.dof = 1
+        else:
+            self.dof = waypoints[0].shape[0]
+        self.duration = ss_waypoints[-1]
+        assert self.ss_waypoints.shape[0] == self.waypoints.shape[0]
+        self.s_start = self.ss_waypoints[0]
+        self.s_end = self.ss_waypoints[-1]
+
         self.uspl = []
         for i in range(self.dof):
             self.uspl.append(UnivariateSpline(self.ss_waypoints, self.waypoints[:, i]))
