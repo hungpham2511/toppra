@@ -18,7 +18,7 @@ class ParameterizationAlgorithm(object):
     Base class for all parameterization algorithms.
 
     All algorithms should have three the following three attributes: `constraints`, `path`
-    and `path_discretization`.
+    and `gridpoints`.
 
     All algorithms need to implement the method `compute_parameterization` as the least
     requirement to make the algorithm running.
@@ -28,20 +28,20 @@ class ParameterizationAlgorithm(object):
     constraint_list: list of `Constraint`
     path: `Interpolator`
         The geometric path, or the trajectory to parameterize.
-    path_discretization: array, optional
+    gridpoints: array, optional
         If not given, automatically generate a grid with 100 steps.
     """
-    def __init__(self, constraint_list, path, path_discretization=None):
-        if path_discretization is None:
-            path_discretization = np.linspace(0, path.get_duration(), 100)
+    def __init__(self, constraint_list, path, gridpoints=None):
+        if gridpoints is None:
+            gridpoints = np.linspace(0, path.get_duration(), 100)
         self.constraints = constraint_list  # Attr
         self.path = path  # Attr
-        self.path_discretization = np.array(path_discretization)  # Attr
-        self._N = len(path_discretization) - 1  # Number of stages. Number of point is _N + 1
-        assert path.get_path_interval()[0] == path_discretization[0]
-        assert path.get_path_interval()[1] == path_discretization[-1]
+        self.gridpoints = np.array(gridpoints)  # Attr
+        self._N = len(gridpoints) - 1  # Number of stages. Number of point is _N + 1
+        assert path.get_path_interval()[0] == gridpoints[0]
+        assert path.get_path_interval()[1] == gridpoints[-1]
         for i in range(self._N):
-            assert path_discretization[i + 1] > path_discretization[i]
+            assert gridpoints[i + 1] > gridpoints[i]
 
     def compute_parameterization(self, sd_start, sd_end):
         """ Compute a valid parameterization.
@@ -92,14 +92,14 @@ class ParameterizationAlgorithm(object):
         t_grid = np.zeros(self._N + 1)
         for i in range(1, self._N + 1):
             sd_average = (sd_grid[i - 1] + sd_grid[i]) / 2
-            delta_s = self.path_discretization[i] - self.path_discretization[i - 1]
+            delta_s = self.gridpoints[i] - self.gridpoints[i - 1]
             if sd_average > TINY:
                 delta_t = delta_s / sd_average
             else:
                 delta_t = 5  # If average speed is too slow.
             t_grid[i] = t_grid[i - 1] + delta_t
 
-        q_grid = self.path.eval(self.path_discretization)
+        q_grid = self.path.eval(self.gridpoints)
         traj_spline = SplineInterpolator(t_grid, q_grid)
 
         if v_grid.shape[1] == 0:

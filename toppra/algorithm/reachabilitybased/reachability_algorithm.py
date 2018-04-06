@@ -14,7 +14,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
     ----------
     constraint_list:
     path:
-    path_discretization: array, optional
+    gridpoints: array, optional
     solver_wrapper: str, optional
         Name of the solver to use.
 
@@ -31,12 +31,12 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
 
     """
 
-    def __init__(self, constraint_list, path, path_discretization=None, solver_wrapper='cvxpy'):
-        super(ReachabilityAlgorithm, self).__init__(constraint_list, path, path_discretization=path_discretization)
+    def __init__(self, constraint_list, path, gridpoints=None, solver_wrapper='cvxpy'):
+        super(ReachabilityAlgorithm, self).__init__(constraint_list, path, gridpoints=gridpoints)
         if solver_wrapper == 'cvxpy':
-            self.solver_wrapper = cvxpyWrapper(self.constraints, self.path, self.path_discretization)
+            self.solver_wrapper = cvxpyWrapper(self.constraints, self.path, self.gridpoints)
         else:
-            self.solver_wrapper = cvxpyWrapper(self.constraints, self.path, self.path_discretization)
+            self.solver_wrapper = cvxpyWrapper(self.constraints, self.path, self.gridpoints)
 
     def compute_feasible_sets(self):
         """ Return the set of feasible squared velocities along the path.
