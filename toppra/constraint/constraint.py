@@ -23,10 +23,6 @@ class Constraint(object):
     - compute_constraint_params(): tuple
 
     """
-    def __init__(self):
-        self.constraint_type = ConstraintType.Unknown
-        self.discretization_type = DiscretizationType.Collocation  # Discretization method used with solver wrappers
-
     def __repr__(self):
         string = self.__class__.__name__ + '(\n'
         string += '    Type: {:}'.format(self.constraint_type) + '\n'
@@ -41,7 +37,10 @@ class Constraint(object):
     def get_discretization_type(self):
         return self.discretization_type
 
-    def compute_constraint_params(self):
+    def compute_constraint_params(self, path, gridpoints):
+        """ Compute the parameters of the constraint.
+
+        """
         raise NotImplementedError
 
     def get_no_extra_vars(self):

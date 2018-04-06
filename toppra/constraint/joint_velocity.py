@@ -22,8 +22,8 @@ class JointVelocityConstraint(CanonicalLinearConstraint):
         for i in range(self.vlim.shape[0]):
             self._format_string += "      J{:d}: {:}".format(i + 1, self.vlim[i]) + "\n"
 
-    def compute_constraint_params(self, path, ss):
-        qs = path.evald(ss)
+    def compute_constraint_params(self, path, gridpoints):
+        qs = path.evald(gridpoints)
         _, _, xbound_ = _create_velocity_constraint(qs, self.vlim)
         xbound = np.array(xbound_)
         xbound[:, 0] = xbound_[:, 1]

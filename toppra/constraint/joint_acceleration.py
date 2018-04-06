@@ -1,4 +1,5 @@
-from .canonical_linear import CanonicalLinearConstraint
+from .canonical_linear import CanonicalLinearConstraint, canlinear_colloc_to_interpolate
+from ..constraint import DiscretizationType
 from ..constants import MAXU
 import numpy as np
 
@@ -28,18 +29,19 @@ class JointAccelerationConstraint(CanonicalLinearConstraint):
     - `ubound` := [-UMAX, UMAX]
 
     """
-    def __init__(self, alim):
+    def __init__(self, alim, discretization_scheme=DiscretizationType.Collocation):
         super(JointAccelerationConstraint, self).__init__()
         self.alim = np.array(alim)
+        self.discretization_type = discretization_scheme
         assert self.alim.shape[1] == 2, "Wrong input shape."
         self._format_string = "    Acceleration limit: \n"
         for i in range(self.alim.shape[0]):
             self._format_string += "      J{:d}: {:}".format(i + 1, self.alim[i]) + "\n"
 
-    def compute_constraint_params(self, path, ss):
-        ps = path.evald(ss)
-        pss = path.evaldd(ss)
-        N = ss.shape[0] - 1
+    def compute_constraint_params(self, path, gridpoints):
+        ps = path.evald(gridpoints)
+        pss = path.evaldd(gridpoints)
+        N = gridpoints.shape[0] - 1
         dof = path.get_dof()
         I_dof = np.eye(dof)
         F = np.zeros((N + 1, dof * 2, dof))
@@ -51,5 +53,10 @@ class JointAccelerationConstraint(CanonicalLinearConstraint):
         F[:, dof:, :] = -I_dof
         ubound[:, 0] = - MAXU
         ubound[:, 1] = MAXU
+        if self.discretization_type == DiscretizationType.Collocation:
+            return ps, pss, np.zeros_like(ps), F, g, ubound, None
+        elif self.discretization_type == DiscretizationType.Interpolation:
+            return canlinear_colloc_to_interpolate(ps, pss, np.zeros_like(ps), F, g, ubound, None, np.diff(gridpoints))
+        else:
+            raise NotImplementedError, "Other form of discretization not supported!"
 
-        return ps, pss, np.zeros_like(ps), F, g, ubound, None

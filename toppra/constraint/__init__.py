@@ -1,3 +1,3 @@
-from .constraint import ConstraintType
+from .constraint import ConstraintType, DiscretizationType
 from .joint_acceleration import JointAccelerationConstraint
 from .joint_velocity import JointVelocityConstraint
