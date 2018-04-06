@@ -32,16 +32,13 @@ class Constraint(object):
         return string
 
     def get_constraint_type(self):
-        return self.constraint_type
+        raise NotImplementedError
 
     def get_discretization_type(self):
-        return self.discretization_type
+        raise NotImplementedError
 
     def compute_constraint_params(self, path, gridpoints):
-        """ Compute the parameters of the constraint.
-
-        """
         raise NotImplementedError
 
     def get_no_extra_vars(self):
-        return self.n_extra_vars
+        raise NotImplementedError

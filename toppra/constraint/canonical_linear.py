@@ -23,6 +23,12 @@ class CanonicalLinearConstraint(Constraint):
         self.constraint_type = ConstraintType.CanonicalLinear
         self.n_extra_vars = 0
 
+    def get_no_extra_vars(self):
+        return self.n_extra_vars
+
+    def get_constraint_type(self):
+        return self.constraint_type
+
     def compute_constraint_params(self, path, gridpoints):
         """ Return constraint parameter for Canonical Linear Constraints.
 
