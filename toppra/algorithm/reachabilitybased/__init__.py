@@ -1,1 +1,2 @@
 from .reachability_algorithm import ReachabilityAlgorithm
+from .time_optimal_algorithm import TOPPRA

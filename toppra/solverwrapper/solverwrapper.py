@@ -7,13 +7,22 @@ class SolverWrapper(object):
     Solver wrappers are used only for implementing Reachability-based parameterization algorithms.
     The main public interface of this class is the method `solve_stagewise_optim`, which needs to
     be implemented by derived classes.
+
+    Attributes
+    ----------
+    constraints : list of `Constraint`
+        Constraints on the system.
+    path : Interpolator
+    path_discretization: array
     """
 
     def __init__(self, constraint_list, path, path_discretization):
-        self.N = len(path_discretization) - 1  # Number of stages. Number of point is N + 1
-        self.path = path
+        # Main attributes
         self.constraints = constraint_list
+        self.path = path
         self.path_discretization = np.array(path_discretization)
+        # End main attributes
+        self.N = len(path_discretization) - 1  # Number of stages. Number of point is _N + 1
         self.deltas = self.path_discretization[1:] - self.path_discretization[:-1]
         assert path.get_path_interval()[0] == path_discretization[0]
         assert path.get_path_interval()[1] == path_discretization[-1]

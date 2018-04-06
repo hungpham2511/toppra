@@ -17,6 +17,12 @@ class ParameterizationAlgorithm(object):
     """
     Base class for all parameterization algorithms.
 
+    All algorithms should have three the following three attributes: `constraints`, `path`
+    and `path_discretization`.
+
+    All algorithms need to implement the method `compute_parameterization` as the least
+    requirement to make the algorithm running.
+
     Parameters
     ----------
     constraint_list: list of `Constraint`
@@ -28,17 +34,19 @@ class ParameterizationAlgorithm(object):
     def __init__(self, constraint_list, path, path_discretization=None):
         if path_discretization is None:
             path_discretization = np.linspace(0, path.get_duration(), 100)
-        self.N = len(path_discretization) - 1  # Number of stages. Number of point is N + 1
-        self.path = path
-        self.constraints = constraint_list
-        self.path_discretization = np.array(path_discretization)
+        self.constraints = constraint_list  # Attr
+        self.path = path  # Attr
+        self.path_discretization = np.array(path_discretization)  # Attr
+        self._N = len(path_discretization) - 1  # Number of stages. Number of point is _N + 1
         assert path.get_path_interval()[0] == path_discretization[0]
         assert path.get_path_interval()[1] == path_discretization[-1]
-        for i in range(self.N):
+        for i in range(self._N):
             assert path_discretization[i + 1] > path_discretization[i]
 
     def compute_parameterization(self, sd_start, sd_end):
         """ Compute a valid parameterization.
+
+        If there is no valid parameterization, simply return None(s).
 
         Parameters
         ----------
@@ -49,13 +57,12 @@ class ParameterizationAlgorithm(object):
 
         Returns
         -------
-        sd_vec: (N+1,) array or None
+        sd_vec: (_N+1,) array None
             Path velocities.
-        sdd_vec: (N,) array or None
+        sdd_vec: (_N,) array or None
             Path accelerations.
-        v_vec: (N,) array or None
-            Auxilliary variables.
-
+        v_vec: (_N,) array or None
+            Auxiliary variables.
         """
         raise NotImplementedError
 
@@ -82,8 +89,8 @@ class ParameterizationAlgorithm(object):
             return None, None
 
         # Gridpoint time instances
-        t_grid = np.zeros(self.N + 1)
-        for i in range(1, self.N + 1):
+        t_grid = np.zeros(self._N + 1)
+        for i in range(1, self._N + 1):
             sd_average = (sd_grid[i] + sd_grid[i + 1]) / 2
             delta_s = self.path_discretization[i + 1] - self.path_discretization[i]
             if sd_average > TINY:

@@ -1,7 +1,10 @@
 from ..algorithm import ParameterizationAlgorithm
 from ...solverwrapper import cvxpyWrapper
-from ...constants import LARGE
+from ...constants import LARGE, TINY, SMALL
+
 import numpy as np
+import logging
+logger = logging.getLogger(__name__)
 
 
 class ReachabilityAlgorithm(ParameterizationAlgorithm):
@@ -30,7 +33,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
 
     def __init__(self, constraint_list, path, path_discretization=None, solver_wrapper='cvxpy'):
         super(ReachabilityAlgorithm, self).__init__(constraint_list, path, path_discretization=path_discretization)
-        if solver_wrapper=='cvxpy':
+        if solver_wrapper == 'cvxpy':
             self.solver_wrapper = cvxpyWrapper(self.constraints, self.path, self.path_discretization)
         else:
             self.solver_wrapper = cvxpyWrapper(self.constraints, self.path, self.path_discretization)
@@ -41,7 +44,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         Returns
         -------
         X: array, or list containing None
-            Shape (N+1, 2). The tuple X[i] contains the lower and upper bound of the
+            Shape (_N+1, 2). The tuple X[i] contains the lower and upper bound of the
             feasible squared path velocity at s[i].  If there is no feasible state,
             X[i] is the tuple (None, None).
 
@@ -51,9 +54,9 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         g_lower = np.zeros(nV)
         g_lower[1] = 1
         X_lower = map(lambda i: self.solver_wrapper.solve_stagewise_optim(
-                i, Hzero, g_lower, -LARGE, LARGE, -LARGE, LARGE)[1], range(self.N + 1))
+                i, Hzero, g_lower, -LARGE, LARGE, -LARGE, LARGE)[1], range(self._N + 1))
         X_upper = map(lambda i: self.solver_wrapper.solve_stagewise_optim(
-            i, Hzero, - g_lower, -LARGE, LARGE, -LARGE, LARGE)[1], range(self.N + 1))
+            i, Hzero, - g_lower, -LARGE, LARGE, -LARGE, LARGE)[1], range(self._N + 1))
         X = np.array((X_lower, X_upper)).T
         return X
 
@@ -70,14 +73,14 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         Returns
         -------
         K: array
-            Shape (N+1,2). The tuple K[i] contains the upper and lower bounds of
+            Shape (_N+1,2). The tuple K[i] contains the upper and lower bounds of
             the set of controllable squared velocities at position s[i].
 
         """
         assert sdmin <= sdmax and 0 <= sdmin
-        K = np.zeros((self.N + 1, 2))
-        K[self.N] = [sdmin ** 2, sdmax ** 2]
-        for i in range(self.N - 1, -1, -1):
+        K = np.zeros((self._N + 1, 2))
+        K[self._N] = [sdmin ** 2, sdmax ** 2]
+        for i in range(self._N - 1, -1, -1):
             K[i] = self._one_step(i, K[i + 1])
         return K
 
@@ -93,17 +96,49 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         -------
         K: list of 2 float or None
         """
-        if None in K_next or i < 0 or i > self.N:
+        if None in K_next or i < 0 or i > self._N:
             return [None, None]
 
         nV = self.solver_wrapper.get_no_vars()
-        Hzero = np.zeros((nV, nV))
         g_upper = np.zeros(nV)
         g_upper[1] = - 1
-        # g_upper[0] = - self.solver_wrapper.get_deltas()[i] * 2
         x_upper = self.solver_wrapper.solve_stagewise_optim(
-            i, Hzero, g_upper, -LARGE, LARGE, K_next[0], K_next[1])[1]
+            i, None, g_upper, None, None, K_next[0], K_next[1])[1]
         x_lower = self.solver_wrapper.solve_stagewise_optim(
-            i, Hzero, - g_upper, -LARGE, LARGE, K_next[0], K_next[1])[1]
+            i, None, - g_upper, None, None, K_next[0], K_next[1])[1]
         return [x_lower, x_upper]
+
+    def compute_parameterization(self, sd_start, sd_end):
+        assert sd_end >= 0 and sd_start >= 0, "Path velocities must be positive"
+        K = self.compute_controllable_sets(sd_end, sd_end)
+
+        if None in K[0]:
+            logger.warn("The set of controllable velocities at the beginning is empty!")
+            return None, None, None
+
+        x_start = sd_start ** 2
+        if x_start + SMALL < K[0, 0] or K[0, 1] + SMALL < x_start:
+            logger.warn("The initial velocity is not controllable.")
+            return None, None, None
+
+        N = self.solver_wrapper.get_no_stages()
+        deltas = self.solver_wrapper.get_deltas()
+        xs = np.zeros(N + 1)
+        xs[0] = x_start
+        us = np.zeros(N)
+        v_vec = np.zeros((N, self.solver_wrapper.get_no_vars() - 2))
+
+        for i in range(self._N):
+            optim_res = self._forward_step(i, xs[i], K[i + 1])
+            if optim_res is None:
+                us[i] = None
+                xs[i + 1] = None
+                v_vec[i] = None
+            else:
+                us[i] = optim_res[0]
+                xs[i + 1] = xs[i] + 2 * deltas[i] * us[i]
+                v_vec[i] = optim_res[2:]
+        sd_vec = np.sqrt(xs)
+        sdd_vec = np.copy(us)
+        return sdd_vec, sd_vec, v_vec
 

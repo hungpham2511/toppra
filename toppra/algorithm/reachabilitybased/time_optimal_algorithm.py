@@ -4,41 +4,39 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
+
 class TOPPRA(ReachabilityAlgorithm):
     """ The Time-Optimal Path Parameterization based on Reachability Analysis algorithm.
 
     """
-    def compute_parameterization(self, sd_start, sd_end):
-        """
+
+    def _forward_step(self, i, x, K_next):
+        """ Compute the highest possible path velocity that is controllable.
 
         Parameters
         ----------
-        sd_start
-        sd_end
+        i: int
+            Current stage index
+        x: float
+            The squared velocity at the current stage.
+        K_next: list
+            The lower and upper bounds of the set of controllable squared velocities
+            in the next stage.
 
         Returns
         -------
-        sd_grid
-        sdd_grid
-
+        optim_var: array
+            Optimal variable, which has this format (u, x, v).
         """
-        assert sd_end >= 0 and sd_start >= 0, "Path velocities must be positive"
-        K = self.compute_controllable_sets(sd_end, sd_end)
+        if None in K_next or i < 0 or i > self._N:
+            return [None, None]
 
-        if None in K[0]:
-            logger.warn("The set of controllable velocities at the beginning is empty!")
-            return None, None
+        nV = self.solver_wrapper.get_no_vars()
+        g_upper = np.zeros(nV)
+        g_upper[1] = - 1
+        g_upper[0] = - 2 * self.solver_wrapper.get_deltas()[i]
 
-        x_start = sd_start ** 2
-        if x_start < K[0, 0] or K[0, 1] < x_start:
-            logger.warn("The initial velocity is not controllable.")
-            return None, None
-
-        N = self.solver_wrapper.get_no_stages()
-        xs = np.zeros(N + 1)
-        xs[0] = x_start
-        us = np.zeros(N)
-        # for i in range(N):
-
-
+        optim_var = self.solver_wrapper.solve_stagewise_optim(
+            i, None, g_upper, x, x, K_next[0], K_next[1])
+        return optim_var
 

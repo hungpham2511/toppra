@@ -37,11 +37,11 @@ def inv_dyn(rave_robot, q, qd, qdd, forceslist=None, returncomponents=True):
     Parameters
     ----------
     rave_robot : OpenRAVE.robot
-    q : (N, ) ndarray
+    q : (_N, ) ndarray
         Joint position.
-    qd : (N, ) ndarray
+    qd : (_N, ) ndarray
         Joint velocity.
-    qdd : (N, ) ndarray
+    qdd : (_N, ) ndarray
         Joint acceleration.
     returncomponents : Bool
         If True, return the list [t1, t2, t3]
@@ -97,18 +97,18 @@ def smooth_singularities(pp, us, xs, vs=None):
     ----------
     pp: :class:`.qpOASESPPSolver`
     us: array
-        Shape (N, ). Controls.
+        Shape (_N, ). Controls.
     xs: array
-        Shape (N+1, ). Squared velocities.
+        Shape (_N+1, ). Squared velocities.
     vs: array, optional
         If not given, `vs_smth` will not be returned.
 
     Returns
     -------
     us_smth: array
-        Shape (N, ). Smoothed controls.
+        Shape (_N, ). Smoothed controls.
     xs_smth: array
-        Shape (N+1, ). Smoothed squared velocities.
+        Shape (_N+1, ). Smoothed squared velocities.
     vs_smth: array
         If `vs` is not given, `vs_smth` will not be returned.
 
