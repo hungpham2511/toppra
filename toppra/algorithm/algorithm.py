@@ -84,15 +84,15 @@ class ParameterizationAlgorithm(object):
             Time-parameterized auxiliary variable trajectory. If unable to
             parameterize or if there is no auxiliary variable, return None.
         """
-        sd_grid, sdd_grid, v_grid = self.compute_parameterization(sd_start, sd_end)
+        sdd_grid, sd_grid, v_grid = self.compute_parameterization(sd_start, sd_end)
         if sd_grid is None:
             return None, None
 
         # Gridpoint time instances
         t_grid = np.zeros(self._N + 1)
         for i in range(1, self._N + 1):
-            sd_average = (sd_grid[i] + sd_grid[i + 1]) / 2
-            delta_s = self.path_discretization[i + 1] - self.path_discretization[i]
+            sd_average = (sd_grid[i - 1] + sd_grid[i]) / 2
+            delta_s = self.path_discretization[i] - self.path_discretization[i - 1]
             if sd_average > TINY:
                 delta_t = delta_s / sd_average
             else:
@@ -102,7 +102,7 @@ class ParameterizationAlgorithm(object):
         q_grid = self.path.eval(self.path_discretization)
         traj_spline = SplineInterpolator(t_grid, q_grid)
 
-        if v_grid is None:
+        if v_grid.shape[1] == 0:
             v_spline = None
         else:
             v_grid_ = np.zeros((v_grid.shape[0] + 1, v_grid.shape[1]))

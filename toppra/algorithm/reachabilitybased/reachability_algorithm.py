@@ -1,6 +1,6 @@
 from ..algorithm import ParameterizationAlgorithm
 from ...solverwrapper import cvxpyWrapper
-from ...constants import LARGE, TINY, SMALL
+from ...constants import LARGE, SMALL
 
 import numpy as np
 import logging
@@ -136,7 +136,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
                 v_vec[i] = None
             else:
                 us[i] = optim_res[0]
-                xs[i + 1] = xs[i] + 2 * deltas[i] * us[i]
+                xs[i + 1] = max(0, xs[i] + 2 * deltas[i] * us[i])
                 v_vec[i] = optim_res[2:]
         sd_vec = np.sqrt(xs)
         sdd_vec = np.copy(us)
