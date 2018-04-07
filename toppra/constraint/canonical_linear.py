@@ -23,15 +23,8 @@ class CanonicalLinearConstraint(Constraint):
         self.constraint_type = ConstraintType.CanonicalLinear
         self.n_extra_vars = 0
 
-    def get_no_extra_vars(self):
-        return self.n_extra_vars
-
-    def get_constraint_type(self):
-        return self.constraint_type
-
     def compute_constraint_params(self, path, gridpoints):
-        """ Return constraint parameter for Canonical Linear Constraints.
-
+        """ Return constraint parameters.
 
         Parameters
         ----------
@@ -57,18 +50,6 @@ class CanonicalLinearConstraint(Constraint):
         xbound: array, or None
             Shape (N, 2). See notes.
 
-        Notes
-        -----
-        The general canonical linear constraint has this form
-
-        .. math::
-
-            a[i] u_1 + b[i] x + c[i] &= v, \\\\
-            F[i] v &\\leq g[i], \\\\
-            xbound[i, 0] \\leq x \\leq xbound[i, 1], \\\\
-            ubound[i, 0] \\leq u \\leq ubound[i, 1].
-
-        Secondly, this function generates parameters that account for discretization scheme.
         """
         raise NotImplementedError
 
