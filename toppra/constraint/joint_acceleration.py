@@ -56,7 +56,7 @@ class JointAccelerationConstraint(CanonicalLinearConstraint):
         if self.discretization_type == DiscretizationType.Collocation:
             return ps, pss, np.zeros_like(ps), F, g, ubound, None
         elif self.discretization_type == DiscretizationType.Interpolation:
-            return canlinear_colloc_to_interpolate(ps, pss, np.zeros_like(ps), F, g, ubound, None, np.diff(gridpoints))
+            return canlinear_colloc_to_interpolate(ps, pss, np.zeros_like(ps), F, g, ubound, None, gridpoints)
         else:
             raise NotImplementedError, "Other form of discretization not supported!"
 

@@ -26,43 +26,76 @@ class CanonicalLinearConstraint(Constraint):
     def compute_constraint_params(self, path, gridpoints):
         """ Return constraint parameters.
 
+        If a set of parameters are not available, None is returned.
+
         Parameters
         ----------
         path: `Interpolator`
             The geometric path.
         gridpoints: array
-            The path discretization.
+            (N+1,) array. The path discretization.
 
         Returns
         -------
-        a: array
-            Shape (N, m). See notes.
-        b: array
-            Shape (N, m). See notes.
-        c: array
-            Shape (N, m). See notes.
-        F: array
-            Shape (N, k, m). See notes.
-        g: array
-            Shape (N, k,). See notes
+        a: array, or None
+            Shape (N + 1, m). See notes.
+        b: array, or None
+            Shape (N + 1, m). See notes.
+        c: array, or None
+            Shape (N + 1, m). See notes.
+        F: array, or None
+            Shape (N + 1, k, m). See notes.
+        g: array, or None
+            Shape (N + 1, k,). See notes
         ubound: array, or None
-            Shape (N, 2). See notes.
+            Shape (N + 1, 2). See notes.
         xbound: array, or None
-            Shape (N, 2). See notes.
+            Shape (N + 1, 2). See notes.
 
         """
         raise NotImplementedError
 
 
-def canlinear_colloc_to_interpolate(a, b, c, F, g, xbound, ubound, deltas):
+def canlinear_colloc_to_interpolate(a, b, c, F, g, xbound, ubound, gridpoints):
     """ Convert a set of parameters to the interpolation discretization scheme.
+
+    If a set of parameters is None, the resulting set is also None.
 
     Parameters
     ----------
-    See above.
+    a: array, or None
+        Shape (N + 1, m). See notes.
+    b: array, or None
+        Shape (N + 1, m). See notes.
+    c: array, or None
+        Shape (N + 1, m). See notes.
+    F: array, or None
+        Shape (N + 1, k, m). See notes.
+    g: array, or None
+        Shape (N + 1, k,). See notes
+    ubound: array, or None
+        Shape (N + 1, 2). See notes.
+    xbound: array, or None
+        Shape (N + 1, 2). See notes.
+    gridpoints: array
+        (N+1,) array. The path discretization.
 
     Returns
     -------
+    a_intp: array, or None
+        Shape (N + 1, m). See notes.
+    b_intp: array, or None
+        Shape (N + 1, m). See notes.
+    c_intp: array, or None
+        Shape (N + 1, m). See notes.
+    F_intp: array, or None
+        Shape (N + 1, k, m). See notes.
+    g_intp: array, or None
+        Shape (N + 1, k,). See notes
+    ubound: array, or None
+        Shape (N + 1, 2). See notes.
+    xbound: array, or None
+        Shape (N + 1, 2). See notes.
 
     """
     if a is None:
@@ -75,6 +108,7 @@ def canlinear_colloc_to_interpolate(a, b, c, F, g, xbound, ubound, deltas):
         N = a.shape[0] - 1
         d = a.shape[1]
         m = g.shape[1]
+        deltas = np.diff(gridpoints)
 
         a_intp = np.zeros((N + 1, 2 * d))
         a_intp[:, :d] = a
