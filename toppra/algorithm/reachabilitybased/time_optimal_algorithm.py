@@ -8,6 +8,14 @@ logger = logging.getLogger(__name__)
 class TOPPRA(ReachabilityAlgorithm):
     """ The Time-Optimal Path Parameterization based on Reachability Analysis algorithm.
 
+    Parameters
+    ----------
+    constraint_list: list of Constraint
+    path: Interpolator
+    gridpoints: array, optional
+    solver_wrapper: str, optional
+        Name of the solver to use.
+
     """
 
     def _forward_step(self, i, x, K_next):

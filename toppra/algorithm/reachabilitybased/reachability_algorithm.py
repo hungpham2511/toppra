@@ -12,8 +12,8 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
 
     Parameters
     ----------
-    constraint_list:
-    path:
+    constraint_list: list of Constraint
+    path: Interpolator
     gridpoints: array, optional
     solver_wrapper: str, optional
         Name of the solver to use.
@@ -27,8 +27,6 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
     - compute_controllable_sets
     - compute_reachable_sets
     - compute_feasible_sets
-
-
     """
 
     def __init__(self, constraint_list, path, gridpoints=None, solver_wrapper='cvxpy'):

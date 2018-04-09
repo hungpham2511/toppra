@@ -67,8 +67,8 @@ class cvxpyWrapper(SolverWrapper):
         objective = cvxpy.Minimize(0.5 * cvxpy.quad_form(ux, H) + g * ux)
 
         problem = cvxpy.Problem(objective, constraints=cvxpy_constraints)
-        optimal_value = problem.solve()
-        if isinstance(optimal_value, float):
+        problem.solve()
+        if problem.status == 'optimal':
             return np.array(ux.value).flatten()
         else:
             return [None] * self.get_no_vars()

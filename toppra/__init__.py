@@ -6,6 +6,7 @@ Reachability-Analysis-based Time-Optimal Path Parametrization.
 This package produces routines for creation and handling path constraints
 using the algorithm `TOPP-RA`.
 """
+import constraint
 from TOPP import *
 from interpolator import *
 from constraints import *

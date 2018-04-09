@@ -57,10 +57,10 @@ class ParameterizationAlgorithm(object):
 
         Returns
         -------
-        sd_vec: (_N+1,) array None
-            Path velocities.
         sdd_vec: (_N,) array or None
             Path accelerations.
+        sd_vec: (_N+1,) array None
+            Path velocities.
         v_vec: (_N,) array or None
             Auxiliary variables.
         """
@@ -78,9 +78,9 @@ class ParameterizationAlgorithm(object):
 
         Returns
         -------
-        Interpolator or None
+        :class:`Interpolator`
             Time-parameterized joint position trajectory. If unable to parameterize, return None.
-        Interpolator or None
+        :class:`Interpolator`
             Time-parameterized auxiliary variable trajectory. If unable to
             parameterize or if there is no auxiliary variable, return None.
         """

@@ -59,13 +59,16 @@ class CanonicalLinearSecondOrderConstraint(CanonicalLinearConstraint):
             map(lambda p_: self.inv_dyn(p_, v_zero, v_zero), p)
         )
         a = np.array(
-            map(lambda p_, ps_: self.inv_dyn(p_, v_zero, ps_), zip(p, ps))
+            map(lambda (p_, ps_): self.inv_dyn(p_, v_zero, ps_), zip(p, ps))
         ) - c
         b = np.array(
-            map(lambda p_, ps_, pss_: self.inv_dyn(p_, ps_, pss_), zip(p, ps, pss))
+            map(lambda (p_, ps_, pss_): self.inv_dyn(p_, ps_, pss_), zip(p, ps, pss))
         ) - c
 
-        return a, b, c, F, g, None, None
+        if self.discretization_type == DiscretizationType.Collocation:
+            return a, b, c, F, g, None, None
+        else:
+            return
 
 
 
