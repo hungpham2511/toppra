@@ -78,7 +78,9 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         assert sdmin <= sdmax and 0 <= sdmin
         K = np.zeros((self._N + 1, 2))
         K[self._N] = [sdmin ** 2, sdmax ** 2]
+        logger.debug("Start solving for controllable sets")
         for i in range(self._N - 1, -1, -1):
+            if i % 1 == 0: logger.debug("[Solve Controllable] i={:d}".format(i))
             K[i] = self._one_step(i, K[i + 1])
         return K
 

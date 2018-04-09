@@ -67,7 +67,7 @@ class cvxpyWrapper(SolverWrapper):
         objective = cvxpy.Minimize(0.5 * cvxpy.quad_form(ux, H) + g * ux)
 
         problem = cvxpy.Problem(objective, constraints=cvxpy_constraints)
-        problem.solve()
+        problem.solve(solver='MOSEK')
         if problem.status == 'optimal':
             return np.array(ux.value).flatten()
         else:
