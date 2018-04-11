@@ -1,4 +1,4 @@
-from .canonical_linear import CanonicalLinearConstraint
+from .canonical_linear import CanonicalLinearConstraint, canlinear_colloc_to_interpolate
 from .constraint import DiscretizationType
 import numpy as np
 
@@ -67,11 +67,8 @@ class CanonicalLinearSecondOrderConstraint(CanonicalLinearConstraint):
 
         if self.discretization_type == DiscretizationType.Collocation:
             return a, b, c, F, g, None, None
+        elif self.discretization_type == DiscretizationType.Interpolation:
+            return canlinear_colloc_to_interpolate(a, b, c, F, g, None, None, gridpoints)
         else:
-            return
-
-
-
-
-
+            raise NotImplementedError, "Other form of discretization not supported!"
 

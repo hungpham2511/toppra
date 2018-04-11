@@ -44,7 +44,18 @@ class Constraint(object):
         return self.constraint_type
 
     def get_discretization_type(self):
-        raise self.discretization_type
+        return self.discretization_type
+
+    def set_discretization_type(self, t):
+        if t == 0:
+            self.discretization_type = DiscretizationType.Collocation
+        elif t == 1:
+            self.discretization_type = DiscretizationType.Interpolation
+        elif t == DiscretizationType.Collocation or t == DiscretizationType.Interpolation:
+            self.disretization_type = t
+        else:
+            raise "Discretization type: {:} not implemented!".format(t)
+
 
     def compute_constraint_params(self, path, gridpoints):
         raise NotImplementedError

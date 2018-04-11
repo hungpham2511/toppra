@@ -4,6 +4,8 @@ import numpy as np
 class SolverWrapper(object):
     """ Base class for all solver wrappers.
 
+    Pattern: Strategy. `SolverWrapper` is the Strategy; `ReachabilityAlgorithm` is the Context.
+
     Solver wrappers are used only for implementing Reachability-based parameterization algorithms.
     The main public interface of this class is the method `solve_stagewise_optim`, which needs to
     be implemented by derived classes.

@@ -16,7 +16,7 @@ class JointVelocityConstraint(CanonicalLinearConstraint):
 
     def __init__(self, vlim):
         super(JointVelocityConstraint, self).__init__()
-        self.vlim = np.array(vlim)
+        self.vlim = np.array(vlim, dtype=float)
         assert self.vlim.shape[1] == 2, "Wrong input shape."
         self._format_string = "    Velocity limit: \n"
         for i in range(self.vlim.shape[0]):

@@ -1,5 +1,5 @@
 from .constraint import Constraint
-from .constraint import ConstraintType
+from .constraint import ConstraintType, DiscretizationType
 
 import numpy as np
 
@@ -21,6 +21,7 @@ class CanonicalLinearConstraint(Constraint):
     """
     def __init__(self):
         self.constraint_type = ConstraintType.CanonicalLinear
+        self.discretization_type = DiscretizationType.Collocation
         self.n_extra_vars = 0
 
     def compute_constraint_params(self, path, gridpoints):

@@ -31,7 +31,7 @@ class JointAccelerationConstraint(CanonicalLinearConstraint):
     """
     def __init__(self, alim, discretization_scheme=DiscretizationType.Collocation):
         super(JointAccelerationConstraint, self).__init__()
-        self.alim = np.array(alim)
+        self.alim = np.array(alim, dtype=float)
         self.discretization_type = discretization_scheme
         assert self.alim.shape[1] == 2, "Wrong input shape."
         self._format_string = "    Acceleration limit: \n"

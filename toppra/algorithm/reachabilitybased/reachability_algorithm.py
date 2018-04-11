@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 class ReachabilityAlgorithm(ParameterizationAlgorithm):
     """ Base class for all Reachability Analysis-based parameterization algorithms.
 
+
     Parameters
     ----------
     constraint_list: list of Constraint
@@ -18,11 +19,20 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
     solver_wrapper: str, optional
         Name of the solver to use.
 
+    Notes
+    -----
+    There are two patterns this class implements.
+
+    1) Together with `SolverWrapper`, it uses a Strategy pattern to achieve different
+       solver configuration.
+
+    2) The class itself implements a `Template` pattern.
+
     RA-based algorithm uses a `SolverWrapper` for most, if not all, computations.
     During initialization, a solver wrapper is constructed from the given variables
     and is used afterward.
 
-    In contrast to a generic path parameterization algorithm, a RA-based algorithm
+    In addition to a generic path parameterization algorithm, a RA-based algorithm
     implement additionally three methods:
     - compute_controllable_sets
     - compute_reachable_sets
@@ -100,7 +110,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         -------
         K: list of 2 float or None
         """
-        if None in K_next or i < 0 or i > self._N:
+        if np.isnan(K_next).any() or i < 0 or i > self._N:
             return [None, None]
 
         nV = self.solver_wrapper.get_no_vars()
@@ -116,8 +126,11 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         assert sd_end >= 0 and sd_start >= 0, "Path velocities must be positive"
         K = self.compute_controllable_sets(sd_end, sd_end)
 
-        if None in K[0]:
-            logger.warn("The set of controllable velocities at the beginning is empty!")
+        if np.isnan(K).any():
+            output_string =  "The set of controllable velocities at the beginning is empty!"
+            for i, Ki in enumerate(K):
+                output_string += "K_{:d} = [{:} {:}] \n".format(i, Ki[0], Ki[1])
+            logger.warn(output_string)
             return None, None, None
 
         x_start = sd_start ** 2
