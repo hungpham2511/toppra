@@ -51,10 +51,12 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         Hzero = np.zeros((nV, nV))
         g_lower = np.zeros(nV)
         g_lower[1] = 1
+        self.solver_wrapper.setup_solver()
         X_lower = map(lambda i: self.solver_wrapper.solve_stagewise_optim(
                 i, Hzero, g_lower, -LARGE, LARGE, -LARGE, LARGE)[1], range(self._N + 1))
         X_upper = map(lambda i: self.solver_wrapper.solve_stagewise_optim(
             i, Hzero, - g_lower, -LARGE, LARGE, -LARGE, LARGE)[1], range(self._N + 1))
+        self.solver_wrapper.close_solver()
         X = np.array((X_lower, X_upper)).T
         return X
 
@@ -79,9 +81,11 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         K = np.zeros((self._N + 1, 2))
         K[self._N] = [sdmin ** 2, sdmax ** 2]
         logger.debug("Start solving for controllable sets")
+        self.solver_wrapper.setup_solver()
         for i in range(self._N - 1, -1, -1):
             if i % 1 == 0: logger.debug("[Solve Controllable] i={:d}".format(i))
             K[i] = self._one_step(i, K[i + 1])
+        self.solver_wrapper.close_solver()
         return K
 
     def _one_step(self, i, K_next):
@@ -128,7 +132,9 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         us = np.zeros(N)
         v_vec = np.zeros((N, self.solver_wrapper.get_no_vars() - 2))
 
+        self.solver_wrapper.setup_solver()
         for i in range(self._N):
+            logger.debug("[Solve forward] i={:d}".format(i))
             optim_res = self._forward_step(i, xs[i], K[i + 1])
             if optim_res is None:
                 us[i] = None
@@ -138,6 +144,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
                 us[i] = optim_res[0]
                 xs[i + 1] = max(0, xs[i] + 2 * deltas[i] * us[i])
                 v_vec[i] = optim_res[2:]
+        self.solver_wrapper.close_solver()
         sd_vec = np.sqrt(xs)
         sdd_vec = np.copy(us)
         return sdd_vec, sd_vec, v_vec

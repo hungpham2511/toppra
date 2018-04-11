@@ -68,6 +68,7 @@ class cvxpyWrapper(SolverWrapper):
 
         problem = cvxpy.Problem(objective, constraints=cvxpy_constraints)
         problem.solve(solver='MOSEK')
+        # problem.solve(solver='ECOS')
         if problem.status == 'optimal':
             return np.array(ux.value).flatten()
         else:

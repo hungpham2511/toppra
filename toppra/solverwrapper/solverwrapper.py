@@ -8,6 +8,10 @@ class SolverWrapper(object):
     The main public interface of this class is the method `solve_stagewise_optim`, which needs to
     be implemented by derived classes.
 
+    Some solvers need to be setup and close down properly (mosek). Hence this class contains two
+    abstract methods `setup_solver` and `close_solver`, which should be called before and after
+    any computation by the algorithm object.
+
     Attributes
     ----------
     constraints : list of `Constraint`
@@ -83,3 +87,9 @@ class SolverWrapper(object):
         where `v` is an auxiliary variable, only presented in non-canonical constraints.
         """
         raise NotImplementedError
+
+    def setup_solver(self):
+        pass
+
+    def close_solver(self):
+        pass
