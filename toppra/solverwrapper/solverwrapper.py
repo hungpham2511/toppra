@@ -60,9 +60,8 @@ class SolverWrapper(object):
         Parameters
         ----------
         i: int
-            The stage index.
+            The stage index. See notes for details on each variable.
         H: array or None
-            If is None, use the zero matrix.
         g: array
         x_min: float or None
         x_max: float or None
@@ -71,14 +70,14 @@ class SolverWrapper(object):
 
         Returns
         -------
-        array or None
+        array or list of None
              If the optimization successes, return an array containing the optimal variable.
              Otherwise, a list of None that has the same shape as the variable.
 
         Notes
         -----
         This is the main public interface of `SolverWrapper`. The stage-wise quadratic optimization problem
-        is given by:
+        is:
 
         .. math::
             \\text{min  }  & 0.5 [u, x, v] H [u, x, v]^\\top + [u, x, v] g    \\\\
@@ -86,7 +85,7 @@ class SolverWrapper(object):
                            & x_{min} \leq x \leq x_{max}             \\\\
                            & x_{next, min} \leq x + 2 \Delta_i u \leq x_{next, max},
 
-        where `v` is an auxiliary variable, only presented in non-canonical constraints.
+        where `v` is an auxiliary variable, only exist if there are non-canonical constraints.
         """
         raise NotImplementedError
 
