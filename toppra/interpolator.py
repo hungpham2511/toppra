@@ -261,7 +261,7 @@ class SplineInterpolator(Interpolator):
         if np.isscalar(waypoints[0]):
             self.dof = 1
         else:
-            self.dof = waypoints[0].shape[0]
+            self.dof = self.waypoints[0].shape[0]
         self.duration = ss_waypoints[-1]
         assert self.ss_waypoints.shape[0] == self.waypoints.shape[0]
         self.s_start = self.ss_waypoints[0]

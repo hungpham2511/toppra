@@ -47,6 +47,15 @@ class Constraint(object):
         return self.discretization_type
 
     def set_discretization_type(self, t):
+        """ Discretization type: Collocation or Interpolation.
+
+        Parameters
+        ----------
+        t: int, or DiscretizationType
+            If is 1, set to Interpolation.
+            If is 0, set to Collocation.
+
+        """
         if t == 0:
             self.discretization_type = DiscretizationType.Collocation
         elif t == 1:

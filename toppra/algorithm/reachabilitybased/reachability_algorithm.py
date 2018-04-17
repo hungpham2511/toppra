@@ -1,5 +1,5 @@
 from ..algorithm import ParameterizationAlgorithm
-from ...solverwrapper import cvxpyWrapper
+from ...solverwrapper import cvxpyWrapper, qpOASESSolverWrapper
 from ...constants import LARGE, SMALL
 
 import numpy as np
@@ -43,8 +43,10 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         super(ReachabilityAlgorithm, self).__init__(constraint_list, path, gridpoints=gridpoints)
         if solver_wrapper == 'cvxpy':
             self.solver_wrapper = cvxpyWrapper(self.constraints, self.path, self.gridpoints)
+        elif solver_wrapper == 'qpOASES':
+            self.solver_wrapper = qpOASESSolverWrapper(self.constraints, self.path, self.gridpoints)
         else:
-            self.solver_wrapper = cvxpyWrapper(self.constraints, self.path, self.gridpoints)
+            raise NotImplementedError, "Solver wrapper for {:} not implemented!".format(solver_wrapper)
 
     def compute_feasible_sets(self):
         """ Return the set of feasible squared velocities along the path.

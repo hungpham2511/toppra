@@ -66,7 +66,7 @@ class ParameterizationAlgorithm(object):
         """
         raise NotImplementedError
 
-    def compute_trajectory(self, sd_start, sd_end):
+    def compute_trajectory(self, sd_start, sd_end, return_profile=False):
         """ Return the time-parameterized joint trajectory and auxilliary trajectory.
 
         Parameters
@@ -83,10 +83,15 @@ class ParameterizationAlgorithm(object):
         :class:`Interpolator`
             Time-parameterized auxiliary variable trajectory. If unable to
             parameterize or if there is no auxiliary variable, return None.
+        profiles: tuple
+            Return if return_profile is True, results from compute_parameterization.
         """
         sdd_grid, sd_grid, v_grid = self.compute_parameterization(sd_start, sd_end)
         if sd_grid is None:
-            return None, None
+            if return_profile:
+                return None, None, None
+            else:
+                return None, None
 
         # Gridpoint time instances
         t_grid = np.zeros(self._N + 1)
@@ -110,4 +115,7 @@ class ParameterizationAlgorithm(object):
             v_grid_[-1] = v_grid[-1]
             v_spline = SplineInterpolator(t_grid, v_grid_)
 
-        return traj_spline, v_spline
+        if return_profile:
+            return traj_spline, v_spline, (sdd_grid, sd_grid, v_grid)
+        else:
+            return traj_spline, v_spline
