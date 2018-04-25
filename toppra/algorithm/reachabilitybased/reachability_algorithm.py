@@ -149,9 +149,11 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
 
         self.solver_wrapper.setup_solver()
         for i in range(self._N):
-            logger.debug("[Solve forward] i={:d}".format(i))
+            if i == 56:
+                pass
             optim_res = self._forward_step(i, xs[i], K[i + 1])
-            if optim_res is None:
+            logger.debug("[Solve forward] i={:d} > Solution = {:}".format(i, optim_res))
+            if optim_res[0] is None:
                 us[i] = None
                 xs[i + 1] = None
                 v_vec[i] = None
