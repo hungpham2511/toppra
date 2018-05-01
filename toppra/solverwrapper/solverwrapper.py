@@ -2,24 +2,30 @@ import numpy as np
 
 
 class SolverWrapper(object):
-    """ Base class for all solver wrappers.
+    """The base class for all solver wrappers.
 
-    Pattern: Strategy. `SolverWrapper` is the Strategy; `ReachabilityAlgorithm` is the Context.
+    Pattern: Strategy. `SolverWrapper` is the Strategy;
+    `ReachabilityAlgorithm` is the Context.
 
-    Solver wrappers are used only for implementing Reachability-based parameterization algorithms.
-    The main public interface of this class is the method `solve_stagewise_optim`, which needs to
+    Solver wrappers implement the core operations of
+    Reachability-based algorithms.  The main public interface of this
+    class is the method `solve_stagewise_optim`. This method needs to
     be implemented by derived classes.
 
-    Some solvers need to be setup and close down properly (mosek). Hence this class contains two
-    abstract methods `setup_solver` and `close_solver`, which should be called before and after
-    any computation by the algorithm object.
+    Some solvers need to be setup and close down properly. Examples
+    are mosek and qpOASES with warmstart.  Hence this class contains
+    two abstract methods `setup_solver` and `close_solver`, which
+    should be called before and after any computation by the algorithm
+    object.
 
     Attributes
     ----------
     constraints : list of `Constraint`
-        Constraints on the system.
+        Constraints on the robot system.
     path : Interpolator
+        The geometric path to be time-parametrized.
     path_discretization: array
+        The discretization grid use to discretize the geometric path.
     """
 
     def __init__(self, constraint_list, path, path_discretization):
@@ -55,7 +61,7 @@ class SolverWrapper(object):
         return self.deltas
 
     def solve_stagewise_optim(self, i, H, g, x_min, x_max, x_next_min, x_next_max):
-        """ Solve a stage-wise quadratic optimization.
+        """Solve a stage-wise quadratic optimization.
 
         Parameters
         ----------
@@ -76,8 +82,8 @@ class SolverWrapper(object):
 
         Notes
         -----
-        This is the main public interface of `SolverWrapper`. The stage-wise quadratic optimization problem
-        is:
+        This is the main public interface of `SolverWrapper`. The
+        stage-wise quadratic optimization problem is:
 
         .. math::
             \\text{min  }  & 0.5 [u, x, v] H [u, x, v]^\\top + [u, x, v] g    \\\\
@@ -86,6 +92,7 @@ class SolverWrapper(object):
                            & x_{next, min} \leq x + 2 \Delta_i u \leq x_{next, max},
 
         where `v` is an auxiliary variable, only exist if there are non-canonical constraints.
+
         """
         raise NotImplementedError
 
