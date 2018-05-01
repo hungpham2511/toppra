@@ -18,7 +18,7 @@ class TOPPRA(ReachabilityAlgorithm):
 
     """
 
-    def _forward_step(self, i, x, K_next, eps=1e-5):
+    def _forward_step(self, i, x, K_next):
         """ Compute the highest possible path velocity that is controllable.
 
         Parameters
@@ -47,10 +47,9 @@ class TOPPRA(ReachabilityAlgorithm):
         g_upper[1] = - 1
         g_upper[0] = - 2 * self.solver_wrapper.get_deltas()[i]
 
-        # Account for numerical erros
-        K_mid = (K_next[0] + K_next[1]) / 2
-        K_next_max = max(K_next[1] - eps, K_mid)
-        K_next_min = min(K_next[0] + eps, K_mid)
+        # Account for propagating numerical errors
+        K_next_max = K_next[1]
+        K_next_min = K_next[0]
 
         optim_var = self.solver_wrapper.solve_stagewise_optim(
             i, None, g_upper, x, x, K_next_min, K_next_max)

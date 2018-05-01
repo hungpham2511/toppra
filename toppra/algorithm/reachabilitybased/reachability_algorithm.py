@@ -149,8 +149,6 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
 
         self.solver_wrapper.setup_solver()
         for i in range(self._N):
-            if i == 56:
-                pass
             optim_res = self._forward_step(i, xs[i], K[i + 1])
             logger.debug("[Solve forward] i={:d} > Solution = {:}".format(i, optim_res))
             if optim_res[0] is None:
@@ -159,7 +157,10 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
                 v_vec[i] = None
             else:
                 us[i] = optim_res[0]
-                xs[i + 1] = max(0, xs[i] + 2 * deltas[i] * us[i])
+                # The below function min( , max( ,)) ensure that the state x_{i+1} is controllable.
+                # While this is ensured theoretically by the existence of the controllable sets,
+                # numerical errors might violate this condition.
+                xs[i + 1] = min(K[i+1, 1], max(K[i+1, 0], xs[i] + 2 * deltas[i] * us[i]))
                 v_vec[i] = optim_res[2:]
         self.solver_wrapper.close_solver()
         sd_vec = np.sqrt(xs)
