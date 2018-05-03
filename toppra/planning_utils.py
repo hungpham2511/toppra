@@ -35,12 +35,12 @@ def retime_active_joints_kinematics(traj, robot, output_interpolator=False, vmul
     traj_ra: SplineInterpolator
         Return if 'output_interpolator' is True.
     """
-    logger.debug("Start retiming for an OpenRAVE trajectory.")
+    logger.info("Start retiming an OpenRAVE trajectory.")
     if use_ravewrapper:
-        logger.debug("Use RaveTrajectoryWrapper. This might not work properly!")
+        logger.warn("Use RaveTrajectoryWrapper. This might not work properly!")
         path = RaveTrajectoryWrapper(traj, robot)
     else:
-        logger.debug("Use a spline to represent the input path!")
+        logger.info("Use a spline to represent the input path!")
         path = RaveTrajectoryWrapper(traj, robot)
         waypoints = path.eval(path.ss_waypoints)
         ss_waypoints = [0]
