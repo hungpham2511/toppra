@@ -2,10 +2,16 @@
 Some utility functions need to generate PathConstraints. Most are
 specific to different scenarios.
 """
-import logging
+import logging, coloredlogs
 import numpy as np
 
 LOGGER = logging.getLogger(__name__)
+
+
+def setup_logging(level="WARN"):
+    """ Setup basic logging facility to console.
+    """
+    coloredlogs.install(logger=logging.getLogger("toppra"), level=level)
 
 
 def compute_jacobian_wrench(robot, link, point):
