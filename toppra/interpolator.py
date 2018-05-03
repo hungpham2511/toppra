@@ -157,15 +157,22 @@ class RaveTrajectoryWrapper(Interpolator):
         self._interpolation = self.spec.GetGroupFromName('joint').interpolation
         assert self._interpolation == 'quadratic' or self._interpolation == "cubic", "This class only handles trajectories with quadratic or cubic interpolation"
         self._duration = traj.GetDuration()
-        self.n_waypoints = traj.GetNumWaypoints()
-        self.ss_waypoints = np.zeros(self.n_waypoints)
-        for i in range(self.n_waypoints - 1):
-            self.ss_waypoints[i + 1] = self.spec.ExtractDeltaTime(traj.GetWaypoint(i + 1)) + self.ss_waypoints[i]
+        all_waypoints = traj.GetWaypoints(0, traj.GetNumWaypoints()).reshape(traj.GetNumWaypoints(), -1)
+        valid_wp_indices = [0]
+        self.ss_waypoints = [0.0]
+        for i in range(1, traj.GetNumWaypoints()):
+            dt = self.spec.ExtractDeltaTime(all_waypoints[i])
+            if dt > 1e-5:  # If delta is too small, skip it.
+                valid_wp_indices.append(i)
+                self.ss_waypoints.append(self.ss_waypoints[-1] + dt)
+
+        self.n_waypoints = len(valid_wp_indices)
+        self.ss_waypoints = np.array(self.ss_waypoints)
         self.s_start = self.ss_waypoints[0]
         self.s_end = self.ss_waypoints[-1]
 
-        self.waypoints = np.array([self.spec.ExtractJointValues(traj.GetWaypoint(i), robot, robot.GetActiveDOFIndices()) for i in range(self.n_waypoints)])
-        self.waypoints_d = np.array([self.spec.ExtractJointValues(traj.GetWaypoint(i), robot, robot.GetActiveDOFIndices(), 1) for i in range(self.n_waypoints)])
+        self.waypoints = np.array([self.spec.ExtractJointValues(all_waypoints[i], robot, robot.GetActiveDOFIndices()) for i in valid_wp_indices])
+        self.waypoints_d = np.array([self.spec.ExtractJointValues(all_waypoints[i], robot, robot.GetActiveDOFIndices(), 1) for i in valid_wp_indices])
 
         # Degenerate case: there is only one waypoint.
         if self.n_waypoints == 1:
@@ -192,8 +199,7 @@ class RaveTrajectoryWrapper(Interpolator):
             self.ppoly = PPoly(pp_coeffs, self.ss_waypoints)
 
         elif self._interpolation == "cubic":
-            self.waypoints_dd = np.array([self.spec.ExtractJointValues(traj.GetWaypoint(i), robot, robot.GetActiveDOFIndices(), 2)
-                                          for i in range(self.n_waypoints)])
+            self.waypoints_dd = np.array([self.spec.ExtractJointValues(all_waypoints[i], robot, robot.GetActiveDOFIndices(), 2) for i in valid_wp_indices])
             self.waypoints_ddd = []
             for i in range(self.n_waypoints - 1):
                 qddd = ((self.waypoints_dd[i + 1] - self.waypoints_dd[i]) / (self.ss_waypoints[i + 1] - self.ss_waypoints[i]))
