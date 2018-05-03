@@ -69,6 +69,8 @@ class ParameterizationAlgorithm(object):
     def compute_trajectory(self, sd_start, sd_end, return_profile=False):
         """ Return the time-parameterized joint trajectory and auxilliary trajectory.
 
+        If parameterization fails, return a tuple of None(s).
+
         Parameters
         ----------
         sd_start: float

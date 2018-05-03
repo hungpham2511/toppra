@@ -58,9 +58,9 @@ def test_consistency(request, env, traj_string):
     qds_ra = path.evald(ss)
     if path._interpolation != "quadratic":
         qdds_ra = path.evaldd(ss)
-    plt.plot(qs_ra)
-    plt.title(request.node.name)
-    plt.show()
+    # plt.plot(qs_ra)
+    # plt.title(request.node.name)
+    # plt.show()
 
     np.testing.assert_allclose(qs_rave, qs_ra, atol=1e-8)
     np.testing.assert_allclose(qds_rave, qds_ra, atol=1e-8)

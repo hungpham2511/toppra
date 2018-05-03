@@ -136,7 +136,11 @@ class Interpolator(object):
 
 
 class RaveTrajectoryWrapper(Interpolator):
-    """A wrapper over OpenRAVE's :class:`GenericTrajectory`.
+    """An interpolator that wraps OpenRAVE's :class:`GenericTrajectory`.
+
+    Only trajectories using quadratic interpolation or cubic interpolation are supported.
+    The trajectory is represented as a piecewise polynomial. The polynomial could be
+    quadratic or cubic depending the interpolation method used by the input trajectory object.
 
     Parameters
     ----------
@@ -144,10 +148,6 @@ class RaveTrajectoryWrapper(Interpolator):
         An OpenRAVE joint trajectory.
     robot: :class:`openravepy.GenericRobot`
         An OpenRAVE robot.
-
-    Notes
-    -----
-    Only trajectories using quadratic interpolation or cubic interpolation are supported.
     """
     def __init__(self, traj, robot):
         self.traj = traj  #: init
@@ -164,48 +164,49 @@ class RaveTrajectoryWrapper(Interpolator):
         self.s_start = self.ss_waypoints[0]
         self.s_end = self.ss_waypoints[-1]
 
-        self.waypoints = np.array([self.spec.ExtractJointValues(traj.GetWaypoint(i), robot, robot.GetActiveDOFIndices())
-                          for i in range(self.n_waypoints)])
-        self.waypoints_deriv = np.array([self.spec.ExtractJointValues(traj.GetWaypoint(i), robot, robot.GetActiveDOFIndices(), 1)
-                                for i in range(self.n_waypoints)])
+        self.waypoints = np.array([self.spec.ExtractJointValues(traj.GetWaypoint(i), robot, robot.GetActiveDOFIndices()) for i in range(self.n_waypoints)])
+        self.waypoints_d = np.array([self.spec.ExtractJointValues(traj.GetWaypoint(i), robot, robot.GetActiveDOFIndices(), 1) for i in range(self.n_waypoints)])
 
+        # Degenerate case: there is only one waypoint.
         if self.n_waypoints == 1:
             pp_coeffs = np.zeros((1, 1, self.dof))
             for idof in range(self.dof):
                 pp_coeffs[0, 0, idof] = self.waypoints[0, idof]
             # A constant function
             self.ppoly = PPoly(pp_coeffs, [0, 1])
+
         elif self._interpolation == "quadratic":
-            self.waypoints_dderiv = []
+            self.waypoints_dd = []
             for i in range(self.n_waypoints - 1):
-                qdd = ((self.waypoints_deriv[i + 1] - self.waypoints_deriv[i]) / (self.ss_waypoints[i + 1] - self.ss_waypoints[i]))
-                self.waypoints_dderiv.append(qdd)
-            self.waypoints_dderiv = np.array(self.waypoints_dderiv)
+                qdd = ((self.waypoints_d[i + 1] - self.waypoints_d[i]) / (self.ss_waypoints[i + 1] - self.ss_waypoints[i]))
+                self.waypoints_dd.append(qdd)
+            self.waypoints_dd = np.array(self.waypoints_dd)
 
             # Fill the coefficient matrix for scipy.PPoly class
             pp_coeffs = np.zeros((3, self.n_waypoints - 1, self.dof))
             for idof in range(self.dof):
                 for iseg in range(self.n_waypoints - 1):
-                    pp_coeffs[:, iseg, idof] = [self.waypoints_dderiv[iseg, idof] / 2,
-                                                self.waypoints_deriv[iseg, idof],
+                    pp_coeffs[:, iseg, idof] = [self.waypoints_dd[iseg, idof] / 2,
+                                                self.waypoints_d[iseg, idof],
                                                 self.waypoints[iseg, idof]]
             self.ppoly = PPoly(pp_coeffs, self.ss_waypoints)
+
         elif self._interpolation == "cubic":
-            self.waypoints_dderiv = np.array([self.spec.ExtractJointValues(traj.GetWaypoint(i), robot, robot.GetActiveDOFIndices(), 2)
-                                              for i in range(self.n_waypoints)])
-            self.waypoints_ddderiv = []
+            self.waypoints_dd = np.array([self.spec.ExtractJointValues(traj.GetWaypoint(i), robot, robot.GetActiveDOFIndices(), 2)
+                                          for i in range(self.n_waypoints)])
+            self.waypoints_ddd = []
             for i in range(self.n_waypoints - 1):
-                qddd = ((self.waypoints_dderiv[i + 1] - self.waypoints_dderiv[i]) / (self.ss_waypoints[i + 1] - self.ss_waypoints[i]))
-                self.waypoints_ddderiv.append(qddd)
-            self.waypoints_ddderiv = np.array(self.waypoints_ddderiv)
+                qddd = ((self.waypoints_dd[i + 1] - self.waypoints_dd[i]) / (self.ss_waypoints[i + 1] - self.ss_waypoints[i]))
+                self.waypoints_ddd.append(qddd)
+            self.waypoints_ddd = np.array(self.waypoints_ddd)
 
             # Fill the coefficient matrix for scipy.PPoly class
             pp_coeffs = np.zeros((4, self.n_waypoints - 1, self.dof))
             for idof in range(self.dof):
                 for iseg in range(self.n_waypoints - 1):
-                    pp_coeffs[:, iseg, idof] = [self.waypoints_ddderiv[iseg, idof] / 6,
-                                                self.waypoints_dderiv[iseg, idof] / 2,
-                                                self.waypoints_deriv[iseg, idof],
+                    pp_coeffs[:, iseg, idof] = [self.waypoints_ddd[iseg, idof] / 6,
+                                                self.waypoints_dd[iseg, idof] / 2,
+                                                self.waypoints_d[iseg, idof],
                                                 self.waypoints[iseg, idof]]
             self.ppoly = PPoly(pp_coeffs, self.ss_waypoints)
 
