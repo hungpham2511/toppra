@@ -65,10 +65,10 @@ def test_basic_init(pp_fixture, solver_name, i, H, g, x_ineq):
     xnext_min = 0
     xnext_max = 1
     
-    # Algorithm
+    # Results from solverwrapper to test
     result = solver.solve_stagewise_optim(i, H, g, xmin, xmax, xnext_min, xnext_max)
     
-    # Actual result
+    # Results from cvxpy, used as the actual, desired values
     ux = cvxpy.Variable(2)
     u = ux[0]
     x = ux[1]
