@@ -3,7 +3,7 @@ This module contains several interfaces for interpolated path.
 Most are simple wrappers over scipy.interpolators.
 """
 import numpy as np
-from scipy.interpolate import UnivariateSpline, CubicSpline
+from scipy.interpolate import UnivariateSpline, CubicSpline, PPoly
 import openravepy as orpy
 
 
@@ -141,93 +141,88 @@ class RaveTrajectoryWrapper(Interpolator):
     Parameters
     ----------
     traj: :class:`openravepy.GenericTrajectory`
-        An OpenRAVE joint trajectory using quadratic interpolation.
+        An OpenRAVE joint trajectory.
     robot: :class:`openravepy.GenericRobot`
-        An OpenRAVE robot, suitable to `traj`.
+        An OpenRAVE robot.
 
     Notes
     -----
-    Only trajectories using quadratic interpolation is
-    supported. Supports for other kinds will be added in the future.
+    Only trajectories using quadratic interpolation or cubic interpolation are supported.
     """
     def __init__(self, traj, robot):
         self.traj = traj  #: init
         self.spec = traj.GetConfigurationSpecification()
         self.dof = robot.GetActiveDOF()
 
-        assert self.spec.GetGroupFromName('joint').interpolation == 'quadratic', "This class only handle trajectory with quadratic interpolation"
-
+        self._interpolation = self.spec.GetGroupFromName('joint').interpolation
+        assert self._interpolation == 'quadratic' or self._interpolation == "cubic", "This class only handles trajectories with quadratic or cubic interpolation"
+        self._duration = traj.GetDuration()
         self.n_waypoints = traj.GetNumWaypoints()
-        dt_waypoints = [self.spec.ExtractDeltaTime(traj.GetWaypoint(i))
-                        for i in range(self.n_waypoints)]
-        self.ss_waypoints = np.array(dt_waypoints)
-        self.s_start = self.ss_waypoints[0]
-        self.s_end = self.ss_waypoints[1]
-        for i in range(1, self.n_waypoints):
-            self.ss_waypoints[i] = dt_waypoints[i] + self.ss_waypoints[i - 1]
-
-        self.waypoints = [self.spec.ExtractJointValues(traj.GetWaypoint(i), robot, robot.GetActiveDOFIndices())
-                          for i in range(self.n_waypoints)]
-        self.waypoints_deriv = [self.spec.ExtractJointValues(traj.GetWaypoint(i), robot, robot.GetActiveDOFIndices(), 1)
-                                for i in range(self.n_waypoints)]
-        self.waypoints_dderiv = []
+        self.ss_waypoints = np.zeros(self.n_waypoints)
         for i in range(self.n_waypoints - 1):
-            qdd = ((self.waypoints_deriv[i + 1] - self.waypoints_deriv[i])
-                   / dt_waypoints[i + 1])
-            self.waypoints_dderiv.append(qdd)
+            self.ss_waypoints[i + 1] = self.spec.ExtractDeltaTime(traj.GetWaypoint(i + 1)) + self.ss_waypoints[i]
+        self.s_start = self.ss_waypoints[0]
+        self.s_end = self.ss_waypoints[-1]
+
+        self.waypoints = np.array([self.spec.ExtractJointValues(traj.GetWaypoint(i), robot, robot.GetActiveDOFIndices())
+                          for i in range(self.n_waypoints)])
+        self.waypoints_deriv = np.array([self.spec.ExtractJointValues(traj.GetWaypoint(i), robot, robot.GetActiveDOFIndices(), 1)
+                                for i in range(self.n_waypoints)])
+
+        if self.n_waypoints == 1:
+            pp_coeffs = np.zeros((1, 1, self.dof))
+            for idof in range(self.dof):
+                pp_coeffs[0, 0, idof] = self.waypoints[0, idof]
+            # A constant function
+            self.ppoly = PPoly(pp_coeffs, [0, 1])
+        elif self._interpolation == "quadratic":
+            self.waypoints_dderiv = []
+            for i in range(self.n_waypoints - 1):
+                qdd = ((self.waypoints_deriv[i + 1] - self.waypoints_deriv[i]) / (self.ss_waypoints[i + 1] - self.ss_waypoints[i]))
+                self.waypoints_dderiv.append(qdd)
+            self.waypoints_dderiv = np.array(self.waypoints_dderiv)
+
+            # Fill the coefficient matrix for scipy.PPoly class
+            pp_coeffs = np.zeros((3, self.n_waypoints - 1, self.dof))
+            for idof in range(self.dof):
+                for iseg in range(self.n_waypoints - 1):
+                    pp_coeffs[:, iseg, idof] = [self.waypoints_dderiv[iseg, idof] / 2,
+                                                self.waypoints_deriv[iseg, idof],
+                                                self.waypoints[iseg, idof]]
+            self.ppoly = PPoly(pp_coeffs, self.ss_waypoints)
+        elif self._interpolation == "cubic":
+            self.waypoints_dderiv = np.array([self.spec.ExtractJointValues(traj.GetWaypoint(i), robot, robot.GetActiveDOFIndices(), 2)
+                                              for i in range(self.n_waypoints)])
+            self.waypoints_ddderiv = []
+            for i in range(self.n_waypoints - 1):
+                qddd = ((self.waypoints_dderiv[i + 1] - self.waypoints_dderiv[i]) / (self.ss_waypoints[i + 1] - self.ss_waypoints[i]))
+                self.waypoints_ddderiv.append(qddd)
+            self.waypoints_ddderiv = np.array(self.waypoints_ddderiv)
+
+            # Fill the coefficient matrix for scipy.PPoly class
+            pp_coeffs = np.zeros((4, self.n_waypoints - 1, self.dof))
+            for idof in range(self.dof):
+                for iseg in range(self.n_waypoints - 1):
+                    pp_coeffs[:, iseg, idof] = [self.waypoints_ddderiv[iseg, idof] / 6,
+                                                self.waypoints_dderiv[iseg, idof] / 2,
+                                                self.waypoints_deriv[iseg, idof],
+                                                self.waypoints[iseg, idof]]
+            self.ppoly = PPoly(pp_coeffs, self.ss_waypoints)
+
+        self.ppoly_d = self.ppoly.derivative()
+        self.ppoly_dd = self.ppoly.derivative(2)
+
+    def get_duration(self):
+        return self._duration
 
     def eval(self, ss_sam):
-        if np.isscalar(ss_sam):
-            index = _find_left_index(self.ss_waypoints, ss_sam)
-            qdd_left = self.waypoints_dderiv[index]
-            qd_left = self.waypoints_deriv[index]
-            q_left = self.waypoints[index]
-            ds = (ss_sam - self.ss_waypoints[index])
-            q = q_left + qd_left * ds + qdd_left * ds ** 2 / 2
-            return q
-        else:
-            qs = []
-            for s in ss_sam:
-                index = _find_left_index(self.ss_waypoints, s)
-                qdd_left = self.waypoints_dderiv[index]
-                qd_left = self.waypoints_deriv[index]
-                q_left = self.waypoints[index]
-                ds = (s - self.ss_waypoints[index])
-                q = q_left + qd_left * ds + qdd_left * ds ** 2 / 2
-                qs.append(q)
-            return np.array(qs)
+        return self.ppoly(ss_sam)
 
     def evald(self, ss_sam):
-        if np.isscalar(ss_sam):
-            index = _find_left_index(self.ss_waypoints, ss_sam)
-            qdd_left = self.waypoints_dderiv[index]
-            qd_left = self.waypoints_deriv[index]
-            deltat = (ss_sam - self.ss_waypoints[index])
-            qd = qd_left + qdd_left * deltat
-            return qd
-        else:
-            qds = []
-            for s in ss_sam:
-                index = _find_left_index(self.ss_waypoints, s)
-                qdd_left = self.waypoints_dderiv[index]
-                qd_left = self.waypoints_deriv[index]
-                deltat = (s - self.ss_waypoints[index])
-                qd = qd_left + qdd_left * deltat
-                qds.append(qd)
-            return np.array(qds)
+        return self.ppoly_d(ss_sam)
 
     def evaldd(self, ss_sam):
-        if np.isscalar(ss_sam):
-            index = _find_left_index(self.ss_waypoints, ss_sam)
-            qdd_left = self.waypoints_dderiv[index]
-            return qdd_left
-        else:
-            qdds = []
-            for s in ss_sam:
-                index = _find_left_index(self.ss_waypoints, s)
-                qdd_left = self.waypoints_dderiv[index]
-                qdds.append(qdd_left)
-            return np.array(qdds)
+        return self.ppoly_dd(ss_sam)
 
 
 class SplineInterpolator(Interpolator):
