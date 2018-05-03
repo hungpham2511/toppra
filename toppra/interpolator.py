@@ -4,6 +4,7 @@ Most are simple wrappers over scipy.interpolators.
 """
 import numpy as np
 from scipy.interpolate import UnivariateSpline, CubicSpline
+import openravepy as orpy
 
 
 def normalize(ss):
@@ -98,7 +99,7 @@ class Interpolator(object):
         raise NotImplementedError
 
     def evald(self, ss_sam):
-        position__ = """ Evaluate the first derivative of the geometric path.
+        """ Evaluate the first derivative of the geometric path.
 
         Parameters
         ----------
@@ -127,10 +128,10 @@ class Interpolator(object):
         """
         raise NotImplementedError
 
-    def serialize_rave(self):
+    def compute_rave_trajectory(self):
         raise NotImplementedError
 
-    def serialize_ros(self):
+    def compute_ros_trajectory(self):
         raise NotImplementedError
 
 
@@ -267,9 +268,28 @@ class SplineInterpolator(Interpolator):
         self.s_start = self.ss_waypoints[0]
         self.s_end = self.ss_waypoints[-1]
 
-        self.cspl = CubicSpline(ss_waypoints, waypoints)
-        self.cspld = self.cspl.derivative()
-        self.cspldd = self.cspld.derivative()
+        if len(ss_waypoints) == 1:
+            def f1(s):
+                try:
+                    ret = np.zeros((len(s), self.dof))
+                    ret[:, :] = self.waypoints[0]
+                except TypeError:
+                    ret = self.waypoints[0]
+                return ret
+            def f2(s):
+                try:
+                    ret = np.zeros((len(s), self.dof))
+                except TypeError:
+                    ret = np.zeros(self.dof)
+                return ret
+
+            self.cspl = f1
+            self.cspld = f2
+            self.cspldd = f2
+        else:
+            self.cspl = CubicSpline(ss_waypoints, waypoints)
+            self.cspld = self.cspl.derivative()
+            self.cspldd = self.cspld.derivative()
 
     def get_duration(self):
         return self.duration
@@ -282,6 +302,41 @@ class SplineInterpolator(Interpolator):
 
     def evaldd(self, ss_sam):
         return self.cspldd(ss_sam)
+
+    def compute_rave_trajectory(self, robot):
+        """ Compute an OpenRAVE trajectory equivalent to this trajectory.
+
+        Parameters
+        ----------
+        robot: OpenRAVE.Robot
+
+        Returns
+        -------
+        trajectory: OpenRAVE.Trajectory
+        """
+
+        traj = orpy.RaveCreateTrajectory(robot.GetEnv(), "")
+        spec = robot.GetActiveConfigurationSpecification('cubic')
+        spec.AddDerivativeGroups(1, False)
+        spec.AddDerivativeGroups(2, True)
+
+        traj.Init(spec)
+        deltas = [0]
+        for i in range(len(self.ss_waypoints) - 1):
+            deltas.append(self.ss_waypoints[i + 1] - self.ss_waypoints[i])
+        if len(self.ss_waypoints) == 1:
+            q = self.eval(0)
+            qd = self.evald(0)
+            qdd = self.evaldd(0)
+            traj.Insert(traj.GetNumWaypoints(), list(q) + list(qd) + list(qdd) + [0])
+        else:
+            qs = self.eval(self.ss_waypoints)
+            qds = self.evald(self.ss_waypoints)
+            qdds = self.evaldd(self.ss_waypoints)
+            for (q, qd, qdd, dt) in zip(qs, qds, qdds, deltas):
+                traj.Insert(traj.GetNumWaypoints(),
+                            q.tolist() + qd.tolist() + qdd.tolist() + [dt])
+        return traj
 
 
 class UnivariateSplineInterpolator(Interpolator):
