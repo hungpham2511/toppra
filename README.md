@@ -1,59 +1,47 @@
-# The Reachability-based Time-Optimal Path Parametrization Solver
+# TOPP-RA
 
-
-TOPP-RA is the latest theoretical development for solving the
-Time-Optimal Path Parameterization (TOPP) problem. TOPP-RA achieves
-100% success rate while being faster than the state-of-the-art
-implementation of the [classic Bobrow
-algorithm](https://github.com/quangounet/TOPP). The current
-implementation of TOPP-RA supports the following constraints :
+TOPP-RA is a package for parametrizing trajectories for robot subject
+to kinematic and dynamic constraints.  The current implementation
+supports the following constraints :
 
 1. joint velocity and acceleration bounds;
 2. torque bounds (including redundantly-actuated manipulators);
 3. contact stability for legged robots.
 
-Refer to the accompanying paper [A new approach to Time-Optimal Path Parameterization based on Reachability Analysis](https://arxiv.org/abs/1707.07239) for more details.
+Refer to the accompanying paper [A new approach to Time-Optimal Path
+Parameterization based on Reachability
+Analysis](https://arxiv.org/abs/1707.07239) for more details.
 
 
 # Installation
-## Basic
-
-There are some perquisites. To install simply do the following.
-``` sh
-pip install Cython numpy coloredlogs enum scipy 
-```
+## Basic functionality (robotic manipulators)
 
 Install
 [qpOASES](https://projects.coin-or.org/qpOASES/wiki/QpoasesInstallation) by
-following steps given in the official site. In particular, 
+following the steps below:
 ``` shell
+mkdir ~/temp && cd ~/temp
 svn co https://projects.coin-or.org/svn/qpOASES/stable/3.2 qpOASES
-cd <install-dir>
-make
+cd qpOASES/ && make
+python interfaces/python/setup.py install
 ```
-Then, to install the python interface do
-``` sh
-cd <install-dir>/interfaces/python
-python setup.py install
-```
-
 
 Finally, install `toppra` with
 ``` sh
 cd <toppra-dir>
 python setup.py install
 ```
-after installation complete, run tests by doing
-``` sh
-cd <toppra-dir>/tests/
-pytest -v
+you are good to go. If you have `openrave` installed on your computer, you can
+run the below example to see `toppra` in action.
+
+``` shell
+python examples/retime_rave_trajectory.py
 ```
-if `pytest` is not installed, grab it from `pip`.
 
+## Advanced (and unstable) functionality 
 
-
-## Multi-contact and torque bounds examples
-To use these functionality, the following libraries are needed:
+Multi-contact and torque bounds.  To use these functionality, the
+following libraries are needed:
 
 1. [openRAVE](https://github.com/rdiankov/openrave)
 2. [pymanoid](https://github.com/stephane-caron/pymanoid)
@@ -81,68 +69,10 @@ make clean && make html
 <google-chrome> build/index.html
 ```
 
-# Basic usage
-
-The following code snippets shows basic usage of `toppra`. We will
-first define the constraints, which in this case are kinematic
-constraints, and second generate a random geometric path. Finally, we
-parametrize the path using `toppra.
-
-
-First, import necessary functions
-```python
-from toppra import (create_velocity_path_constraint,
-                    create_acceleration_path_constraint,
-                    qpOASESPPSolver,
-                    compute_trajectory_gridpoints,
-                    smooth_singularities,
-		    SplineInterpolator,
-                    interpolate_constraint)
-import numpy as np
+## Test
+`toppra` uses `pytest` for testing. To run all the tests, do:
+``` sh
+cd <toppra-dir>/tests/
+pytest -v
 ```
-Then, generate a random instance
-```python
-N = 100
-N_samples = 5
-dof = 7
-np.random.seed(1)
-way_pts = np.random.randn(N_samples, dof)
-path = SplineInterpolator(np.linspace(0, 1, N_samples), way_pts)
-ss = np.linspace(0, 1, N + 1)
-# Velocity Constraint
-vlim_ = np.random.rand(dof) * 20
-vlim = np.vstack((-vlim_, vlim_)).T
-pc_vel = create_velocity_path_constraint(path, ss, vlim)
-# Acceleration Constraints
-alim_ = np.random.rand(dof) * 2
-alim = np.vstack((-alim_, alim_)).T
-pc_acc = create_acceleration_path_constraint(path, ss, alim)
-constraints = [pc_vel, pc_acc]
-constraints_intp = [interpolate_constraint(c) for c in constraints]
-```
-Finally, solve with `toppra`
-```python
-pp = qpOASESSolver(constraints)
-us, xs = pp.solve_topp()
-t, q, qd, qdd = compute_trajectory_gridpoints(path, pp.ss, us, xs)
-```
-We can now plot the solution with `matplotlib`
-``` python
-# plotting
-import matplotlib.pyplot as plt
-f, axs = plt.subplots(3, 1, figsize=[3, 5])
-axs[0].plot(t, qd[:, [1, 2]])
-axs[0].plot(t, qd, alpha=0.2)
-axs[1].plot(t, qdd[:, [1, 2]])
-axs[1].plot(t, qdd, alpha=0.2)
-axs[2].plot(np.sqrt(pp.K[:, 0]), '--', c='C3')
-axs[2].plot(np.sqrt(pp.K[:, 1]), '--', c='C3')
-axs[2].plot(np.sqrt(xs))
-plt.show()
-```
-This figure should appear!
-
-![basic usage figure](medias/basic_usage.png)
-
-For more examples, see the /examples folder.
-
+if `pytest` is not installed, grab it from `pip`.

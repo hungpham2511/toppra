@@ -20,8 +20,7 @@ PACKAGES = ["toppra",
             "toppra.constraint",
             "toppra.algorithm",
             "toppra.algorithm.reachabilitybased",
-            "toppra.solverwrapper",
-]
+            "toppra.solverwrapper"]
 
 ext_1 = Extension(SRC_DIR + "._CythonUtils",
                   [SRC_DIR + "/_CythonUtils.pyx"],
