@@ -2,7 +2,7 @@ from .interpolator import RaveTrajectoryWrapper, SplineInterpolator
 from .constraint import JointAccelerationConstraint, JointVelocityConstraint, DiscretizationType
 from .algorithm import TOPPRA
 import numpy as np
-import logging
+import logging, time
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +35,7 @@ def retime_active_joints_kinematics(traj, robot, output_interpolator=False, vmul
     traj_ra: SplineInterpolator
         Return if 'output_interpolator' is True.
     """
+    _t0 = time.time()
     logger.info("Start retiming an OpenRAVE trajectory.")
     if use_ravewrapper:
         logger.warn("Use RaveTrajectoryWrapper. This might not work properly!")
@@ -66,8 +67,13 @@ def retime_active_joints_kinematics(traj, robot, output_interpolator=False, vmul
             path.ss_waypoints[i]
             + np.linspace(0, 1, Ni + 1)[1:] * (path.ss_waypoints[i + 1] - path.ss_waypoints[i]))
     instance = TOPPRA([pc_vel, pc_acc], path, gridpoints=gridpoints, solver_wrapper='qpOASES')
+    _t1 = time.time()
 
     traj_ra, aux_traj = instance.compute_trajectory(0, 0)
+    _t2 = time.time()
+    logger.info("t_setup={:.5f}ms, t_solve={:.5f}ms, t_total={:.5f}ms".format(
+        (_t1 - _t0) * 1e3, (_t2 - _t1)*1e3, (_t2 - _t0)*1e3
+    ))
     if traj_ra is None:
         logger.warn("Retime fails. Something is wrong!")
         traj_rave = None

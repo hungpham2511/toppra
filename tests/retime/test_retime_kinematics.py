@@ -19,15 +19,18 @@ def robot_fixture():
         ikmodel.autogenerate()
         print 'IKFast {0} has been successfully generated'.format(iktype.name)
     env.SetViewer('qtosg')
+    toppra.setup_logging("INFO")
     yield robot
     env.Destroy()
 
-@pytest.mark.parametrize("seed", [0, 1, 2, 3])
+
+@pytest.mark.parametrize("seed", range(100),
+                         ids=["Seed="+str(i) for i in range(100)])
 def test_retime_kinematics(robot_fixture, seed):
     env = robot_fixture.GetEnv()
     basemanip = orpy.interfaces.BaseManipulation(robot_fixture)
 
-    # Generate trajectory from seed
+    # Generate random trajectory from seed
     arm_indices = robot_fixture.GetActiveDOFIndices()
     qlim_lower, qlim_upper = robot_fixture.GetActiveDOFLimits()
     qseed = np.random.randint(1000000, size=(1000,))  # Try 1000 times
@@ -49,13 +52,8 @@ def test_retime_kinematics(robot_fixture, seed):
     traj = basemanip.MoveActiveJoints(goal=qsel[1], execute=False, outputtrajobj=True)
     assert traj is not None
 
-    # Retime it
     # Rave traj
-    traj_new, interpolator = toppra.retime_active_joints_kinematics(traj, robot_fixture, output_interpolator=True, vmult=0.2)
+    traj_new, interpolator = toppra.retime_active_joints_kinematics(
+        traj, robot_fixture, output_interpolator=True, vmult=1.0)
     assert traj_new is not None
-    robot_fixture.GetController().SetPath(traj_new)
-    robot_fixture.WaitForController(0)
-
-    # Start and initial waypoints
-
-    # Consistent Joint Position
+    assert traj_new.GetDuration() < traj.GetDuration() + 1  # Should not be too far from the optimal value
