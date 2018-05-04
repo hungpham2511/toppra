@@ -1,5 +1,12 @@
 from .solverwrapper import SolverWrapper
-import cvxpy
+import logging
+logger = logging.getLogger(__name__)
+try:
+    import cvxpy
+    FOUND_CVXPY = True
+except ImportError:
+    logger.info("CVXPY installation not found.")
+    FOUND_CVXPY = False
 import numpy as np
 from ..constraint import ConstraintType
 

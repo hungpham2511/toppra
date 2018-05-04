@@ -1,5 +1,4 @@
 from .solverwrapper import SolverWrapper
-import cvxpy
 import numpy as np
 from ..constraint import ConstraintType
 from qpoases import (PyOptions as Options, PyPrintLevel as PrintLevel,

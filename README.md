@@ -20,9 +20,8 @@ Refer to the accompanying paper [A new approach to Time-Optimal Path Parameteriz
 
 There are some perquisites. To install simply do the following.
 ``` sh
-pip install Cython numpy coloredlogs enum scipy quadprog cvxpy cvxopt matplotlib pycddlib
+pip install Cython numpy coloredlogs enum scipy 
 ```
-Note that `cvxpy` 1.0 is still unstable, and should not be installed.
 
 Install
 [qpOASES](https://projects.coin-or.org/qpOASES/wiki/QpoasesInstallation) by

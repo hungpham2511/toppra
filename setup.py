@@ -3,10 +3,12 @@ from Cython.Distutils import build_ext
 import numpy as np
 
 NAME = "toppra"
-VERSION = "0.1"
-DESCR = "An implementation of TOPP via Reachability Analysis (TOPP-RA)"
+VERSION = "0.2"
+DESCR = "An implementation of TOPP-RA (TOPP via Reachability Analysis) for time-parametrizing" \
+        "trajectories for robots subject to kinematic (velocity and acceleration) and dynamic" \
+        "(torque) constraints. Some other kinds of constraints are also supported."
 URL = "https://github.com/hungpham2511/toppra"
-REQUIRES = ['numpy', 'cython', 'coloredlogs', 'enum', 'scipy']
+REQUIRES = ['numpy', 'cython', "scipy", "coloredlogs", "enum"]
 
 AUTHOR = "Hung Pham"
 EMAIL = "hungpham2511@gmail.com"
@@ -14,7 +16,12 @@ EMAIL = "hungpham2511@gmail.com"
 LICENSE = "MIT"
 
 SRC_DIR = "toppra"
-PACKAGES = [SRC_DIR]
+PACKAGES = ["toppra",
+            "toppra.constraint",
+            "toppra.algorithm",
+            "toppra.algorithm.reachabilitybased",
+            "toppra.solverwrapper",
+]
 
 ext_1 = Extension(SRC_DIR + "._CythonUtils",
                   [SRC_DIR + "/_CythonUtils.pyx"],
