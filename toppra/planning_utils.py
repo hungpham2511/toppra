@@ -12,8 +12,12 @@ def retime_active_joints_kinematics(traj, robot, output_interpolator=False, vmul
 
     Parameters
     ----------
-    traj: OpenRAVE Trajectory
+    traj: OpenRAVE Trajectory or (N,dof)array
+        The original trajectory. If is an array, a cubic spline will be used to interpolate
+        through all points before parameterization.
     robot: OpenRAVE Robot
+        The kinematic limits, which are velocity and acceleration limits, are taken from the robot
+        model.
     output_interpolator: bool, optional
         If this is true, output the interpolator object together with the retimed trajectory.
     vmult: float, optional
@@ -37,7 +41,11 @@ def retime_active_joints_kinematics(traj, robot, output_interpolator=False, vmul
     """
     _t0 = time.time()
     logger.info("Start retiming an OpenRAVE trajectory.")
-    if use_ravewrapper:
+    if isinstance(traj, np.ndarray):
+        logger.info("Received a list of waypoints.")
+        ss_waypoints = np.linspace(0, 1, len(traj))
+        path = SplineInterpolator(ss_waypoints, traj)
+    elif use_ravewrapper:
         logger.warn("Use RaveTrajectoryWrapper. This might not work properly!")
         path = RaveTrajectoryWrapper(traj, robot)
     else:

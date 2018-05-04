@@ -24,9 +24,8 @@ def robot_fixture():
     env.Destroy()
 
 
-@pytest.mark.parametrize("seed", range(100),
-                         ids=["Seed="+str(i) for i in range(100)])
-def test_retime_kinematics(robot_fixture, seed):
+@pytest.mark.parametrize("seed", range(100), ids=["Seed="+str(i) for i in range(100)])
+def test_retime_kinematics_ravetraj(robot_fixture, seed):
     env = robot_fixture.GetEnv()
     basemanip = orpy.interfaces.BaseManipulation(robot_fixture)
 
@@ -57,3 +56,21 @@ def test_retime_kinematics(robot_fixture, seed):
         traj, robot_fixture, output_interpolator=True, vmult=1.0)
     assert traj_new is not None
     assert traj_new.GetDuration() < traj.GetDuration() + 1  # Should not be too far from the optimal value
+
+
+@pytest.mark.parametrize("seed", range(100), ids=["Seed="+str(i) for i in range(100)])
+def test_retime_kinematics_waypoints(robot_fixture, seed):
+    dof = robot_fixture.GetActiveDOF()
+
+    # Generate random trajectory from seed
+    qlim_lower, qlim_upper = robot_fixture.GetActiveDOFLimits()
+
+    np.random.seed(seed)
+    waypoints = np.random.rand(5, dof)
+    for i in range(5):
+        waypoints[i] = qlim_lower + waypoints[i] * (qlim_upper - qlim_lower)
+
+    traj_new, trajra = toppra.retime_active_joints_kinematics(waypoints, robot_fixture, output_interpolator=True)
+    assert traj_new is not None
+    assert traj_new.GetDuration() < 30 and traj_new.GetDuration() > 0
+
