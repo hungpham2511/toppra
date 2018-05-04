@@ -16,22 +16,25 @@ Analysis](https://arxiv.org/abs/1707.07239) for more details.
 # Installation
 ## Basic functionality (robotic manipulators)
 
+
 Install
 [qpOASES](https://projects.coin-or.org/qpOASES/wiki/QpoasesInstallation) by
 following the steps below:
 ``` shell
-mkdir ~/temp && cd ~/temp
-svn co https://projects.coin-or.org/svn/qpOASES/stable/3.2 qpOASES
-cd qpOASES/ && make
-python interfaces/python/setup.py install
+git clone https://github.com/hungpham2511/qpOASES
+cd qpOASES/ && mkdir bin && make
+cd interfaces/python/
+pip install cython
+python setup.py install --user
 ```
 
 Finally, install `toppra` with
 ``` sh
-cd <toppra-dir>
-python setup.py install
+git clone https://github.com/hungpham2511/toppra
+cd toppra/
+python setup.py install --user
 ```
-you are good to go. If you have `openrave` installed on your computer, you can
+And you are good to go. If you have `openrave` installed on your computer, you can
 run the below example to see `toppra` in action.
 
 ``` shell

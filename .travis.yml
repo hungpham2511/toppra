@@ -1,0 +1,39 @@
+sudo: true
+dist: trusty
+language:
+  - generic
+cache:
+  - apt
+
+env:
+  - CI_SOURCE_PATH=$(pwd)
+
+# Install package dependencies
+before_install:
+  # Testing $DISPLAY
+  - echo $DISPLAY
+  # Install OpenRAVE
+  - mkdir -p ~/git; cd ~/git
+  - git clone https://github.com/crigroup/openrave-installation.git
+  - cd openrave-installation
+  - ./install-dependencies.sh
+  - ./install-fcl.sh
+  - ./install-openrave.sh
+  - sudo apt install python-tk
+  - pip install pytest pytest-cov cython matplotlib --user
+
+install:
+  # Install dependencies
+  - mkdir -p ~/git/ && cd ~/git/
+  - git clone https://github.com/hungpham2511/qpOASES
+  - cd qpOASES/ && mkdir bin && make
+  - cd interfaces/python/
+  - python setup.py install --user
+
+script:
+  - cd $CI_SOURCE_PATH
+  - pip install . --user
+  - py.test --cov=toppra tests/ -v
+
+after_success:
+  - coveralls

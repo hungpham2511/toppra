@@ -4,7 +4,12 @@ Most are simple wrappers over scipy.interpolators.
 """
 import numpy as np
 from scipy.interpolate import UnivariateSpline, CubicSpline, PPoly
-import openravepy as orpy
+import logging
+logger = logging.getLogger(__name__)
+try:
+    import openravepy as orpy
+except ImportError:
+    logger.warn("Openravepy not found!")
 
 
 def normalize(ss):
