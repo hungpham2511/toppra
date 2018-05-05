@@ -12,6 +12,7 @@ env:
 before_install:
   # Testing $DISPLAY
   - echo $DISPLAY
+
   # Install OpenRAVE
   - mkdir -p ~/git; cd ~/git
   - git clone https://github.com/crigroup/openrave-installation.git
@@ -20,7 +21,7 @@ before_install:
   - ./install-fcl.sh
   - ./install-openrave.sh
   - sudo apt install python-tk
-  - pip install pytest pytest-cov cython matplotlib --user
+  - pip install --ignore-installed cython matplotlib coverage --user
 
 install:
   # Install dependencies
@@ -32,8 +33,9 @@ install:
 
 script:
   - cd $CI_SOURCE_PATH
-  - pip install . --user
-  - py.test --cov=toppra tests/ -v
+  - pip install -r requirements.txt --user
+  - pip install -e . --user
+  - py.test --cov=toppra
 
 after_success:
   - coveralls

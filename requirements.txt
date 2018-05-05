@@ -1,0 +1,9 @@
+numpy
+cython
+scipy>0.18
+coloredlogs
+enum
+cvxpy>=0.4.11, <1.0.0
+pytest
+pytest-cov
+
