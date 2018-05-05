@@ -2,7 +2,11 @@ import numpy as np
 import numpy.testing as npt
 import pytest
 from toppra import SplineInterpolator
-import openravepy as orpy
+try:
+    import openravepy as orpy
+    FOUND_OPENRAVE = True
+except ImportError:
+    FOUND_OPENRAVE = False
 
 
 @pytest.fixture(scope='module')
@@ -76,6 +80,7 @@ class Test_SplineInterpolator(object):
         npt.assert_allclose(pi.evald((xs[0] + xs[1]) / 2), yd)
         npt.assert_allclose(pi.evaldd(0), np.zeros_like(ys[0]))
 
+    @pytest.mark.skipif(not FOUND_OPENRAVE, reason="Not found openrave installation")
     @pytest.mark.parametrize("ss_waypoints, waypoints", [
         [[0, 0.2, 0.5, 0.9],  [[0.377, -0.369,  1.042, -0.265, -0.35 , -0.105, -0.74 ],
                               [ 1.131,  0.025,  0.778,  0.781,  0.543, -0.139,  0.222],

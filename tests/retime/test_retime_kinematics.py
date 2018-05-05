@@ -1,7 +1,11 @@
 import pytest
 import toppra
 import numpy as np
-import openravepy as orpy
+try:
+    import openravepy as orpy
+    FOUND_OPENRAVE = True
+except ImportError:
+    FOUND_OPENRAVE = False
 
 
 @pytest.fixture(scope='module')
@@ -24,6 +28,7 @@ def robot_fixture():
     env.Destroy()
 
 
+@pytest.mark.skipif(not FOUND_OPENRAVE, reason="Not found openrave installation")
 @pytest.mark.parametrize("seed", range(100), ids=["Seed="+str(i) for i in range(100)])
 def test_retime_kinematics_ravetraj(robot_fixture, seed):
     env = robot_fixture.GetEnv()
@@ -32,6 +37,7 @@ def test_retime_kinematics_ravetraj(robot_fixture, seed):
     # Generate random trajectory from seed
     arm_indices = robot_fixture.GetActiveDOFIndices()
     qlim_lower, qlim_upper = robot_fixture.GetActiveDOFLimits()
+    np.random.seed(seed)
     qseed = np.random.randint(1000000, size=(1000,))  # Try 1000 times
     qsel = []
     for seed in qseed:
@@ -58,6 +64,7 @@ def test_retime_kinematics_ravetraj(robot_fixture, seed):
     assert traj_new.GetDuration() < traj.GetDuration() + 1  # Should not be too far from the optimal value
 
 
+@pytest.mark.skipif(not FOUND_OPENRAVE, reason="Not found openrave installation")
 @pytest.mark.parametrize("seed", range(100), ids=["Seed="+str(i) for i in range(100)])
 def test_retime_kinematics_waypoints(robot_fixture, seed):
     dof = robot_fixture.GetActiveDOF()
