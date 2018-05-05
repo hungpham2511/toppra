@@ -32,6 +32,7 @@ Finally, install `toppra` with
 ``` sh
 git clone https://github.com/hungpham2511/toppra
 cd toppra/
+pip install -r requirements.txt --user
 pip install . -e --user
 ```
 And you are good to go. If you have `openrave` installed on your computer, you can
