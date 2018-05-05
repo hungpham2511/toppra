@@ -1,7 +1,12 @@
 import pytest
 import numpy as np
 import numpy.testing as npt
-import cvxpy
+try:
+    import cvxpy
+    FOUND_CXPY = True
+except ImportError:
+    FOUND_CXPY = False
+
 
 import toppra
 import toppra.constraint as constraint
@@ -42,6 +47,7 @@ def pp_fixture(request):
 @pytest.mark.parametrize("H", [np.array([[1.5, 0], [0, 1.0]]), np.zeros((2, 2)), None])
 @pytest.mark.parametrize("g", [np.array([0.2, -1]), np.array([0.5, 1]), np.array([2.0, 1])])
 @pytest.mark.parametrize("x_ineq", [(-1, 1), (0.2, 0.2), (0.4, 0.3), (None, None)])
+@pytest.mark.skipif(not FOUND_CXPY, reason="This test requires cvxpy to validate results.")
 def test_basic_init(pp_fixture, solver_name, i, H, g, x_ineq):
     """ A basic test case for wrappers.
 
@@ -93,7 +99,7 @@ def test_basic_init(pp_fixture, solver_name, i, H, g, x_ineq):
     else:
         objective = cvxpy.Minimize(g * ux)
     problem = cvxpy.Problem(objective, cvxpy_constraints)
-    problem.solve(solver="MOSEK")
+    problem.solve()
     if problem.status == "optimal":
         actual = np.array(ux.value).flatten()
     else:

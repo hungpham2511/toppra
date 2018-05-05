@@ -7,6 +7,12 @@ try:
 except ImportError:
     logger.info("CVXPY installation not found.")
     FOUND_CVXPY = False
+try:
+    import mosek
+    FOUND_MOSEK = True
+except ImportError:
+    logger.info("Mosek installation not found!")
+    FOUND_MOSEK = False
 import numpy as np
 from ..constraint import ConstraintType
 
@@ -74,8 +80,10 @@ class cvxpyWrapper(SolverWrapper):
         objective = cvxpy.Minimize(0.5 * cvxpy.quad_form(ux, H) + g * ux)
 
         problem = cvxpy.Problem(objective, constraints=cvxpy_constraints)
-        problem.solve(solver='MOSEK')
-        # problem.solve(solver='ECOS')
+        if FOUND_MOSEK:
+            problem.solve(solver='MOSEK')
+        else:
+            problem.solve()
         if problem.status == 'optimal':
             return np.array(ux.value).flatten()
         else:
