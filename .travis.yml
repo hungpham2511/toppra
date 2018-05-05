@@ -21,7 +21,8 @@ before_install:
   - ./install-fcl.sh
   - ./install-openrave.sh
   - sudo apt install python-tk
-  - pip install --ignore-installed cython matplotlib coverage --user
+  - pip install --ignore-installed cython matplotlib coverage python-coveralls --user
+
 
 install:
   # Install dependencies
