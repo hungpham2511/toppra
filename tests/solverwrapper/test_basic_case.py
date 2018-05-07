@@ -6,6 +6,8 @@ import toppra
 import toppra.constraint as constraint
 from toppra.solverwrapper import cvxpyWrapper, qpOASESSolverWrapper
 
+toppra.setup_logging(level="DEBUG")
+
 try:
     import cvxpy
     FOUND_CXPY = True
@@ -110,14 +112,29 @@ def test_basic_init(pp_fixture, solver_name, i, H, g, x_ineq):
         problem.solve(solver="ECOS", verbose=True)
     if problem.status == "optimal":
         actual = np.array(ux.value).flatten()
-    else:
-        actual = [None, None]
-
-    # Assertion
-    if actual[0] is not None:
         npt.assert_allclose(result.flatten(), actual.flatten(), atol=5e-3, rtol=1e-5)  # Very bad accuracy? why?
     else:
-        assert actual == result
+        assert np.all(np.isnan(result))
 
 
+@pytest.mark.parametrize("solver_name", ['cvxpy', 'qpOASES'])
+def test_infeasible_instance(pp_fixture, solver_name):
+    """If the given parameters are infeasible, the solverwrapper should
+    terminate gracefully and return a numpy vector [nan, nan].
+    """
+    constraints, path, path_discretization, vlim, alim = pp_fixture
+    if solver_name == "cvxpy":
+        solver = cvxpyWrapper(constraints, path, path_discretization)
+    elif solver_name == 'qpOASES':
+        solver = qpOASESSolverWrapper(constraints, path, path_discretization)
 
+    g = np.r_[0, 1].astype(float)
+
+    result = solver.solve_stagewise_optim(0, None, g, 1.1, 1.0, None, None)
+    assert np.all(np.isnan(result))
+
+    result = solver.solve_stagewise_optim(0, None, g, 1.1, 1.0, 0, -0.5)
+    assert np.all(np.isnan(result))
+
+    result = solver.solve_stagewise_optim(0, None, g, None, None, 0, -0.5)
+    assert np.all(np.isnan(result))

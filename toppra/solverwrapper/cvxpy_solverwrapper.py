@@ -87,5 +87,7 @@ class cvxpyWrapper(SolverWrapper):
         if problem.status == 'optimal':
             return np.array(ux.value).flatten()
         else:
-            return [None] * self.get_no_vars()
+            res = np.empty(self.get_no_vars())
+            res[:] = np.nan
+            return res
 

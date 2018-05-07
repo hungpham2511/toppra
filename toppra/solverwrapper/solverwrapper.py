@@ -76,9 +76,9 @@ class SolverWrapper(object):
 
         Returns
         -------
-        array or list of None
+        array
              If the optimization successes, return an array containing the optimal variable.
-             Otherwise, a list of None that has the same shape as the variable.
+             Otherwise, the return array contains NaN (numpy.nan).
 
         Notes
         -----

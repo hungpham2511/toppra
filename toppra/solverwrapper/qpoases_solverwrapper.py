@@ -103,4 +103,6 @@ class qpOASESSolverWrapper(SolverWrapper):
             self.solver.getPrimalSolution(var)
             return var
         else:
-            return [None] * self.nV
+            res = np.empty(self.get_no_vars())
+            res[:] = np.nan
+            return res
