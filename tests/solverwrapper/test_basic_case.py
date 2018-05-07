@@ -1,17 +1,22 @@
 import pytest
 import numpy as np
 import numpy.testing as npt
+
+import toppra
+import toppra.constraint as constraint
+from toppra.solverwrapper import cvxpyWrapper, qpOASESSolverWrapper
+
 try:
     import cvxpy
     FOUND_CXPY = True
 except ImportError:
     FOUND_CXPY = False
 
-
-import toppra
-import toppra.constraint as constraint
-from toppra.solverwrapper import cvxpyWrapper, qpOASESSolverWrapper
-from toppra.constants import TINY
+try:
+    import mosek
+    FOUND_MOSEK = True
+except ImportError:
+    FOUND_MOSEK = False
 
 
 @pytest.fixture(scope='class', params=['vel_accel'])
@@ -99,7 +104,10 @@ def test_basic_init(pp_fixture, solver_name, i, H, g, x_ineq):
     else:
         objective = cvxpy.Minimize(g * ux)
     problem = cvxpy.Problem(objective, cvxpy_constraints)
-    problem.solve()
+    if FOUND_MOSEK:
+        problem.solve(solver="MOSEK", verbose=True)
+    else:
+        problem.solve(solver="ECOS", verbose=True)
     if problem.status == "optimal":
         actual = np.array(ux.value).flatten()
     else:
