@@ -1,4 +1,7 @@
 # TOPP-RA
+[![Build Status](https://travis-ci.org/hungpham2511/toppra.svg?branch=master)](https://travis-ci.org/hungpham2511/toppra) [![Coverage Status](https://coveralls.io/repos/github/hungpham2511/toppra/badge.svg?branch=master)](https://coveralls.io/github/hungpham2511/toppra?branch=master)
+
+
 
 TOPP-RA is a package for parametrizing trajectories for robot subject
 to kinematic and dynamic constraints.  The current implementation
