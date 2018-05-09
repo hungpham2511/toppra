@@ -1,3 +1,5 @@
+"""
+"""
 import numpy as np
 
 try:
@@ -14,14 +16,11 @@ logger = logging.getLogger(__name__)
 
 
 class ParameterizationAlgorithm(object):
-    """
-    Base class for all parameterization algorithms.
+    """Base class for all parameterization algorithms.
 
-    All algorithms should have three the following three attributes: `constraints`, `path`
-    and `gridpoints`.
-
-    All algorithms need to implement the method `compute_parameterization` as the least
-    requirement to make the algorithm running.
+    All algorithms should have three attributes: `constraints`, `path`
+    and `gridpoints` and also implement the method
+    `compute_parameterization`.
 
     Parameters
     ----------
@@ -44,7 +43,7 @@ class ParameterizationAlgorithm(object):
             assert gridpoints[i + 1] > gridpoints[i]
 
     def compute_parameterization(self, sd_start, sd_end):
-        """ Compute a valid parameterization.
+        """ Compute a path parameterization.
 
         If there is no valid parameterization, simply return None(s).
 
@@ -67,7 +66,7 @@ class ParameterizationAlgorithm(object):
         raise NotImplementedError
 
     def compute_trajectory(self, sd_start, sd_end, return_profile=False):
-        """ Return the time-parameterized joint trajectory and auxilliary trajectory.
+        """ Compute the resulting joint trajectory and auxilliary trajectory.
 
         If parameterization fails, return a tuple of None(s).
 

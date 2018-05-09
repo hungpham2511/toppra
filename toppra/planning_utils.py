@@ -7,7 +7,7 @@ import logging, time
 logger = logging.getLogger(__name__)
 
 
-def retime_active_joints_kinematics(traj, robot, output_interpolator=False, vmult=1.0, amult=1.0, N=100, use_ravewrapper=False):
+def retime_active_joints_kinematics(traj, robot, output_interpolator=False, vmult=1.0, amult=1.0, N=100, use_ravewrapper=False, additional_constraints=[]):
     """ Retime a trajectory wrt velocity and acceleration constraints.
 
     Parameters
@@ -31,6 +31,8 @@ def retime_active_joints_kinematics(traj, robot, output_interpolator=False, vmul
         however, not desirable because the input trajectory tends to have discontinous second
         order derivative. This causes alots of problems for the parameterization algorithm
         TOPPRA.
+    additional_constraints: list, optional
+        List of additional constraints to consider.
 
     Returns
     -------
@@ -74,7 +76,7 @@ def retime_active_joints_kinematics(traj, robot, output_interpolator=False, vmul
         gridpoints.extend(
             path.ss_waypoints[i]
             + np.linspace(0, 1, Ni + 1)[1:] * (path.ss_waypoints[i + 1] - path.ss_waypoints[i]))
-    instance = TOPPRA([pc_vel, pc_acc], path, gridpoints=gridpoints, solver_wrapper='qpOASES')
+    instance = TOPPRA([pc_vel, pc_acc] + additional_constraints, path, gridpoints=gridpoints, solver_wrapper='qpOASES')
     _t1 = time.time()
 
     traj_ra, aux_traj = instance.compute_trajectory(0, 0)
@@ -83,7 +85,7 @@ def retime_active_joints_kinematics(traj, robot, output_interpolator=False, vmul
         (_t1 - _t0) * 1e3, (_t2 - _t1)*1e3, (_t2 - _t0)*1e3
     ))
     if traj_ra is None:
-        logger.warn("Retime fails. Something is wrong!")
+        logger.warn("Retime fails.")
         traj_rave = None
     else:
         logger.info("Retime successes!")

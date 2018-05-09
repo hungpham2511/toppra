@@ -29,7 +29,7 @@ def robot_fixture():
 
 
 @pytest.mark.skipif(not FOUND_OPENRAVE, reason="Not found openrave installation")
-@pytest.mark.parametrize("seed", range(100), ids=["Seed="+str(i) for i in range(100)])
+@pytest.mark.parametrize("seed", range(90, 100), ids=["Seed=" + str(i) for i in range(90, 100)])
 def test_retime_kinematics_ravetraj(robot_fixture, seed):
     env = robot_fixture.GetEnv()
     basemanip = orpy.interfaces.BaseManipulation(robot_fixture)
