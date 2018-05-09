@@ -67,6 +67,11 @@ def retime_active_joints_kinematics(traj, robot, output_interpolator=False, vmul
     pc_vel = JointVelocityConstraint(vlim)
     pc_acc = JointAccelerationConstraint(
         alim, discretization_scheme=DiscretizationType.Interpolation)
+    logger.info("Number of constraints {:d}".format(2 + len(additional_constraints)))
+    logger.info(str(pc_vel))
+    logger.info(str(pc_acc))
+    for _c in additional_constraints:
+        logger.info(str(_c))
 
     # Include the waypoints in the grid
     ds = path.ss_waypoints[-1] / N

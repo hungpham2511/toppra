@@ -54,7 +54,6 @@ class Constraint(object):
         t: int, or DiscretizationType
             If is 1, set to Interpolation.
             If is 0, set to Collocation.
-
         """
         if t == 0:
             self.discretization_type = DiscretizationType.Collocation

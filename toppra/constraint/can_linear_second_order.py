@@ -35,16 +35,20 @@ class CanonicalLinearSecondOrderConstraint(CanonicalLinearConstraint):
 
     To evaluate the coefficients a(s), b(s), c(s), inv_dyn is called repeatedly with
     appropriate arguments.
-
     """
 
-    def __init__(self, inv_dyn, cnst_F, cnst_g, discretization_scheme=DiscretizationType.Collocation):
+    def __init__(self, inv_dyn, cnst_F, cnst_g, dof=None, discretization_scheme=DiscretizationType.Collocation):
         super(CanonicalLinearSecondOrderConstraint, self).__init__()
         self.discretization_type = discretization_scheme
         self.inv_dyn = inv_dyn
         self.cnst_F = cnst_F
         self.cnst_g = cnst_g
-        self._format_string = "   Generalized Second-order constraint"
+        self._format_string = "    Kind: Generalized Second-order constraint\n"
+        self._format_string = "    Dimension:\n"
+        if dof is not None:
+            z_ = np.zeros(dof)
+            F_ = cnst_F(z_)
+        self._format_string += "        F in R^({:d}, {:d})\n".format(*F_.shape)
         self.discretization_type = discretization_scheme
 
     def compute_constraint_params(self, path, gridpoints):
