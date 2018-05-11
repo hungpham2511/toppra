@@ -52,11 +52,18 @@ def retime_active_joints_kinematics(traj, robot, output_interpolator=False, vmul
         path = RaveTrajectoryWrapper(traj, robot)
     else:
         logger.info("Use a spline to represent the input path!")
-        path = RaveTrajectoryWrapper(traj, robot)
-        waypoints = path.eval(path.ss_waypoints)
-        ss_waypoints = [0]
-        for i in range(waypoints.shape[0] - 1):
-            ss_waypoints.append(ss_waypoints[-1] + np.linalg.norm(waypoints[i + 1] - waypoints[i]))
+        ss_waypoints = []
+        waypoints = []
+        spec = traj.GetConfigurationSpecification()
+        for i in range(traj.GetNumWaypoints()):
+            data = traj.GetWaypoint(i)
+            dt = spec.ExtractDeltaTime(data)
+            if dt > 1e-5 or len(waypoints) == 0:  # If delta is too small, skip it.
+                if len(ss_waypoints) == 0:
+                    ss_waypoints.append(0)
+                else:
+                    ss_waypoints.append(ss_waypoints[-1] + dt)
+                waypoints.append(spec.ExtractJointValues(data, robot, robot.GetActiveDOFIndices()))
         path = SplineInterpolator(ss_waypoints, waypoints)
 
     vmax = robot.GetActiveDOFMaxVel() * vmult

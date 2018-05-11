@@ -15,7 +15,7 @@ def setup_logging(level="WARN"):
 
 
 def compute_jacobian_wrench(robot, link, point):
-    """ Compute the wrench Jacobian for link at point point.
+    """ Compute the wrench Jacobian for `link` at `point`.
 
     We look for J_wrench such that
           J_wrench.T * wrench = J_trans.T * F + J_rot.T * tau
