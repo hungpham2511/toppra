@@ -3,7 +3,6 @@ import toppra.constraint as constraint
 import toppra.algorithm as algo
 import numpy as np
 import matplotlib.pyplot as plt
-import time
 import coloredlogs
 coloredlogs.install(level='DEBUG')
 
@@ -28,7 +27,7 @@ path = ta.SplineInterpolator(np.linspace(0, 1, 5), way_pts)
 pc_vel = constraint.JointVelocityConstraint(vlim)
 pc_acc = constraint.JointAccelerationConstraint(
     alim, discretization_scheme=constraint.DiscretizationType.Interpolation)
-instance = algo.TOPPRA([pc_vel, pc_acc], path,gridpoints=np.linspace(0, 1, 101), solver_wrapper='qpOASES')
+instance = algo.TOPPRA([pc_vel, pc_acc], path, gridpoints=np.linspace(0, 1, 101), solver_wrapper='qpOASES')
 
 X = instance.compute_feasible_sets()
 K = instance.compute_controllable_sets(0, 0)
