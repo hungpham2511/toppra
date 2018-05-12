@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 
 
 def plot_trajectories(traj1, traj2, robot, N=50):
+    "Plot the trajectory (position, velocity and acceleration)."
     fig, axs = plt.subplots(3, 1, sharex=True)
     for idx, traj in enumerate([traj1, traj2]):
         ts = np.linspace(0, traj.GetDuration(), N)
@@ -29,22 +30,31 @@ def plot_trajectories(traj1, traj2, robot, N=50):
     accel_max = robot.GetActiveDOFMaxAccel()
     style = "--"
     for i in range(traj_ra.get_dof()):
-        axs[1].plot([0, ts[-1]], [vel_max[i], vel_max[i]], style, c="C"+str(i))
-        axs[1].plot([0, ts[-1]], [-vel_max[i], -vel_max[i]], style, c="C"+str(i))
-        axs[2].plot([0, ts[-1]], [accel_max[i], accel_max[i]], style, c="C"+str(i))
-        axs[2].plot([0, ts[-1]], [-accel_max[i], -accel_max[i]], style, c="C"+str(i))
+        axs[1].plot([0, ts[-1]], [vel_max[i], vel_max[i]], style, c="C" + str(i))
+        axs[1].plot([0, ts[-1]], [-vel_max[i], -vel_max[i]], style, c="C" + str(i))
+        axs[2].plot([0, ts[-1]], [accel_max[i], accel_max[i]], style, c="C" + str(i))
+        axs[2].plot([0, ts[-1]], [-accel_max[i], -accel_max[i]], style, c="C" + str(i))
     plt.show()
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="A simple retiming example.")
+def main(env=None, test=False):
+    "Main function."
+    parser = argparse.ArgumentParser(description="A simple example in which trajectories, which are planned using"
+                                                 "OpenRAVE is retimed using toppra. The trajectories are found using"
+                                                 "birrt, the default planner. Goals are generated randomly and "
+                                                 "uniformly.")
     parser.add_argument('-e', '--env', help='OpenRAVE Environment file', default="data/lab1.env.xml")
-    parser.add_argument('-l', '--level', help='Logging level', default="INFO")
-    parser.add_argument('-p', '--plot', help='Plot the original and the retimed trajectories', action='store_true')
-    parser.add_argument('-n', '--Ngrid', help='Number of discretization step', default=500)
+    parser.add_argument('-v', '--verbose', help='Show DEBUG log and plot trajectories', action="store_true")
+    parser.add_argument('-N', '--Ngrid', help='Number of discretization step', default=500, type=int)
     args = vars(parser.parse_args())
-    toppra.setup_logging(args['level'])
-    env = orpy.Environment()
+
+    if args['verbose']:
+        toppra.setup_logging('DEBUG')
+    else:
+        toppra.setup_logging('INFO')
+
+    if env is None:
+        env = orpy.Environment()
     env.SetDebugLevel(0)
     env.Load(args['env'])
     env.SetViewer('qtosg')
@@ -55,10 +65,13 @@ if __name__ == '__main__':
     robot.SetActiveDOFs(manipulator.GetArmIndices())
     controller = robot.GetController()
     basemanip = orpy.interfaces.BaseManipulation(robot)
-
     dof = robot.GetActiveDOF()
 
-    while True:
+    pc_torque = toppra.create_rave_torque_path_constraint(
+        robot, discretization_scheme=toppra.constraint.DiscretizationType.Interpolation)
+
+    it = 0
+    while True or (test and it > 5):
         lower, upper = robot.GetActiveDOFLimits()
         qrand = np.random.rand(dof) * (upper - lower) + lower
         with robot:
@@ -70,16 +83,21 @@ if __name__ == '__main__':
         if traj_original is None:
             continue
         traj_retimed, trajra = toppra.retime_active_joints_kinematics(
-            traj_original, robot, output_interpolator=True, N=args['Ngrid'])
+            traj_original, robot, output_interpolator=True, N=args['Ngrid'],
+            additional_constraints=[pc_torque])
 
         print("Original duration: {:.3f}. Retimed duration: {:3f}.".format(
             traj_original.GetDuration(), traj_retimed.GetDuration()))
 
-        if args['plot']:
+        if args['verbose']:
             plot_trajectories(traj_original, traj_retimed, robot)
         time.sleep(1)
 
         controller.SetPath(traj_retimed)
         robot.WaitForController(0)
+        it += 1
 
+
+if __name__ == '__main__':
+    main()
 
