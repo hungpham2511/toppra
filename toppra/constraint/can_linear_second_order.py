@@ -4,7 +4,7 @@ import numpy as np
 
 
 class CanonicalLinearSecondOrderConstraint(CanonicalLinearConstraint):
-    """ A class to represent Canonical Linear Generalized Second-order constraints.
+    """A class to represent Canonical Linear Generalized Second-order constraints.
 
     Parameters
     ----------
@@ -12,31 +12,39 @@ class CanonicalLinearSecondOrderConstraint(CanonicalLinearConstraint):
         The "inverse dynamics" function that receives joint position, velocity and
         acceleration as inputs and ouputs the "joint torque". See notes for more
         details.
-    cnst_coeffs: (array) -> array, array
-        The coefficient functions of the constraints. See notes for more details.
+    cnst_F: array -> array
+        Coefficient function. See notes for more details.
+    cnst_g: array -> array
+        Coefficient function. See notes for more details.
+    dof: int, optional
+        Dimension of joint position vectors. Required.
 
     Notes
     -----
-    A constraint of this kind can be represented by the following formula
+    A Second Order Constraint can be given by the following formula:
 
     .. math::
         A(q) \ddot q + \dot q^\\top B(q) \dot q + C(q) = w,
 
-    where w is a vector that satisfies the polyhedral constraint
+    where w is a vector that satisfies the polyhedral constraint:
 
     .. math::
         F(q) w \\leq g(q).
 
-    To evaluate the constraint parameters, multiple calls to inv_dyn, cnst_F and cnst_g
-    are made. Specifically one can write the second-order equation as follows
+    Notice that `inv_dyn(q, qd, qdd) = w` and that `cnsf_coeffs(q) =
+    F(q), g(q)`.
+
+    To evaluate the constraint on a geometric path `p(s)`, multiple
+    calls to `inv_dyn` and `const_coeff` are made. Specifically one
+    can derive the second-order equation as follows
 
     .. math::
-        A(q) p'(s) \ddot s + [A(q) p''(s) + p'(s)^\\top B(q) p'(s)] + C(q) = w,
+        A(q) p'(s) \ddot s + [A(q) p''(s) + p'(s)^\\top B(q) p'(s)] \dot s^2 + C(q) = w,
+        a(s) \ddot s + b(s) \dot s ^2 + c(s) = w
 
-    To evaluate the coefficients a(s), b(s), c(s), inv_dyn is called repeatedly with
-    appropriate arguments.
+    To evaluate the coefficients a(s), b(s), c(s), inv_dyn is called
+    repeatedly with appropriate arguments.
     """
-
     def __init__(self, inv_dyn, cnst_F, cnst_g, dof=None, discretization_scheme=DiscretizationType.Collocation):
         super(CanonicalLinearSecondOrderConstraint, self).__init__()
         self.discretization_type = discretization_scheme
