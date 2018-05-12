@@ -19,4 +19,11 @@ def test_torque_bound_barret(barret_robot, dof):
     path = toppra.SplineInterpolator(np.linspace(0, 1, 5), np.random.rand(5, dof))
     a, b, c, F, g, _, _ = constraint.compute_constraint_params(path, np.linspace(0, path.get_duration(), 5))
 
+    assert a.shape[1] == dof
+    assert b.shape[1] == dof
+    assert c.shape[1] == dof
+    assert F.shape[1:] == (2 * dof, dof)
+    assert g.shape[1] == 2 * dof
+
+
     

@@ -51,6 +51,7 @@ class CanonicalLinearSecondOrderConstraint(CanonicalLinearConstraint):
         self.inv_dyn = inv_dyn
         self.cnst_F = cnst_F
         self.cnst_g = cnst_g
+        self.dof = dof
         self._format_string = "    Kind: Generalized Second-order constraint\n"
         self._format_string = "    Dimension:\n"
         if dof is not None:
@@ -59,6 +60,10 @@ class CanonicalLinearSecondOrderConstraint(CanonicalLinearConstraint):
         self._format_string += "        F in R^({:d}, {:d})\n".format(*F_.shape)
 
     def compute_constraint_params(self, path, gridpoints):
+        if path.get_dof() != self.get_dof():
+            raise ValueError("Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
+                self.get_dof(), path.get_dof()
+            ))
         v_zero = np.zeros(path.get_dof())
         p = path.eval(gridpoints)
         ps = path.evald(gridpoints)

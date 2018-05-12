@@ -126,6 +126,7 @@ def create_rave_torque_path_constraint(robot, discretization_scheme=Discretizati
     cnst: `SecondOrderCanonicalLinearConstraint`
     """
     qdd_full = np.zeros(robot.GetDOF())
+    active_dofs = robot.GetActiveDOFIndices()
     def inv_dyn(q, qd, qdd):
         with robot:
             # Temporary remove vel/acc constraints
@@ -134,14 +135,14 @@ def create_rave_torque_path_constraint(robot, discretization_scheme=Discretizati
             robot.SetDOFVelocityLimits(100 * vlim)
             robot.SetDOFAccelerationLimits(100 * alim)
             # Inverse dynamics
-            qdd_full[robot.GetActiveDOFIndices()] = qdd
+            qdd_full[active_dofs] = qdd
             robot.SetActiveDOFValues(q)
             robot.SetActiveDOFVelocities(qd)
             res = robot.ComputeInverseDynamics(qdd_full)
             # Restore vel/acc constraints
             robot.SetDOFVelocityLimits(vlim)
             robot.SetDOFAccelerationLimits(alim)
-        return res
+        return res[active_dofs]
     tau_max = robot.GetDOFTorqueLimits()[robot.GetActiveDOFIndices()]
     F = np.vstack((np.eye(robot.GetActiveDOF()), - np.eye(robot.GetActiveDOF())))
     g = np.hstack((tau_max, tau_max))

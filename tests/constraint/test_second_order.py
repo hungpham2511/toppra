@@ -7,7 +7,6 @@ import toppra
 def coefficients_functions():
     "Coefficients for the equation: A(q) ddot q + dot q B(q) dot q + C(q) = w"
     def A(q):
-        assert len(q) == 2
         return np.array([[np.sin(q[0]), 0],
                          [np.cos(q[1]), q[0] + q[1]]])
 
@@ -32,6 +31,19 @@ def coefficients_functions():
     np.random.seed(0)
     path = toppra.SplineInterpolator([0, 1, 2, 4], np.random.randn(4, 2))
     return A, B, C, F, g, path
+
+
+def test_wrong_dimension(coefficients_functions):
+    A, B, C, cnst_F, cnst_g, path = coefficients_functions
+    def inv_dyn(q, qd, qdd):
+        return A(q).dot(qdd) + np.dot(qd.T, np.dot(B(q), qd)) + C(q)
+    constraint = toppra.constraint.CanonicalLinearSecondOrderConstraint(inv_dyn, cnst_F, cnst_g, dof=2)
+    path_wrongdim = toppra.SplineInterpolator(np.linspace(0, 1, 5), np.random.randn(5, 10))
+    with pytest.raises(ValueError) as e_info:
+        constraint.compute_constraint_params(path_wrongdim, np.r_[0, 0.5, 1])
+    assert e_info.value.args[0] == "Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
+        constraint.get_dof(), 10
+    )
 
 
 def test_assemble_ABCFg(coefficients_functions):
