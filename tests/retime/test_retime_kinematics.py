@@ -22,7 +22,7 @@ def robot_fixture():
         print 'Generating IKFast {0}. It will take few minutes...'.format(iktype.name)
         ikmodel.autogenerate()
         print 'IKFast {0} has been successfully generated'.format(iktype.name)
-    env.SetViewer('qtosg')
+    # env.SetViewer('qtosg')
     toppra.setup_logging("INFO")
     yield robot
     env.Destroy()
