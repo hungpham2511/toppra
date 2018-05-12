@@ -1,10 +1,11 @@
 import toppra as ta
+import toppra.constraint as constraint
+import toppra.algorithm as algo
 import numpy as np
 import matplotlib.pyplot as plt
 import time
 import coloredlogs
-coloredlogs.install(level='INFO')
-np.set_printoptions(3)
+coloredlogs.install(level='DEBUG')
 
 # Parameters
 N = 300
@@ -12,113 +13,41 @@ N_samples = 5
 SEED = 9
 dof = 7
 
-# Generate random waypoints in R7, then interpolate with a spline to
-# obtain a random geometric path.
+# Random waypoints used to obtain a random geometric path.
 np.random.seed(SEED)
 way_pts = np.random.randn(N_samples, dof)
-path = ta.SplineInterpolator(np.linspace(0, 1, 5), way_pts)
-ss = np.linspace(0, 1, N + 1)
 
 # Create velocity bounds, then velocity constraint object
 vlim_ = np.random.rand(dof) * 20
 vlim = np.vstack((-vlim_, vlim_)).T
-pc_vel = ta.create_velocity_path_constraint(path, ss, vlim)
-
 # Create acceleration bounds, then acceleration constraint object
 alim_ = np.random.rand(dof) * 2
 alim = np.vstack((-alim_, alim_)).T
-pc_acc = ta.create_acceleration_path_constraint(path, ss, alim)
-cset = [pc_vel, pc_acc]
 
-# There are two possible choices. The first is to TOPP with
-# collocation discretization strategy, and the second is with
-# first-order interpolation discretization strategy. The below script
-# show the first choice.
+path = ta.SplineInterpolator(np.linspace(0, 1, 5), way_pts)
+pc_vel = constraint.JointVelocityConstraint(vlim)
+pc_acc = constraint.JointAccelerationConstraint(
+    alim, discretization_scheme=constraint.DiscretizationType.Interpolation)
+instance = algo.TOPPRA([pc_vel, pc_acc], path,gridpoints=np.linspace(0, 1, 101), solver_wrapper='qpOASES')
 
-t_ = time.time()
-pp = ta.qpOASESPPSolver(cset)
-t_setup = time.time() - t_
-pp.set_start_interval(0)
-pp.set_goal_interval(0)
-us, xs = pp.solve_topp(save_solutions=False)
-t_solve = time.time() - t_ - t_setup
-t, q, qd, qdd = ta.compute_trajectory_gridpoints(path, pp.ss, us, xs)
-t_total = time.time() - t_
+X = instance.compute_feasible_sets()
+K = instance.compute_controllable_sets(0, 0)
 
-pp.K
+_, sd_vec, _ = instance.compute_parameterization(0, 0)
 
-# Smooth the result.
-us_smth, xs_smth = ta.smooth_singularities(pp, us, xs)
-t_smth, q_smth, qd_smth, qdd_smth = ta.compute_trajectory_gridpoints(
-    path, pp.ss, us_smth, xs_smth)
+X = np.sqrt(X)
+K = np.sqrt(K)
 
-# The below show first-order interpolation strategq.
-t_ = time.time()
-cset_intp = [ta.interpolate_constraint(pc) for pc in cset]
-t_intp_interpolate = time.time() - t_
-pp_intp = ta.qpOASESPPSolver(cset_intp)
-pp_intp.set_start_interval(0)
-pp_intp.set_goal_interval(0)
-t_intp_setup = time.time() - t_
-us_intp, xs_intp = pp_intp.solve_topp()
-t_intp_solve = time.time() - t_ - t_intp_setup
-t_intp, q_intp, qd_intp, qdd_intp = ta.compute_trajectory_gridpoints(
-    path, pp_intp.ss, us_intp, xs_intp)
-t_intp_total = time.time() - t_
-
-print """
-Report
-------
-
-Total computation time
-(colloc.)      : {:8.4f} msec
--     setup: {:8.4f} msec
--     solve: {:8.4f} msec
-
-(intp.)        : {:8.4f} msec
--     setup: {:8.4f} msec
--     interpolate/setup: {:8.4f} msec
--     solve: {:8.4f} msec
-
-""".format(1000 * t_total, 1000 * t_setup, 1000 * t_solve, 1000 *
-           t_intp_total, 1000 * t_intp_setup, 1e3 *
-           t_intp_interpolate, 1000 * t_intp_solve)
-
-# Plotting
-f, axs = plt.subplots(3, 3, figsize=[9, 6])
-axs[0, 0].plot(t, qd[:, [1, 2]])
-axs[0, 0].plot(t, qd, alpha=0.2)
-axs[1, 0].plot(t, qdd[:, [1, 2]])
-axs[1, 0].plot(t, qdd, alpha=0.2)
-axs[2, 0].plot(np.sqrt(pp.K[:, 0]), '--', c='C3')
-axs[2, 0].plot(np.sqrt(pp.K[:, 1]), '--', c='C3')
-axs[2, 0].plot(np.sqrt(xs))
-axs[0, 1].plot(t_smth, qd_smth[:, [1, 2]])
-axs[0, 1].plot(t_smth, qd_smth, alpha=0.2)
-axs[1, 1].plot(t_smth, qdd_smth[:, [1, 2]])
-axs[1, 1].plot(t_smth, qdd_smth, alpha=0.2)
-axs[2, 1].plot(np.sqrt(pp.K[:, 0]), '--', c='C3')
-axs[2, 1].plot(np.sqrt(pp.K[:, 1]), '--', c='C3')
-axs[2, 1].plot(np.sqrt(xs_smth))
-axs[0, 2].plot(t_intp, qd_intp[:, [1, 2]])
-axs[0, 2].plot(t_intp, qd_intp, alpha=0.2)
-axs[1, 2].plot(t_intp, qdd_intp[:, [1, 2]])
-axs[1, 2].plot(t_intp, qdd_intp, alpha=0.2)
-axs[2, 2].plot(np.sqrt(pp_intp.K[:, 0]), '--', c='C3')
-axs[2, 2].plot(np.sqrt(pp_intp.K[:, 1]), '--', c='C3')
-axs[2, 2].plot(np.sqrt(xs_intp))
-axs[0, 0].set_title('(colloc.) velocity')
-axs[1, 0].set_title('(colloc.) acceleration')
-axs[2, 0].set_title('(colloc.) profile')
-axs[0, 1].set_title('(smth colloc.) velocity')
-axs[1, 1].set_title('(smth colloc.) acceleration')
-axs[2, 1].set_title('(smth colloc.) profile')
-axs[0, 2].set_title('(intp.) velocity')
-axs[1, 2].set_title('(intp.) acceleration')
-axs[2, 2].set_title('(intp.) profile')
-plt.tight_layout()
+plt.plot(X[:, 0], c='green')
+plt.plot(X[:, 1], c='green')
+plt.plot(K[:, 0], '--', c='red')
+plt.plot(K[:, 1], '--', c='red')
+plt.plot(sd_vec)
 plt.show()
 
-import IPython
-if IPython.get_ipython() is None:
-    IPython.embed()
+jnt_traj, aux_traj = instance.compute_trajectory(0, 0)
+ts_sample = np.linspace(0, jnt_traj.get_duration(), 100)
+qs_sample = jnt_traj.evaldd(ts_sample)
+
+plt.plot(ts_sample, qs_sample)
+plt.show()
