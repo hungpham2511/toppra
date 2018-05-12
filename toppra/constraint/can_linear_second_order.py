@@ -57,7 +57,6 @@ class CanonicalLinearSecondOrderConstraint(CanonicalLinearConstraint):
             z_ = np.zeros(dof)
             F_ = cnst_F(z_)
         self._format_string += "        F in R^({:d}, {:d})\n".format(*F_.shape)
-        self.discretization_type = discretization_scheme
 
     def compute_constraint_params(self, path, gridpoints):
         v_zero = np.zeros(path.get_dof())

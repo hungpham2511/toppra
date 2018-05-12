@@ -13,7 +13,7 @@ from .interpolator import *
 from .utils import smooth_singularities, setup_logging
 # from . import postprocess
 # from .postprocess import compute_trajectory_gridpoints, compute_trajectory_uniform
-from .planning_utils import retime_active_joints_kinematics
+from .planning_utils import retime_active_joints_kinematics, create_rave_torque_path_constraint
 import constraint as constraint
 
 setup_logging()

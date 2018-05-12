@@ -1,5 +1,6 @@
 from .interpolator import RaveTrajectoryWrapper, SplineInterpolator
-from .constraint import JointAccelerationConstraint, JointVelocityConstraint, DiscretizationType
+from .constraint import JointAccelerationConstraint, JointVelocityConstraint, \
+    DiscretizationType, CanonicalLinearSecondOrderConstraint
 from .algorithm import TOPPRA
 import numpy as np
 import logging, time
@@ -107,4 +108,48 @@ def retime_active_joints_kinematics(traj, robot, output_interpolator=False, vmul
         return traj_rave, traj_ra
     else:
         return traj_rave
+
+
+def create_rave_torque_path_constraint(robot, discretization_scheme=DiscretizationType.Collocation):
+    """Create torque bound for the given robot.
+
+    The torque bound constraint for a manipulator whose links are
+    rigid bodies is a Second Order canonical linear constraint.
+
+    Parameters
+    ----------
+    robot: openravepy.Robot
+        
+
+    Returns
+    -------
+    cnst: `SecondOrderCanonicalLinearConstraint`
+    """
+    qdd_full = np.zeros(robot.GetDOF())
+    def inv_dyn(q, qd, qdd):
+        with robot:
+            # Temporary remove vel/acc constraints
+            vlim = robot.GetDOFVelocityLimits()
+            alim = robot.GetDOFAccelerationLimits()
+            robot.SetDOFVelocityLimits(100 * vlim)
+            robot.SetDOFAccelerationLimits(100 * alim)
+            # Inverse dynamics
+            qdd_full[robot.GetActiveDOFIndices()] = qdd
+            robot.SetActiveDOFValues(q)
+            robot.SetActiveDOFVelocities(qd)
+            res = robot.ComputeInverseDynamics(qdd_full)
+            # Restore vel/acc constraints
+            robot.SetDOFVelocityLimits(vlim)
+            robot.SetDOFAccelerationLimits(alim)
+        return res
+    tau_max = robot.GetDOFTorqueLimits()[robot.GetActiveDOFIndices()]
+    F = np.vstack((np.eye(robot.GetActiveDOF()), - np.eye(robot.GetActiveDOF())))
+    g = np.hstack((tau_max, tau_max))
+
+    cnst_F = lambda q: F
+    cnst_g = lambda q: g
+
+    cnst = CanonicalLinearSecondOrderConstraint(inv_dyn, cnst_F, cnst_g, dof=robot.GetActiveDOF(),
+                                                discretization_scheme=discretization_scheme)
+    return cnst
 
