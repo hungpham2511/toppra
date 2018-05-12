@@ -90,3 +90,13 @@ class TestClass_JointAccelerationConstraint(object):
             npt.assert_allclose(g[i], g_actual)
             npt.assert_allclose(ubound[i], [-MAXU, MAXU])
 
+    def test_wrong_dimension(self, acceleration_pc_data):
+        data, pc = acceleration_pc_data
+        path_wrongdim = ta.SplineInterpolator(np.linspace(0, 1, 5), np.random.randn(5, 10))
+        with pytest.raises(ValueError) as e_info:
+            pc.compute_constraint_params(path_wrongdim, np.r_[0, 0.5, 1])
+        assert e_info.value.args[0] == "Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
+            pc.get_dof(), 10
+        )
+
+

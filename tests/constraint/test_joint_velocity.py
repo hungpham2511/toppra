@@ -40,19 +40,8 @@ def create_velocity_pc_fixtures(request):
 
 
 class TestClass_JointVelocityConstraint(object):
-    """
-
-    Tests:
-    ------
-
-    1. syntactic: the object return should have correct dimension.
-
-    2. constraint satisfaction: the `PathConstraint` returned should
-    be consistent with the data.
-
-    """
     def test_constraint_type(self, velocity_pc_data):
-        """ Syntactic correct.
+        """ Syntactic correctness: the object returned should have correct dimension.
         """
         data, pc = velocity_pc_data
         assert pc.get_constraint_type() == constraint.ConstraintType.CanonicalLinear
@@ -86,3 +75,14 @@ class TestClass_JointVelocityConstraint(object):
 
             # 3. They should agree
             npt.assert_allclose([xmin, xmax], xlimit[i], atol=TINY)
+
+    def test_wrong_dimension(self, velocity_pc_data):
+        data, pc = velocity_pc_data
+        path_wrongdim = ta.SplineInterpolator(np.linspace(0, 1, 5), np.random.randn(5, 10))
+        with pytest.raises(ValueError) as e_info:
+            pc.compute_constraint_params(path_wrongdim, [0, 0.5, 1])
+        assert e_info.value.args[0] == "Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
+            pc.get_dof(), 10
+        )
+
+

@@ -27,7 +27,8 @@ class Constraint(object):
     constraint_type: ConstraintType
     discretization_type: DiscretizationType
     n_extra_vars: int
-
+    dof: int
+        Degree-of-freedom of the input path.
     """
     def __repr__(self):
         string = self.__class__.__name__ + '(\n'
@@ -36,6 +37,9 @@ class Constraint(object):
         string += self._format_string
         string += ')'
         return string
+
+    def get_dof(self):
+        return self.dof
 
     def get_no_extra_vars(self):
         return self.n_extra_vars
@@ -63,7 +67,6 @@ class Constraint(object):
             self.disretization_type = t
         else:
             raise "Discretization type: {:} not implemented!".format(t)
-
 
     def compute_constraint_params(self, path, gridpoints):
         raise NotImplementedError

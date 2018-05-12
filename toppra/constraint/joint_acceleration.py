@@ -32,6 +32,7 @@ class JointAccelerationConstraint(CanonicalLinearConstraint):
     def __init__(self, alim, discretization_scheme=DiscretizationType.Collocation):
         super(JointAccelerationConstraint, self).__init__()
         self.alim = np.array(alim, dtype=float)
+        self.dof = self.alim.shape[0]
         self.discretization_type = discretization_scheme
         assert self.alim.shape[1] == 2, "Wrong input shape."
         self._format_string = "    Acceleration limit: \n"
@@ -39,6 +40,10 @@ class JointAccelerationConstraint(CanonicalLinearConstraint):
             self._format_string += "      J{:d}: {:}".format(i + 1, self.alim[i]) + "\n"
 
     def compute_constraint_params(self, path, gridpoints):
+        if path.get_dof() != self.get_dof():
+            raise ValueError("Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
+                self.get_dof(), path.get_dof()
+            ))
         ps = path.evald(gridpoints)
         pss = path.evaldd(gridpoints)
         N = gridpoints.shape[0] - 1
