@@ -1,6 +1,7 @@
 from ..algorithm import ParameterizationAlgorithm
 from ...solverwrapper import cvxpyWrapper, qpOASESSolverWrapper
 from ...constants import LARGE, SMALL
+from ...constraint import ConstraintType
 
 import numpy as np
 import logging
@@ -8,16 +9,17 @@ logger = logging.getLogger(__name__)
 
 
 class ReachabilityAlgorithm(ParameterizationAlgorithm):
-    """ Base class for all Reachability Analysis-based parameterization algorithms.
+    """Base class for all Reachability Analysis-based parameterization algorithms.
 
 
     Parameters
     ----------
     constraint_list: list of Constraint
     path: Interpolator
-    gridpoints: array, optional
+    gridpoints: (N+1,)array, optional
     solver_wrapper: str, optional
-        Name of the solver to use.
+        Name of solver to use. If leave to be None, will select the
+        most suitable solver wrapper.
 
     Notes
     -----
@@ -38,14 +40,23 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
     - compute_reachable_sets
     - compute_feasible_sets
     """
-    def __init__(self, constraint_list, path, gridpoints=None, solver_wrapper='qpOASES'):
+    def __init__(self, constraint_list, path, gridpoints=None, solver_wrapper=None):
         super(ReachabilityAlgorithm, self).__init__(constraint_list, path, gridpoints=gridpoints)
+        # Choose solver wrapper automatically
+        if solver_wrapper is None:
+            has_conic = False
+            for c in constraint_list:
+                if c.get_constraint_type() == ConstraintType.CanonicalConic:
+                    has_conic = True
+                    solver_wrapper = "cvxpy"
+            if not has_conic:
+                solver_wrapper = "qpOASES"
         if solver_wrapper == 'cvxpy':
             self.solver_wrapper = cvxpyWrapper(self.constraints, self.path, self.gridpoints)
         elif solver_wrapper == 'qpOASES':
             self.solver_wrapper = qpOASESSolverWrapper(self.constraints, self.path, self.gridpoints)
         else:
-            raise NotImplementedError, "Solver wrapper {:} not found!".format(solver_wrapper)
+            raise NotImplementedError("Solver wrapper {:} not found!".format(solver_wrapper))
 
     def compute_feasible_sets(self):
         """Compute the sets of feasible squared velocities.
@@ -64,7 +75,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         g_lower[1] = 1
         self.solver_wrapper.setup_solver()
         X_lower = map(lambda i: self.solver_wrapper.solve_stagewise_optim(
-                i, Hzero, g_lower, -LARGE, LARGE, -LARGE, LARGE)[1], range(self._N + 1))
+            i, Hzero, g_lower, -LARGE, LARGE, -LARGE, LARGE)[1], range(self._N + 1))
         X_upper = map(lambda i: self.solver_wrapper.solve_stagewise_optim(
             i, Hzero, - g_lower, -LARGE, LARGE, -LARGE, LARGE)[1], range(self._N + 1))
         self.solver_wrapper.close_solver()

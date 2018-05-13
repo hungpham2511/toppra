@@ -65,7 +65,7 @@ def test_retime_kinematics_ravetraj(robot_fixture, seed):
 
 
 @pytest.mark.skipif(not FOUND_OPENRAVE, reason="Not found openrave installation")
-@pytest.mark.parametrize("seed", range(100), ids=["Seed="+str(i) for i in range(100)])
+@pytest.mark.parametrize("seed", range(100, 110), ids=["Seed="+str(i) for i in range(100, 110)])
 def test_retime_kinematics_waypoints(robot_fixture, seed):
     dof = robot_fixture.GetActiveDOF()
 
@@ -77,7 +77,8 @@ def test_retime_kinematics_waypoints(robot_fixture, seed):
     for i in range(5):
         waypoints[i] = qlim_lower + waypoints[i] * (qlim_upper - qlim_lower)
 
-    traj_new, trajra = toppra.retime_active_joints_kinematics(waypoints, robot_fixture, output_interpolator=True)
+    traj_new, trajra = toppra.retime_active_joints_kinematics(
+        waypoints, robot_fixture, output_interpolator=True)
     assert traj_new is not None
     assert traj_new.GetDuration() < 30 and traj_new.GetDuration() > 0
 
