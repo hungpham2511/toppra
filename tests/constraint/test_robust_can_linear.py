@@ -24,7 +24,6 @@ def test_basic(accel_constraint, dist_scheme):
 
     ro_cnst = toppra.constraint.RobustCanonicalLinearConstraint(cnst, [0.1, 2, .3])
     ro_cnst.set_discretization_type(dist_scheme)
-    assert isinstance(ro_cnst, toppra.constraint.CanonicalConicConstraint)
 
     assert ro_cnst.get_constraint_type() == toppra.constraint.ConstraintType.CanonicalConic
     assert ro_cnst.get_dof() == 5
@@ -43,9 +42,10 @@ def test_basic(accel_constraint, dist_scheme):
     for i in range(10):
         np.testing.assert_allclose(a[i], F0[i].dot(a0[i]))
         np.testing.assert_allclose(b[i], F0[i].dot(b0[i]))
-        np.testing.assert_allclose(c[i], F0[i].dot(c0[i]))
-
-        np.testing.assert_allclose(P[i], np.diag([0.1, 2, 3]))
+        np.testing.assert_allclose(c[i], F0[i].dot(c0[i]) - g0[i])
+    for i in range(10):
+        for j in range(a0.shape[1]):
+            np.testing.assert_allclose(P[i, j], np.diag([0.1, 2, .3]))
 
 
 def test_negative_perb(accel_constraint):
@@ -53,6 +53,6 @@ def test_negative_perb(accel_constraint):
     cnst, path = accel_constraint
     with pytest.raises(ValueError) as e_info:
         ro_cnst = toppra.constraint.RobustCanonicalLinearConstraint(cnst, [-0.1, 2, .3])
-    assert e_info.value.args[0] == "Perturbation must be non-negative. Input {:f}".format([-0.1, 2, .3])
+    assert e_info.value.args[0] == "Perturbation must be non-negative. Input {:}".format([-0.1, 2, .3])
 
 
