@@ -6,6 +6,7 @@ logger = logging.getLogger(__name__)
 class ConstraintType(Enum):
     Unknown = -1
     CanonicalLinear = 0
+    CanonicalConic = 1
 
 
 class DiscretizationType(Enum):
