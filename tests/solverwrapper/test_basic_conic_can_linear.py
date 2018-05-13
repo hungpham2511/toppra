@@ -36,7 +36,7 @@ def path():
     path = toppra.SplineInterpolator(np.linspace(0, 1, 5), np.random.randn(5, 3))
     yield path
 
-@pytest.mark.parametrize("i", [0, 5, 10])
+@pytest.mark.parametrize("i", [0, 5, 9])
 @pytest.mark.parametrize("H", [np.array([[1.5, 0], [0, 1.0]]), np.zeros((2, 2)), None])
 @pytest.mark.parametrize("g", [np.array([0.2, -1]), np.array([0.5, 1]), np.array([2.0, 1])])
 @pytest.mark.parametrize("x_ineq", [(-1, 1), (0.2, 0.2), (0.4, 0.3), (None, None)])
@@ -44,7 +44,7 @@ def path():
 def test_vel_robust_accel(vel_accel_robustaccel, path, solver_name, i, H, g, x_ineq):
     "Case 1: only velocity and robust acceleration constraints"
     vel_c, _, robust_acc_c = vel_accel_robustaccel
-    path_dist = np.linspace(0, path.get_duration(), 10)
+    path_dist = np.linspace(0, path.get_duration(), 10 + 1)
     if solver_name == "cvxpy":
         solver = toppra.solverwrapper.cvxpyWrapper([vel_c, robust_acc_c], path, path_dist)
     elif solver_name == "ECOS":
@@ -95,15 +95,34 @@ def test_vel_robust_accel(vel_accel_robustaccel, path, solver_name, i, H, g, x_i
             result.flatten(), actual.flatten(), atol=5e-3, rtol=1e-5)
     else:
         assert np.all(np.isnan(result))
-    assert False
 
-
-def test_robust_accel_only(vel_accel_robustaccel):
-    "Case 2: only robust acceleration constraints"
-    assert False
-
-def test_accel_robust_accel(vel_accel_robustaccel):
-    "Case 3: Both accel and robust accel"
-
-def test_compare_accel_robust_accel(vel_accel_robustaccel):
+@pytest.mark.parametrize("i", [0, 5, 9])
+@pytest.mark.parametrize("H", [np.array([[1.5, 0], [0, 1.0]]), None])
+@pytest.mark.parametrize("g", [np.array([0.2, -1])])
+@pytest.mark.parametrize("x_ineq", [(-1, 1), (0.2, 0.2), (None, None)])
+@pytest.mark.parametrize("solver_name", ['cvxpy', 'ECOS'])
+def test_compare_accel_robust_accel(vel_accel_robustaccel, path, solver_name, i, H, g, x_ineq):
     "Case 4: If robust accel has very small perturbation ellipsoid, it should be equivalent to acceleration constraint."
+    vel_c, acc_c, _ = vel_accel_robustaccel
+
+    robust_acc_c = toppra.constraint.RobustCanonicalLinearConstraint(
+        acc_c, [0, 0, 0], discretization_scheme=acc_c.get_discretization_type())
+    path_dist = np.linspace(0, path.get_duration(), 10)
+
+    if solver_name == "cvxpy":
+        solver = toppra.solverwrapper.cvxpyWrapper([vel_c, acc_c], path, path_dist)
+        ro_solver = toppra.solverwrapper.cvxpyWrapper([vel_c, robust_acc_c], path, path_dist)
+    elif solver_name == "ECOS":
+        return
+    else:
+        assert False
+
+    xmin, xmax = x_ineq
+    xnext_min = 0
+    xnext_max = 1
+ 
+    result = solver.solve_stagewise_optim(i, H, g, xmin, xmax, xnext_min, xnext_max)
+    ro_result = ro_solver.solve_stagewise_optim(i, H, g, xmin, xmax, xnext_min, xnext_max)
+
+    np.testing.assert_allclose(result, ro_result, atol=1e-4)
+

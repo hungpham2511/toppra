@@ -1,5 +1,8 @@
 from .solverwrapper import SolverWrapper
 import logging
+import numpy as np
+from ..constraint import ConstraintType
+
 logger = logging.getLogger(__name__)
 try:
     import cvxpy
@@ -13,8 +16,6 @@ try:
 except ImportError:
     logger.info("Mosek installation not found!")
     FOUND_MOSEK = False
-import numpy as np
-from ..constraint import ConstraintType
 
 
 class cvxpyWrapper(SolverWrapper):
@@ -32,10 +33,10 @@ class cvxpyWrapper(SolverWrapper):
 
     def __init__(self, constraint_list, path, path_discretization):
         super(cvxpyWrapper, self).__init__(constraint_list, path, path_discretization)
-
+        valid_types = [ConstraintType.CanonicalLinear, ConstraintType.CanonicalConic]
         # Currently only support Canonical Linear Constraint
         for constraint in constraint_list:
-            if constraint.get_constraint_type() != ConstraintType.CanonicalLinear:
+            if constraint.get_constraint_type() not in valid_types:
                 raise NotImplementedError
 
     def solve_stagewise_optim(self, i, H, g, x_min, x_max, x_next_min, x_next_max):
@@ -58,21 +59,30 @@ class cvxpyWrapper(SolverWrapper):
             if x_next_max is not None:
                 cvxpy_constraints.append(x + 2 * delta * u <= x_next_max)
 
-        for j in range(len(self.constraints)):
-            a, b, c, F, h, ubound, xbound = self.params[j]
+        for k, constraint in enumerate(self.constraints):
+            if constraint.get_constraint_type() == ConstraintType.CanonicalLinear:
+                a, b, c, F, h, ubound, xbound = self.params[k]
 
-            # Case 1
-            if a is not None:
-                v = a[i] * u + b[i] * x + c[i]
-                cvxpy_constraints.append(F[i] * v <= h[i])
+                if a is not None:
+                    v = a[i] * u + b[i] * x + c[i]
+                    cvxpy_constraints.append(F[i] * v <= h[i])
 
-            if ubound is not None:
-                cvxpy_constraints.append(ubound[i, 0] <= u)
-                cvxpy_constraints.append(u <= ubound[i, 1])
+                if ubound is not None:
+                    cvxpy_constraints.append(ubound[i, 0] <= u)
+                    cvxpy_constraints.append(u <= ubound[i, 1])
 
-            if xbound is not None:
-                cvxpy_constraints.append(xbound[i, 0] <= x)
-                cvxpy_constraints.append(x <= xbound[i, 1])
+                if xbound is not None:
+                    cvxpy_constraints.append(xbound[i, 0] <= x)
+                    cvxpy_constraints.append(x <= xbound[i, 1])
+
+            elif constraint.get_constraint_type() == ConstraintType.CanonicalConic:
+                a, b, c, P = self.params[k]
+
+                d = a.shape[1]
+                for j in range(d):
+                    cvxpy_constraints.append(
+                        a[i, j] * u + b[i, j] * x + c[i, j]
+                        + cvxpy.norm(P[i, j].T[:, :2] * ux + P[i, j].T[:, 2]) <= 0)
 
         if H is None:
             H = np.zeros((self.get_no_vars(), self.get_no_vars()))
