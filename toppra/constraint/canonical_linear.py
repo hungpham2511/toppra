@@ -7,7 +7,7 @@ import numpy as np
 class CanonicalLinearConstraint(Constraint):
     """  Base class for all canonical linear constraints.
 
-    A canonical linear constraints can be written in the following form
+    A canonical linear constraint has following form
 
     .. math::
 

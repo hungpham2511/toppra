@@ -22,7 +22,7 @@ def test_basic(accel_constraint, dist_scheme):
     cnst, path = accel_constraint
     cnst.set_discretization_type(dist_scheme)
 
-    ro_cnst = toppra.constraint.create_robust_canonical_linear(cnst, [0.1, 2, .3])
+    ro_cnst = toppra.constraint.RobustCanonicalLinearConstraint(cnst, [0.1, 2, .3])
     ro_cnst.set_discretization_type(dist_scheme)
     assert isinstance(ro_cnst, toppra.constraint.CanonicalConicConstraint)
 
@@ -52,7 +52,7 @@ def test_negative_perb(accel_constraint):
     "If negative pertubations are given, raise ValueError"
     cnst, path = accel_constraint
     with pytest.raises(ValueError) as e_info:
-        ro_cnst = toppra.create_robust_canonical_linear(cnst, [-0.1, 2, .3])
+        ro_cnst = toppra.constraint.RobustCanonicalLinearConstraint(cnst, [-0.1, 2, .3])
     assert e_info.value.args[0] == "Perturbation must be non-negative. Input {:f}".format([-0.1, 2, .3])
 
 
