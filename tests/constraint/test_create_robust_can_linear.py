@@ -1,0 +1,58 @@
+import toppra
+import pytest
+import numpy as np
+
+
+@pytest.fixture()
+def accel_constraint(request):
+    dof = 5
+    np.random.seed(0)
+    alim_ = np.random.rand(5)
+    alim = np.vstack((-alim_, alim_)).T
+    constraint = toppra.constraint.JointAccelerationConstraint(alim)
+
+    np.random.seed(0)
+    path = toppra.SplineInterpolator(np.linspace(0, 1, 5), np.random.randn(5, dof))
+    yield constraint, path
+
+@pytest.mark.parametrize("dist_scheme", [toppra.constraint.DiscretizationType.Collocation,
+                                         toppra.constraint.DiscretizationType.Interpolation])
+def test_basic(accel_constraint, dist_scheme):
+    "Basic initialization."
+    cnst, path = accel_constraint
+    cnst.set_discretization_type(dist_scheme)
+
+    ro_cnst = toppra.constraint.create_robust_canonical_linear(cnst, [0.1, 2, .3])
+    ro_cnst.set_discretization_type(dist_scheme)
+    assert isinstance(ro_cnst, toppra.constraint.CanonicalConicConstraint)
+
+    assert ro_cnst.get_constraint_type() == toppra.constraint.ConstraintType.CanonicalConic
+    assert ro_cnst.get_dof() == 5
+
+    a, b, c, P = ro_cnst.compute_constraint_params(
+        path, np.linspace(0, path.get_duration(), 10))
+    assert a.shape == (10, 2 * path.get_dof())
+    assert b.shape == (10, 2 * path.get_dof())
+    assert c.shape == (10, 2 * path.get_dof())
+    assert P.shape == (10, 2 * path.get_dof(), 3, 3)
+
+    # Linear params
+    a0, b0, c0, F0, g0, _, _ = cnst.compute_constraint_params(path, np.linspace(0, path.get_duration(), 10))
+
+    # Assert values
+    for i in range(10):
+        np.testing.assert_allclose(a[i], F0[i].dot(a0[i]))
+        np.testing.assert_allclose(b[i], F0[i].dot(b0[i]))
+        np.testing.assert_allclose(c[i], F0[i].dot(c0[i]))
+
+        np.testing.assert_allclose(P[i], np.diag([0.1, 2, 3]))
+
+
+def test_negative_perb(accel_constraint):
+    "If negative pertubations are given, raise ValueError"
+    cnst, path = accel_constraint
+    with pytest.raises(ValueError) as e_info:
+        ro_cnst = toppra.create_robust_canonical_linear(cnst, [-0.1, 2, .3])
+    assert e_info.value.args[0] == "Perturbation must be non-negative. Input {:f}".format([-0.1, 2, .3])
+
+
