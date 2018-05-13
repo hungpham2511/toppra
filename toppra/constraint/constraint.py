@@ -65,7 +65,7 @@ class Constraint(object):
         elif t == 1:
             self.discretization_type = DiscretizationType.Interpolation
         elif t == DiscretizationType.Collocation or t == DiscretizationType.Interpolation:
-            self.disretization_type = t
+            self.discretization_type = t
         else:
             raise "Discretization type: {:} not implemented!".format(t)
 

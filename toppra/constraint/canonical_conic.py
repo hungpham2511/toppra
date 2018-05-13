@@ -55,16 +55,18 @@ class RobustCanonicalLinearConstraint(CanonicalConicConstraint):
         Lengths of the axes of the perturbation ellipsoid. Must all be
         non-negative.
     """
-    def __init__(self, cnst, ellipsoid_axes_lengths):
+    def __init__(self, cnst, ellipsoid_axes_lengths, discretization_scheme=DiscretizationType.Collocation):
         super(RobustCanonicalLinearConstraint, self).__init__()
         self.dof = cnst.get_dof()
         assert cnst.get_constraint_type() == ConstraintType.CanonicalLinear
+        self.set_discretization_type(discretization_scheme)
         if np.any(np.r_[ellipsoid_axes_lengths] < 0):
             raise ValueError("Perturbation must be non-negative. Input {:}".format(ellipsoid_axes_lengths))
         self.base_constraint = cnst
         self.ellipsoid_axes_lengths = ellipsoid_axes_lengths
 
     def compute_constraint_params(self, path, gridpoints):
+        self.base_constraint.set_discretization_type(self.discretization_type)
         a_, b_, c_, F_, g_, _, _ = self.base_constraint.compute_constraint_params(path, gridpoints)
 
         a = np.zeros(F_.shape[:2])
