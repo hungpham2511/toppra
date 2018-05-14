@@ -93,6 +93,8 @@ def test_vel_robust_accel(vel_accel_robustaccel, path, solver_name, i, H, g, x_i
         actual = np.array(ux.value).flatten()
         np.testing.assert_allclose(
             result.flatten(), actual.flatten(), atol=5e-3, rtol=1e-5)
+        # X must be non-negative, always
+        assert result[1] >= 0 
     else:
         assert np.all(np.isnan(result))
 

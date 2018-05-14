@@ -79,6 +79,9 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         X_upper = map(lambda i: self.solver_wrapper.solve_stagewise_optim(
             i, Hzero, - g_lower, -LARGE, LARGE, -LARGE, LARGE)[1], range(self._N + 1))
         self.solver_wrapper.close_solver()
+        for i in range(self._N + 1):
+            if X_lower[i] < 0:
+                X_lower[i] = 0
         X = np.array((X_lower, X_upper)).T
         return X
 
@@ -105,6 +108,8 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         self.solver_wrapper.setup_solver()
         for i in range(self._N - 1, -1, -1):
             K[i] = self._one_step(i, K[i + 1])
+            if K[i, 0] < 0:
+                K[i, 0] = 0
             logger.debug("[Compute controllable sets] K_{:d}={:}".format(i, K[i]))
         if np.isnan(K[0]).any():
             logger.warn("The 0-th controllable set is empty. This path is not parametrizable.")

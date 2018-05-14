@@ -45,6 +45,14 @@ def test_toppra_linear(vel_accel_robustaccel, path):
     traj, _ = instance.compute_trajectory(0, 0)
     assert traj is not None
 
+    X = instance.compute_feasible_sets()
+    assert np.all(X >= 0)
+    assert not np.any(np.isnan(X))
+
+    K = instance.compute_controllable_sets(0, 0)
+    assert np.all(K >= 0)
+    assert not np.any(np.isnan(K))
+
 
 def test_toppra_conic(vel_accel_robustaccel, path):
     vel_c, acc_c, ro_acc_c = vel_accel_robustaccel
@@ -54,4 +62,12 @@ def test_toppra_conic(vel_accel_robustaccel, path):
     traj, _ = ro_instance.compute_trajectory(0, 0)
     assert traj is not None
     assert traj.get_duration() < 20 and traj.get_duration() > 0
+
+    X = ro_instance.compute_feasible_sets()
+    assert np.all(X >= 0)
+    assert not np.any(np.isnan(X))
+
+    K = ro_instance.compute_controllable_sets(0, 0)
+    assert np.all(K >= 0)
+    assert not np.any(np.isnan(K))
 

@@ -82,3 +82,4 @@ def test_retime_kinematics_waypoints(robot_fixture, seed):
     assert traj_new is not None
     assert traj_new.GetDuration() < 30 and traj_new.GetDuration() > 0
 
+

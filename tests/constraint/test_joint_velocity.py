@@ -76,6 +76,9 @@ class TestClass_JointVelocityConstraint(object):
             # 3. They should agree
             npt.assert_allclose([xmin, xmax], xlimit[i], atol=TINY)
 
+            # Assert non-negativity
+            assert xlimit[i, 0] >= 0
+
     def test_wrong_dimension(self, velocity_pc_data):
         data, pc = velocity_pc_data
         path_wrongdim = ta.SplineInterpolator(np.linspace(0, 1, 5), np.random.randn(5, 10))
