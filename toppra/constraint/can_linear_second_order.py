@@ -47,7 +47,7 @@ class CanonicalLinearSecondOrderConstraint(CanonicalLinearConstraint):
     """
     def __init__(self, inv_dyn, cnst_F, cnst_g, dof=None, discretization_scheme=DiscretizationType.Collocation):
         super(CanonicalLinearSecondOrderConstraint, self).__init__()
-        self.discretization_type = discretization_scheme
+        self.set_discretization_type(discretization_scheme)
         self.inv_dyn = inv_dyn
         self.cnst_F = cnst_F
         self.cnst_g = cnst_g
