@@ -11,7 +11,10 @@ LOGGER = logging.getLogger(__name__)
 def setup_logging(level="WARN"):
     """ Setup basic logging facility to console.
     """
-    coloredlogs.install(logger=logging.getLogger("toppra"), level=level)
+    coloredlogs.install(logger=logging.getLogger("toppra"), level=level,
+                        fmt="%(levelname)s %(asctime)s (%(name)s) [%(funcName)s: %(lineno)d] %(message)s",
+                        datefmt="%H:%M:%S",
+                        milliseconds=True)
 
 
 def compute_jacobian_wrench(robot, link, point):
