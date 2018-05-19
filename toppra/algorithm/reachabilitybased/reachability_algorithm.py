@@ -1,5 +1,5 @@
 from ..algorithm import ParameterizationAlgorithm
-from ...solverwrapper import cvxpyWrapper, qpOASESSolverWrapper
+from ...solverwrapper import cvxpyWrapper, qpOASESSolverWrapper, ecosWrapper
 from ...constants import LARGE, SMALL
 from ...constraint import ConstraintType
 
@@ -42,19 +42,33 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
     """
     def __init__(self, constraint_list, path, gridpoints=None, solver_wrapper=None):
         super(ReachabilityAlgorithm, self).__init__(constraint_list, path, gridpoints=gridpoints)
-        # Choose solver wrapper automatically
+
+        logger.debug("Checking supplied constraints.")
+        has_conic = False
+        for c in constraint_list:
+            if c.get_constraint_type() == ConstraintType.CanonicalConic:
+                has_conic = True
+    
         if solver_wrapper is None:
-            has_conic = False
-            for c in constraint_list:
-                if c.get_constraint_type() == ConstraintType.CanonicalConic:
-                    has_conic = True
-                    solver_wrapper = "cvxpy"
-            if not has_conic:
+            logger.debug("Solver wrapper not supplied. Choose solver wrapper automatically!")
+            if has_conic:
+                solver_wrapper = "ecos"
+            else:
                 solver_wrapper = "qpOASES"
-        if solver_wrapper == 'cvxpy':
+            logger.debug("Select solver {:}".format(solver_wrapper))
+        else:
+            if has_conic:
+                assert solver_wrapper.lower() in ['cvxpy', 'ecos'], "Problem has conic constraints, solver {:} is not suitable".format(solver_wrapper)
+            else:
+                assert solver_wrapper.lower() in ['cvxpy', 'qpoases', 'ecos'], "Solver {:} not found".format(solver_wrapper)
+
+        # Select
+        if solver_wrapper.lower() == "cvxpy":
             self.solver_wrapper = cvxpyWrapper(self.constraints, self.path, self.gridpoints)
-        elif solver_wrapper == 'qpOASES':
+        elif solver_wrapper.lower() == "qpoases":
             self.solver_wrapper = qpOASESSolverWrapper(self.constraints, self.path, self.gridpoints)
+        elif solver_wrapper.lower() == "ecos":
+            self.solver_wrapper = ecosWrapper(self.constraints, self.path, self.gridpoints)
         else:
             raise NotImplementedError("Solver wrapper {:} not found!".format(solver_wrapper))
 
@@ -69,6 +83,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
             state, X[i] equals (np.nan, np.nan).
 
         """
+        logger.info("Start computing the feasible sets")
         nV = self.solver_wrapper.get_no_vars()
         Hzero = np.zeros((nV, nV))
         g_lower = np.zeros(nV)

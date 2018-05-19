@@ -39,9 +39,10 @@ def path():
     yield path
 
 
-def test_toppra_linear(vel_accel_robustaccel, path):
+@pytest.mark.parametrize("solver_wrapper", ["cvxpy", "qpoases"])
+def test_toppra_linear(vel_accel_robustaccel, path, solver_wrapper):
     vel_c, acc_c, ro_acc_c = vel_accel_robustaccel
-    instance = toppra.algorithm.TOPPRA([vel_c, acc_c], path)
+    instance = toppra.algorithm.TOPPRA([vel_c, acc_c], path, solver_wrapper=solver_wrapper)
     traj, _ = instance.compute_trajectory(0, 0)
     assert traj is not None
 
@@ -54,11 +55,12 @@ def test_toppra_linear(vel_accel_robustaccel, path):
     assert not np.any(np.isnan(K))
 
 
-def test_toppra_conic(vel_accel_robustaccel, path):
+@pytest.mark.parametrize("solver_wrapper", ["cvxpy", "ecos"])
+def test_toppra_conic(vel_accel_robustaccel, path, solver_wrapper):
     vel_c, acc_c, ro_acc_c = vel_accel_robustaccel
     acc_c.set_discretization_type(1)
     ro_acc_c.set_discretization_type(1)
-    ro_instance = toppra.algorithm.TOPPRA([vel_c, ro_acc_c], path)
+    ro_instance = toppra.algorithm.TOPPRA([vel_c, ro_acc_c], path, solver_wrapper=solver_wrapper)
     traj, _ = ro_instance.compute_trajectory(0, 0)
     assert traj is not None
     assert traj.get_duration() < 20 and traj.get_duration() > 0

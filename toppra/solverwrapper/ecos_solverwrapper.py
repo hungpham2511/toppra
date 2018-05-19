@@ -135,11 +135,13 @@ class ecosWrapper(SolverWrapper):
 
         # Fill 
         G = scipy.sparse.csc_matrix(G_lil)
-        result = ecos.solve(g, G, h, dims)
-        if result['info']['infostring'] == "Optimal solution found":
+        result = ecos.solve(g, G, h, dims, verbose=False)
+        accepted_infos = ["Optimal solution found", "Close to optimal solution found"]
+        if result['info']['infostring'] in accepted_infos:
             success = True
         else:
             success = False
+            logger.warn("Optimization fails. Result dictionary: \n {:}".format(result))
 
         ux_opt = np.zeros(2)
         if success:

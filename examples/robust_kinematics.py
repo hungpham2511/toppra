@@ -15,10 +15,13 @@ def main():
     parser.add_argument("-du", "--du", default=1e-3, type=float)
     parser.add_argument("-dx", "--dx", default=5e-2, type=float)
     parser.add_argument("-dc", "--dc", default=9e-3, type=float)
+    parser.add_argument("-so", "--solver_wrapper", default='ecos')
     parser.add_argument("-i", "--interpolation_scheme", default=1, type=int)
     args = parser.parse_args()
     if args.verbose:
         ta.setup_logging("DEBUG")
+    else:
+        ta.setup_logging("INFO")
 
     # Parameters
     N_samples = 5
@@ -42,7 +45,8 @@ def main():
     robust_pc_acc = constraint.RobustCanonicalLinearConstraint(
         pc_acc, [args.du, args.dx, args.dc], args.interpolation_scheme)
     instance = algo.TOPPRA([pc_vel, robust_pc_acc], path,
-                           gridpoints=np.linspace(0, 1, args.N + 1))
+                           gridpoints=np.linspace(0, 1, args.N + 1),
+                           solver_wrapper=args.solver_wrapper)
 
     X = instance.compute_feasible_sets()
     K = instance.compute_controllable_sets(0, 0)
