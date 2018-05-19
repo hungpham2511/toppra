@@ -118,6 +118,20 @@ class ecosWrapper(SolverWrapper):
                 h[currow: currow + 2] = [_xbound[i, 1], -_xbound[i, 0]]
                 currow += 2
         ## Fill 4)
+        for k in self._conic_idx:
+            _a, _b, _c, _P = self.params[k]
+
+            # NOTE: Here the following arrangement is used.
+            # G_i = [  a_ij        b_ij  ]
+            #       [ -P_ij^T[:, :2]     ]
+            # h_i = [- c_ij         ]
+            #       [- P_ij^T[:, 2] ]
+            for j in range(_a.shape[1]):
+                G_lil[currow, :] = [_a[i, j], _b[i, j]]
+                G_lil[currow + 1: currow + 4, :] = _P[i, j].T[:, :2]
+                h[currow] = - _c[i, j]
+                h[currow + 1: currow + 4] = _P[i, j].T[:, 2]
+                currow += 4
 
         # Fill 
         G = scipy.sparse.csc_matrix(G_lil)

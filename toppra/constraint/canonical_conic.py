@@ -36,6 +36,7 @@ class CanonicalConicConstraint(Constraint):
         self.discretization_type = DiscretizationType.Collocation
         self.n_extra_vars = 0
         self.dof = -1
+        self._format_string = ""
 
     def compute_constraint_params(self, path, gridpoints):
         raise NotImplementedError
@@ -71,6 +72,7 @@ class RobustCanonicalLinearConstraint(CanonicalConicConstraint):
             raise ValueError("Perturbation must be non-negative. Input {:}".format(ellipsoid_axes_lengths))
         self.base_constraint = cnst
         self.ellipsoid_axes_lengths = ellipsoid_axes_lengths
+        self._format_string += "    Robust constraint generated from a canonical linear constraint\n"
 
     def compute_constraint_params(self, path, gridpoints):
         self.base_constraint.set_discretization_type(self.discretization_type)

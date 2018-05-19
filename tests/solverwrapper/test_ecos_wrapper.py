@@ -1,3 +1,5 @@
+""" Tests for features specific to `ecosWrapper`.
+"""
 import pytest
 import numpy as np
 import toppra

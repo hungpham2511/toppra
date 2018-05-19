@@ -1,3 +1,5 @@
+""" Tests for features specific to conic solver wrapper.
+"""
 import pytest
 import numpy as np
 import toppra
@@ -16,7 +18,6 @@ try:
     FOUND_CXPY = True
 except ImportError:
     FOUND_CXPY = False
-
 
 @pytest.fixture(params=[(0, 0)])
 def vel_accel_robustaccel(request):
@@ -40,7 +41,7 @@ def path():
 @pytest.mark.parametrize("H", [None])
 @pytest.mark.parametrize("g", [np.array([0.2, -1]), np.array([0.5, 1]), np.array([2.0, 1])])
 @pytest.mark.parametrize("x_ineq", [(-1, 1), (0.2, 0.2), (0.4, 0.3), (None, None)])
-@pytest.mark.parametrize("solver_name", ['ECOS'])
+@pytest.mark.parametrize("solver_name", ["cvxpy", "ECOS"])
 def test_vel_robust_accel(vel_accel_robustaccel, path, solver_name, i, H, g, x_ineq):
     "Case 1: only velocity and robust acceleration constraints. Only linear objective."
     vel_c, _, robust_acc_c = vel_accel_robustaccel
