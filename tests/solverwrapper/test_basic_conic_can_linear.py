@@ -37,18 +37,18 @@ def path():
     yield path
 
 @pytest.mark.parametrize("i", [0, 5, 9])
-@pytest.mark.parametrize("H", [np.array([[1.5, 0], [0, 1.0]]), np.zeros((2, 2)), None])
+@pytest.mark.parametrize("H", [None])
 @pytest.mark.parametrize("g", [np.array([0.2, -1]), np.array([0.5, 1]), np.array([2.0, 1])])
 @pytest.mark.parametrize("x_ineq", [(-1, 1), (0.2, 0.2), (0.4, 0.3), (None, None)])
-@pytest.mark.parametrize("solver_name", ['cvxpy', 'ECOS'])
+@pytest.mark.parametrize("solver_name", ['ECOS'])
 def test_vel_robust_accel(vel_accel_robustaccel, path, solver_name, i, H, g, x_ineq):
-    "Case 1: only velocity and robust acceleration constraints"
+    "Case 1: only velocity and robust acceleration constraints. Only linear objective."
     vel_c, _, robust_acc_c = vel_accel_robustaccel
     path_dist = np.linspace(0, path.get_duration(), 10 + 1)
     if solver_name == "cvxpy":
         solver = toppra.solverwrapper.cvxpyWrapper([vel_c, robust_acc_c], path, path_dist)
     elif solver_name == "ECOS":
-        return
+        solver = toppra.solverwrapper.ecosWrapper([vel_c, robust_acc_c], path, path_dist)
     else:
         assert False
 
@@ -102,7 +102,7 @@ def test_vel_robust_accel(vel_accel_robustaccel, path, solver_name, i, H, g, x_i
 @pytest.mark.parametrize("H", [np.array([[1.5, 0], [0, 1.0]]), None])
 @pytest.mark.parametrize("g", [np.array([0.2, -1])])
 @pytest.mark.parametrize("x_ineq", [(-1, 1), (0.2, 0.2), (None, None)])
-@pytest.mark.parametrize("solver_name", ['cvxpy', 'ECOS'])
+@pytest.mark.parametrize("solver_name", ['cvxpy'])
 def test_compare_accel_robust_accel(vel_accel_robustaccel, path, solver_name, i, H, g, x_ineq):
     "Case 4: If robust accel has very small perturbation ellipsoid, it should be equivalent to acceleration constraint."
     vel_c, acc_c, _ = vel_accel_robustaccel
@@ -115,7 +115,8 @@ def test_compare_accel_robust_accel(vel_accel_robustaccel, path, solver_name, i,
         solver = toppra.solverwrapper.cvxpyWrapper([vel_c, acc_c], path, path_dist)
         ro_solver = toppra.solverwrapper.cvxpyWrapper([vel_c, robust_acc_c], path, path_dist)
     elif solver_name == "ECOS":
-        return
+        solver = toppra.solverwrapper.cvxpyWrapper([vel_c, acc_c], path, path_dist)
+        ro_solver = toppra.solverwrapper.ecosWrapper([vel_c, robust_acc_c], path, path_dist)
     else:
         assert False
 

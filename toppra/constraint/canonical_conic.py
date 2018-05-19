@@ -15,14 +15,21 @@ class CanonicalConicConstraint(Constraint):
 
     where P[i, j] is a 3x3 matrix.
 
-    Constraints of this form is known mathematically as conic
-    quadratic constraints. See [1] for more information.
+    Constraints of this form can be translated to conic-quadratic
+    constraints. This transformation can be found in [1]. The
+    resulting conic-quadratic constraint is given below
+    
+    .. math::
+        a[i, j]u + b[i, j]x + c[i, j] + \|P[i, j]^T [u, x, 1]^T \|_2 \leq 0,
+
+    where i is the stage index, and j is the constraint index. 
 
     Refs:
     ----
     [1] Ben-Tal, A., & Nemirovski, A. (2001). Lectures on modern convex
         optimization: analysis, algorithms, and engineering applications
         (Vol. 2). Siam.
+
     """
     def __init__(self):
         self.constraint_type = ConstraintType.CanonicalConic
