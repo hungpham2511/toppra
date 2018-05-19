@@ -7,7 +7,7 @@ import ecos
 
 logger = logging.getLogger(__name__)
 
-INF = 1e10
+INF = 1e2
 
 
 class ecosWrapper(SolverWrapper):
@@ -73,12 +73,12 @@ class ecosWrapper(SolverWrapper):
         if x_min is not None:
             h[currow] = - x_min
         else:
-            h[currow] = 1.0
+            h[currow] = INF
         currow += 1
         if x_max is not None:
             h[currow] = x_max
         else:
-            h[currow] = 1.0
+            h[currow] = INF
         currow += 1
         ## Fill 2)
         if i < self.N:
