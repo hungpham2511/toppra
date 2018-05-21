@@ -4,7 +4,7 @@ import numpy.testing as npt
 
 import toppra
 import toppra.constraint as constraint
-from toppra.solverwrapper import cvxpyWrapper, qpOASESSolverWrapper
+from toppra.solverwrapper import cvxpyWrapper, qpOASESSolverWrapper, ecosWrapper
 
 toppra.setup_logging(level="DEBUG")
 
@@ -49,7 +49,7 @@ def pp_fixture(request):
     print "\n [TearDown] Finish PP Fixture"
 
 
-@pytest.mark.parametrize("solver_name", ['cvxpy', 'qpOASES'])
+@pytest.mark.parametrize("solver_name", ['cvxpy', 'qpOASES', "ecos"])
 @pytest.mark.parametrize("i", [0, 10, 30])
 @pytest.mark.parametrize("H", [np.array([[1.5, 0], [0, 1.0]]), np.zeros((2, 2)), None])
 @pytest.mark.parametrize("g", [np.array([0.2, -1]), np.array([0.5, 1]), np.array([2.0, 1])])
@@ -73,14 +73,20 @@ def test_basic_init(pp_fixture, solver_name, i, H, g, x_ineq):
         solver = cvxpyWrapper(constraints, path, path_discretization)
     elif solver_name == 'qpOASES':
         solver = qpOASESSolverWrapper(constraints, path, path_discretization)
+    elif solver_name == 'ecos' and H is None:
+        solver = ecosWrapper(constraints, path, path_discretization)
+    else:
+        return True  # Skip all other tests
 
     xmin, xmax = x_ineq
     xnext_min = 0
     xnext_max = 1
-    
+
     # Results from solverwrapper to test
+    solver.setup_solver()
     result = solver.solve_stagewise_optim(i, H, g, xmin, xmax, xnext_min, xnext_max)
-    
+    solver.close_solver()
+
     # Results from cvxpy, used as the actual, desired values
     ux = cvxpy.Variable(2)
     u = ux[0]
@@ -117,7 +123,7 @@ def test_basic_init(pp_fixture, solver_name, i, H, g, x_ineq):
         assert np.all(np.isnan(result))
 
 
-@pytest.mark.parametrize("solver_name", ['cvxpy', 'qpOASES'])
+@pytest.mark.parametrize("solver_name", ['cvxpy', 'qpOASES', 'ecos'])
 def test_infeasible_instance(pp_fixture, solver_name):
     """If the given parameters are infeasible, the solverwrapper should
     terminate gracefully and return a numpy vector [nan, nan].
@@ -127,9 +133,12 @@ def test_infeasible_instance(pp_fixture, solver_name):
         solver = cvxpyWrapper(constraints, path, path_discretization)
     elif solver_name == 'qpOASES':
         solver = qpOASESSolverWrapper(constraints, path, path_discretization)
+    elif solver_name == 'ecos':
+        solver = ecosWrapper(constraints, path, path_discretization)
 
     g = np.r_[0, 1].astype(float)
 
+    solver.setup_solver()
     result = solver.solve_stagewise_optim(0, None, g, 1.1, 1.0, None, None)
     assert np.all(np.isnan(result))
 
@@ -138,3 +147,4 @@ def test_infeasible_instance(pp_fixture, solver_name):
 
     result = solver.solve_stagewise_optim(0, None, g, None, None, 0, -0.5)
     assert np.all(np.isnan(result))
+    solver.close_solver()
