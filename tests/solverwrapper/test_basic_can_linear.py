@@ -4,7 +4,8 @@ import numpy.testing as npt
 
 import toppra
 import toppra.constraint as constraint
-from toppra.solverwrapper import cvxpyWrapper, qpOASESSolverWrapper, ecosWrapper
+from toppra.solverwrapper import (cvxpyWrapper, qpOASESSolverWrapper, ecosWrapper,
+                                  hotqpOASESSolverWrapper)
 
 toppra.setup_logging(level="DEBUG")
 
@@ -49,7 +50,7 @@ def pp_fixture(request):
     print "\n [TearDown] Finish PP Fixture"
 
 
-@pytest.mark.parametrize("solver_name", ['cvxpy', 'qpOASES', "ecos"])
+@pytest.mark.parametrize("solver_name", ['cvxpy', 'qpOASES', "ecos", 'hotqpOASES'])
 @pytest.mark.parametrize("i", [0, 10, 30])
 @pytest.mark.parametrize("H", [np.array([[1.5, 0], [0, 1.0]]), np.zeros((2, 2)), None])
 @pytest.mark.parametrize("g", [np.array([0.2, -1]), np.array([0.5, 1]), np.array([2.0, 1])])
@@ -73,6 +74,8 @@ def test_basic_init(pp_fixture, solver_name, i, H, g, x_ineq):
         solver = cvxpyWrapper(constraints, path, path_discretization)
     elif solver_name == 'qpOASES':
         solver = qpOASESSolverWrapper(constraints, path, path_discretization)
+    elif solver_name == 'hotqpOASES':
+        solver = hotqpOASESSolverWrapper(constraints, path, path_discretization)
     elif solver_name == 'ecos' and H is None:
         solver = ecosWrapper(constraints, path, path_discretization)
     else:
@@ -123,7 +126,7 @@ def test_basic_init(pp_fixture, solver_name, i, H, g, x_ineq):
         assert np.all(np.isnan(result))
 
 
-@pytest.mark.parametrize("solver_name", ['cvxpy', 'qpOASES', 'ecos'])
+@pytest.mark.parametrize("solver_name", ['cvxpy', 'qpOASES', 'ecos', 'hotqpOASES'])
 def test_infeasible_instance(pp_fixture, solver_name):
     """If the given parameters are infeasible, the solverwrapper should
     terminate gracefully and return a numpy vector [nan, nan].
@@ -133,6 +136,8 @@ def test_infeasible_instance(pp_fixture, solver_name):
         solver = cvxpyWrapper(constraints, path, path_discretization)
     elif solver_name == 'qpOASES':
         solver = qpOASESSolverWrapper(constraints, path, path_discretization)
+    elif solver_name == 'hotqpOASES':
+        solver = hotqpOASESSolverWrapper(constraints, path, path_discretization)
     elif solver_name == 'ecos':
         solver = ecosWrapper(constraints, path, path_discretization)
 
