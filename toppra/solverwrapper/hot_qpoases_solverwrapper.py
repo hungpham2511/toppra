@@ -44,7 +44,7 @@ class hotqpOASESSolverWrapper(SolverWrapper):
 
     def setup_solver(self):
         option = Options()
-        option.printLevel = PrintLevel.NONE
+        option.printLevel = PrintLevel.HIGH
         self.solver_up = SQProblem(self.nV, self.nC)
         self.solver_up.setOptions(option)
         self.solver_down = SQProblem(self.nV, self.nC)
@@ -137,7 +137,10 @@ class hotqpOASESSolverWrapper(SolverWrapper):
             else:
                 self.solver_down.getPrimalSolution(var)
             if np.all(var == np.zeros(2)):
-                logger.fatal("Hotstart fails but qpOASES does not report correctly.")
+                logger.fatal("Hotstart fails but qpOASES does not report correctly. {:}".format(
+                    var))
+                # TODO: Investigate why this happen and fix the
+                # relevant code (in qpOASES wrapper)
             else:
                 return var
         res = np.empty(self.get_no_vars())

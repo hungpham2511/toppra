@@ -51,7 +51,7 @@ def pp_fixture(request):
 
 
 @pytest.mark.parametrize("solver_name", ['cvxpy', 'qpOASES', "ecos", 'hotqpOASES'])
-@pytest.mark.parametrize("i", [0, 10, 30])
+@pytest.mark.parametrize("i", [3, 10, 30])
 @pytest.mark.parametrize("H", [np.array([[1.5, 0], [0, 1.0]]), np.zeros((2, 2)), None])
 @pytest.mark.parametrize("g", [np.array([0.2, -1]), np.array([0.5, 1]), np.array([2.0, 1])])
 @pytest.mark.parametrize("x_ineq", [(-1, 1), (0.2, 0.2), (0.4, 0.3), (None, None)])
@@ -87,6 +87,8 @@ def test_basic_init(pp_fixture, solver_name, i, H, g, x_ineq):
 
     # Results from solverwrapper to test
     solver.setup_solver()
+    result_ = solver.solve_stagewise_optim(i - 2, H, g, xmin, xmax, xnext_min, xnext_max)
+    result_ = solver.solve_stagewise_optim(i - 1, H, g, xmin, xmax, xnext_min, xnext_max)
     result = solver.solve_stagewise_optim(i, H, g, xmin, xmax, xnext_min, xnext_max)
     solver.close_solver()
 

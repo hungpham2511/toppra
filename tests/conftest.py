@@ -1,4 +1,8 @@
-import openravepy as orpy
+
+try:
+    import openravepy as orpy
+except:
+    pass
 import pytest
     
 

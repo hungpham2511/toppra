@@ -1,5 +1,5 @@
 from ..algorithm import ParameterizationAlgorithm
-from ...solverwrapper import cvxpyWrapper, qpOASESSolverWrapper, ecosWrapper
+from ...solverwrapper import cvxpyWrapper, qpOASESSolverWrapper, ecosWrapper, hotqpOASESSolverWrapper
 from ...constants import LARGE, SMALL
 from ...constraint import ConstraintType
 
@@ -60,13 +60,15 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
             if has_conic:
                 assert solver_wrapper.lower() in ['cvxpy', 'ecos'], "Problem has conic constraints, solver {:} is not suitable".format(solver_wrapper)
             else:
-                assert solver_wrapper.lower() in ['cvxpy', 'qpoases', 'ecos'], "Solver {:} not found".format(solver_wrapper)
+                assert solver_wrapper.lower() in ['cvxpy', 'qpoases', 'ecos', 'hotqpoases'], "Solver {:} not found".format(solver_wrapper)
 
         # Select
         if solver_wrapper.lower() == "cvxpy":
             self.solver_wrapper = cvxpyWrapper(self.constraints, self.path, self.gridpoints)
         elif solver_wrapper.lower() == "qpoases":
             self.solver_wrapper = qpOASESSolverWrapper(self.constraints, self.path, self.gridpoints)
+        elif solver_wrapper.lower() == "hotqpoases":
+            self.solver_wrapper = hotqpOASESSolverWrapper(self.constraints, self.path, self.gridpoints)
         elif solver_wrapper.lower() == "ecos":
             self.solver_wrapper = ecosWrapper(self.constraints, self.path, self.gridpoints)
         else:
@@ -87,6 +89,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         nV = self.solver_wrapper.get_no_vars()
         Hzero = np.zeros((nV, nV))
         g_lower = np.zeros(nV)
+        g_lower[0] = 1e-9
         g_lower[1] = 1
         self.solver_wrapper.setup_solver()
         X_lower = map(lambda i: self.solver_wrapper.solve_stagewise_optim(
@@ -153,6 +156,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
 
         nV = self.solver_wrapper.get_no_vars()
         g_upper = np.zeros(nV)
+        g_upper[0] = 1e-9
         g_upper[1] = - 1
         x_upper = self.solver_wrapper.solve_stagewise_optim(
             i, None, g_upper, None, None, K_next[0], K_next[1])[1]
