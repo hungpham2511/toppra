@@ -5,7 +5,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import argparse
 
+
 ta.setup_logging("INFO")
+
 
 def main():
     # Parameters
@@ -13,9 +15,11 @@ def main():
     SEED = 9
     dof = 7
 
-    # Random waypoints used to obtain a random geometric path.
+    # Random waypoints used to obtain a random geometric path. Here,
+    # we use spline interpolation.
     np.random.seed(SEED)
     way_pts = np.random.randn(N_samples, dof)
+    path = ta.SplineInterpolator(np.linspace(0, 1, 5), way_pts)
 
     # Create velocity bounds, then velocity constraint object
     vlim_ = np.random.rand(dof) * 20
@@ -23,12 +27,12 @@ def main():
     # Create acceleration bounds, then acceleration constraint object
     alim_ = np.random.rand(dof) * 2
     alim = np.vstack((-alim_, alim_)).T
-
-    path = ta.SplineInterpolator(np.linspace(0, 1, 5), way_pts)
     pc_vel = constraint.JointVelocityConstraint(vlim)
     pc_acc = constraint.JointAccelerationConstraint(
         alim, discretization_scheme=constraint.DiscretizationType.Interpolation)
-    instance = algo.TOPPRA([pc_vel, pc_acc], path, gridpoints=np.linspace(0, 1, 101),
+
+    # Setup a parametrization instance with hot-qpOASES
+    instance = algo.TOPPRA([pc_vel, pc_acc], path, gridpoints=np.linspace(0, 1, 1001),
                            solver_wrapper='hotqpoases')
 
     X = instance.compute_feasible_sets()
@@ -44,8 +48,11 @@ def main():
     plt.plot(K[:, 0], '--', c='red', label="Controllable sets")
     plt.plot(K[:, 1], '--', c='red')
     plt.plot(sd_vec, label="Velocity profile")
-    plt.legend()
     plt.title("Path-position path-velocity plot")
+    plt.xlabel("Path position")
+    plt.ylabel("Path velocity square")
+    plt.legend()
+    plt.tight_layout()
     plt.show()
 
     jnt_traj, aux_traj = instance.compute_trajectory(0, 0)
@@ -53,7 +60,10 @@ def main():
     qs_sample = jnt_traj.evaldd(ts_sample)
 
     plt.plot(ts_sample, qs_sample)
+    plt.xlabel("Time (s)")
+    plt.ylabel("Joint acceleration (rad/s^2)")
     plt.show()
+
 
 if __name__ == '__main__':
     main()

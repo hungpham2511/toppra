@@ -89,7 +89,8 @@ def retime_active_joints_kinematics(traj, robot, output_interpolator=False, vmul
         gridpoints.extend(
             path.ss_waypoints[i]
             + np.linspace(0, 1, Ni + 1)[1:] * (path.ss_waypoints[i + 1] - path.ss_waypoints[i]))
-    instance = TOPPRA([pc_vel, pc_acc] + additional_constraints, path, gridpoints=gridpoints, solver_wrapper='qpOASES')
+    instance = TOPPRA([pc_vel, pc_acc] + additional_constraints, path,
+                      gridpoints=gridpoints, solver_wrapper='hotqpOASES')
     _t1 = time.time()
 
     traj_ra, aux_traj = instance.compute_trajectory(0, 0)
