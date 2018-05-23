@@ -91,16 +91,18 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         g_lower = np.zeros(nV)
         g_lower[0] = 1e-9
         g_lower[1] = 1
+        X = np.zeros((self._N + 1, 2))
         self.solver_wrapper.setup_solver()
-        X_lower = map(lambda i: self.solver_wrapper.solve_stagewise_optim(
-            i, Hzero, g_lower, -LARGE, LARGE, -LARGE, LARGE)[1], range(self._N + 1))
-        X_upper = map(lambda i: self.solver_wrapper.solve_stagewise_optim(
-            i, Hzero, - g_lower, -LARGE, LARGE, -LARGE, LARGE)[1], range(self._N + 1))
+        for i in range(self._N + 1):
+            X[i, 0] = self.solver_wrapper.solve_stagewise_optim(i, Hzero, g_lower,
+                                                                -LARGE, LARGE, -LARGE, LARGE)[1]
+            X[i, 1] = self.solver_wrapper.solve_stagewise_optim(i, Hzero, -g_lower,
+                                                                -LARGE, LARGE, -LARGE, LARGE)[1]
+            logger.debug("X[i]={:}".format(X[i]))
         self.solver_wrapper.close_solver()
         for i in range(self._N + 1):
-            if X_lower[i] < 0:
-                X_lower[i] = 0
-        X = np.array((X_lower, X_upper)).T
+            if X[i, 0] < 0:
+                X[i, 0] = 0
         return X
 
     def compute_controllable_sets(self, sdmin, sdmax):

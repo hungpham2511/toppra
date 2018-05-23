@@ -93,8 +93,12 @@ class cvxpyWrapper(SolverWrapper):
             # problem.solve(solver='MOSEK')
         # else:
             # problem.solve()
-        problem.solve()
-        if problem.status == 'optimal':
+        if logger.getEffectiveLevel() == logging.DEBUG:
+            verbose = True
+        else:
+            verbose = False
+        problem.solve(verbose=verbose)
+        if problem.status == cvxpy.OPTIMAL or problem.status == cvxpy.OPTIMAL_INACCURATE:
             return np.array(ux.value).flatten()
         else:
             res = np.empty(self.get_no_vars())

@@ -32,9 +32,10 @@ def vel_accel_robustaccel(request):
     yield vel_cnst, accl_cnst, robust_accl_cnst
 
 
-@pytest.fixture
-def path():
-    np.random.seed(1)
+@pytest.fixture(params=[1, 2])
+def path(request):
+    seed = request.param
+    np.random.seed(seed)
     path = toppra.SplineInterpolator(np.linspace(0, 1, 5), np.random.randn(5, 3))
     yield path
 
@@ -61,9 +62,6 @@ def test_toppra_conic(vel_accel_robustaccel, path, solver_wrapper):
     acc_c.set_discretization_type(1)
     ro_acc_c.set_discretization_type(1)
     ro_instance = toppra.algorithm.TOPPRA([vel_c, ro_acc_c], path, solver_wrapper=solver_wrapper)
-    traj, _ = ro_instance.compute_trajectory(0, 0)
-    assert traj is not None
-    assert traj.get_duration() < 20 and traj.get_duration() > 0
 
     X = ro_instance.compute_feasible_sets()
     assert np.all(X >= 0)
@@ -72,6 +70,11 @@ def test_toppra_conic(vel_accel_robustaccel, path, solver_wrapper):
     K = ro_instance.compute_controllable_sets(0, 0)
     assert np.all(K >= 0)
     assert not np.any(np.isnan(K))
+
+    traj, _ = ro_instance.compute_trajectory(0, 0)
+    assert traj is not None
+    assert traj.get_duration() < 20 and traj.get_duration() > 0
+
 
 
 @pytest.mark.parametrize("solver_wrapper", [("cvxpy", "qpoases"),
@@ -82,11 +85,11 @@ def test_toppra_linear_compare(vel_accel_robustaccel, path, solver_wrapper):
     vel_c, acc_c, ro_acc_c = vel_accel_robustaccel
     instance = toppra.algorithm.TOPPRA([vel_c, acc_c], path, solver_wrapper=solver_wrapper[0])
     instance2 = toppra.algorithm.TOPPRA([vel_c, acc_c], path, solver_wrapper=solver_wrapper[1])
-    
+
     X = instance.compute_feasible_sets()
     X2 = instance2.compute_feasible_sets()
     np.testing.assert_allclose(X, X2, atol=1e-5)
-    
+
     sd, sdd, _ = instance.compute_parameterization(0, 0)
     sd2, sdd2, _ = instance2.compute_parameterization(0, 0)
     np.testing.assert_allclose(X, X2, atol=1e-5)

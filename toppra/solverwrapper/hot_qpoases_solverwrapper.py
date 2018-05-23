@@ -7,13 +7,20 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+eps = 1e-8  # Coefficient to check for qpoases tolerances
+
+
 class hotqpOASESSolverWrapper(SolverWrapper):
     """A solver wrapper using `qpOASES`.
 
     This wrapper takes advantage of the warm-start capability of
     qpOASES quadratic programming solver by using two different
     solvers. One to solve for maximized controllable sets and one to
-    solve for minimized controllable sets. 
+    solve for minimized controllable sets.
+
+    If the logger "toppra" is set to debug level, qpoases solvers are
+    initialized with PrintLevel.HIGH. Otherwise, these are initialized
+    with PrintLevel.NONE
 
     Parameters
     ----------
@@ -23,12 +30,9 @@ class hotqpOASESSolverWrapper(SolverWrapper):
         The geometric path.
     path_discretization: array
         The discretized path positions.
-
     """
-
     def __init__(self, constraint_list, path, path_discretization):
         super(hotqpOASESSolverWrapper, self).__init__(constraint_list, path, path_discretization)
-
         # Currently only support Canonical Linear Constraint
         self.nC = 2 # First constraint is x + 2 D u <= xnext_max, second is xnext_min <= x + 2D u
         for i, constraint in enumerate(constraint_list):
@@ -44,7 +48,10 @@ class hotqpOASESSolverWrapper(SolverWrapper):
 
     def setup_solver(self):
         option = Options()
-        option.printLevel = PrintLevel.HIGH
+        if logger.getEffectiveLevel() == logging.DEBUG:
+            option.printLevel = PrintLevel.HIGH
+        else:
+            option.printLevel = PrintLevel.NONE
         self.solver_up = SQProblem(self.nV, self.nC)
         self.solver_up.setOptions(option)
         self.solver_down = SQProblem(self.nV, self.nC)
@@ -117,16 +124,19 @@ class hotqpOASESSolverWrapper(SolverWrapper):
 
         # Select what solver to use
         if g[1] > 0:  # Choose solver_up
-            logger.debug("Choose solver [up] ")
             if abs(self.solver_up_recent_index - i) > 1:
+                logger.debug("Choose solver [up] - init")
                 res = self.solver_up.init(H, g, self._A, l, h, self._lA, self._hA, np.array([1000]))
             else:
+                logger.debug("Choose solver [up] - hotstart")
                 res = self.solver_up.hotstart(H, g, self._A, l, h, self._lA, self._hA, np.array([1000]))
             self.solver_up_recent_index = i
         else:  # Choose solver_down
             if abs(self.solver_down_recent_index - i) > 1:
+                logger.debug("Choose solver [down] - init")
                 res = self.solver_down.init(H, g, self._A, l, h, self._lA, self._hA, np.array([1000]))
             else:
+                logger.debug("Choose solver [down] - hotstart")
                 res = self.solver_down.hotstart(H, g, self._A, l, h, self._lA, self._hA, np.array([1000]))
             self.solver_down_recent_index = i
 
@@ -136,13 +146,20 @@ class hotqpOASESSolverWrapper(SolverWrapper):
                 self.solver_up.getPrimalSolution(var)
             else:
                 self.solver_down.getPrimalSolution(var)
-            if np.all(var == np.zeros(2)):
-                logger.fatal("Hotstart fails but qpOASES does not report correctly. {:}".format(
-                    var))
+
+            # Check for constraint feasibility
+            success = (np.all(l <= var + eps) and np.all(var <= h + eps)
+                       and np.all(np.dot(self._A, var) <= self._hA + eps)
+                       and np.all(np.dot(self._A, var) >= self._lA - eps))
+            if not success:
+                # import ipdb; ipdb.set_trace()
+                logger.fatal("Hotstart fails but qpOASES does not report correctly. \n "
+                             "var: {:}, lower_bound: {:}, higher_bound{:}".format(var, l, h))
                 # TODO: Investigate why this happen and fix the
                 # relevant code (in qpOASES wrapper)
             else:
                 return var
+
         res = np.empty(self.get_no_vars())
         res[:] = np.nan
         return res
