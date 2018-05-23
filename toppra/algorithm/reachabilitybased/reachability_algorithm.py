@@ -130,7 +130,8 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
             K[i] = self._one_step(i, K[i + 1])
             if K[i, 0] < 0:
                 K[i, 0] = 0
-            logger.debug("[Compute controllable sets] K_{:d}={:}".format(i, K[i]))
+            if logger.isEnabledFor(logging.DEBUG):
+                logger.debug("[Compute controllable sets] K_{:d}={:}".format(i, K[i]))
         if np.isnan(K[0]).any():
             logger.warn("The 0-th controllable set is empty. This path is not parametrizable.")
         self.solver_wrapper.close_solver()

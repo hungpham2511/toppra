@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 eps = 1e-8  # Coefficient to check for qpoases tolerances
+INF = 10000
 
 
 class hotqpOASESSolverWrapper(SolverWrapper):
@@ -45,6 +46,8 @@ class hotqpOASESSolverWrapper(SolverWrapper):
         self._A = np.zeros((self.nC, self.nV))
         self._lA = - np.ones(self.nC)
         self._hA = - np.ones(self.nC)
+        self._l = - np.ones(2) * INF
+        self._h = np.ones(2) * INF
 
     def setup_solver(self):
         option = Options()
@@ -70,15 +73,14 @@ class hotqpOASESSolverWrapper(SolverWrapper):
         #  s.t    lA <= Ay <= hA
         #         l  <=  y <= h
         assert i <= self.N and 0 <= i
-        INF = 10000
 
-        l = - np.ones(2) * INF
-        h = np.ones(2) * INF
+        self._l[:] = -INF
+        self._h[:] = INF
 
         if x_min is not None:
-            l[1] = max(l[1], x_min)
+            self._l[1] = max(self._l[1], x_min)
         if x_max is not None:
-            h[1] = min(h[1], x_max)
+            self._h[1] = min(self._h[1], x_max)
 
         if i < self.N:
             delta = self.get_deltas()[i]
@@ -112,12 +114,12 @@ class hotqpOASESSolverWrapper(SolverWrapper):
                 cur_index = cur_index + nC_
 
             if ubound is not None:
-                l[0] = max(l[0], ubound[i, 0])
-                h[0] = min(h[0], ubound[i, 1])
+                self._l[0] = max(self._l[0], ubound[i, 0])
+                self._h[0] = min(self._h[0], ubound[i, 1])
 
             if xbound is not None:
-                l[1] = max(l[1], xbound[i, 0])
-                h[1] = min(h[1], xbound[i, 1])
+                self._l[1] = max(self._l[1], xbound[i, 0])
+                self._h[1] = min(self._h[1], xbound[i, 1])
 
         if H is None:
             H = np.zeros((self.get_no_vars(), self.get_no_vars()))
@@ -125,19 +127,23 @@ class hotqpOASESSolverWrapper(SolverWrapper):
         # Select what solver to use
         if g[1] > 0:  # Choose solver_up
             if abs(self.solver_up_recent_index - i) > 1:
-                logger.debug("Choose solver [up] - init")
-                res = self.solver_up.init(H, g, self._A, l, h, self._lA, self._hA, np.array([1000]))
+                if logger.isEnabledFor(logging.DEBUG):
+                    logger.debug("Choose solver [up] - init")
+                res = self.solver_up.init(H, g, self._A, self._l, self._h, self._lA, self._hA, np.array([1000]))
             else:
-                logger.debug("Choose solver [up] - hotstart")
-                res = self.solver_up.hotstart(H, g, self._A, l, h, self._lA, self._hA, np.array([1000]))
+                if logger.isEnabledFor(logging.DEBUG):
+                    logger.debug("Choose solver [up] - hotstart")
+                res = self.solver_up.hotstart(H, g, self._A, self._l, self._h, self._lA, self._hA, np.array([1000]))
             self.solver_up_recent_index = i
         else:  # Choose solver_down
             if abs(self.solver_down_recent_index - i) > 1:
-                logger.debug("Choose solver [down] - init")
-                res = self.solver_down.init(H, g, self._A, l, h, self._lA, self._hA, np.array([1000]))
+                if logger.isEnabledFor(logging.DEBUG):
+                    logger.debug("Choose solver [down] - init")
+                res = self.solver_down.init(H, g, self._A, self._l, self._h, self._lA, self._hA, np.array([1000]))
             else:
-                logger.debug("Choose solver [down] - hotstart")
-                res = self.solver_down.hotstart(H, g, self._A, l, h, self._lA, self._hA, np.array([1000]))
+                if logger.isEnabledFor(logging.DEBUG):
+                    logger.debug("Choose solver [down] - hotstart")
+                res = self.solver_down.hotstart(H, g, self._A, self._l, self._h, self._lA, self._hA, np.array([1000]))
             self.solver_down_recent_index = i
 
         if res == ReturnValue.SUCCESSFUL_RETURN:
@@ -148,13 +154,13 @@ class hotqpOASESSolverWrapper(SolverWrapper):
                 self.solver_down.getPrimalSolution(var)
 
             # Check for constraint feasibility
-            success = (np.all(l <= var + eps) and np.all(var <= h + eps)
+            success = (np.all(self._l <= var + eps) and np.all(var <= self._h + eps)
                        and np.all(np.dot(self._A, var) <= self._hA + eps)
                        and np.all(np.dot(self._A, var) >= self._lA - eps))
             if not success:
                 # import ipdb; ipdb.set_trace()
                 logger.fatal("Hotstart fails but qpOASES does not report correctly. \n "
-                             "var: {:}, lower_bound: {:}, higher_bound{:}".format(var, l, h))
+                             "var: {:}, lower_bound: {:}, higher_bound{:}".format(var, self._l, self._h))
                 # TODO: Investigate why this happen and fix the
                 # relevant code (in qpOASES wrapper)
             else:
