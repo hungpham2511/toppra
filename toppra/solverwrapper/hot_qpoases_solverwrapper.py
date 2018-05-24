@@ -31,9 +31,15 @@ class hotqpOASESSolverWrapper(SolverWrapper):
         The geometric path.
     path_discretization: array
         The discretized path positions.
+    disable_check: bool, optional
+        Disable check for solution validity. Improve speed by about
+        20% but entails the possibility that failure is not reported
+        correctly.
+
     """
-    def __init__(self, constraint_list, path, path_discretization):
+    def __init__(self, constraint_list, path, path_discretization, disable_check=False):
         super(hotqpOASESSolverWrapper, self).__init__(constraint_list, path, path_discretization)
+        self._disable_check = disable_check
         # Currently only support Canonical Linear Constraint
         self.nC = 2 # First constraint is x + 2 D u <= xnext_max, second is xnext_min <= x + 2D u
         for i, constraint in enumerate(constraint_list):
@@ -44,8 +50,8 @@ class hotqpOASESSolverWrapper(SolverWrapper):
                 self.nC += F.shape[1]
 
         self._A = np.zeros((self.nC, self.nV))
-        self._lA = - np.ones(self.nC)
-        self._hA = - np.ones(self.nC)
+        self._lA = - np.ones(self.nC) * INF
+        self._hA = np.ones(self.nC) * INF
         self._l = - np.ones(2) * INF
         self._h = np.ones(2) * INF
 
@@ -87,19 +93,15 @@ class hotqpOASESSolverWrapper(SolverWrapper):
             if x_next_min is not None:
                 self._A[0] = [-2 * delta, -1]
                 self._hA[0] = - x_next_min
-                self._lA[0] = - INF
             else:
                 self._A[0] = [0, 0]
                 self._hA[0] = INF
-                self._lA[0] = -INF
             if x_next_max is not None:
                 self._A[1] = [2 * delta, 1]
                 self._hA[1] = x_next_max
-                self._lA[1] = - INF
             else:
                 self._A[1] = [0, 0]
                 self._hA[1] = INF
-                self._lA[1] = -INF
         cur_index = 2
         for j in range(len(self.constraints)):
             a, b, c, F, v, ubound, xbound = self.params[j]
@@ -152,6 +154,9 @@ class hotqpOASESSolverWrapper(SolverWrapper):
                 self.solver_up.getPrimalSolution(var)
             else:
                 self.solver_down.getPrimalSolution(var)
+
+            if self._disable_check:
+                return var
 
             # Check for constraint feasibility
             success = (np.all(self._l <= var + eps) and np.all(var <= self._h + eps)

@@ -45,7 +45,7 @@ def main(env=None, test=False):
                                                  "uniformly.")
     parser.add_argument('-e', '--env', help='OpenRAVE Environment file', default="data/lab1.env.xml")
     parser.add_argument('-v', '--verbose', help='Show DEBUG log and plot trajectories', action="store_true")
-    parser.add_argument('-N', '--Ngrid', help='Number of discretization step', default=500, type=int)
+    parser.add_argument('-N', '--Ngrid', help='Number of discretization step', default=100, type=int)
     args = vars(parser.parse_args())
 
     if args['verbose']:
