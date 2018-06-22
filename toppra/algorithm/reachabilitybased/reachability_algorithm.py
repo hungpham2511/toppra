@@ -192,16 +192,16 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         self.solver_wrapper.setup_solver()
         for i in range(self._N):
             optim_res = self._forward_step(i, xs[i], K[i + 1])
-            if optim_res[0] is None:
-                us[i] = None
-                xs[i + 1] = None
-                v_vec[i] = None
+            if np.isnan(optim_res[0]):
+                us[i] = np.nan
+                xs[i + 1] = np.nan
+                v_vec[i] = np.nan
             else:
                 us[i] = optim_res[0]
                 # The below function min( , max( ,)) ensure that the state x_{i+1} is controllable.
                 # While this is ensured theoretically by the existence of the controllable sets,
                 # numerical errors might violate this condition.
-                xs[i + 1] = min(K[i + 1, 1], max(K[i + 1, 0], xs[i] + 2 * deltas[i] * us[i]))
+                xs[i + 1] = min(K[i + 1, 1], max(K[i + 1, 0], xs[i] + 2 * deltas[i] * us[i] - SMALL))
                 v_vec[i] = optim_res[2:]
             logger.debug("[Forward pass] u_{:d} = {:f}, x_{:d} = {:f}".format(i, us[i], i+1, xs[i+1]))
         self.solver_wrapper.close_solver()

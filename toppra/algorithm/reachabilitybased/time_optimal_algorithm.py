@@ -37,10 +37,11 @@ class TOPPRA(ReachabilityAlgorithm):
         -------
         optim_var: array
             Optimal variable, which has this format (u, x, v).
+            If this step fails, `optim_var` contains only nans.
         """
         # Immediate return
         if None in K_next or i < 0 or i > self._N or np.isnan(x) or x is None:
-            return [None, None]
+            return [np.nan, np.nan]
 
         nV = self.solver_wrapper.get_no_vars()
         g_upper = np.zeros(nV)
