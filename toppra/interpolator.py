@@ -261,7 +261,7 @@ class SplineInterpolator(Interpolator):
         The path 2nd derivative.
 
     """
-    def __init__(self, ss_waypoints, waypoints):
+    def __init__(self, ss_waypoints, waypoints, bc_type='not-a-knot'):
         super(SplineInterpolator, self).__init__()
         assert ss_waypoints[0] == 0, "First index must equals zero."
         self.ss_waypoints = np.array(ss_waypoints)
@@ -294,7 +294,7 @@ class SplineInterpolator(Interpolator):
             self.cspld = f2
             self.cspldd = f2
         else:
-            self.cspl = CubicSpline(ss_waypoints, waypoints)
+            self.cspl = CubicSpline(ss_waypoints, waypoints, bc_type=bc_type)
             self.cspld = self.cspl.derivative()
             self.cspldd = self.cspld.derivative()
 

@@ -65,7 +65,7 @@ class ParameterizationAlgorithm(object):
         """
         raise NotImplementedError
 
-    def compute_trajectory(self, sd_start, sd_end, return_profile=False):
+    def compute_trajectory(self, sd_start, sd_end, return_profile=False, bc_type='not-a-knot'):
         """ Compute the resulting joint trajectory and auxilliary trajectory.
 
         If parameterization fails, return a tuple of None(s).
@@ -106,7 +106,7 @@ class ParameterizationAlgorithm(object):
             t_grid[i] = t_grid[i - 1] + delta_t
 
         q_grid = self.path.eval(self.gridpoints)
-        traj_spline = SplineInterpolator(t_grid, q_grid)
+        traj_spline = SplineInterpolator(t_grid, q_grid, bc_type)
 
         if v_grid.shape[1] == 0:
             v_spline = None

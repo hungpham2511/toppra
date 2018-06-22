@@ -58,7 +58,8 @@ class hotqpOASESSolverWrapper(SolverWrapper):
     def setup_solver(self):
         option = Options()
         if logger.getEffectiveLevel() == logging.DEBUG:
-            option.printLevel = PrintLevel.HIGH
+            # option.printLevel = PrintLevel.HIGH
+            option.printLevel = PrintLevel.NONE
         else:
             option.printLevel = PrintLevel.NONE
         self.solver_up = SQProblem(self.nV, self.nC)
