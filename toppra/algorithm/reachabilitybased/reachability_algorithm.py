@@ -168,19 +168,47 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         res[:] = [x_lower, x_upper]
         return res
 
-    def compute_parameterization(self, sd_start, sd_end):
+    def compute_parameterization(self, sd_start, sd_end, return_data=False):
+        """ Compute a path parameterization.
+
+        If there is no valid parameterization, simply return None(s).
+
+        Parameters
+        ----------
+        sd_start: float
+            Starting path velocity. Must be positive.
+        sd_end: float
+            Goal path velocity. Must be positive.
+        return_data: bool, optional
+            If is True, also return matrix K which contains the controllable sets.
+
+        Returns
+        -------
+        sdd_vec: (_N,) array or None
+            Path accelerations.
+        sd_vec: (_N+1,) array None
+            Path velocities.
+        v_vec: (_N,) array or None
+            Auxiliary variables.
+        """
         assert sd_end >= 0 and sd_start >= 0, "Path velocities must be positive"
         K = self.compute_controllable_sets(sd_end, sd_end)
         if np.isnan(K).any():
             logger.warn("The set of controllable velocities at the beginning is empty!")
-            return None, None, None
+            if return_data:
+                return None, None, None, K
+            else:
+                return None, None, None
 
         x_start = sd_start ** 2
         if x_start + SMALL < K[0, 0] or K[0, 1] + SMALL < x_start:
             logger.warn("The initial velocity is not controllable. {:f} not in ({:f}, {:f})".format(
                 x_start, K[0, 0], K[0, 1]
             ))
-            return None, None, None
+            if return_data:
+                return None, None, None, K
+            else:
+                return None, None, None
 
         N = self.solver_wrapper.get_no_stages()
         deltas = self.solver_wrapper.get_deltas()
@@ -193,6 +221,8 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         for i in range(self._N):
             optim_res = self._forward_step(i, xs[i], K[i + 1])
             if np.isnan(optim_res[0]):
+                logger.fatal("A numerical error occurs: The instance is controllable "
+                             "but forward pass fails.")
                 us[i] = np.nan
                 xs[i + 1] = np.nan
                 v_vec[i] = np.nan
@@ -205,7 +235,10 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
                 v_vec[i] = optim_res[2:]
             logger.debug("[Forward pass] u_{:d} = {:f}, x_{:d} = {:f}".format(i, us[i], i+1, xs[i+1]))
         self.solver_wrapper.close_solver()
+
         sd_vec = np.sqrt(xs)
         sdd_vec = np.copy(us)
-        return sdd_vec, sd_vec, v_vec
-
+        if return_data:
+            return sdd_vec, sd_vec, v_vec, K
+        else:
+            return sdd_vec, sd_vec, v_vec

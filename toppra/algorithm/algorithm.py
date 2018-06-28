@@ -87,10 +87,11 @@ class ParameterizationAlgorithm(object):
         profiles: tuple
             Return if return_profile is True, results from compute_parameterization.
         """
-        sdd_grid, sd_grid, v_grid = self.compute_parameterization(sd_start, sd_end)
+        sdd_grid, sd_grid, v_grid, K = self.compute_parameterization(sd_start, sd_end, return_data=True)
+
         if sd_grid is None:
             if return_profile:
-                return None, None, None
+                return None, None, (sdd_grid, sd_grid, v_grid, K)
             else:
                 return None, None
 
@@ -117,6 +118,6 @@ class ParameterizationAlgorithm(object):
             v_spline = SplineInterpolator(t_grid, v_grid_)
 
         if return_profile:
-            return traj_spline, v_spline, (sdd_grid, sd_grid, v_grid)
+            return traj_spline, v_spline, (sdd_grid, sd_grid, v_grid, K)
         else:
             return traj_spline, v_spline
