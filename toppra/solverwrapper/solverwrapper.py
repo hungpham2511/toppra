@@ -4,19 +4,23 @@ import numpy as np
 class SolverWrapper(object):
     """The base class for all solver wrappers.
 
-    Pattern: Strategy. `SolverWrapper` is the Strategy;
-    `ReachabilityAlgorithm` is the Context.
+    Solver wrappers implement a core method needed by all
+    Reachability-based algorithms: The method
+    `solve_stagewise_optim`. This methods solves a Linear/Quadratic
+    Program subject to constraints at a given stage, and in addition
+    some auxiliary constraints.  This method needs to be
+    implemented by derived classes which use different underlying
+    solvers.
 
-    Solver wrappers implement the core operations of
-    Reachability-based algorithms.  The main public interface of this
-    class is the method `solve_stagewise_optim`. This method needs to
-    be implemented by derived classes.
+    Note that some solver wrappers only handle Linear Program. Some
+    handle both.
 
-    Some solvers need to be setup and close down properly. Examples
-    are mosek and qpOASES with warmstart.  Hence this class contains
-    two abstract methods `setup_solver` and `close_solver`, which
-    should be called before and after any computation by the algorithm
-    object.
+    Some solver wrappers need to be setup and close down before and
+    after usage. For instance, the wrappers for mosek and qpOASES with
+    warmstart capability. To provide this functionality, this class
+    contains two abstract methods `setup_solver` and `close_solver`,
+    which should be called before and after any call to
+    `solve_stagewise_optim`, so that necessary setups can be made.
 
     Attributes
     ----------
@@ -26,6 +30,7 @@ class SolverWrapper(object):
         The geometric path to be time-parametrized.
     path_discretization: array
         The discretization grid use to discretize the geometric path.
+
     """
 
     def __init__(self, constraint_list, path, path_discretization):
