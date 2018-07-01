@@ -27,8 +27,12 @@ ext_1 = Extension(SRC_DIR + "._CythonUtils",
                   libraries=[],
                   include_dirs=[np.get_include()])
 
+ext_2 = Extension(SRC_DIR + ".solverwrapper.cy_seidel_solverwrapper",
+                  [SRC_DIR + "/solverwrapper/cy_seidel_solverwrapper.pyx"],
+                  include_dirs=[np.get_include()])
 
-EXTENSIONS = [ext_1]
+
+EXTENSIONS = [ext_1, ext_2]
 
 if __name__ == "__main__":
     setup(install_requires=REQUIRES,

@@ -70,12 +70,12 @@ class ecosWrapper(SolverWrapper):
         currow = 0
         ## Fill 1)
         G_lil[currow: currow + 2, 1] = [[-1], [1]]
-        if x_min is not None:
+        if not np.isnan(x_min):
             h[currow] = - x_min
         else:
             h[currow] = INF
         currow += 1
-        if x_max is not None:
+        if not np.isnan(x_max):
             h[currow] = x_max
         else:
             h[currow] = INF

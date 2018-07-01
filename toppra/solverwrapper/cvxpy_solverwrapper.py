@@ -47,9 +47,9 @@ class cvxpyWrapper(SolverWrapper):
         x = ux[1]
         cvxpy_constraints = []
 
-        if x_min is not None:
+        if not np.isnan(x_min):
             cvxpy_constraints.append(x_min <= x)
-        if x_max is not None:
+        if not np.isnan(x_max):
             cvxpy_constraints.append(x <= x_max)
 
         if i < self.N:

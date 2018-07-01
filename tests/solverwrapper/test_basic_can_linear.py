@@ -5,7 +5,7 @@ import numpy.testing as npt
 import toppra
 import toppra.constraint as constraint
 from toppra.solverwrapper import (cvxpyWrapper, qpOASESSolverWrapper, ecosWrapper,
-                                  hotqpOASESSolverWrapper)
+                                  hotqpOASESSolverWrapper, seidelWrapper)
 
 toppra.setup_logging(level="DEBUG")
 
@@ -50,11 +50,11 @@ def pp_fixture(request):
     print "\n [TearDown] Finish PP Fixture"
 
 
-@pytest.mark.parametrize("solver_name", ['cvxpy', 'qpOASES', "ecos", 'hotqpOASES'])
+@pytest.mark.parametrize("solver_name", ['cvxpy', 'qpOASES', "ecos", 'hotqpOASES', 'seidel'])
 @pytest.mark.parametrize("i", [3, 10, 30])
 @pytest.mark.parametrize("H", [np.array([[1.5, 0], [0, 1.0]]), np.zeros((2, 2)), None])
 @pytest.mark.parametrize("g", [np.array([0.2, -1]), np.array([0.5, 1]), np.array([2.0, 1])])
-@pytest.mark.parametrize("x_ineq", [(-1, 1), (0.2, 0.2), (0.4, 0.3), (None, None)])
+@pytest.mark.parametrize("x_ineq", [(-1, 1), (0.2, 0.2), (0.4, 0.3), (np.nan, np.nan)])
 @pytest.mark.skipif(not FOUND_CXPY, reason="This test requires cvxpy to validate results.")
 def test_basic_init(pp_fixture, solver_name, i, H, g, x_ineq):
     """ A basic test case for wrappers.
@@ -78,6 +78,8 @@ def test_basic_init(pp_fixture, solver_name, i, H, g, x_ineq):
         solver = hotqpOASESSolverWrapper(constraints, path, path_discretization)
     elif solver_name == 'ecos' and H is None:
         solver = ecosWrapper(constraints, path, path_discretization)
+    elif solver_name == 'seidel' and H is None:
+        solver = seidelWrapper(constraints, path, path_discretization)
     else:
         return True  # Skip all other tests
 
@@ -109,7 +111,7 @@ def test_basic_init(pp_fixture, solver_name, i, H, g, x_ineq):
         x + u * 2 * Di <= xnext_max,
         x + u * 2 * Di >= xnext_min,
     ]
-    if xmin is not None:
+    if not np.isnan(xmin):
         cvxpy_constraints.append(x <= xmax)
         cvxpy_constraints.append(x >= xmin)
     if H is not None:
@@ -128,7 +130,7 @@ def test_basic_init(pp_fixture, solver_name, i, H, g, x_ineq):
         assert np.all(np.isnan(result))
 
 
-@pytest.mark.parametrize("solver_name", ['cvxpy', 'qpOASES', 'ecos', 'hotqpOASES'])
+@pytest.mark.parametrize("solver_name", ['cvxpy', 'qpOASES', 'ecos', 'hotqpOASES', 'seidel'])
 def test_infeasible_instance(pp_fixture, solver_name):
     """If the given parameters are infeasible, the solverwrapper should
     terminate gracefully and return a numpy vector [nan, nan].
