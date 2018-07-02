@@ -48,7 +48,7 @@ def solve_lp1d(double[:] v, a, b, double low, double high):
 
 
 def solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, double[:] low, double[:] high, INT_t[:] active_c):
-    """ Solve a Linear Program with 1 variable.
+    """ Solve a Linear Program with 2 variable.
 
     See func:`cy_solve_lp2d` for more details.
     """
@@ -185,9 +185,7 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
                 sol.active_c[1] = -3
 
     # handle other constraints in a, b, c
-    
     for k in range(nrows):
-        # print k, nrows
         i = index_map[k]
         # if current optimal variable satisfies the i-th constraint, continue
         if a[i] * cur_optvar[0] + b[i] * cur_optvar[1] + c[i] < TINY:
@@ -252,13 +250,18 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
                 a_1d[j] = -1.0
                 b_1d[j] = t_limit
             else:
+                # the curretly considered constraint is parallel to
+                # the base one. Check if they are infeasible, in which
+                # case return failure immediately.
+                if cj + zero_prj[1] * bj + zero_prj[0] * aj > 0:
+                    sol.result = 0
+                    return sol
+                # feasible constraints, specify 0 <= 1
                 a_1d[j] = 0
                 b_1d[j] = 1.0
 
         # solve the projected, 1 dimensional LP
         sol_1d = cy_solve_lp1d(v_1d, nrows_1d, a_1d, b_1d, low_1d, high_1d)
-        # print "Problem!!", sol_1d, nrows_1d, np.asarray(a_1d), np.asarray(b_1d), np.asarray(v_1d), low_1d, high_1d
-        # print np.asarray(d_tan), denom, t_limit
         
         # 1d lp infeasible
         if sol_1d.result == 0:
@@ -340,11 +343,11 @@ cdef class seidelWrapper:
         i: int
             The stage index. See notes for details on each variable.
         H: array or None
-        g: array
-        x_min: float or None
-        x_max: float or None
-        x_next_min: float or None
-        x_next_max: float or None
+        g: (2,)array
+        x_min: float or nan
+        x_max: float or nan
+        x_next_min: float or nan
+        x_next_max: float or nan
 
         Returns
         -------
@@ -417,13 +420,6 @@ cdef class seidelWrapper:
         v[:2] = -g
 
         solution = cy_solve_lp2d(v, a, b, c, low, high, active_c)
-
-        print v
-        print repr(a)
-        print repr(b)
-        print repr(c)
-        print low, high
-        print solution
 
         if solution.result == 0:
             var = np.zeros(2)

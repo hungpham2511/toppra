@@ -41,7 +41,7 @@ class TOPPRA(ReachabilityAlgorithm):
         """
         # Immediate return
         if None in K_next or i < 0 or i > self._N or np.isnan(x) or x is None:
-            return [np.nan, np.nan]
+            return np.array([np.nan, np.nan])
 
         nV = self.solver_wrapper.get_no_vars()
         g_upper = np.zeros(nV)

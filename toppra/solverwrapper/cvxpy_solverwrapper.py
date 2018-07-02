@@ -54,9 +54,9 @@ class cvxpyWrapper(SolverWrapper):
 
         if i < self.N:
             delta = self.get_deltas()[i]
-            if x_next_min is not None:
+            if not np.isnan(x_next_min):
                 cvxpy_constraints.append(x_next_min <= x + 2 * delta * u)
-            if x_next_max is not None:
+            if not np.isnan(x_next_max):
                 cvxpy_constraints.append(x + 2 * delta * u <= x_next_max)
 
         for k, constraint in enumerate(self.constraints):

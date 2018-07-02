@@ -40,7 +40,7 @@ def path():
 @pytest.mark.parametrize("i", [0, 5, 9])
 @pytest.mark.parametrize("H", [None])
 @pytest.mark.parametrize("g", [np.array([0.2, -1]), np.array([0.5, 1]), np.array([2.0, 1])])
-@pytest.mark.parametrize("x_ineq", [(-1, 1), (0.2, 0.2), (0.4, 0.3), (None, None)])
+@pytest.mark.parametrize("x_ineq", [(-1, 1), (0.2, 0.2), (0.4, 0.3), (np.nan, np.nan)])
 @pytest.mark.parametrize("solver_name", ["cvxpy", "ECOS"])
 def test_vel_robust_accel(vel_accel_robustaccel, path, solver_name, i, H, g, x_ineq):
     "Case 1: only velocity and robust acceleration constraints. Only linear objective."
@@ -78,7 +78,7 @@ def test_vel_robust_accel(vel_accel_robustaccel, path, solver_name, i, H, g, x_i
             a[i, j] * u + b[i, j] * x + c[i, j]
             + cvxpy.norm(P[i, j].T[:, :2] * ux + P[i, j].T[:, 2]) <= 0
         )
-    if xmin is not None:
+    if not np.isnan(xmin):
         cvx_constraints.append(x <= xmax)
         cvx_constraints.append(x >= xmin)
     if H is not None:
@@ -102,7 +102,7 @@ def test_vel_robust_accel(vel_accel_robustaccel, path, solver_name, i, H, g, x_i
 @pytest.mark.parametrize("i", [0, 5, 9])
 @pytest.mark.parametrize("H", [np.array([[1.5, 0], [0, 1.0]]), None])
 @pytest.mark.parametrize("g", [np.array([0.2, -1])])
-@pytest.mark.parametrize("x_ineq", [(-1, 1), (0.2, 0.2), (None, None)])
+@pytest.mark.parametrize("x_ineq", [(-1, 1), (0.2, 0.2), (np.nan, np.nan)])
 @pytest.mark.parametrize("solver_name", ['cvxpy'])
 def test_compare_accel_robust_accel(vel_accel_robustaccel, path, solver_name, i, H, g, x_ineq):
     "Case 4: If robust accel has very small perturbation ellipsoid, it should be equivalent to acceleration constraint."

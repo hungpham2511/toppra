@@ -66,29 +66,9 @@ class SolverWrapper(object):
         return self.deltas
 
     def solve_stagewise_optim(self, i, H, g, x_min, x_max, x_next_min, x_next_max):
-        """Solve a stage-wise quadratic optimization.
+        """Solve a stage-wise quadratic (or linear) optimization problem.
 
-        Parameters
-        ----------
-        i: int
-            The stage index. See notes for details on each variable.
-        H: array or None
-        g: array
-        x_min: float or None
-        x_max: float or None
-        x_next_min: float or None
-        x_next_max: float or None
-
-        Returns
-        -------
-        array
-             If the optimization successes, return an array containing the optimal variable.
-             Otherwise, the return array contains NaN (numpy.nan).
-
-        Notes
-        -----
-        This is the main public interface of `SolverWrapper`. The
-        stage-wise quadratic optimization problem is:
+        The quadratic optimization problem is described below:
 
         .. math::
             \\text{min  }  & 0.5 [u, x, v] H [u, x, v]^\\top + [u, x, v] g    \\\\
@@ -96,7 +76,34 @@ class SolverWrapper(object):
                            & x_{min} \leq x \leq x_{max}             \\\\
                            & x_{next, min} \leq x + 2 \Delta_i u \leq x_{next, max},
 
-        where `v` is an auxiliary variable, only exist if there are non-canonical constraints.
+        where `v` is an auxiliary variable, only exist if there are
+        non-canonical constraints.  The linear program is the
+        quadratic problem without the quadratic term.
+
+        Parameters
+        ----------
+        i: int
+            The stage index.
+        H: array or None
+            The coefficient of the quadratic objective function. If is
+            None, neglect the quadratic term.
+        g: array
+            The linear term.
+        x_min: float
+            If not specified, set to NaN.
+        x_max: float
+            If not specified, set to NaN.
+        x_next_min: float
+            If not specified, set to NaN.
+        x_next_max: float
+            If not specified, set to NaN.
+
+        Returns
+        -------
+        double array
+
+             If successes, return an array containing the optimal
+             variable.  Otherwise, return an array contains NaN.
 
         """
         raise NotImplementedError

@@ -144,16 +144,18 @@ def test_infeasible_instance(pp_fixture, solver_name):
         solver = hotqpOASESSolverWrapper(constraints, path, path_discretization)
     elif solver_name == 'ecos':
         solver = ecosWrapper(constraints, path, path_discretization)
+    elif solver_name == 'seidel':
+        solver = seidelWrapper(constraints, path, path_discretization)
 
     g = np.r_[0, 1].astype(float)
 
     solver.setup_solver()
-    result = solver.solve_stagewise_optim(0, None, g, 1.1, 1.0, None, None)
+    result = solver.solve_stagewise_optim(0, None, g, 1.1, 1.0, np.nan, np.nan)
     assert np.all(np.isnan(result))
 
     result = solver.solve_stagewise_optim(0, None, g, 1.1, 1.0, 0, -0.5)
     assert np.all(np.isnan(result))
 
-    result = solver.solve_stagewise_optim(0, None, g, None, None, 0, -0.5)
+    result = solver.solve_stagewise_optim(0, None, g, np.nan, np.nan, 0, -0.5)
     assert np.all(np.isnan(result))
     solver.close_solver()

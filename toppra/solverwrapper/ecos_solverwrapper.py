@@ -84,13 +84,13 @@ class ecosWrapper(SolverWrapper):
         if i < self.N:
             delta = self.get_deltas()[i]
             G_lil[currow, :] = [[- 2 * delta, -1]]
-            if x_next_min is not None:
+            if not np.isnan(x_next_min):
                 h[currow] = - x_next_min
             else:
                 h[currow] = INF
             currow += 1
             G_lil[currow, :] = [[2 * delta, 1]]
-            if x_next_max is not None:
+            if not np.isnan(x_next_max):
                 h[currow] = x_next_max
             else:
                 h[currow] = INF

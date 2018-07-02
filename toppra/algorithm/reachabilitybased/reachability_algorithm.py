@@ -162,9 +162,9 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         g_upper[0] = 1e-9
         g_upper[1] = - 1
         x_upper = self.solver_wrapper.solve_stagewise_optim(
-            i, None, g_upper, None, None, K_next[0], K_next[1])[1]
+            i, None, g_upper, np.nan, np.nan, K_next[0], K_next[1])[1]
         x_lower = self.solver_wrapper.solve_stagewise_optim(
-            i, None, - g_upper, None, None, K_next[0], K_next[1])[1]
+            i, None, - g_upper, np.nan, np.nan, K_next[0], K_next[1])[1]
         res[:] = [x_lower, x_upper]
         return res
 

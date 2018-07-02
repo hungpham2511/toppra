@@ -23,7 +23,7 @@ except ImportError:
 
 @pytest.mark.parametrize("i", [0, 5, 9])
 @pytest.mark.parametrize("g", [np.array([0.2, -1]), np.array([0.5, 1]), np.array([2.0, 1])])
-@pytest.mark.parametrize("x_ineq", [(-1, 1), (0.2, 0.2), (0.4, 0.3), (None, None)])
+@pytest.mark.parametrize("x_ineq", [(-1, 1), (0.2, 0.2), (0.4, 0.3), (np.nan, np.nan)])
 def test_linear_constraints_only(vel_accel_robustaccel, path, i, g, x_ineq):
     "Only canonical linear constraints."
     vel_c, acc_c, robust_acc_c = vel_accel_robustaccel
