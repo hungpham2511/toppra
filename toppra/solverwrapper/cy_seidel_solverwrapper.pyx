@@ -359,7 +359,10 @@ cdef class seidelWrapper:
             a, b, c, F, v, ubnd, xbnd = self.constraints[i].compute_constraint_params(
             self.path, self.path_discretization)
             if a is not None:
-                self.nC += F.shape[1]
+                if self.constraints[i].identical:
+                    self.nC += F.shape[0]
+                else:
+                    self.nC += F.shape[1]
             self._params.append((a, b, c, F, v, ubnd, xbnd))
 
         # init active c
@@ -456,11 +459,12 @@ cdef class seidelWrapper:
             a_j, b_j, c_j, F_j, v_j, ubound_j, xbound_j = self._params[j]
             
             if a_j is not None:
-
-                nC_ = F_j[i].shape[0]
-                ta = F_j[i].dot(a_j[i])
-                tb = F_j[i].dot(b_j[i])
-                tc = - v_j[i] + F_j[i].dot(c_j[i])
+                
+                # TODO: handle the case of non-identical constraints
+                nC_ = F_j.shape[0]
+                ta = F_j.dot(a_j[i])
+                tb = F_j.dot(b_j[i])
+                tc = - v_j + F_j.dot(c_j[i])
 
                 for k in range(nC_):
                     self.a[cur_index + k] = ta[k]

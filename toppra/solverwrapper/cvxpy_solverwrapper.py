@@ -65,7 +65,10 @@ class cvxpyWrapper(SolverWrapper):
 
                 if a is not None:
                     v = a[i] * u + b[i] * x + c[i]
-                    cvxpy_constraints.append(F[i] * v <= h[i])
+                    if constraint.identical:
+                        cvxpy_constraints.append(F * v <= h)
+                    else:
+                        cvxpy_constraints.append(F[i] * v <= h[i])
 
                 if ubound is not None:
                     cvxpy_constraints.append(ubound[i, 0] <= u)

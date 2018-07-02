@@ -38,6 +38,7 @@ class JointAccelerationConstraint(CanonicalLinearConstraint):
         self._format_string = "    Acceleration limit: \n"
         for i in range(self.alim.shape[0]):
             self._format_string += "      J{:d}: {:}".format(i + 1, self.alim[i]) + "\n"
+        self.identical = True
 
     def compute_constraint_params(self, path, gridpoints):
         if path.get_dof() != self.get_dof():
@@ -49,19 +50,20 @@ class JointAccelerationConstraint(CanonicalLinearConstraint):
         N = gridpoints.shape[0] - 1
         dof = path.get_dof()
         I_dof = np.eye(dof)
-        F = np.zeros((N + 1, dof * 2, dof))
-        g = np.zeros((N + 1, dof * 2))
+        F = np.zeros((dof * 2, dof))
+        g = np.zeros(dof * 2)
         ubound = np.zeros((N + 1, 2))
-        g[:, 0:dof] = self.alim[:, 1]
-        g[:, dof:] = - self.alim[:, 0]
-        F[:, 0:dof, :] = I_dof
-        F[:, dof:, :] = -I_dof
+        g[0:dof] = self.alim[:, 1]
+        g[dof:] = - self.alim[:, 0]
+        F[0:dof, :] = I_dof
+        F[dof:, :] = -I_dof
         ubound[:, 0] = - MAXU
         ubound[:, 1] = MAXU
         if self.discretization_type == DiscretizationType.Collocation:
             return ps, pss, np.zeros_like(ps), F, g, ubound, None
         elif self.discretization_type == DiscretizationType.Interpolation:
-            return canlinear_colloc_to_interpolate(ps, pss, np.zeros_like(ps), F, g, ubound, None, gridpoints)
+            return canlinear_colloc_to_interpolate(ps, pss, np.zeros_like(ps), F, g, ubound, None,
+                                                   gridpoints, identical=True)
         else:
             raise NotImplementedError, "Other form of discretization not supported!"
 

@@ -167,6 +167,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         g_upper[1] = - 1
         x_upper = self.solver_wrapper.solve_stagewise_optim(
             i, None, g_upper, np.nan, np.nan, K_next[0], K_next[1])[1]
+        # import ipdb; ipdb.set_trace()
         x_lower = self.solver_wrapper.solve_stagewise_optim(
             i, None, - g_upper, np.nan, np.nan, K_next[0], K_next[1])[1]
         res[:] = [x_lower, x_upper]

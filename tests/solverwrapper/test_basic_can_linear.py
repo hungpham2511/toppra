@@ -107,7 +107,7 @@ def test_basic_init(pp_fixture, solver_name, i, H, g, x_ineq):
         u >= ubound[i, 0],
         x <= xbound[i, 1],
         x >= xbound[i, 0],
-        F[i] * v <= h[i],
+        F * v <= h,
         x + u * 2 * Di <= xnext_max,
         x + u * 2 * Di >= xnext_min,
     ]

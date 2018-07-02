@@ -82,12 +82,12 @@ class TestClass_JointAccelerationConstraint(object):
         F_actual = np.vstack((np.eye(dof), - np.eye(dof)))
         g_actual = np.hstack((alim[:, 1], - alim[:, 0]))
 
+        npt.assert_allclose(F, F_actual)
+        npt.assert_allclose(g, g_actual)
         for i in range(0, N + 1):
             npt.assert_allclose(a[i], ps[i])
             npt.assert_allclose(b[i], pss[i])
             npt.assert_allclose(c[i], np.zeros_like(ps[i]))
-            npt.assert_allclose(F[i], F_actual)
-            npt.assert_allclose(g[i], g_actual)
             npt.assert_allclose(ubound[i], [-MAXU, MAXU])
 
     def test_wrong_dimension(self, acceleration_pc_data):

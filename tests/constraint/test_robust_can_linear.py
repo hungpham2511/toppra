@@ -41,9 +41,9 @@ def test_basic(accel_constraint, dist_scheme):
 
     # Assert values
     for i in range(10):
-        np.testing.assert_allclose(a[i], F0[i].dot(a0[i]))
-        np.testing.assert_allclose(b[i], F0[i].dot(b0[i]))
-        np.testing.assert_allclose(c[i], F0[i].dot(c0[i]) - g0[i])
+        np.testing.assert_allclose(a[i], F0.dot(a0[i]))
+        np.testing.assert_allclose(b[i], F0.dot(b0[i]))
+        np.testing.assert_allclose(c[i], F0.dot(c0[i]) - g0)
     for i in range(10):
         for j in range(a0.shape[1]):
             np.testing.assert_allclose(P[i, j], np.diag([0.1, 2, .3]))

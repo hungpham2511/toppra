@@ -32,7 +32,10 @@ class ecosWrapper(SolverWrapper):
             if _type == ConstraintType.CanonicalLinear:
                 self._linear_idx.append(i)
                 if self.params[i][3] is not None:  # Check F is not None
-                    self._linear_dim += self.params[i][3].shape[1]
+                    if constraint.identical:
+                        self._linear_dim += self.params[i][3].shape[0]
+                    else:
+                        self._linear_dim += self.params[i][3].shape[1]
                 if self.params[i][5] is not None:  # Check ubound
                     self._linear_dim += 2
                 if self.params[i][6] is not None:  # Check xbound
@@ -100,11 +103,18 @@ class ecosWrapper(SolverWrapper):
             _a, _b, _c, _F, _h, _ubound, _xbound = self.params[k]
 
             if _a is not None:
-                nb_cnst = _F.shape[1]
-                G_lil[currow:currow + nb_cnst, 0] = np.dot(_F[i], _a[i]).reshape(-1, 1)
-                G_lil[currow:currow + nb_cnst, 1] = np.dot(_F[i], _b[i]).reshape(-1, 1)
-                h[currow:currow + nb_cnst] = _h[i] - np.dot(_F[i], _c[i])
-                currow += nb_cnst
+                if self.constraints[k].identical:
+                    nb_cnst = _F.shape[0]
+                    G_lil[currow:currow + nb_cnst, 0] = np.dot(_F, _a[i]).reshape(-1, 1)
+                    G_lil[currow:currow + nb_cnst, 1] = np.dot(_F, _b[i]).reshape(-1, 1)
+                    h[currow:currow + nb_cnst] = _h - np.dot(_F, _c[i])
+                    currow += nb_cnst
+                else:
+                    nb_cnst = _F.shape[1]
+                    G_lil[currow:currow + nb_cnst, 0] = np.dot(_F[i], _a[i]).reshape(-1, 1)
+                    G_lil[currow:currow + nb_cnst, 1] = np.dot(_F[i], _b[i]).reshape(-1, 1)
+                    h[currow:currow + nb_cnst] = _h[i] - np.dot(_F[i], _c[i])
+                    currow += nb_cnst
 
             if _ubound is not None:
                 G_lil[currow, 0] = 1

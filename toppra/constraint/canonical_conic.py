@@ -77,16 +77,28 @@ class RobustCanonicalLinearConstraint(CanonicalConicConstraint):
     def compute_constraint_params(self, path, gridpoints):
         self.base_constraint.set_discretization_type(self.discretization_type)
         a_, b_, c_, F_, g_, _, _ = self.base_constraint.compute_constraint_params(path, gridpoints)
+        N = len(gridpoints) - 1
+        if self.base_constraint.identical:
+            d = F_.shape[0]
+        else:
+            d = F_.shape[1]
 
-        a = np.zeros(F_.shape[:2])
-        b = np.zeros(F_.shape[:2])
-        c = np.zeros(F_.shape[:2])
-        for i in range(len(gridpoints)):
-            a[i] = F_[i].dot(a_[i])
-            b[i] = F_[i].dot(b_[i])
-            c[i] = F_[i].dot(c_[i]) - g_[i]
+        a = np.zeros((N + 1, d))
+        b = np.zeros((N + 1, d))
+        c = np.zeros((N + 1, d))
 
-        P = np.zeros((F_.shape[0], F_.shape[1], 3, 3))
+        if self.base_constraint.identical:
+            for i in range(len(gridpoints)):
+                a[i] = F_.dot(a_[i])
+                b[i] = F_.dot(b_[i])
+                c[i] = F_.dot(c_[i]) - g_
+        else:
+            for i in range(len(gridpoints)):
+                a[i] = F_[i].dot(a_[i])
+                b[i] = F_[i].dot(b_[i])
+                c[i] = F_[i].dot(c_[i]) - g_[i]
+
+        P = np.zeros((N + 1, d, 3, 3))
         diag_ = np.diag(self.ellipsoid_axes_lengths)
         for i in range(len(gridpoints)):
             P[i] = diag_

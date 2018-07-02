@@ -5,7 +5,7 @@ import numpy as np
 
 
 class CanonicalLinearConstraint(Constraint):
-    """  Base class for all canonical linear constraints.
+    """Base class for all canonical linear constraints.
 
     A canonical linear constraint has following form
 
@@ -16,13 +16,19 @@ class CanonicalLinearConstraint(Constraint):
         xbound[i, 0] \\leq x \\leq xbound[i, 1], \\\\
         ubound[i, 0] \\leq u \\leq ubound[i, 1].
 
-    Derived classes should implement the method
-    - compute_constraint_params(): tuple
+    Derived classes implement the method `compute_constraint_params`.
+
+    Remark that if F[i], h[i] are identical for any value of index i,
+    then parameter F that is returned by `compute_constraint_params`
+    might has shape (k, m) instead of (N, k, m) and parameter g might
+    has shape (k) instead of (N, k). In this case, the flag identical
+    will be set to True.
     """
     def __init__(self):
         self.constraint_type = ConstraintType.CanonicalLinear
         self.discretization_type = DiscretizationType.Collocation
         self.n_extra_vars = 0
+        self.identical = False
 
     def compute_constraint_params(self, path, gridpoints):
         """ Return constraint parameters.
@@ -57,7 +63,7 @@ class CanonicalLinearConstraint(Constraint):
         raise NotImplementedError
 
 
-def canlinear_colloc_to_interpolate(a, b, c, F, g, xbound, ubound, gridpoints):
+def canlinear_colloc_to_interpolate(a, b, c, F, g, xbound, ubound, gridpoints, identical=False):
     """ Convert a set of parameters to the interpolation discretization scheme.
 
     If a set of parameters is None, the resulting set is also None.
@@ -105,7 +111,7 @@ def canlinear_colloc_to_interpolate(a, b, c, F, g, xbound, ubound, gridpoints):
         c_intp = None
         F_intp = None
         g_intp = None
-    else:
+    elif not identical:
         N = a.shape[0] - 1
         d = a.shape[1]
         m = g.shape[1]
@@ -135,6 +141,33 @@ def canlinear_colloc_to_interpolate(a, b, c, F, g, xbound, ubound, gridpoints):
         F_intp[:, :m, :d] = F
         F_intp[:-1, m:, d:] = F[1:]
         F_intp[-1, m:, d:] = F[-1]
+    elif identical:
+        N = a.shape[0] - 1
+        m, d = F.shape
+        deltas = np.diff(gridpoints)
+
+        a_intp = np.zeros((N + 1, 2 * d))
+        a_intp[:, :d] = a
+        a_intp[:-1, d:] = a[1:] + 2 * deltas.reshape(-1, 1) * b[1:]
+        a_intp[-1, d:] = a_intp[-1, :d]
+
+        b_intp = np.zeros((N + 1, 2 * d))
+        b_intp[:, :d] = b
+        b_intp[:-1, d:] = b[1:]
+        b_intp[-1, d:] = b_intp[-1, :d]
+
+        c_intp = np.zeros((N + 1, 2 * d))
+        c_intp[:, :d] = c
+        c_intp[:-1, d:] = c[1:]
+        c_intp[-1, d:] = c_intp[-1, :d]
+
+        g_intp = np.zeros(2 * m)
+        g_intp[:m] = g
+        g_intp[m:] = g
+
+        F_intp = np.zeros((2 * m, 2 * d))
+        F_intp[:m, :d] = F
+        F_intp[m:, d:] = F
 
     return a_intp, b_intp, c_intp, F_intp, g_intp, xbound, ubound
 

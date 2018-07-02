@@ -47,7 +47,10 @@ class hotqpOASESSolverWrapper(SolverWrapper):
                 raise NotImplementedError
             a, b, c, F, v, _, _ = self.params[i]
             if a is not None:
-                self.nC += F.shape[1]
+                if constraint.identical:
+                    self.nC += F.shape[0]
+                else:
+                    self.nC += F.shape[1]
 
         self._A = np.zeros((self.nC, self.nV))
         self._lA = - np.ones(self.nC) * INF
@@ -107,15 +110,20 @@ class hotqpOASESSolverWrapper(SolverWrapper):
         for j in range(len(self.constraints)):
             a, b, c, F, v, ubound, xbound = self.params[j]
 
-            # Case 1
             if a is not None:
-                nC_ = F[i].shape[0]
-                self._A[cur_index: cur_index + nC_, 0] = F[i].dot(a[i])
-                self._A[cur_index: cur_index + nC_, 1] = F[i].dot(b[i])
-                self._hA[cur_index: cur_index + nC_] = v[i] - F[i].dot(c[i])
-                self._lA[cur_index: cur_index + nC_] = - INF
+                if self.constraints[j].identical:
+                    nC_ = F.shape[0]
+                    self._A[cur_index: cur_index + nC_, 0] = F.dot(a[i])
+                    self._A[cur_index: cur_index + nC_, 1] = F.dot(b[i])
+                    self._hA[cur_index: cur_index + nC_] = v - F.dot(c[i])
+                    self._lA[cur_index: cur_index + nC_] = - INF
+                else:
+                    nC_ = F[i].shape[0]
+                    self._A[cur_index: cur_index + nC_, 0] = F[i].dot(a[i])
+                    self._A[cur_index: cur_index + nC_, 1] = F[i].dot(b[i])
+                    self._hA[cur_index: cur_index + nC_] = v[i] - F[i].dot(c[i])
+                    self._lA[cur_index: cur_index + nC_] = - INF
                 cur_index = cur_index + nC_
-
             if ubound is not None:
                 self._l[0] = max(self._l[0], ubound[i, 0])
                 self._h[0] = min(self._h[0], ubound[i, 1])
