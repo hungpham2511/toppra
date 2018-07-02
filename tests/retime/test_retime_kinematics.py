@@ -30,7 +30,8 @@ def robot_fixture():
 
 @pytest.mark.skipif(not FOUND_OPENRAVE, reason="Not found openrave installation")
 @pytest.mark.parametrize("seed", range(90, 100), ids=["Seed=" + str(i) for i in range(90, 100)])
-def test_retime_kinematics_ravetraj(robot_fixture, seed):
+@pytest.mark.parametrize("solver_wrapper", ["hotqpoases", "seidel", "ecos"])
+def test_retime_kinematics_ravetraj(robot_fixture, seed, solver_wrapper):
     env = robot_fixture.GetEnv()
     basemanip = orpy.interfaces.BaseManipulation(robot_fixture)
 
@@ -59,14 +60,15 @@ def test_retime_kinematics_ravetraj(robot_fixture, seed):
 
     # Rave traj
     traj_new, interpolator = toppra.retime_active_joints_kinematics(
-        traj, robot_fixture, output_interpolator=True, vmult=1.0)
+        traj, robot_fixture, output_interpolator=True, vmult=1.0, solver_wrapper=solver_wrapper)
     assert traj_new is not None
     assert traj_new.GetDuration() < traj.GetDuration() + 1  # Should not be too far from the optimal value
 
 
 @pytest.mark.skipif(not FOUND_OPENRAVE, reason="Not found openrave installation")
 @pytest.mark.parametrize("seed", range(100, 110), ids=["Seed="+str(i) for i in range(100, 110)])
-def test_retime_kinematics_waypoints(robot_fixture, seed):
+@pytest.mark.parametrize("solver_wrapper", ["hotqpoases", "seidel", "ecos"])
+def test_retime_kinematics_waypoints(robot_fixture, seed, solver_wrapper):
     dof = robot_fixture.GetActiveDOF()
 
     # Generate random trajectory from seed
@@ -78,8 +80,7 @@ def test_retime_kinematics_waypoints(robot_fixture, seed):
         waypoints[i] = qlim_lower + waypoints[i] * (qlim_upper - qlim_lower)
 
     traj_new, trajra = toppra.retime_active_joints_kinematics(
-        waypoints, robot_fixture, output_interpolator=True)
+        waypoints, robot_fixture, output_interpolator=True, solver_wrapper=solver_wrapper)
     assert traj_new is not None
     assert traj_new.GetDuration() < 30 and traj_new.GetDuration() > 0
-
 

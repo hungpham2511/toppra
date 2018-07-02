@@ -331,6 +331,15 @@ cdef class seidelWrapper:
                 self.nC += F.shape[1]
             self._params.append((a, b, c, F, v, ubnd, xbnd))
 
+    def get_no_vars(self):
+        return self.nV
+
+    def get_no_stages(self):
+        return self.N
+
+    def get_deltas(self):
+        return np.asarray(self.deltas)
+
     @property
     def params(self):
         return self._params

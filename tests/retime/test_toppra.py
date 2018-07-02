@@ -40,7 +40,7 @@ def path(request):
     yield path
 
 
-@pytest.mark.parametrize("solver_wrapper", ["cvxpy", "ecos", "qpoases", "hotqpoases"])
+@pytest.mark.parametrize("solver_wrapper", ["cvxpy", "ecos", "qpoases", "hotqpoases", "seidel"])
 def test_toppra_linear(vel_accel_robustaccel, path, solver_wrapper):
     vel_c, acc_c, ro_acc_c = vel_accel_robustaccel
     instance = toppra.algorithm.TOPPRA([vel_c, acc_c], path, solver_wrapper=solver_wrapper)
@@ -79,7 +79,8 @@ def test_toppra_conic(vel_accel_robustaccel, path, solver_wrapper):
 
 @pytest.mark.parametrize("solver_wrapper", [("cvxpy", "qpoases"),
                                             ("cvxpy", "hotqpoases"),
-                                            ("cvxpy", "ecos")])
+                                            ("cvxpy", "ecos"),
+                                            ("cvxpy", "seidel")])
 def test_toppra_linear_compare(vel_accel_robustaccel, path, solver_wrapper):
     "Compare the output of the algorithm"
     vel_c, acc_c, ro_acc_c = vel_accel_robustaccel
