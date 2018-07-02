@@ -101,7 +101,8 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
                                                                 -LARGE, LARGE, -LARGE, LARGE)[1]
             X[i, 1] = self.solver_wrapper.solve_stagewise_optim(i, Hzero, -g_lower,
                                                                 -LARGE, LARGE, -LARGE, LARGE)[1]
-            logger.debug("X[i]={:}".format(X[i]))
+            if logger.getEffectiveLevel() == logging.DEBUG:
+                logger.debug("X[i]={:}".format(X[i]))
         self.solver_wrapper.close_solver()
         for i in range(self._N + 1):
             if X[i, 0] < 0:
