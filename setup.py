@@ -29,6 +29,7 @@ ext_1 = Extension(SRC_DIR + "._CythonUtils",
 
 ext_2 = Extension(SRC_DIR + ".solverwrapper.cy_seidel_solverwrapper",
                   [SRC_DIR + "/solverwrapper/cy_seidel_solverwrapper.pyx"],
+                  extra_compile_args=['-O1'],
                   include_dirs=[np.get_include()])
 
 

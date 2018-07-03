@@ -125,7 +125,8 @@ def test_basic_init(pp_fixture, solver_name, i, H, g, x_ineq):
         problem.solve(solver="ECOS", verbose=True)
     if problem.status == "optimal":
         actual = np.array(ux.value).flatten()
-        npt.assert_allclose(result.flatten(), actual.flatten(), atol=5e-3, rtol=1e-5)  # Very bad accuracy? why?
+        result = np.array(result).flatten()
+        npt.assert_allclose(result, actual, atol=5e-3, rtol=1e-5)  # Very bad accuracy? why?
     else:
         assert np.all(np.isnan(result))
 

@@ -7,15 +7,13 @@ class SolverWrapper(object):
     Solver wrappers implement a core method needed by all
     Reachability-based algorithms: The method
     `solve_stagewise_optim`. This methods solves a Linear/Quadratic
-    Program subject to constraints at a given stage, and in addition
-    some auxiliary constraints.  This method needs to be
-    implemented by derived classes which use different underlying
-    solvers.
+    Program subject to linear constraints at a given stage, and
+    possibly with additional auxiliary constraints.
 
-    Note that some solver wrappers only handle Linear Program. Some
-    handle both.
+    Note that some solver wrappers only handle Linear Program while
+    some handle both.
 
-    Some solver wrappers need to be setup and close down before and
+    Certain solver wrappers need to be setup and close down before and
     after usage. For instance, the wrappers for mosek and qpOASES with
     warmstart capability. To provide this functionality, this class
     contains two abstract methods `setup_solver` and `close_solver`,
@@ -30,7 +28,6 @@ class SolverWrapper(object):
         The geometric path to be time-parametrized.
     path_discretization: array
         The discretization grid use to discretize the geometric path.
-
     """
 
     def __init__(self, constraint_list, path, path_discretization):
@@ -51,9 +48,10 @@ class SolverWrapper(object):
         self.nV = 2 + sum([c.get_no_extra_vars() for c in self.constraints])
 
     def get_no_stages(self):
-        """ Return the number of stages.
+        """Return the number of stages.
 
-        The number of gridpoints equals N + 1, where N is the number of stages.
+        The number of gridpoints equals N + 1, where N is the number
+        of stages.
         """
         return self.N
 
@@ -84,10 +82,10 @@ class SolverWrapper(object):
         ----------
         i: int
             The stage index.
-        H: array or None
+        H: (d,d)array or None
             The coefficient of the quadratic objective function. If is
             None, neglect the quadratic term.
-        g: array
+        g: (d,)array
             The linear term.
         x_min: float
             If not specified, set to NaN.
@@ -100,11 +98,10 @@ class SolverWrapper(object):
 
         Returns
         -------
-        double array
-
+        double array, or list
              If successes, return an array containing the optimal
-             variable.  Otherwise, return an array contains NaN.
-
+             variable.  Since NaN is also a valid double, this list
+             contains NaN if the optimization problem is infeasible.
         """
         raise NotImplementedError
 
