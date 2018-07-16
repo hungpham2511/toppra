@@ -88,7 +88,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
             state, X[i] equals (np.nan, np.nan).
 
         """
-        logger.info("Start computing the feasible sets")
+        logger.debug("Start computing the feasible sets")
         nV = self.solver_wrapper.get_no_vars()
         Hzero = np.zeros((nV, nV))
         g_lower = np.zeros(nV)
@@ -128,7 +128,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         assert sdmin <= sdmax and 0 <= sdmin
         K = np.zeros((self._N + 1, 2))
         K[self._N] = [sdmin ** 2, sdmax ** 2]
-        logger.info("Start computing the controllable sets")
+        logger.debug("Start computing the controllable sets")
         self.solver_wrapper.setup_solver()
         for i in range(self._N - 1, -1, -1):
             K[i] = self._one_step(i, K[i + 1])

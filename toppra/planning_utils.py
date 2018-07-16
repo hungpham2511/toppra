@@ -43,16 +43,17 @@ def retime_active_joints_kinematics(traj, robot, output_interpolator=False, vmul
         Return if 'output_interpolator' is True.
     """
     _t0 = time.time()
-    logger.info("Start retiming an OpenRAVE trajectory.")
     if isinstance(traj, np.ndarray):
-        logger.info("Received a list of waypoints.")
+        logger.debug("Received a list of waypoints.")
         ss_waypoints = np.linspace(0, 1, len(traj))
-        path = SplineInterpolator(ss_waypoints, traj)
+        path = SplineInterpolator(ss_waypoints, traj, bc_type='natural')
     elif use_ravewrapper:
         logger.warn("Use RaveTrajectoryWrapper. This might not work properly!")
         path = RaveTrajectoryWrapper(traj, robot)
+    elif isinstance(traj, SplineInterpolator):
+        path = traj
     else:
-        logger.info("Use a spline to represent the input path!")
+        logger.debug("Use a spline to represent the input path!")
         ss_waypoints = []
         waypoints = []
         spec = traj.GetConfigurationSpecification()
@@ -75,11 +76,11 @@ def retime_active_joints_kinematics(traj, robot, output_interpolator=False, vmul
     pc_vel = JointVelocityConstraint(vlim)
     pc_acc = JointAccelerationConstraint(
         alim, discretization_scheme=DiscretizationType.Interpolation)
-    logger.info("Number of constraints {:d}".format(2 + len(additional_constraints)))
-    logger.info(str(pc_vel))
-    logger.info(str(pc_acc))
+    logger.debug("Number of constraints {:d}".format(2 + len(additional_constraints)))
+    logger.debug(str(pc_vel))
+    logger.debug(str(pc_acc))
     for _c in additional_constraints:
-        logger.info(str(_c))
+        logger.debug(str(_c))
 
     # Include the waypoints in the grid
     ds = path.ss_waypoints[-1] / N
@@ -95,14 +96,14 @@ def retime_active_joints_kinematics(traj, robot, output_interpolator=False, vmul
 
     traj_ra, aux_traj = instance.compute_trajectory(0, 0)
     _t2 = time.time()
-    logger.info("t_setup={:.5f}ms, t_solve={:.5f}ms, t_total={:.5f}ms".format(
+    logger.debug("t_setup={:.5f}ms, t_solve={:.5f}ms, t_total={:.5f}ms".format(
         (_t1 - _t0) * 1e3, (_t2 - _t1)*1e3, (_t2 - _t0)*1e3
     ))
     if traj_ra is None:
         logger.warn("Retime fails.")
         traj_rave = None
     else:
-        logger.info("Retime successes!")
+        logger.debug("Retime successes!")
         traj_rave = traj_ra.compute_rave_trajectory(robot)
 
     if output_interpolator:
