@@ -2,7 +2,7 @@ import numpy as np
 cimport numpy as np
 from libc.math cimport abs, pow, isnan
 cimport cython
-
+from cpython.array cimport array, clone
 
 ctypedef np.int_t INT_t
 ctypedef np.float_t FLOAT_t
@@ -152,6 +152,8 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
     active_c: int memoryview
         Contains (2) indicies of rows in a, b, c that are likely the
         active constraints at the optimal solution.
+    use_cache: 
+    index_map: map from range(nrows) to the considered entries.
 
     Returns
     -------
@@ -162,8 +164,8 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
 
     """
     cdef:
-        unsigned int nrows = a.shape[0], nrows_1d
-        unsigned int i, k, j, n_wsr
+        unsigned int nrows = a.shape[0], nrows_1d, n_wsr = 0  # number of working set recomputation
+        unsigned int i, k, j
         double[2] cur_optvar, zero_prj
         double[2] d_tan  # vector parallel to the line
         double[2] v_1d_  # optimizing direction
@@ -185,16 +187,6 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
         for i in range(nrows):
             index_map[i] = i
 
-    n_wsr = 0  # number of working set recomputation
-
-    # If active_c contains valid entries, swap the first two indices
-    # in index_map to these values.
-    if active_c[0] >= 0 and active_c[0] < nrows and active_c[1] >= 0 and active_c[1] < nrows:
-        index_map[0] = active_c[1]
-        index_map[active_c[1]] = 0
-        index_map[1] = active_c[0]
-        index_map[active_c[0]] = 1
-
     # handle fixed bounds (low, high). The following convention is
     # adhered to: fixed bounds are assigned the numbers: -1, -2, -3,
     # -4 according to the following order: low[0], high[0], low[1],
@@ -212,6 +204,18 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
                 sol.active_c[0] = -1
             else:
                 sol.active_c[1] = -3
+
+    # If active_c contains valid entries, swap the first two indices
+    # in index_map to these values.
+    if active_c[0] >= 0 and active_c[0] < nrows and active_c[1] >= 0 and active_c[1] < nrows:
+        index_map[0] = active_c[1]
+        index_map[active_c[1]] = 0
+        index_map[1] = active_c[0]
+        index_map[active_c[0]] = 1
+
+    # pre-process the inequalities, remove those that are redundant
+    cdef cloned_index_map 
+
 
     # handle other constraints in a, b, c
     for k in range(nrows):
@@ -399,6 +403,7 @@ cdef class seidelWrapper:
                         self.a_arr[i, cur_index + k] = ta[i, k]
                         self.b_arr[i, cur_index + k] = tb[i, k]
                         self.c_arr[i, cur_index + k] = tc[i, k]
+                cur_index += nC_
 
             if ubound_j is not None:
                 for i in range(self.N + 1):
@@ -514,7 +519,7 @@ cdef class seidelWrapper:
         # warmstarting: two solvers can be selected, upper or lower,
         # depending on the sign of g[1]
         if g[1] > 0:  # choose upper solver
-            solution = cy_solve_lp2d(self.v, self.a_arr[i, :], self.b_arr[i], self.c_arr[i],
+            solution = cy_solve_lp2d(self.v, self.a_arr[i], self.b_arr[i], self.c_arr[i],
                                      self.low_arr[i], self.high_arr[i], self.active_c_up,
                                      True, self.index_map, self.a_1d, self.b_1d)
             if solution.result == 0:
