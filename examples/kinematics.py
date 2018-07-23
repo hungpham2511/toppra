@@ -35,6 +35,8 @@ def main():
     instance = algo.TOPPRA([pc_vel, pc_acc], path, gridpoints=np.linspace(0, 1, 1001),
                            solver_wrapper='hotqpoases')
 
+    # Compute the feasible sets and the controllable sets for viewing.
+    # Note that these steps are not necessary.
     X = instance.compute_feasible_sets()
     K = instance.compute_controllable_sets(0, 0)
 
@@ -55,6 +57,7 @@ def main():
     plt.tight_layout()
     plt.show()
 
+    # Retime the trajectory, only this step is necessary.
     jnt_traj, aux_traj = instance.compute_trajectory(0, 0)
     ts_sample = np.linspace(0, jnt_traj.get_duration(), 100)
     qs_sample = jnt_traj.evaldd(ts_sample)

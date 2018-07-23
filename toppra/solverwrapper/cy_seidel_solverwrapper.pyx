@@ -74,7 +74,7 @@ def solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, double[:] low
     return data.result, data.optval, data.optvar, data.active_c
 
 
-@cython.profile(True)
+# @cython.profile(True)
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cdef LpSol cy_solve_lp1d(double[:] v, int nrows, double[:] a, double[:] b, double low, double high):
@@ -130,7 +130,7 @@ cdef LpSol cy_solve_lp1d(double[:] v, int nrows, double[:] a, double[:] b, doubl
 
     return solution
 
-@cython.profile(True)
+# @cython.profile(True)
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, double[:] low, double[:] high, INT_t[:] active_c, bint use_cache, INT_t [:] index_map, double[:] a_1d, double[:] b_1d):
@@ -140,6 +140,11 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
         dbl_max    v^T [x 1]
         s.t.   a x[0] + b x[1] + c <= 0
                low <= x <= high
+
+    NOTE: A possible optimization for this function is pruning linear
+    constraints that are clearly infeasible. This is not implemented
+    because in my current code, the bottleneck is not in solving
+    TOPP-RA but in setting up the parameters.
 
     Parameters
     ----------
@@ -152,8 +157,17 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
     active_c: int memoryview
         Contains (2) indicies of rows in a, b, c that are likely the
         active constraints at the optimal solution.
-    use_cache: 
-    index_map: map from range(nrows) to the considered entries.
+    use_cache: bool
+    index_map: int memoryview
+        A view to a pre-allocated integer array, to map from
+        [1,...,nrows] to the considered entries. This array is created
+        to avoid the cost of initializing a new array.
+    a_1d: double memoryview
+        A view to an initialized array. This array is created to avoid
+        the cost of initializing a new array.
+    b_1d: double memoryview
+        A view to an initialized array. This array is created to avoid
+        the cost of initializing a new array.
 
     Returns
     -------
@@ -231,7 +245,7 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
         # let ax + by + c=0 b the new constraint
         # let zero_prj be the projected point, one has
         #     zero_prj =  1 / (a^2 + b^2) [a  -b] [-c]
-        #                              [b   a] [ 0]
+        #                                 [b   a] [ 0]
         # this can be derived using perpendicularity
         # more specifically
         # zero_prj[0] = -ac / (a^2 + b^2), zero_prj[1] = -bc / (a^2 + b^2)
@@ -341,7 +355,7 @@ cdef class seidelWrapper:
         double [:, :] low_arr, high_arr    # mmviews of coefficients of the 2D Lp
 
         
-    @cython.profile(True)
+    # @cython.profile(True)
     def __init__(self, list constraint_list, path, path_discretization):
         self.constraints = constraint_list
         self.path = path
@@ -436,7 +450,7 @@ cdef class seidelWrapper:
     def params(self):
         return self._params
 
-    @cython.profile(True)
+    # @cython.profile(True)
     @cython.boundscheck(False)
     @cython.wraparound(False)
     cpdef solve_stagewise_optim(self, unsigned int i, H, np.ndarray g, double x_min, double x_max, double x_next_min, double x_next_max):
@@ -449,6 +463,9 @@ cdef class seidelWrapper:
             \\text{s.t.  } & [u, x] \\text{ is feasible at stage } i \\\\
                            & x_{min} \leq x \leq x_{max}             \\\\
                            & x_{next, min} \leq x + 2 \Delta_i u \leq x_{next, max},
+
+        NOTE: if x_min == x_max, one can solve an LP instead of a 2D
+        LP. This optimization is currently not implemented.
 
         Parameters
         ----------
