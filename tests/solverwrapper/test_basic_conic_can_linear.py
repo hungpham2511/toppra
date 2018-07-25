@@ -1,4 +1,7 @@
-""" Tests for features specific to conic solver wrapper.
+"""A test suite for solverwrappers that implement solve methods for
+conic canonical linear constraints. Wrapppers considered include:
+'cvxpy', and "ecos".
+
 """
 import pytest
 import numpy as np
