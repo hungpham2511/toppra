@@ -248,6 +248,9 @@ class SplineInterpolator(Interpolator):
         Shaped (N+1,). Path positions of the waypoints.
     waypoints: array
         Shaped (N+1, dof). Waypoints.
+    bc_type: str
+        Kind of boundary condition. See scipy.CubicSpline
+        documentation for more details.
 
     Attributes
     ----------

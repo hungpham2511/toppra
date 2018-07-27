@@ -6,6 +6,8 @@ import toppra as ta
 import toppra.constraint as constraint
 from toppra.constants import TINY
 
+MAXSD = 10
+
 
 @pytest.fixture(scope="class", params=[2, 6], name='velocity_pc_data')
 def create_velocity_pc_fixtures(request):
@@ -64,7 +66,7 @@ class TestClass_JointVelocityConstraint(object):
             # 2. Compute max sd from the data
             constraints = [qs[i] * sd <= vlim[:, 1],
                            qs[i] * sd >= vlim[:, 0],
-                           sd >= 0]
+                           sd >= 0, sd <= MAXSD]
             prob = cvx.Problem(cvx.Maximize(sd), constraints)
             prob.solve(solver=cvx.ECOS, abstol=1e-9)
             xmax = sd.value ** 2
