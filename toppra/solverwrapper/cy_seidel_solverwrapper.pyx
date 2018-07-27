@@ -198,8 +198,6 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
         b_1d = np.zeros(nrows + 4)
     else:
         assert index_map.shape[0] == nrows
-        for i in range(nrows):
-            index_map[i] = i
 
     # handle fixed bounds (low, high). The following convention is
     # adhered to: fixed bounds are assigned the numbers: -1, -2, -3,
@@ -221,15 +219,22 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
 
     # If active_c contains valid entries, swap the first two indices
     # in index_map to these values.
-    if active_c[0] >= 0 and active_c[0] < nrows and active_c[1] >= 0 and active_c[1] < nrows:
+    cdef unsigned int cur_row = 2
+    if active_c[0] >= 0 and active_c[0] < nrows and active_c[1] >= 0 and active_c[1] < nrows and active_c[0] != active_c[1]:
+        # active_c contains valid indices
         index_map[0] = active_c[1]
-        index_map[active_c[1]] = 0
         index_map[1] = active_c[0]
-        index_map[active_c[0]] = 1
+        for i in range(nrows):
+            if i != active_c[0] and i != active_c[1]:
+                index_map[cur_row] = i
+                cur_row += 1
+    else:
+        for i in range(nrows):
+            index_map[i] = i
+    # print(index_map)
 
     # pre-process the inequalities, remove those that are redundant
     cdef cloned_index_map 
-
 
     # handle other constraints in a, b, c
     for k in range(nrows):
@@ -535,6 +540,7 @@ cdef class seidelWrapper:
 
         # warmstarting: two solvers can be selected, upper or lower,
         # depending on the sign of g[1]
+           
         if g[1] > 0:  # choose upper solver
             solution = cy_solve_lp2d(self.v, self.a_arr[i], self.b_arr[i], self.c_arr[i],
                                      self.low_arr[i], self.high_arr[i], self.active_c_up,
@@ -551,12 +557,20 @@ cdef class seidelWrapper:
                                      self.low_arr[i], self.high_arr[i], self.active_c_down,
                                      True, self.index_map, self.a_1d, self.b_1d)
             if solution.result == 0:
+                # print "v={:}\n a={:}\n b={:}\n c={:}\n low={:}\n high={:}".format(
+                #     *map(repr, map(np.asarray,
+                #                   [self.v, self.a_arr[i], self.b_arr[i], self.c_arr[i], self.low_arr[i], self.high_arr[i]])))
                 var[0] = NAN
                 var[1] = NAN
             else:
                 var[:] = solution.optvar
                 self.active_c_down[0] = solution.active_c[0]
                 self.active_c_down[1] = solution.active_c[1]
+                # print "v={:}\n a={:}\n b={:}\n c={:}\n low={:}\n high={:}\n result={:}\n-----".format(
+                    # *map(repr, map(np.asarray,
+                                   # [self.v, self.a_arr[i], self.b_arr[i], self.c_arr[i], self.low_arr[i], self.high_arr[i], var])))
+                # print np.asarray(self.active_c_down)
+                
         return var
 
     def setup_solver(self):
