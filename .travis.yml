@@ -35,7 +35,7 @@ install:
 script:
   - cd $CI_SOURCE_PATH
   - pip install -r requirements.txt --user
-  - pip install -e . --user
+  - python setup.py install --user
   - py.test --cov=toppra
 
 after_success:
