@@ -43,7 +43,9 @@ def solve_lp1d(double[:] v, a, b, double low, double high):
     static typing.
 
     """
-    if a == [] or a is None:
+    if a is None:
+        data = cy_solve_lp1d(v, 0, None, None, low, high)
+    elif len(a) == 0:
         data = cy_solve_lp1d(v, 0, None, None, low, high)
     else:
         data = cy_solve_lp1d(v, len(a), a, b, low, high)
@@ -203,7 +205,11 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
     # adhered to: fixed bounds are assigned the numbers: -1, -2, -3,
     # -4 according to the following order: low[0], high[0], low[1],
     # high[1].
+
     for i in range(2):
+        if low[i] > high[i]:
+            sol.result = 0
+            return sol
         if v[i] > TINY:
             cur_optvar[i] = high[i]
             if i == 0:
@@ -231,7 +237,6 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
     else:
         for i in range(nrows):
             index_map[i] = i
-    # print(index_map)
 
     # pre-process the inequalities, remove those that are redundant
     cdef cloned_index_map 
