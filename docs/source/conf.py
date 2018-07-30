@@ -21,7 +21,6 @@ import sys
 sys.path.insert(0, os.path.abspath('../../toppra/'))
 
 
-import sphinx_rtd_theme
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -35,8 +34,16 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.coverage',
               'sphinx.ext.mathjax',
               'sphinx.ext.napoleon',
-              'sphinx.ext.viewcode']
- 
+              'sphinx.ext.viewcode',
+              'sphinx.ext.intersphinx'
+]
+ # Add mappings
+intersphinx_mapping = {
+    'urllib3': ('http://urllib3.readthedocs.org/en/latest', None),
+    'python': ('http://docs.python.org/3', None),
+    "scipy": ('http://docs.scipy.org/doc/scipy/reference', None)
+}
+
 napoleon_google_docstring = False
 napoleon_use_param = False
 napoleon_use_ivar = True
@@ -120,13 +127,13 @@ html_sidebars = {
 }
 
 
-html_theme = 'sphinx_rtd_theme'
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-html_theme_options = {
-    'collapse_navigation': False,
-    'display_version': True,
-    'logo_only': True,
-}
+# html_theme = 'sphinx_rtd_theme'
+# html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+# html_theme_options = {
+#     'collapse_navigation': False,
+#     'display_version': True,
+#     'logo_only': True,
+# }
 
 # -- Options for HTMLHelp output ------------------------------------------
 
