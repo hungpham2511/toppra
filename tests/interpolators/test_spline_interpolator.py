@@ -75,7 +75,7 @@ class Test_SplineInterpolator(object):
     ])
     def test_2waypoints(self, xs, ys, yd):
         "There is only two waypoints. Linear interpolation is done between them."
-        pi = SplineInterpolator(xs, ys)
+        pi = SplineInterpolator(xs, ys, bc_type='natural')
         npt.assert_allclose(pi.get_path_interval(), xs)
         npt.assert_allclose(pi.evald((xs[0] + xs[1]) / 2), yd)
         npt.assert_allclose(pi.evaldd(0), np.zeros_like(ys[0]))

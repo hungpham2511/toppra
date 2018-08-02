@@ -1,3 +1,8 @@
+"""A test suite for solverwrappers that implement solve methods for
+canonical linear constraints. Wrapppers considered include:
+'cvxpy', 'qpOASES', "ecos", 'hotqpOASES', 'seidel'.
+
+"""
 import pytest
 import numpy as np
 import numpy.testing as npt

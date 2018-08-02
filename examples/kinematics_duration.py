@@ -32,8 +32,9 @@ def main():
         alim, discretization_scheme=constraint.DiscretizationType.Interpolation)
 
     # Setup a parametrization instance with hot-qpOASES
-    instance = algo.TOPPRA([pc_vel, pc_acc], path, gridpoints=np.linspace(0, 1, 1001),
-                           solver_wrapper='hotqpoases')
+    instance = algo.TOPPRAsd([pc_vel, pc_acc], path, gridpoints=np.linspace(0, 1, 1001),
+                             solver_wrapper='hotqpoases')
+    instance.set_desired_duration(60)
 
     # Compute the feasible sets and the controllable sets for viewing.
     # Note that these steps are not necessary.

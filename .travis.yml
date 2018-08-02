@@ -23,7 +23,6 @@ before_install:
   - sudo apt install python-tk
   - pip install --ignore-installed cython matplotlib coverage python-coveralls --user
 
-
 install:
   # Install dependencies
   - mkdir -p ~/git/ && cd ~/git/
@@ -35,8 +34,9 @@ install:
 script:
   - cd $CI_SOURCE_PATH
   - pip install -r requirements.txt --user
-  - pip install -e . --user
-  - py.test --cov=toppra
+  - python setup.py develop --user  # need to run the develop command to have coverage working. install command (below) should work just fine.
+  # - python setup.py install --user
+  - py.test --cov=toppra tests
 
 after_success:
   - coveralls

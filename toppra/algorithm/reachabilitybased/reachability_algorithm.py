@@ -88,7 +88,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
             state, X[i] equals (np.nan, np.nan).
 
         """
-        logger.info("Start computing the feasible sets")
+        logger.debug("Start computing the feasible sets")
         nV = self.solver_wrapper.get_no_vars()
         Hzero = np.zeros((nV, nV))
         g_lower = np.zeros(nV)
@@ -128,7 +128,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         assert sdmin <= sdmax and 0 <= sdmin
         K = np.zeros((self._N + 1, 2))
         K[self._N] = [sdmin ** 2, sdmax ** 2]
-        logger.info("Start computing the controllable sets")
+        logger.debug("Start computing the controllable sets")
         self.solver_wrapper.setup_solver()
         for i in range(self._N - 1, -1, -1):
             K[i] = self._one_step(i, K[i + 1])
@@ -189,12 +189,14 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
 
         Returns
         -------
-        sdd_vec: (_N,) array or None
+        sdd_vec: (N,) array or None
             Path accelerations.
-        sd_vec: (_N+1,) array None
+        sd_vec: (N+1,) array None
             Path velocities.
-        v_vec: (_N,) array or None
+        v_vec: (N,) array or None
             Auxiliary variables.
+        K: (N+1, 2) array
+            Return if `return_data` is True. The controllable sets.
         """
         assert sd_end >= 0 and sd_start >= 0, "Path velocities must be positive"
         K = self.compute_controllable_sets(sd_end, sd_end)

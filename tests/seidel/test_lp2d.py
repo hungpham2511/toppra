@@ -1,5 +1,6 @@
 import toppra.solverwrapper.cy_seidel_solverwrapper as seidel
 import numpy as np
+from numpy import array
 import pytest
 import cvxpy as cvx
 
@@ -101,6 +102,39 @@ def test_random_constraints(seed):
     # solve with the method to test and assert correctness
     data = seidel.solve_lp2d(v, a, b, c, low, high, active_c)
     res, optval, optvar, active_c = data
+    if prob.status == "optimal":
+        assert res == 1
+        np.testing.assert_allclose(optval, prob.value)
+        np.testing.assert_allclose(optvar, np.asarray(x.value).flatten())
+    elif prob.status == "infeasible":
+        assert res == 0
+    else:
+        assert False, "Solve this LP with cvxpy returns status: {:}".format(prob.status)
+
+
+def test_err1():
+    """A case seidel solver fails to solve correctly. I discovered this
+    while working on toppra.
+
+    """
+    v = array([-1.e-09,  1.e+00,  0.e+00])
+    a = array([-0.02020202,  0.02020202,  1.53515768,  4.3866269 , -3.9954173 , -1.53515768, -4.3866269 ,  3.9954173 ])
+    b = array([  -1.        ,    1.        , -185.63664301,  156.27072783, -209.00954213,  185.63664301, -156.27072783,  209.00954213])
+    c = array([ 0.       , -0.0062788, -1.       , -2.       , -4.       , -1.       , -1.       , -1.       ])
+    low = array([-100.,    0.])
+    high = array([1.00000000e+02, 6.26434609e-02])
+
+    data = seidel.solve_lp2d(v, a, b, c, low, high, np.array([0, 5]))  # only break at this active constraints
+    res, optval, optvar, active_c = data
+
+    # solve with cvxpy
+    x = cvx.Variable(2)
+    constraints = [a * x[0] + b * x[1] + c <= 0,
+                   low <= x, x <= high]
+    obj = cvx.Maximize(v[0] * x[0] + v[1] * x[1] + v[2])
+    prob = cvx.Problem(obj, constraints)
+    prob.solve()
+    # solve with the method to test and assert correctness
     if prob.status == "optimal":
         assert res == 1
         np.testing.assert_allclose(optval, prob.value)

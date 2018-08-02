@@ -1,4 +1,7 @@
-""" Tests for features specific to conic solver wrapper.
+"""A test suite for solverwrappers that implement solve methods for
+conic canonical linear constraints. Wrapppers considered include:
+'cvxpy', and "ecos".
+
 """
 import pytest
 import numpy as np
@@ -124,7 +127,7 @@ def test_compare_accel_robust_accel(vel_accel_robustaccel, path, solver_name, i,
     xmin, xmax = x_ineq
     xnext_min = 0
     xnext_max = 1
- 
+
     result = solver.solve_stagewise_optim(i, H, g, xmin, xmax, xnext_min, xnext_max)
     ro_result = ro_solver.solve_stagewise_optim(i, H, g, xmin, xmax, xnext_min, xnext_max)
 

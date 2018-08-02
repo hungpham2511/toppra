@@ -1,5 +1,5 @@
 from .canonical_linear import CanonicalLinearConstraint
-from .._CythonUtils import _create_velocity_constraint
+from toppra._CythonUtils import _create_velocity_constraint
 import numpy as np
 
 
