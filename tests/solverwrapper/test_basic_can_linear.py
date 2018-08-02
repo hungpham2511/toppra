@@ -27,9 +27,44 @@ except ImportError:
     FOUND_MOSEK = False
 
 
+class RandomSecondOrderLinearConstraint(constraint.CanonicalLinearConstraint):
+    """A random Second-Order non-identical constraint.
+
+    This contraint is defined solely for testing purposes. It accepts
+    a degree of freedom, then generates the coefficient randomly.
+
+    """
+
+    def __init__(self, dof, discretization_scheme=constraint.DiscretizationType.Collocation):
+        super(RandomSecondOrderLinearConstraint, self).__init__()
+        self.dof = dof
+        self.set_discretization_type(discretization_scheme)
+        self.identical = False
+        self._format_string = "    Random Second-Order constraint (dof={:d}) \n".format(
+            self.dof)
+
+    def compute_constraint_params(self, path, gridpoints):
+        N = gridpoints.shape[0] - 1
+        a = np.random.randn(N + 1, self.dof)
+        b = np.random.randn(N + 1, self.dof)
+        c = np.random.randn(N + 1, self.dof)
+        F = np.random.randn(N + 1, self.dof, self.dof)
+        g = np.random.rand(N + 1, self.dof)
+        for i in range(N + 1):
+            g[i] += F[i].dot(c[i])
+
+        if self.discretization_type == constraint.DiscretizationType.Collocation:
+            return a, b, c, F, g, None, None
+        elif self.discretization_type == constraint.DiscretizationType.Interpolation:
+            return constraint.canlinear_colloc_to_interpolate(
+                a, b, c, F, g, None, None, gridpoints, identical=False)
+        else:
+            raise NotImplementedError("Other form of discretization not supported!")
+
+
 @pytest.fixture(scope='class', params=['vel_accel'])
-def pp_fixture(request):
-    """ Velocity & Acceleration Path Constraint.
+def basic_init_fixture(request):
+    """ A fixture for testing basic capability of the solver wrapper.
 
     This test case has only two constraints, one velocity constraint
     and one acceleration constraint.
@@ -48,8 +83,9 @@ def pp_fixture(request):
     alim_ = np.random.rand(dof) * 10 + 100
     alim = np.vstack((-alim_, alim_)).T
     pc_acc = constraint.JointAccelerationConstraint(alim)
-
-    pcs = [pc_vel, pc_acc]
+    # random Second Order Constraint, only use for testing
+    pc_rand = RandomSecondOrderLinearConstraint(dof)
+    pcs = [pc_vel, pc_acc, pc_rand]
     yield pcs, path, ss, vlim, alim
 
     print "\n [TearDown] Finish PP Fixture"
@@ -61,20 +97,20 @@ def pp_fixture(request):
 @pytest.mark.parametrize("g", [np.array([0.2, -1]), np.array([0.5, 1]), np.array([2.0, 1])])
 @pytest.mark.parametrize("x_ineq", [(-1, 1), (0.2, 0.2), (0.4, 0.3), (np.nan, np.nan)])
 @pytest.mark.skipif(not FOUND_CXPY, reason="This test requires cvxpy to validate results.")
-def test_basic_init(pp_fixture, solver_name, i, H, g, x_ineq):
+def test_basic_init(basic_init_fixture, solver_name, i, H, g, x_ineq):
     """ A basic test case for wrappers.
 
-    Notice that the input fixture `pp_fixture` is known to have two constraints,
+    Notice that the input fixture `basic_init_fixture` is known to have two constraints,
     one velocity and one acceleration. Hence, in this test, I directly formulate
     an optimization with cvxpy to test the result.
 
     Parameters
     ----------
-    pp_fixture: a fixture with only two constraints, one velocity and
+    basic_init_fixture: a fixture with only two constraints, one velocity and
         one acceleration constraint.
 
     """
-    constraints, path, path_discretization, vlim, alim = pp_fixture
+    constraints, path, path_discretization, vlim, alim = basic_init_fixture
     if solver_name == "cvxpy":
         solver = cvxpyWrapper(constraints, path, path_discretization)
     elif solver_name == 'qpOASES':
@@ -103,16 +139,19 @@ def test_basic_init(pp_fixture, solver_name, i, H, g, x_ineq):
     ux = cvxpy.Variable(2)
     u = ux[0]
     x = ux[1]
-    _, _, _, _, _, _, xbound = solver.params[0]
-    a, b, c, F, h, ubound, _ = solver.params[1]
+    _, _, _, _, _, _, xbound = solver.params[0]  # vel constraint
+    a, b, c, F, h, ubound, _ = solver.params[1]  # accel constraint
+    a2, b2, c2, F2, h2, _, _ = solver.params[2]  # random constraint
     Di = path_discretization[i + 1] - path_discretization[i]
     v = a[i] * u + b[i] * x + c[i]
+    v2 = a2[i] * u + b2[i] * x + c2[i]
     cvxpy_constraints = [
         u <= ubound[i, 1],
         u >= ubound[i, 0],
         x <= xbound[i, 1],
         x >= xbound[i, 0],
         F * v <= h,
+        F2[i] * v2 <= h2[i],
         x + u * 2 * Di <= xnext_max,
         x + u * 2 * Di >= xnext_min,
     ]
@@ -137,11 +176,11 @@ def test_basic_init(pp_fixture, solver_name, i, H, g, x_ineq):
 
 
 @pytest.mark.parametrize("solver_name", ['cvxpy', 'qpOASES', 'ecos', 'hotqpOASES', 'seidel'])
-def test_infeasible_instance(pp_fixture, solver_name):
+def test_infeasible_instance(basic_init_fixture, solver_name):
     """If the given parameters are infeasible, the solverwrapper should
     terminate gracefully and return a numpy vector [nan, nan].
     """
-    constraints, path, path_discretization, vlim, alim = pp_fixture
+    constraints, path, path_discretization, vlim, alim = basic_init_fixture
     if solver_name == "cvxpy":
         solver = cvxpyWrapper(constraints, path, path_discretization)
     elif solver_name == 'qpOASES':

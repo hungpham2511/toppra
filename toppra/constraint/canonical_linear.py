@@ -20,9 +20,10 @@ class CanonicalLinearConstraint(Constraint):
 
     Remark that if F[i], h[i] are identical for any value of index i,
     then parameter F that is returned by `compute_constraint_params`
-    might has shape (k, m) instead of (N, k, m) and parameter g might
-    has shape (k) instead of (N, k). In this case, the flag identical
-    will be set to True.
+    might has shape (k, m) instead of (N, k, m), in which case
+    parameter g has shape (k) instead of (N, k) and the attribute
+    `identical` will be True.
+
     """
     def __init__(self):
         self.constraint_type = ConstraintType.CanonicalLinear
