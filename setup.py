@@ -1,5 +1,6 @@
 from setuptools import setup, Extension
 from Cython.Distutils import build_ext
+from Cython.Build import cythonize
 import numpy as np
 
 NAME = "toppra"
@@ -47,5 +48,5 @@ if __name__ == "__main__":
           url=URL,
           license=LICENSE,
           cmdclass={"build_ext": build_ext},
-          ext_modules=EXTENSIONS
+          ext_modules=cythonize(EXTENSIONS)
           )

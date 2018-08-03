@@ -412,21 +412,32 @@ cdef class seidelWrapper:
         cdef double [:, :] ta, tb, tc
         cdef unsigned int nC_
         for j in range(nCons):
-            a_j, b_j, c_j, F_j, v_j, ubound_j, xbound_j = self._params[j]
+            a_j, b_j, c_j, F_j, h_j, ubound_j, xbound_j = self._params[j]
 
             if a_j is not None:
-                nC_ = F_j.shape[0]
-                # <- Most time consuming code, but this computation seems unavoidable
-                ta = a_j.dot(F_j.T)
-                tb = b_j.dot(F_j.T)
-                tc = c_j.dot(F_j.T) - v_j
-                # <-- End
+                if self.constraints[j].identical:
+                    nC_ = F_j.shape[0]
+                    # <- Most time consuming code, but this computation seems unavoidable
+                    ta = a_j.dot(F_j.T)
+                    tb = b_j.dot(F_j.T)
+                    tc = c_j.dot(F_j.T) - h_j
+                    # <-- End
 
-                for i in range(self.N + 1):
-                    for k in range(nC_):
-                        self.a_arr[i, cur_index + k] = ta[i, k]
-                        self.b_arr[i, cur_index + k] = tb[i, k]
-                        self.c_arr[i, cur_index + k] = tc[i, k]
+                    for i in range(self.N + 1):
+                        for k in range(nC_):
+                            self.a_arr[i, cur_index + k] = ta[i, k]
+                            self.b_arr[i, cur_index + k] = tb[i, k]
+                            self.c_arr[i, cur_index + k] = tc[i, k]
+                else:
+                    nC_ = F_j.shape[1]
+                    for i in range(self.N + 1):
+                        tai = np.dot(F_j[i], a_j[i])
+                        tbi = np.dot(F_j[i], b_j[i])
+                        tci = np.dot(F_j[i], c_j[i]) - h_j[i]
+                        for k in range(nC_):
+                            self.a_arr[i, cur_index + k] = tai[k]
+                            self.b_arr[i, cur_index + k] = tbi[k]
+                            self.c_arr[i, cur_index + k] = tci[k]
                 cur_index += nC_
 
             if ubound_j is not None:
