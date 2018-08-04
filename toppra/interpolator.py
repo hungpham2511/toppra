@@ -238,9 +238,10 @@ class RaveTrajectoryWrapper(Interpolator):
 
 
 class SplineInterpolator(Interpolator):
-    """Interpolate the given waypoints by spline.
+    """Interpolate the given waypoints by cubic spline.
 
-    This is a simple wrapper over scipy.CubicSpline class.
+    This interpolator is implemented as a simple wrapper over scipy's
+    CubicSpline class.
 
     Parameters
     ----------
@@ -248,9 +249,9 @@ class SplineInterpolator(Interpolator):
         Shaped (N+1,). Path positions of the waypoints.
     waypoints: array
         Shaped (N+1, dof). Waypoints.
-    bc_type: str
-        Kind of boundary condition. See scipy.CubicSpline
-        documentation for more details.
+    bc_type: str, optional
+        Boundary condition. Can be 'not-a-knot', 'clamped', 'natural' or 'periodic'.
+        See scipy.CubicSpline documentation for more details.
 
     Attributes
     ----------

@@ -79,7 +79,7 @@ def solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, double[:] low
 # @cython.profile(True)
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef LpSol cy_solve_lp1d(double[:] v, int nrows, double[:] a, double[:] b, double low, double high):
+cdef LpSol cy_solve_lp1d(double[:] v, int nrows, double[:] a, double[:] b, double low, double high) except *:
     """ Solve the following program
     
             dbl_max   v[0] x + v[1]
@@ -135,7 +135,7 @@ cdef LpSol cy_solve_lp1d(double[:] v, int nrows, double[:] a, double[:] b, doubl
 # @cython.profile(True)
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, double[:] low, double[:] high, INT_t[:] active_c, bint use_cache, INT_t [:] index_map, double[:] a_1d, double[:] b_1d):
+cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, double[:] low, double[:] high, INT_t[:] active_c, bint use_cache, INT_t [:] index_map, double[:] a_1d, double[:] b_1d) except *:
     """ Solve a LP with two variables.
 
     The LP is specified as follow:
@@ -519,12 +519,17 @@ cdef class seidelWrapper:
             unsigned int k, cur_index = 0, j, nC  # indices
             double [2] var  # Result
             LpSol  # Solution struct to hold the 2D or 1D LP result
+            double low_arr[2], high_arr[2]
+        low_arr[0] = self.low_arr[i, 0]
+        low_arr[1] = self.low_arr[i, 1]
+        high_arr[0] = self.high_arr[i, 0]
+        high_arr[1] = self.high_arr[i, 1]
 
         # handle x_min <= x_i <= x_max
         if not isnan(x_min):
-            self.low_arr[i, 1] = dbl_max(self.low_arr[i, 1], x_min)
+            low_arr[1] = dbl_max(low_arr[1], x_min)
         if not isnan(x_max):
-            self.high_arr[i, 1] = dbl_min(self.high_arr[i, 1], x_max)
+            high_arr[1] = dbl_min(high_arr[1], x_max)
 
         # handle x_next_min <= 2 delta u + x_i <= x_next_max
         if i < self.N:
@@ -559,7 +564,7 @@ cdef class seidelWrapper:
            
         if g[1] > 0:  # choose upper solver
             solution = cy_solve_lp2d(self.v, self.a_arr[i], self.b_arr[i], self.c_arr[i],
-                                     self.low_arr[i], self.high_arr[i], self.active_c_up,
+                                     low_arr, high_arr, self.active_c_up,
                                      True, self.index_map, self.a_1d, self.b_1d)
             if solution.result == 0:
                 var[0] = NAN
@@ -570,7 +575,7 @@ cdef class seidelWrapper:
                 self.active_c_up[1] = solution.active_c[1]
         else:  # chose lower solver
             solution = cy_solve_lp2d(self.v, self.a_arr[i], self.b_arr[i], self.c_arr[i],
-                                     self.low_arr[i], self.high_arr[i], self.active_c_down,
+                                     low_arr, high_arr, self.active_c_down,
                                      True, self.index_map, self.a_1d, self.b_1d)
             if solution.result == 0:
                 # print "v={:}\n a={:}\n b={:}\n c={:}\n low={:}\n high={:}".format(
