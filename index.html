@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="toppra.TOPP" href="TOPP.html" /> 
+    <link rel="next" title="Welcome" href="hello.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -82,20 +82,9 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="TOPP.html">toppra.TOPP</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="TOPP.html#topp">TOPP</a></li>
-<li class="toctree-l2"><a class="reference internal" href="TOPP.html#post-processing">Post-Processing</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="constraints.html">toppra.constraints</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="constraints.html#creating-constraint">Creating constraint</a></li>
-<li class="toctree-l2"><a class="reference internal" href="constraints.html#the-pathconstraint-class">The <code class="docutils literal notranslate"><span class="pre">PathConstraint</span></code> class</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="interpolators.html">toppra.interpolator</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="example_kinematics.html">Kinematics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hello.html">Welcome</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hello.html#mod1">mod1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hello.html#mod2">mod2</a></li>
 </ul>
 
             
@@ -162,23 +151,47 @@
             
   <div class="section" id="welcome-to-topp-ra-s-documentation">
 <h1>Welcome to TOPP-RA’s documentation!<a class="headerlink" href="#welcome-to-topp-ra-s-documentation" title="Permalink to this headline">¶</a></h1>
-<p>TOPP-RA is a library for computing the Time-Optimal Path
-Parametrization for geometric paths.</p>
-<div class="section" id="package-references">
-<h2>Package References<a class="headerlink" href="#package-references" title="Permalink to this headline">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="TOPP.html">toppra.TOPP</a></li>
-<li class="toctree-l1"><a class="reference internal" href="constraints.html">toppra.constraints</a></li>
-<li class="toctree-l1"><a class="reference internal" href="interpolators.html">toppra.interpolator</a></li>
-</ul>
+<p>TOPP-RA is a library for time-parameterizing robot trajectories subject to kinematic and
+dynamic constraints. It is able to compute the <em>time-optimal</em> time-parametrization of a given
+path, as well as a time-parametrization with a <em>specified duration</em>.
+See the examples for more details.</p>
+<p>The current implementation supports the following constraints:</p>
+<ol class="arabic simple">
+<li>joint velocity and acceleration bounds;</li>
+<li><em>robust</em> acceleration bounds;</li>
+<li>torque bounds (including redundantly-actuated manipulators);</li>
+<li><em>robust</em> torque bounds;</li>
+<li>contact stability for legged robots.</li>
+</ol>
+<dl class="docutils">
+<dt>If you use this library for your research, please reference the accompanying paper:</dt>
+<dd><a class="reference external" href="https://arxiv.org/abs/1707.07239">«A new approach to Time-Optimal Path Parameterization based on Reachability Analysis»</a>,
+<em>IEEE Transactions on Robotics</em>, vol. 34(3), pp. 645–659, 2018.</dd>
+</dl>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>TOPP-RA can be installed from source by the following steps:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/hungpham2511/toppra <span class="o">&amp;&amp;</span> <span class="nb">cd</span> toppra/
+pip install -r requirements.txt --user
+python setup.py install --user
+</pre></div>
 </div>
+<p>These lines implement the most basic functionalities, such as parametrize trajectories
+subject to velocity and acceleration constraints. Some advanced functionalities require
+<cite>openrave</cite>, <cite>cvxpy</cite> and so on. See [link to installation rst] for the full instruction.</p>
 </div>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
+</div>
+</div>
+<div class="section" id="package-references">
+<h2>Package References<a class="headerlink" href="#package-references" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="example_kinematics.html">Kinematics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hello.html">Welcome</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hello.html#mod1">mod1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hello.html#mod2">mod2</a></li>
 </ul>
 </div>
 </div>
@@ -200,7 +213,7 @@ Parametrization for geometric paths.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="TOPP.html" class="btn btn-neutral float-right" title="toppra.TOPP" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="hello.html" class="btn btn-neutral float-right" title="Welcome" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>
