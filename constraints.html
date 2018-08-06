@@ -1,0 +1,555 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>toppra.constraints &mdash; TOPP-RA 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="toppra.interpolator" href="interpolators.html" />
+    <link rel="prev" title="toppra.TOPP" href="TOPP.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> TOPP-RA
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="TOPP.html">toppra.TOPP</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="TOPP.html#topp">TOPP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TOPP.html#post-processing">Post-Processing</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">toppra.constraints</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#creating-constraint">Creating constraint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-pathconstraint-class">The <code class="docutils literal notranslate"><span class="pre">PathConstraint</span></code> class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="interpolators.html">toppra.interpolator</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="example_kinematics.html">Kinematics</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">TOPP-RA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>toppra.constraints</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/constraints.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-toppra.constraints">
+<span id="toppra-constraints"></span><h1>toppra.constraints<a class="headerlink" href="#module-toppra.constraints" title="Permalink to this headline">¶</a></h1>
+<p>This module constains <cite>PathConstraint</cite>, the unifying interface to
+constraints on geometric path. It also contains routines for creating
+the <cite>PathConstraint</cite>.</p>
+<div class="section" id="creating-constraint">
+<h2>Creating constraint<a class="headerlink" href="#creating-constraint" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="toppra.constraints.interpolate_constraint">
+<code class="descclassname">toppra.constraints.</code><code class="descname">interpolate_constraint</code><span class="sig-paren">(</span><em>pc</em><span class="sig-paren">)</span><a class="headerlink" href="#toppra.constraints.interpolate_constraint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Produce a discretized <a class="reference internal" href="toppra.html#toppra.constraints.PathConstraint" title="toppra.constraints.PathConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">PathConstraint</span></code></a> by first-order
+interpolation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pc</strong> (<a class="reference internal" href="toppra.html#toppra.constraints.PathConstraint" title="toppra.constraints.PathConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">PathConstraint</span></code></a>) – The original, collocated, constraint.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>out</strong> – The interpolated constraint.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="toppra.html#toppra.constraints.PathConstraint" title="toppra.constraints.PathConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">PathConstraint</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toppra.constraints.create_full_contact_path_constraint">
+<code class="descclassname">toppra.constraints.</code><code class="descname">create_full_contact_path_constraint</code><span class="sig-paren">(</span><em>path</em>, <em>ss</em>, <em>robot</em>, <em>stance</em><span class="sig-paren">)</span><a class="headerlink" href="#toppra.constraints.create_full_contact_path_constraint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contact stability constraint (Colomb frictional model).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>path</strong> (<a class="reference internal" href="toppra.html#toppra.interpolator.SplineInterpolator" title="toppra.interpolator.SplineInterpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">SplineInterpolator</span></code></a>)</li>
+<li><strong>ss</strong> (<em>array.</em>) – Shape (N+1, ). Discretization grid points.</li>
+<li><strong>robot</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Pymanoid.Humanoid</span></code>) – Used for dynamics computation.
+Torque bounds are taken from the internal OpenRAVE robot.</li>
+<li><strong>stance</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Pymanoid.Stance</span></code>) – Used for wrench constraint.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>res</strong> – Contact stability constraint.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="toppra.html#toppra.constraints.PathConstraint" title="toppra.constraints.PathConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">PathConstraint</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>The dynamics equation of a robot is given by:</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{M}(\mathbf{q}) \ddot{\mathbf{q}}+
+\mathbf{C}(\mathbf{q}, \dot{\mathbf{q}})+
+\mathbf{g}(\mathbf{q}) = \mathbf{\tau} +
+\sum_i\mathbf{J}_i(\mathbf{q}, \mathbf{pos_endlink}_i)^T
+\mathbf{w}_i,\]</div>
+<p>where</p>
+<ul class="simple">
+<li><span class="math notranslate nohighlight">\(\mathbf{q}, \dot{\mathbf{q}}, \ddot{\mathbf{q}}\)</span>: robot joint position, velocity and acceleration.</li>
+<li><span class="math notranslate nohighlight">\(\tau\)</span>: robot joint torque.</li>
+<li><span class="math notranslate nohighlight">\(\mathbf{w}_i\)</span>: the i-th local contact wrench acting on a link on the robot.</li>
+<li><span class="math notranslate nohighlight">\(\mathbf{pos_endlink}_i\)</span>: the origin of the wrench w_i.</li>
+<li><span class="math notranslate nohighlight">\(\mathbf{J}_i\)</span>: the wrench Jacobian at p_i of the link w_i acts on.</li>
+</ul>
+<p>According to the linearized Colomb friction model, the sets of
+feasible contact wrenches are characterized by linear inequalities such as</p>
+<div class="math notranslate nohighlight">
+\[\{\mathbf{w}_i \mid \mathbf{F}_i \mathbf{w}_i \leq 0\}\]</div>
+<p>Define the slack variable <span class="math notranslate nohighlight">\(\mathbf{v} := [\tau',
+\mathbf{w}_1', \mathbf{w}_2', ...]'\)</span> and note that the left-hand
+side of the dynamic equation can be written in the “abc” form, the
+path constraint is finally given by</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}&amp; \mathbf{a}(s) u + \mathbf{b}(s) x + \mathbf{c}(s) = \mathbf{D}(s) \mathbf{v} \\
+&amp; \mathbf{l}(s) \leq \mathbf{v} \leq \mathbf{h}(s) \\
+&amp; \mathbf{l}_G(s) \leq \mathbf{G}(s) \mathbf{v} \leq \mathbf{h}_G(s)\end{split}\]</div>
+<p class="last">which is a non-canonical Type II <a class="reference internal" href="toppra.html#toppra.constraints.PathConstraint" title="toppra.constraints.PathConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">PathConstraint</span></code></a>.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="toppra.constraints.create_pymanoid_contact_stability_path_constraint">
+<code class="descclassname">toppra.constraints.</code><code class="descname">create_pymanoid_contact_stability_path_constraint</code><span class="sig-paren">(</span><em>path</em>, <em>ss</em>, <em>robot</em>, <em>contact_set</em>, <em>g</em><span class="sig-paren">)</span><a class="headerlink" href="#toppra.constraints.create_pymanoid_contact_stability_path_constraint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contact stability constraint in canonical form.</p>
+<p>This is the reduced form of the full contact stability constraint
+described in <a class="reference internal" href="toppra.html#toppra.constraints.create_full_contact_path_constraint" title="toppra.constraints.create_full_contact_path_constraint"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_full_contact_path_constraint()</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>path</strong> (<a class="reference internal" href="toppra.html#toppra.interpolator.SplineInterpolator" title="toppra.interpolator.SplineInterpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">SplineInterpolator</span></code></a>)</li>
+<li><strong>ss</strong> (<em>array</em>) – Shape (N+1, ). Grid points.</li>
+<li><strong>robot</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Pymanoid.Humanoid</span></code>) – Used for dynamics computation.
+Torque bounds are taken from the internal OpenRAVE robot.</li>
+<li><strong>contact_set</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Pymanoid.ContactSet</span></code>) – Used for wrench computation.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>res</strong> – The resulting path constraint.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="toppra.html#toppra.constraints.PathConstraint" title="toppra.constraints.PathConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">PathConstraint</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toppra.constraints.create_rave_re_torque_path_constraint">
+<code class="descclassname">toppra.constraints.</code><code class="descname">create_rave_re_torque_path_constraint</code><span class="sig-paren">(</span><em>path</em>, <em>ss</em>, <em>robot</em>, <em>J_lc</em>, <em>torque_bnd=None</em><span class="sig-paren">)</span><a class="headerlink" href="#toppra.constraints.create_rave_re_torque_path_constraint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Torque bounds for robots under loop closure constraints.</p>
+<p>Roughly speadking, under loop closure constraints, only virtual
+displacements <span class="math notranslate nohighlight">\(d\mathbf{q}\)</span> satisfying</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{J}_{loop}(\mathbf{q}) d\mathbf{q} = 0,\]</div>
+<p>is admissible.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>path</strong> (<a class="reference internal" href="toppra.html#toppra.interpolator.SplineInterpolator" title="toppra.interpolator.SplineInterpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">SplineInterpolator</span></code></a>)</li>
+<li><strong>ss</strong> (<em>array</em>) – Shape (N+1, ). Grid points.</li>
+<li><strong>robot</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">openravepy.Robot</span></code>) – Used for dynamics computation.</li>
+<li><strong>J_lc</strong> (<em>func</em>) – A mapping q -&gt; an (d, dof) ndarray.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>res</strong> – The resulting path constraint.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="toppra.html#toppra.constraints.PathConstraint" title="toppra.constraints.PathConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">PathConstraint</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toppra.constraints.create_rave_torque_path_constraint">
+<code class="descclassname">toppra.constraints.</code><code class="descname">create_rave_torque_path_constraint</code><span class="sig-paren">(</span><em>path</em>, <em>ss</em>, <em>robot</em><span class="sig-paren">)</span><a class="headerlink" href="#toppra.constraints.create_rave_torque_path_constraint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Torque bounds for an OpenRAVE robot.</p>
+<p>Path-Torque constraint has the form</p>
+<blockquote>
+<div><blockquote>
+<div>sdd * M(q) qs(s)</div></blockquote>
+<ul>
+<li><p class="first">sd ^ 2 [M(q) qss(s) + qs(s)^T C(q) qs(s)]</p>
+</li>
+<li><p class="first">g(q(s)) = tau</p>
+<p>taumin &lt;= tau &lt;= taumax</p>
+</li>
+</ul>
+</div></blockquote>
+<dl class="docutils">
+<dt>As canonical constraint.</dt>
+<dd>sdd * Ai + sd^2 Bi + Ci &lt;= 0</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>path</strong> (<em>Interpolator</em>) – Represents the underlying geometric path.</li>
+<li><strong>ss</strong> (<em>ndarray</em>) – Discretization gridpoints.</li>
+<li><strong>robot</strong> (<em>OpenRAVE.Robot</em>) – Robot model to provide dynamics matrices</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>out</strong> – The equivalent path constraint.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="toppra.html#toppra.constraints.PathConstraint" title="toppra.constraints.PathConstraint">PathConstraint</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toppra.constraints.create_velocity_path_constraint">
+<code class="descclassname">toppra.constraints.</code><code class="descname">create_velocity_path_constraint</code><span class="sig-paren">(</span><em>path</em>, <em>ss</em>, <em>vlim</em><span class="sig-paren">)</span><a class="headerlink" href="#toppra.constraints.create_velocity_path_constraint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a <a class="reference internal" href="toppra.html#toppra.constraints.PathConstraint" title="toppra.constraints.PathConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">PathConstraint</span></code></a> object to represent joint velocity constraint.</p>
+<p>Note that a joint velocity constraint leads to two scalar path constraints.</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}x[i] - sd_{max}[i]^2 \leq 0\\-x[i]  + sd_{min}[i]^2 \leq 0\end{aligned}\end{align} \]</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>path</strong> (<em>Interpolator</em>) – The geometric path.</li>
+<li><strong>vlim</strong> (<em>ndarray, shaped (dof, 2)</em>) – Joint velocity limits.
+vlim[i] is a tuple containing the miminum and maximum velocity.</li>
+<li><strong>ss</strong> (<em>ndarray, shaped (N+1,)</em>) – Discretization gridpoints.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>pc</strong></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="toppra.html#toppra.constraints.PathConstraint" title="toppra.constraints.PathConstraint">PathConstraint</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toppra.constraints.create_acceleration_path_constraint">
+<code class="descclassname">toppra.constraints.</code><code class="descname">create_acceleration_path_constraint</code><span class="sig-paren">(</span><em>path</em>, <em>ss</em>, <em>alim</em><span class="sig-paren">)</span><a class="headerlink" href="#toppra.constraints.create_acceleration_path_constraint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a <a class="reference internal" href="toppra.html#toppra.constraints.PathConstraint" title="toppra.constraints.PathConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">PathConstraint</span></code></a> object to represent joint accelerations constraint.</p>
+<p>A joint acceleration constraint leads to 2n path constraints:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}q'(s[i]) u[i] + q''(s[i]) x[i] - qd_{max} \leq 0\\-q'(s[i]) u[i] - q''(s[i]) x[i] + qd_{min} \leq 0\end{aligned}\end{align} \]</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>path</strong> (<em>Interpolator</em>) – The geometric path.</li>
+<li><strong>alim</strong> (<em>ndarray, shaped (dof, 2)</em>) – Joint acceleration limits.
+alim[i] is a tuple containing the minimum and maximum acceleration of joint i.</li>
+<li><strong>ss</strong> (<em>ndarray, shaped (N+1,)</em>) – Discretization gridpoints.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>pc</strong></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="toppra.html#toppra.constraints.PathConstraint" title="toppra.constraints.PathConstraint">PathConstraint</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="the-pathconstraint-class">
+<h2>The <a class="reference internal" href="toppra.html#toppra.constraints.PathConstraint" title="toppra.constraints.PathConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">PathConstraint</span></code></a> class<a class="headerlink" href="#the-pathconstraint-class" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="toppra.constraints.PathConstraint">
+<em class="property">class </em><code class="descclassname">toppra.constraints.</code><code class="descname">PathConstraint</code><span class="sig-paren">(</span><em>a=None</em>, <em>b=None</em>, <em>c=None</em>, <em>abar=None</em>, <em>bbar=None</em>, <em>cbar=None</em>, <em>D=None</em>, <em>l=None</em>, <em>h=None</em>, <em>lG=None</em>, <em>G=None</em>, <em>hG=None</em>, <em>name=None</em>, <em>ss=None</em><span class="sig-paren">)</span><a class="headerlink" href="#toppra.constraints.PathConstraint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Discretized path constraint.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<em>str, optional</em>) – Name of the constraint.</li>
+<li><strong>ss</strong> (<em>array, optional</em>) – Shape (N+1,). Grid points.</li>
+<li><strong>a</strong> (<em>array, optional</em>) – Shape (N+1, neq). Coeff; Canonical.</li>
+<li><strong>b</strong> (<em>array, optional</em>) – Shape (N+1, neq). Coeff; Canonical.</li>
+<li><strong>c</strong> (<em>array, optional</em>) – Shape (N+1, neq). Coeff; Canonical.</li>
+<li><strong>abar</strong> (<em>array, optional</em>) – Shape (N+1, neq). Coeff; Type I.</li>
+<li><strong>bbar</strong> (<em>array, optional</em>) – Shape (N+1, neq). Coeff; Type I.</li>
+<li><strong>cbar</strong> (<em>array, optional</em>) – Shape (N+1, neq). Coeff; Type I.</li>
+<li><strong>l</strong> (<em>array, optional</em>) – Shape (N+1, nv). Bounds for <cite>v</cite>.</li>
+<li><strong>h</strong> (<em>array, optional</em>) – Shape (N+1, nv). Bounds for <cite>v</cite>.</li>
+<li><strong>G</strong> (<em>array, optional</em>) – Shape (N+1, niq, nv). Coeff; Type II.</li>
+<li><strong>lG</strong> (<em>array, optional</em>) – Shape (N+1, niq). Bounds; Type II.</li>
+<li><strong>hG</strong> (<em>array, optional</em>) – Shape (N+1, niq). Bounds; Type II.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference internal" href="toppra.html#toppra.constraints.PathConstraint.nm" title="toppra.constraints.PathConstraint.nm"><strong>nm</strong></a> (<em>int</em>) – Dimension of non-canonical inequalities.</li>
+<li><a class="reference internal" href="toppra.html#toppra.constraints.PathConstraint.nv" title="toppra.constraints.PathConstraint.nv"><strong>nv</strong></a> (<em>int</em>) – Dimension of slack variable.</li>
+<li><a class="reference internal" href="toppra.html#toppra.constraints.PathConstraint.neq" title="toppra.constraints.PathConstraint.neq"><strong>neq</strong></a> (<em>int</em>) – Dimension of equality constraint.</li>
+<li><a class="reference internal" href="toppra.html#toppra.constraints.PathConstraint.niq" title="toppra.constraints.PathConstraint.niq"><strong>niq</strong></a> (<em>int</em>) – Dimension of non-canonical inequality constraint.</li>
+<li><strong>N</strong> (<em>int</em>) – Number of discretization segments.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>In the most general setting, a <a class="reference internal" href="toppra.html#toppra.constraints.PathConstraint" title="toppra.constraints.PathConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">PathConstraint</span></code></a> object
+candescribes <strong>one</strong> of the following kind:</p>
+<ol class="arabic simple">
+<li><em>Canonical</em>:</li>
+</ol>
+<div class="math notranslate nohighlight">
+\[\mathbf a[i] u    + \mathbf b[i] x    + \mathbf c[i]    \leq 0\]</div>
+<ol class="arabic simple" start="2">
+<li>Non-canonical <em>Type I</em>:</li>
+</ol>
+<div class="math notranslate nohighlight">
+\[\begin{split}&amp; \mathbf{abar}[i] u + \mathbf{bbar}[i] x + \mathbf{cbar}[i]  = \mathbf{D}[i] v \\
+&amp; \mathbf{l}[i]  \leq          v             \leq \mathbf{h}[i]\end{split}\]</div>
+<ol class="arabic simple" start="3">
+<li>Non-canonical <em>Type II</em>, in addition to 2.</li>
+</ol>
+<div class="math notranslate nohighlight">
+\[\mathbf{lG}(s) \leq     \mathbf{G}(s) v             \leq \mathbf{hG}(s)\]</div>
+<p>where <cite>u</cite> is the path acceleration, <cite>x</cite> is the squared path velocity
+and <cite>v</cite> is a slack variable whose physical meanings depend on the
+nature of the constraint.</p>
+<p>Depending on the constraint, corresponding keyword arguments are
+to be given as numerical arrays during initialization.</p>
+<p>Note that there is no actual problem in allowing a constraint to
+have both canonical and non-canonical parts.</p>
+<p class="rubric">Example</p>
+<p>Create a canonical constraint</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">N</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">N</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">N</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pc</span> <span class="o">=</span> <span class="n">PathConstraint</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">ss</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>then, create a first-order interpolation</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pc</span> <span class="o">=</span> <span class="n">interpolate_constraint</span><span class="p">(</span><span class="n">pc</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="interpolators.html" class="btn btn-neutral float-right" title="toppra.interpolator" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="TOPP.html" class="btn btn-neutral" title="toppra.TOPP" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Hung Pham.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

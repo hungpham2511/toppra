@@ -1,0 +1,616 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>toppra.TOPP &mdash; TOPP-RA 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="toppra.constraints" href="constraints.html" />
+    <link rel="prev" title="Welcome to TOPP-RA’s documentation!" href="index.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> TOPP-RA
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">toppra.TOPP</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#topp">TOPP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#post-processing">Post-Processing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="constraints.html">toppra.constraints</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="constraints.html#creating-constraint">Creating constraint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="constraints.html#the-pathconstraint-class">The <code class="docutils literal notranslate"><span class="pre">PathConstraint</span></code> class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="interpolators.html">toppra.interpolator</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="example_kinematics.html">Kinematics</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">TOPP-RA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>toppra.TOPP</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/TOPP.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-toppra.TOPP">
+<span id="toppra-topp"></span><h1>toppra.TOPP<a class="headerlink" href="#module-toppra.TOPP" title="Permalink to this headline">¶</a></h1>
+<p>The TOPP-RA package currently is implemented using <cite>qpOASES</cite>.</p>
+<p>Interfaces to other solvers will be added in the future.</p>
+<div class="section" id="topp">
+<h2>TOPP<a class="headerlink" href="#topp" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="toppra.TOPP.qpOASESPPSolver">
+<em class="property">class </em><code class="descclassname">toppra.TOPP.</code><code class="descname">qpOASESPPSolver</code><span class="sig-paren">(</span><em>constraint_set</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/TOPP.html#qpOASESPPSolver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#toppra.TOPP.qpOASESPPSolver" title="Permalink to this definition">¶</a></dt>
+<dd><p>An implementation of TOPP-RA using the QP solver <code class="docutils literal notranslate"><span class="pre">qpOASES</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>constraint_set</strong> (<em>list</em>) – A list of  <a class="reference internal" href="toppra.html#toppra.constraints.PathConstraint" title="toppra.constraints.PathConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">PathConstraint</span></code></a></li>
+<li><strong>verbose</strong> (<em>bool</em>) – More verbose output.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>Ks</strong> (<em>array</em><em>, </em><em>shape</em><em> (</em><em>N+1</em><em>, </em><em>2</em><em>)</em>) – Controllable sets/intervals.</li>
+<li><strong>I0</strong> (<em>array</em>) – </li>
+<li><strong>IN</strong> (<em>array</em>) – </li>
+<li><a class="reference internal" href="toppra.html#toppra.constraints.PathConstraint.ss" title="toppra.constraints.PathConstraint.ss"><strong>ss</strong></a> (<em>array</em>) – Discretized path positions.</li>
+<li><a class="reference internal" href="toppra.html#toppra.constraints.PathConstraint.nm" title="toppra.constraints.PathConstraint.nm"><strong>nm</strong></a> (<em>int</em>) – Dimension of the canonical constraint part.</li>
+<li><a class="reference internal" href="toppra.html#toppra.constraints.PathConstraint.nv" title="toppra.constraints.PathConstraint.nv"><strong>nv</strong></a> (<em>int</em>) – Dimension of the combined slack.</li>
+<li><a class="reference internal" href="toppra.html#toppra.constraints.PathConstraint.niq" title="toppra.constraints.PathConstraint.niq"><strong>niq</strong></a> (<em>int</em>) – Dimension of the inequalities on slack.</li>
+<li><a class="reference internal" href="toppra.html#toppra.constraints.PathConstraint.neq" title="toppra.constraints.PathConstraint.neq"><strong>neq</strong></a> (<em>int</em>) – Dimension of the equalities on slack.</li>
+<li><strong>nV</strong> (<em>int</em>) – Dimension of the optimization variable.</li>
+<li><strong>nC</strong> (<em>int</em>) – (<code class="docutils literal notranslate"><span class="pre">qpOASES</span></code>) Number of constraints .</li>
+<li><strong>A</strong> (<em>array</em>) – (<code class="docutils literal notranslate"><span class="pre">qpOASES</span></code>) Shape (N+1, nC, nV).</li>
+<li><strong>lA</strong> (<em>array</em>) – (<code class="docutils literal notranslate"><span class="pre">qpOASES</span></code>) Shape (N+1, nC).</li>
+<li><strong>hA</strong> (<em>array</em>) – (<code class="docutils literal notranslate"><span class="pre">qpOASES</span></code>) Shape (N+1, nC).</li>
+<li><strong>l</strong> (<em>array</em>) – (<code class="docutils literal notranslate"><span class="pre">qpOASES</span></code>) Shape (N+1, nV).</li>
+<li><strong>h</strong> (<em>array</em>) – (<code class="docutils literal notranslate"><span class="pre">qpOASES</span></code>) Shape (N+1, nV).</li>
+<li><strong>H</strong> (<em>array</em>) – (<code class="docutils literal notranslate"><span class="pre">qpOASES</span></code>) Shape (nV, nV).</li>
+<li><strong>g</strong> (<em>array</em>) – (<code class="docutils literal notranslate"><span class="pre">qpOASES</span></code>) Shape (nV,).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Notes</p>
+<p>Attributes tagged with (<code class="docutils literal notranslate"><span class="pre">qpOASES</span></code>) are internal variables used with
+the <code class="docutils literal notranslate"><span class="pre">qpOASES</span></code> solver. For details on their construction, see belows.</p>
+<p>The first <code class="docutils literal notranslate"><span class="pre">nop</span></code> rows of <code class="docutils literal notranslate"><span class="pre">A</span></code> are operational rows. They are
+reserved to specify additional constraints. For example, to specify the constraints
+that the next stage state must lie inside the target set.</p>
+<ol class="arabic simple">
+<li>the controllable sets; TODO</li>
+<li>the reachable sets; TODO</li>
+</ol>
+<p>This class uses <code class="docutils literal notranslate"><span class="pre">qpOASES</span></code> to solve Quadratic Programs of the form</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}min  \quad   &amp; 0.5 (u, x, v^T) \mathbf{H} (u, x, v^T)^T + \mathbf{g}^T (u, x, v^T)^T \\
+s.t. \quad   &amp; \mathbf{l_A}[i] \leq \mathbf{A}[i] (u, x, v^T)^T \leq \mathbf{h_A}[i] \\
+             &amp; \mathbf{l}[i]  \leq   (u, x, v^T)^T \leq \mathbf{h}[i]\end{split}\]</div>
+<p>The matrices <span class="math notranslate nohighlight">\(A[i], l_A[i], h_A[i]\)</span> consist of
+four row sections. The four sections are:</p>
+<ol class="arabic simple">
+<li>operational: see above;</li>
+<li>canonical;</li>
+<li>non-canonical;</li>
+<li>non-canonical hard-bound.</li>
+</ol>
+<p>For more details on the last three sections, see
+<a class="reference internal" href="toppra.html#toppra.constraints.PathConstraint" title="toppra.constraints.PathConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">PathConstraint</span></code></a>’s docstring.</p>
+<p>The vectors <span class="math notranslate nohighlight">\(l[i], h[i]\)</span> contain hard-bounds on <span class="math notranslate nohighlight">\(u, x,
+\mathbf{v}\)</span> respectively.</p>
+<dl class="attribute">
+<dt id="toppra.TOPP.qpOASESPPSolver.K">
+<code class="descname">K</code><a class="headerlink" href="#toppra.TOPP.qpOASESPPSolver.K" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Controllable subsets.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="toppra.TOPP.qpOASESPPSolver.L">
+<code class="descname">L</code><a class="headerlink" href="#toppra.TOPP.qpOASESPPSolver.L" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Reachable subsets.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="toppra.TOPP.qpOASESPPSolver.greedy_step">
+<code class="descname">greedy_step</code><span class="sig-paren">(</span><em>i</em>, <em>x</em>, <em>xmin</em>, <em>xmax</em>, <em>init=False</em>, <em>reg=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/TOPP.html#qpOASESPPSolver.greedy_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#toppra.TOPP.qpOASESPPSolver.greedy_step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take a forward greedy step from position s[i], state x.</p>
+<p>If the projection is infeasible (for example when <cite>xmin</cite> &gt;
+<cite>xmax</cite>), then <cite>(None, None)</cite> is returned.</p>
+<p>If the function terminates successfully, <cite>x_greedy</cite> is
+guaranteed to be positive.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>i</strong> (<em>int</em>)</li>
+<li><strong>x</strong> (<em>float</em>)</li>
+<li><strong>x_min</strong> (<em>float</em>)</li>
+<li><strong>x_max</strong> (<em>float</em>)</li>
+<li><strong>init</strong> (<em>bool</em>)</li>
+<li><strong>reg</strong> (<em>float</em>)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>u_greedy</strong> (<em>float</em>) – If infeasible, returns None.</li>
+<li><strong>x_greedy</strong> (<em>float</em>) – If infeasible, returns None.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="toppra.TOPP.qpOASESPPSolver.least_greedy_step">
+<code class="descname">least_greedy_step</code><span class="sig-paren">(</span><em>i</em>, <em>x</em>, <em>xmin</em>, <em>xmax</em>, <em>init=False</em>, <em>reg=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/TOPP.html#qpOASESPPSolver.least_greedy_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#toppra.TOPP.qpOASESPPSolver.least_greedy_step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find min u such that xmin &lt;= x + 2 ds u &lt;= xmax.</p>
+<p>If the projection is infeasible (for example when <cite>xmin</cite> &gt;
+<cite>xmax</cite>), then <cite>(None, None)</cite> is returned.</p>
+<p>If the function terminates successfully, <cite>x_least_greedy</cite> is
+guaranteed to be positive.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>i</strong> (<em>int</em>)</li>
+<li><strong>x</strong> (<em>float</em>)</li>
+<li><strong>x_min</strong> (<em>float</em>)</li>
+<li><strong>x_max</strong> (<em>float</em>)</li>
+<li><strong>init</strong> (<em>bool</em>)</li>
+<li><strong>reg</strong> (<em>float</em>)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>u_greedy</strong> (<em>float</em>) – If infeasible, returns None.</li>
+<li><strong>x_greedy</strong> (<em>float</em>) – If infeasible, returns None.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="toppra.TOPP.qpOASESPPSolver.one_step">
+<code class="descname">one_step</code><span class="sig-paren">(</span><em>i</em>, <em>xmin</em>, <em>xmax</em>, <em>init=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/TOPP.html#qpOASESPPSolver.one_step"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#toppra.TOPP.qpOASESPPSolver.one_step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the one-step set <span class="math notranslate nohighlight">\(\mathcal{Q}_i\)</span> for the interval (<cite>xmin</cite>, <cite>xmax</cite>).</p>
+<p>If the projection is not feasible (for example when <cite>xmin</cite> &gt;
+<cite>xmax</cite>), then return (<cite>None</cite>, <cite>None</cite>).</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The variables <cite>self.nWSR_up</cite> and <cite>self.nWSR_down</cite> need to be
+initialized prior to using this function. See
+<a class="reference internal" href="toppra.html#toppra.TOPP.qpOASESPPSolver.solve_controllable_sets" title="toppra.TOPP.qpOASESPPSolver.solve_controllable_sets"><code class="xref py py-func docutils literal notranslate"><span class="pre">qpOASESPPSolver.solve_controllable_sets()</span></code></a> for more details.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>i</strong> (<em>int</em>) – Index to compute the controllable set.</li>
+<li><strong>xmin</strong> (<em>float</em>) – Maximum target state.</li>
+<li><strong>xmax</strong> (<em>float</em>) – Minimum target state.</li>
+<li><strong>init</strong> (<em>bool, optional</em>) – If <cite>True</cite>, coldstart. Else, hotstart.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>xmin_i</strong> (<em>float</em>) – Lower end-point of <span class="math notranslate nohighlight">\(\mathcal{Q}_i\)</span>.</li>
+<li><strong>xmax_i</strong> (<em>float</em>) – Higher end-point of <span class="math notranslate nohighlight">\(\mathcal{Q}_i\)</span>.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="toppra.TOPP.qpOASESPPSolver.proj_x_admissible">
+<code class="descname">proj_x_admissible</code><span class="sig-paren">(</span><em>i</em>, <em>xmin</em>, <em>xmax</em>, <em>init=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/TOPP.html#qpOASESPPSolver.proj_x_admissible"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#toppra.TOPP.qpOASESPPSolver.proj_x_admissible" title="Permalink to this definition">¶</a></dt>
+<dd><p>Project the interval [xmin, xmax] back to the feasible set.</p>
+<p>If the projection is infeasible, for example when xmin &gt; xmax
+or when the infeasible set if empty, then return None, None.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>i</strong> (<em>int</em>) – Index of the path position where the project is at.</li>
+<li><strong>xmin</strong> (<em>float</em>) – Lower bound of the interval to be projected</li>
+<li><strong>xmax</strong> (<em>float</em>) – Upper bound of the interval to be projected</li>
+<li><strong>init</strong> (<em>bool, optional</em>) – If True, use qpOASES without hotstart.
+If False, use hotstart.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>xmin_i</strong> (<em>float</em>)</li>
+<li><strong>xmax_i</strong> (<em>float</em>)</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If one find unreasonable results such as (0, 0) constantly
+appear, then it is a good idea to reset the internal
+operational matrices using <a class="reference internal" href="toppra.html#toppra.TOPP.qpOASESPPSolver.reset_operational_rows" title="toppra.TOPP.qpOASESPPSolver.reset_operational_rows"><code class="xref py py-func docutils literal notranslate"><span class="pre">qpOASESPPSolver.reset_operational_rows()</span></code></a>.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="toppra.TOPP.qpOASESPPSolver.reach">
+<code class="descname">reach</code><span class="sig-paren">(</span><em>i</em>, <em>xmin</em>, <em>xmax</em>, <em>init=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/TOPP.html#qpOASESPPSolver.reach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#toppra.TOPP.qpOASESPPSolver.reach" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the reach set from [xmin, xmax] at stage i.</p>
+<p>If the projection is not feasible (for example when xmin &gt;
+xmax), then return None, None.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>i</strong> (<em>int</em>)</li>
+<li><strong>xmin</strong> (<em>float</em>)</li>
+<li><strong>xmax</strong> (<em>float</em>)</li>
+<li><strong>init</strong> (<em>bool, optional</em>) – Use qpOASES with hotstart.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>xmin_i</strong> (<em>float</em>)</li>
+<li><strong>xmax_i</strong> (<em>float</em>)</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="toppra.TOPP.qpOASESPPSolver.reset_operational_rows">
+<code class="descname">reset_operational_rows</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/TOPP.html#qpOASESPPSolver.reset_operational_rows"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#toppra.TOPP.qpOASESPPSolver.reset_operational_rows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Zero operational rows.</p>
+<p>It is important to use this function whenever the next
+operation is of different <em>kind</em>.</p>
+<p>In fact this routine is very cheap, thus when in doubt always
+use it.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">solver</span><span class="o">.</span><span class="n">one_step</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">solver</span><span class="o">.</span><span class="n">reset_operational_rows</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">solver</span><span class="o">.</span><span class="n">reach</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="toppra.TOPP.qpOASESPPSolver.set_goal_interval">
+<code class="descname">set_goal_interval</code><span class="sig-paren">(</span><em>IN</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/TOPP.html#qpOASESPPSolver.set_goal_interval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#toppra.TOPP.qpOASESPPSolver.set_goal_interval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the goal squared velocity interval.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>IN</strong> (<em>array or float</em>) – A single float, or a (2, ) array setting the goal
+<cite>(x_lower, x_higher)</cite> squared path velocities.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal notranslate"><span class="pre">AssertionError</span></code> – If <cite>IN</cite> is a single, negative float. Or if <cite>IN[0] &gt; IN[1]</cite>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="toppra.TOPP.qpOASESPPSolver.set_start_interval">
+<code class="descname">set_start_interval</code><span class="sig-paren">(</span><em>I0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/TOPP.html#qpOASESPPSolver.set_start_interval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#toppra.TOPP.qpOASESPPSolver.set_start_interval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set starting <em>squared</em> velocities interval.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>I0</strong> (<em>array, or float</em>) – (2, 0) array, the interval of starting squared path velocities.
+Can also be a float.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal notranslate"><span class="pre">AssertionError</span></code> – If <cite>I0</cite> is a single, negative float. Or if <cite>I0[0] &gt; I0[1]</cite>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="toppra.TOPP.qpOASESPPSolver.slack_vars">
+<code class="descname">slack_vars</code><a class="headerlink" href="#toppra.TOPP.qpOASESPPSolver.slack_vars" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recent stored slack variable.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="toppra.TOPP.qpOASESPPSolver.solve_controllable_sets">
+<code class="descname">solve_controllable_sets</code><span class="sig-paren">(</span><em>eps=1e-14</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/TOPP.html#qpOASESPPSolver.solve_controllable_sets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#toppra.TOPP.qpOASESPPSolver.solve_controllable_sets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solve for controllable sets <span class="math notranslate nohighlight">\(\mathcal{K}_i(I_{\mathrm{goal}})\)</span>.</p>
+<p>The i-th controllable set <span class="math notranslate nohighlight">\(\mathcal{K}_i(I_{\mathrm{goal}})\)</span>
+is the set of states at stage <span class="math notranslate nohighlight">\(i\)</span> such that there exists
+at least a sequence of admissible controls
+<span class="math notranslate nohighlight">\((u_i,\dots,u_{N-1})\)</span> that drives it to
+<span class="math notranslate nohighlight">\(\mathcal{I}_{\mathrm{goal}}\)</span>.</p>
+<p class="rubric">Notes</p>
+<p>The interval computed with <cite>one_step</cite> is <strong>not</strong> the true
+optimal solution. They differ by some small tolerance. This is
+due to numerical errors with the the QP solver
+<code class="docutils literal notranslate"><span class="pre">qpOASES</span></code>. Thus it might happen that the end point of
+the interval is not actually controllable.</p>
+<p>Setting <code class="docutils literal notranslate"><span class="pre">eps</span></code> to non-zero slight restrict the controllable
+set, and thus address this problem.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>eps</strong> (<em>float, optional</em>) – A small margin to guard againts accumulating numerical
+error while computing the one-step sets.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>out</strong> – True if <span class="math notranslate nohighlight">\(\mathcal{K}_0(I_{\mathrm{goal}})\)</span> is not empty.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="toppra.TOPP.qpOASESPPSolver.solve_reachable_sets">
+<code class="descname">solve_reachable_sets</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/TOPP.html#qpOASESPPSolver.solve_reachable_sets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#toppra.TOPP.qpOASESPPSolver.solve_reachable_sets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solve for reachable sets <span class="math notranslate nohighlight">\(\mathcal{L}_i(I_{init})\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>out</strong> – True if <span class="math notranslate nohighlight">\(\mathcal{L}_0(I_{init})\)</span> is not empty.
+False otherwise.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="toppra.TOPP.qpOASESPPSolver.solve_topp">
+<code class="descname">solve_topp</code><span class="sig-paren">(</span><em>save_solutions=False</em>, <em>reg=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/TOPP.html#qpOASESPPSolver.solve_topp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#toppra.TOPP.qpOASESPPSolver.solve_topp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solve for the time-optimal path-parameterization</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>save_solutions</strong> (<em>bool</em>) – Save solutions of each step.</li>
+<li><strong>reg</strong> (<em>float</em>) – Regularization gain.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>us</strong> (<em>array</em>) – Shape (N,). Contains the TOPP’s controls.</li>
+<li><strong>xs</strong> (<em>array</em>) – Shape (N+1,). Contains the TOPP’s squared velocities.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="post-processing">
+<h2>Post-Processing<a class="headerlink" href="#post-processing" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="constraints.html" class="btn btn-neutral float-right" title="toppra.constraints" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Welcome to TOPP-RA’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Hung Pham.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

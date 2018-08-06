@@ -1,0 +1,375 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>toppra.utils &mdash; TOPP-RA 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> TOPP-RA
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../TOPP.html">toppra.TOPP</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../TOPP.html#topp">TOPP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../TOPP.html#post-processing">Post-Processing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../constraints.html">toppra.constraints</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../constraints.html#creating-constraint">Creating constraint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../constraints.html#the-pathconstraint-class">The <code class="docutils literal notranslate"><span class="pre">PathConstraint</span></code> class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../interpolators.html">toppra.interpolator</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../example_kinematics.html">Kinematics</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">TOPP-RA</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>toppra.utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for toppra.utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Some utility functions need to generate PathConstraints. Most are</span>
+<span class="sd">specific to different scenarios.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">coloredlogs</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="setup_logging"><a class="viewcode-back" href="../../toppra.html#toppra.utils.setup_logging">[docs]</a><span class="k">def</span> <span class="nf">setup_logging</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;WARN&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Setup basic logging facility to console.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">coloredlogs</span><span class="o">.</span><span class="n">install</span><span class="p">(</span><span class="n">logger</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;toppra&quot;</span><span class="p">),</span> <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">,</span>
+                        <span class="n">fmt</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(levelname)s</span><span class="s2"> </span><span class="si">%(asctime)s</span><span class="s2"> [</span><span class="si">%(funcName)s</span><span class="s2">: </span><span class="si">%(lineno)d</span><span class="s2">] </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">datefmt</span><span class="o">=</span><span class="s2">&quot;%H:%M:%S&quot;</span><span class="p">,</span>
+                        <span class="n">milliseconds</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="compute_jacobian_wrench"><a class="viewcode-back" href="../../toppra.html#toppra.utils.compute_jacobian_wrench">[docs]</a><span class="k">def</span> <span class="nf">compute_jacobian_wrench</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">link</span><span class="p">,</span> <span class="n">point</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Compute the wrench Jacobian for `link` at `point`.</span>
+
+<span class="sd">    We look for J_wrench such that</span>
+<span class="sd">          J_wrench.T * wrench = J_trans.T * F + J_rot.T * tau</span>
+<span class="sd">    return the induced generalized joint torques.</span>
+
+<span class="sd">    J_wrench is computed by stacking J_translation and J_rotation</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">J_trans</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">ComputeJacobianTranslation</span><span class="p">(</span><span class="n">link</span><span class="o">.</span><span class="n">GetIndex</span><span class="p">(),</span> <span class="n">point</span><span class="p">)</span>
+    <span class="n">J_rot</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">ComputeJacobianAxisAngle</span><span class="p">(</span><span class="n">link</span><span class="o">.</span><span class="n">GetIndex</span><span class="p">())</span>
+    <span class="n">J_wrench</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">J_trans</span><span class="p">,</span> <span class="n">J_rot</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">J_wrench</span></div>
+
+
+<div class="viewcode-block" id="inv_dyn"><a class="viewcode-back" href="../../toppra.html#toppra.utils.inv_dyn">[docs]</a><span class="k">def</span> <span class="nf">inv_dyn</span><span class="p">(</span><span class="n">rave_robot</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">qd</span><span class="p">,</span> <span class="n">qdd</span><span class="p">,</span> <span class="n">forceslist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">returncomponents</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Inverse dynamics equation.</span>
+
+<span class="sd">    Simple wrapper around OpenRAVE&#39;s ComputeInverseDynamics</span>
+<span class="sd">    function. Return the numerical values of the components of the</span>
+<span class="sd">    inverse dynamics equation.</span>
+
+<span class="sd">          M(q) qdd + C(q, qd) qd + g(q)</span>
+<span class="sd">        = t1 + t2 + t3</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    rave_robot : OpenRAVE.robot</span>
+<span class="sd">    q : (_N, ) ndarray</span>
+<span class="sd">        Joint position.</span>
+<span class="sd">    qd : (_N, ) ndarray</span>
+<span class="sd">        Joint velocity.</span>
+<span class="sd">    qdd : (_N, ) ndarray</span>
+<span class="sd">        Joint acceleration.</span>
+<span class="sd">    returncomponents : Bool</span>
+<span class="sd">        If True, return the list [t1, t2, t3]</span>
+<span class="sd">        If False, return t1 + t2 + t3</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    res : (3, ) List, or ndarray</span>
+<span class="sd">        See returncomponents parameter.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>  <span class="c1"># Scalar case</span>
+        <span class="n">q_</span> <span class="o">=</span> <span class="p">[</span><span class="n">q</span><span class="p">]</span>
+        <span class="n">qd_</span> <span class="o">=</span> <span class="p">[</span><span class="n">qd</span><span class="p">]</span>
+        <span class="n">qdd_</span> <span class="o">=</span> <span class="p">[</span><span class="n">qdd</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">q_</span> <span class="o">=</span> <span class="n">q</span>
+        <span class="n">qd_</span> <span class="o">=</span> <span class="n">qd</span>
+        <span class="n">qdd_</span> <span class="o">=</span> <span class="n">qdd</span>
+
+    <span class="c1"># Temporary remove kinematic Limits</span>
+    <span class="n">vlim</span> <span class="o">=</span> <span class="n">rave_robot</span><span class="o">.</span><span class="n">GetDOFVelocityLimits</span><span class="p">()</span>
+    <span class="n">alim</span> <span class="o">=</span> <span class="n">rave_robot</span><span class="o">.</span><span class="n">GetDOFAccelerationLimits</span><span class="p">()</span>
+    <span class="n">rave_robot</span><span class="o">.</span><span class="n">SetDOFVelocityLimits</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="n">vlim</span><span class="p">)</span>
+    <span class="n">rave_robot</span><span class="o">.</span><span class="n">SetDOFAccelerationLimits</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="n">alim</span><span class="p">)</span>
+    <span class="c1"># Do computation</span>
+    <span class="k">with</span> <span class="n">rave_robot</span><span class="p">:</span>
+        <span class="n">rave_robot</span><span class="o">.</span><span class="n">SetDOFValues</span><span class="p">(</span><span class="n">q_</span><span class="p">)</span>
+        <span class="n">rave_robot</span><span class="o">.</span><span class="n">SetDOFVelocities</span><span class="p">(</span><span class="n">qd_</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">rave_robot</span><span class="o">.</span><span class="n">ComputeInverseDynamics</span><span class="p">(</span>
+            <span class="n">qdd_</span><span class="p">,</span> <span class="n">forceslist</span><span class="p">,</span> <span class="n">returncomponents</span><span class="o">=</span><span class="n">returncomponents</span><span class="p">)</span>
+    <span class="c1"># Restore kinematic limits</span>
+    <span class="n">rave_robot</span><span class="o">.</span><span class="n">SetDOFVelocityLimits</span><span class="p">(</span><span class="n">vlim</span><span class="p">)</span>
+    <span class="n">rave_robot</span><span class="o">.</span><span class="n">SetDOFAccelerationLimits</span><span class="p">(</span><span class="n">alim</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span></div>
+
+
+<div class="viewcode-block" id="smooth_singularities"><a class="viewcode-back" href="../../toppra.html#toppra.utils.smooth_singularities">[docs]</a><span class="k">def</span> <span class="nf">smooth_singularities</span><span class="p">(</span><span class="n">pp</span><span class="p">,</span> <span class="n">us</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">vs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Smooth jitters due to singularities.</span>
+
+<span class="sd">    Solving TOPP for discrete problem generated from collocation</span>
+<span class="sd">    scheme tends to create jitters. This function finds and smooths</span>
+<span class="sd">    them.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    (`us_smth`, `xs_smth`) is a *valid* path-parameterization. They</span>
+<span class="sd">    satisfy the linear continuity condition :math:`x_{i+1} = x_i + 2</span>
+<span class="sd">    \Delta_i u_i`.</span>
+
+<span class="sd">    This function is safe: it will always return a solution.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pp: :class:`.qpOASESPPSolver`</span>
+<span class="sd">    us: array</span>
+<span class="sd">        Shape (_N, ). Controls.</span>
+<span class="sd">    xs: array</span>
+<span class="sd">        Shape (_N+1, ). Squared velocities.</span>
+<span class="sd">    vs: array, optional</span>
+<span class="sd">        If not given, `vs_smth` will not be returned.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    us_smth: array</span>
+<span class="sd">        Shape (_N, ). Smoothed controls.</span>
+<span class="sd">    xs_smth: array</span>
+<span class="sd">        Shape (_N+1, ). Smoothed squared velocities.</span>
+<span class="sd">    vs_smth: array</span>
+<span class="sd">        If `vs` is not given, `vs_smth` will not be returned.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Find the indices</span>
+    <span class="n">singular_indices</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">uds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">us</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">N</span> <span class="o">-</span> <span class="mi">3</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">uds</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">uds</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">uds</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Found potential singularity at </span><span class="si">{:d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+            <span class="n">singular_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Found singularities at </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">singular_indices</span><span class="p">)</span>
+
+    <span class="c1"># Smooth the singularities</span>
+    <span class="n">xs_smth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span>
+    <span class="n">us_smth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">us</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">vs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">vs_smth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">vs</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">singular_indices</span><span class="p">:</span>
+        <span class="n">idstart</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+        <span class="n">idend</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="n">xs_smth</span><span class="p">[</span><span class="nb">range</span><span class="p">(</span><span class="n">idstart</span><span class="p">,</span> <span class="n">idend</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">xs_smth</span><span class="p">[</span><span class="n">idstart</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">xs_smth</span><span class="p">[</span><span class="n">idend</span><span class="p">]</span> <span class="o">-</span> <span class="n">xs_smth</span><span class="p">[</span><span class="n">idstart</span><span class="p">])</span> <span class="o">*</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">idend</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">idstart</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">vs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">vs_smth</span><span class="p">[</span><span class="n">idstart</span><span class="p">]</span> <span class="o">+</span>
+                    <span class="p">(</span><span class="n">xs_smth</span><span class="p">[</span><span class="n">idend</span><span class="p">]</span> <span class="o">-</span> <span class="n">xs_smth</span><span class="p">[</span><span class="n">idstart</span><span class="p">])</span> <span class="o">*</span> <span class="n">frac</span>
+                    <span class="k">for</span> <span class="n">frac</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">idend</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">idstart</span><span class="p">)]</span>
+            <span class="n">vs_smth</span><span class="p">[</span><span class="nb">range</span><span class="p">(</span><span class="n">idstart</span><span class="p">,</span> <span class="n">idend</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">N</span><span class="p">):</span>
+        <span class="n">us_smth</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">xs_smth</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xs_smth</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">pp</span><span class="o">.</span><span class="n">ss</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">pp</span><span class="o">.</span><span class="n">ss</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">vs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">us_smth</span><span class="p">,</span> <span class="n">xs_smth</span><span class="p">,</span> <span class="n">vs_smth</span>
+    <span class="k">return</span> <span class="n">us_smth</span><span class="p">,</span> <span class="n">xs_smth</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Hung Pham.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
