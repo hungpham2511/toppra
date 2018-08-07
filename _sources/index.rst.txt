@@ -6,10 +6,11 @@
 Welcome to TOPP-RA's documentation!
 ===================================
 
-TOPP-RA is a library for time-parameterizing robot trajectories subject to kinematic and
-dynamic constraints. It is able to compute the *time-optimal* time-parametrization of a given   
-path, as well as a time-parametrization with a *specified duration*.
-See the examples for more details.
+TOPP-RA is a library for time-parameterizing robot trajectories
+subject to kinematic and dynamic constraints. It is able to compute
+the *time-optimal* time-parametrization of a given path, as well as a
+time-parametrization with a *specified duration*.  See the examples
+for more details.
 
 The current implementation supports the following constraints:
 
@@ -23,8 +24,9 @@ If you use this library for your research, please reference the accompanying pap
       `«A new approach to Time-Optimal Path Parameterization based on Reachability Analysis» <https://arxiv.org/abs/1707.07239>`_,
       *IEEE Transactions on Robotics*, vol. 34(3), pp. 645–659, 2018.
 
+See below for installation instructions and some tutorials.
 
-Installation
+Quick Installation
 ~~~~~~~~~~~~
 TOPP-RA can be installed from source by the following steps:
 
@@ -34,17 +36,18 @@ TOPP-RA can be installed from source by the following steps:
    pip install -r requirements.txt --user
    python setup.py install --user
 
-These lines implement the most basic functionalities, such as parametrize trajectories
-subject to velocity and acceleration constraints. Some advanced functionalities require
-`openrave`, `cvxpy` and so on. See [link to installation rst] for the full instruction.
+These lines implement the most basic functionalities, such as
+parametrize trajectories subject to velocity and acceleration
+constraints. Some advanced functionalities require `openrave`, `cvxpy`
+and so on. See :doc:`installation` for the full instruction.
 
-Examples
+Tutorials
 ~~~~~~~~~~~~~~~~~~
 .. toctree::
    :maxdepth: 1
 
-   example/kinematics
-   example/kinematics_specified_duration
+   tutorials/1_geometric_path
+   tutorials/2_can_linear_constraints
 
 
 Package References

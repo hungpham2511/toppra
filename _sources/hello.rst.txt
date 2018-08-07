@@ -7,6 +7,14 @@ This is a basic introduction.
 mod1
 ----
 
+.. autoclass:: toppra.Interpolator
+   :members:
+
+.. autoclass:: toppra.SplineInterpolator
+
+.. autoclass:: toppra.RaveTrajectoryWrapper
+   :members:
+
 mod2
 ----
 
