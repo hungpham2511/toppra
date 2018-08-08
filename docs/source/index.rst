@@ -27,7 +27,7 @@ If you use this library for your research, please reference the accompanying pap
 See below for installation instructions and some tutorials.
 
 Quick Installation
-~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
 TOPP-RA can be installed from source by the following steps:
 
 .. code-block:: shell
@@ -46,9 +46,10 @@ Tutorials
 .. toctree::
    :maxdepth: 1
 
+   tutorials/0_kinematic_example
    tutorials/1_geometric_path
    tutorials/2_can_linear_constraints
-
+   tutorials/3_catersian_constraints
 
 Package References
 ~~~~~~~~~~~~~~~~~~~
