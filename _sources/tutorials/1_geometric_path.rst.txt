@@ -1,4 +1,4 @@
-Tutorial 1: Representation of paths and trajectories
+1: Path and Trajectory representation
 =====================================================
 
 In TOPP-RA, both geometric paths :math:`\mathbf q(s)_{s \in [0, 1]}`
@@ -8,6 +8,7 @@ functions are :func:`~toppra.Interpolator.eval`,
 :func:`~toppra.Interpolator.evald` and
 :func:`~toppra.Interpolator.evaldd`. These functions evaluate the
 configuration, first-derivatives and second-derivatives respectively.
+
 
 Spline Interpolator
 --------------------

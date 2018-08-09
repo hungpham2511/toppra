@@ -255,6 +255,55 @@ Shape (dof,) if <cite>ss_sam</cite> is a float.</td>
 </div>
 <div class="section" id="mod2">
 <h1>mod2<a class="headerlink" href="#mod2" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="toppra.constraint.CanonicalLinearConstraint">
+<em class="property">class </em><code class="descclassname">toppra.constraint.</code><code class="descname">CanonicalLinearConstraint</code><a class="reference internal" href="_modules/toppra/constraint/canonical_linear.html#CanonicalLinearConstraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#toppra.constraint.CanonicalLinearConstraint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for all canonical linear constraints.</p>
+<p>A canonical linear constraint has following form</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}a[i] u + b[i] x + c[i] &amp;= v, \\
+F[i] v &amp;\leq h[i], \\
+xbound[i, 0] \leq x \leq xbound[i, 1], \\
+ubound[i, 0] \leq u \leq ubound[i, 1].\end{split}\]</div>
+<p>Derived classes implement the method <cite>compute_constraint_params</cite>.</p>
+<p>Remark that if F[i], h[i] are identical for any value of index i,
+then parameter F that is returned by <cite>compute_constraint_params</cite>
+might has shape (k, m) instead of (N, k, m), in which case
+parameter g has shape (k) instead of (N, k) and the attribute
+<cite>identical</cite> will be True.</p>
+<dl class="method">
+<dt id="toppra.constraint.CanonicalLinearConstraint.compute_constraint_params">
+<code class="descname">compute_constraint_params</code><span class="sig-paren">(</span><em>path</em>, <em>gridpoints</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/constraint/canonical_linear.html#CanonicalLinearConstraint.compute_constraint_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#toppra.constraint.CanonicalLinearConstraint.compute_constraint_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return constraint parameters.</p>
+<p>If a set of parameters are not available, None is returned.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>path</strong> (<cite>Interpolator</cite>) – The geometric path.</li>
+<li><strong>gridpoints</strong> (<em>array</em>) – (N+1,) array. The path discretization.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><ul class="simple">
+<li><strong>a</strong> (<em>array, or None</em>) – Shape (N + 1, m). See notes.</li>
+<li><strong>b</strong> (<em>array, or None</em>) – Shape (N + 1, m). See notes.</li>
+<li><strong>c</strong> (<em>array, or None</em>) – Shape (N + 1, m). See notes.</li>
+<li><strong>F</strong> (<em>array, or None</em>) – Shape (N + 1, k, m). See notes.</li>
+<li><strong>g</strong> (<em>array, or None</em>) – Shape (N + 1, k,). See notes</li>
+<li><strong>ubound</strong> (<em>array, or None</em>) – Shape (N + 1, 2). See notes.</li>
+<li><strong>xbound</strong> (<em>array, or None</em>) – Shape (N + 1, 2). See notes.</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 

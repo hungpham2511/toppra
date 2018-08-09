@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Tutorial 2: Canonical Linear Constraint &#8212; TOPP-RA 0.1 documentation</title>
+    <title>2: Canonical Linear Constraint &#8212; TOPP-RA 0.1 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -17,7 +17,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Welcome" href="../hello.html" />
-    <link rel="prev" title="Tutorial 1: Representation of paths and trajectories" href="1_geometric_path.html" />
+    <link rel="prev" title="1: Representation of paths and trajectories" href="1_geometric_path.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -32,9 +32,64 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="tutorial-2-canonical-linear-constraint">
-<h1>Tutorial 2: Canonical Linear Constraint<a class="headerlink" href="#tutorial-2-canonical-linear-constraint" title="Permalink to this headline">¶</a></h1>
-<p>TODO</p>
+  <div class="section" id="canonical-linear-constraint">
+<h1>2: Canonical Linear Constraint<a class="headerlink" href="#canonical-linear-constraint" title="Permalink to this headline">¶</a></h1>
+<p>TOPP-RA <em>can not</em> handle arbitrary constraint; it can only process
+specific kinds. This note concerns Second-Order constraint, a
+constraint type that is supported and is relatively general. Many
+commonly requested constraints, for example: joint acceleration and
+Cartesian acceleration, can be reformulated to this form.</p>
+<div class="section" id="background">
+<h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<p>So what do I mean by Second-Order constraint? A Second-Order
+constraint is one that can be written in the following form</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\mathbf A(q) \ddot q + q^\top \mathbf B(q) q + \mathbf c(q) = &amp; \mathcal I (q, \dot q, \ddot q) ,\\
+\mathbf F(q) &amp; \mathcal I (q, \dot q, \ddot q) \leq \mathbf g(q),\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf q\)</span> denotes the robot’s joint position and
+<span class="math notranslate nohighlight">\(\mathbf{A, B, c, F, g}\)</span> are arbitrary, user-defined functions.</p>
+<p>This constraint consists of two euations that are best viewed
+independently.  The first equation is an <em>inverse dynamics</em> equation
+that links the robot’s joint quantities to the quantity of
+interest. This could be joint torque, tool tip acceleration. Remark
+that it can not be tool tip velocity. The second equation represents a
+set of linear inequality on that quantity.</p>
+</div>
+<div class="section" id="code">
+<h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
+<p>TOPP-RA provides the class
+<code class="xref py py-class docutils literal notranslate"><span class="pre">CanonicalLinearSecondOrderConstraint</span></code> that
+accepts as its inputs:</p>
+<ol class="arabic simple">
+<li>the <em>inverse dynamics</em> function <span class="math notranslate nohighlight">\(\mathcal I\)</span> and</li>
+<li>the constraints functions <span class="math notranslate nohighlight">\(\mathbf F, \mathbf q\)</span></li>
+</ol>
+<p>and returns an <a class="reference internal" href="../hello.html#toppra.constraint.CanonicalLinearConstraint" title="toppra.constraint.CanonicalLinearConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">CanonicalLinearConstraint</span></code></a>
+object, readied to be used with TOPP-RA. See below for code example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">toppra</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="k">def</span> <span class="nf">inverse_dynamic</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">qd</span><span class="p">,</span> <span class="n">qdd</span><span class="p">):</span>
+    <span class="c1"># defined your function</span>
+    <span class="k">return</span> <span class="n">value</span>
+
+<span class="c1"># Define a random path</span>
+<span class="n">way_pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">N_samples</span><span class="p">,</span> <span class="n">dof</span><span class="p">)</span>
+<span class="n">path</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">way_pts</span><span class="p">)</span>
+
+<span class="n">c</span> <span class="o">=</span> <span class="n">toppra</span><span class="o">.</span><span class="n">constraint</span><span class="o">.</span><span class="n">SecondOrderConstraint</span><span class="p">(</span><span class="n">inverse_dynamic</span><span class="p">)</span>
+<span class="n">instance</span> <span class="o">=</span> <span class="n">algo</span><span class="o">.</span><span class="n">TOPPRA</span><span class="p">([</span><span class="n">c</span><span class="p">],</span> <span class="n">path</span><span class="p">)</span>
+
+<span class="n">traj</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">compute_trajectory</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="example-cartesian-velocity-and-acceleration-constraints">
+<h2>Example: Cartesian Velocity and Acceleration constraints<a class="headerlink" href="#example-cartesian-velocity-and-acceleration-constraints" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="example-waiter-motion-constraint">
+<h2>Example: Waiter Motion constraint<a class="headerlink" href="#example-waiter-motion-constraint" title="Permalink to this headline">¶</a></h2>
+</div>
 </div>
 
 
@@ -54,8 +109,9 @@
 
 <h3>Navigation</h3>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="1_geometric_path.html">Tutorial 1: Representation of paths and trajectories</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorial 2: Canonical Linear Constraint</a></li>
+<li class="toctree-l1"><a class="reference internal" href="0_kinematic_example.html">0: A basic example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="1_geometric_path.html">1: Representation of paths and trajectories</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">2: Canonical Linear Constraint</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../hello.html">Welcome</a></li>
@@ -67,7 +123,7 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="1_geometric_path.html" title="previous chapter">Tutorial 1: Representation of paths and trajectories</a></li>
+      <li>Previous: <a href="1_geometric_path.html" title="previous chapter">1: Representation of paths and trajectories</a></li>
       <li>Next: <a href="../hello.html" title="next chapter">Welcome</a></li>
   </ul></li>
 </ul>

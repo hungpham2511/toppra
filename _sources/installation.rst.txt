@@ -1,2 +1,14 @@
 Full Installation
 =================
+
+
+OpenRAVE (dynamic computation)
+
+toppra
+
+(Optional) hotqpoases
+
+(Optional) building docs
+
+(Optional) Testing
+

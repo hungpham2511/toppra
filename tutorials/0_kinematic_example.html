@@ -1,0 +1,203 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>0: Basic examples &#8212; TOPP-RA 0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="1: Path and Trajectory representation" href="1_geometric_path.html" />
+    <link rel="prev" title="Welcome to TOPP-RA’s documentation!" href="../index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="basic-examples">
+<h1>0: Basic examples<a class="headerlink" href="#basic-examples" title="Permalink to this headline">¶</a></h1>
+<p>The most basic usecase of TOPP-RA is compute time-optimal
+time-parameterization subject to joint velocity and acceleration
+constraints. This can be done very easily as shown below:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">toppra</span> <span class="kn">as</span> <span class="nn">ta</span>
+<span class="kn">import</span> <span class="nn">toppra.constraint</span> <span class="kn">as</span> <span class="nn">constraint</span>
+<span class="kn">import</span> <span class="nn">toppra.algorithm</span> <span class="kn">as</span> <span class="nn">algo</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="c1"># Random waypoints used to obtain a random geometric path. Here,</span>
+<span class="c1"># we use spline interpolation.</span>
+<span class="n">dof</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">way_pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">dof</span><span class="p">)</span>
+<span class="n">path</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">way_pts</span><span class="p">)</span>
+
+<span class="c1"># Create velocity bounds, then velocity constraint object</span>
+<span class="n">vlim_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">dof</span><span class="p">)</span> <span class="o">*</span> <span class="mi">20</span>
+<span class="n">vlim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="o">-</span><span class="n">vlim_</span><span class="p">,</span> <span class="n">vlim_</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+<span class="c1"># Create acceleration bounds, then acceleration constraint object</span>
+<span class="n">alim_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">dof</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span>
+<span class="n">alim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="o">-</span><span class="n">alim_</span><span class="p">,</span> <span class="n">alim_</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+<span class="n">pc_vel</span> <span class="o">=</span> <span class="n">constraint</span><span class="o">.</span><span class="n">JointVelocityConstraint</span><span class="p">(</span><span class="n">vlim</span><span class="p">)</span>
+<span class="n">pc_acc</span> <span class="o">=</span> <span class="n">constraint</span><span class="o">.</span><span class="n">JointAccelerationConstraint</span><span class="p">(</span>
+    <span class="n">alim</span><span class="p">,</span> <span class="n">discretization_scheme</span><span class="o">=</span><span class="n">constraint</span><span class="o">.</span><span class="n">DiscretizationType</span><span class="o">.</span><span class="n">Interpolation</span><span class="p">)</span>
+
+<span class="c1"># Setup a parametrization instance</span>
+<span class="n">instance</span> <span class="o">=</span> <span class="n">algo</span><span class="o">.</span><span class="n">TOPPRA</span><span class="p">([</span><span class="n">pc_vel</span><span class="p">,</span> <span class="n">pc_acc</span><span class="p">],</span> <span class="n">path</span><span class="p">,</span> <span class="n">solver_wrapper</span><span class="o">=</span><span class="s1">&#39;seidel&#39;</span><span class="p">)</span>
+
+<span class="c1"># Retime the trajectory, only this step is necessary.</span>
+<span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">jnt_traj</span><span class="p">,</span> <span class="n">aux_traj</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">compute_trajectory</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Parameterization time: {:} secs&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span><span class="p">))</span>
+<span class="n">ts_sample</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">jnt_traj</span><span class="o">.</span><span class="n">get_duration</span><span class="p">(),</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">qs_sample</span> <span class="o">=</span> <span class="n">jnt_traj</span><span class="o">.</span><span class="n">evaldd</span><span class="p">(</span><span class="n">ts_sample</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts_sample</span><span class="p">,</span> <span class="n">qs_sample</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time (s)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Joint acceleration (rad/s^2)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Solving any problem with TOPP-RA follows a simple process. There are
+three steps. The first is initializing an
+<a class="reference internal" href="../hello.html#toppra.Interpolator" title="toppra.Interpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Interpolator</span></code></a> to represents the geometric path of
+interest. This is performed in the following lines.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">way_pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">N_samples</span><span class="p">,</span> <span class="n">dof</span><span class="p">)</span>
+<span class="n">path</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">way_pts</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here, we simply choose random waypoints and define a geometric path as
+the cubic spline interpolation over the waypoints using
+<a class="reference internal" href="../hello.html#toppra.SplineInterpolator" title="toppra.SplineInterpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">SplineInterpolator</span></code></a>.  Details on other kinds of
+interpolator, as well as how to implement a new kind, will be
+represented in <a class="reference internal" href="1_geometric_path.html"><span class="doc">a later tutorial</span></a>.</p>
+<p>The second step is defining the constraints. In this example we
+consider only joint velocity and joint acceleration constraints, both
+of which require only the joint velocity and joint acceleration
+limits.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create velocity bounds, then velocity constraint object</span>
+<span class="n">vlim_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">dof</span><span class="p">)</span> <span class="o">*</span> <span class="mi">20</span>
+<span class="n">vlim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="o">-</span><span class="n">vlim_</span><span class="p">,</span> <span class="n">vlim_</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+<span class="c1"># Create acceleration bounds, then acceleration constraint object</span>
+<span class="n">alim_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">dof</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span>
+<span class="n">alim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="o">-</span><span class="n">alim_</span><span class="p">,</span> <span class="n">alim_</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+<span class="n">pc_vel</span> <span class="o">=</span> <span class="n">constraint</span><span class="o">.</span><span class="n">JointVelocityConstraint</span><span class="p">(</span><span class="n">vlim</span><span class="p">)</span>
+<span class="n">pc_acc</span> <span class="o">=</span> <span class="n">constraint</span><span class="o">.</span><span class="n">JointAccelerationConstraint</span><span class="p">(</span>
+    <span class="n">alim</span><span class="p">,</span> <span class="n">discretization_scheme</span><span class="o">=</span><span class="n">constraint</span><span class="o">.</span><span class="n">DiscretizationType</span><span class="o">.</span><span class="n">Interpolation</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that a constraint can have <cite>discretization_scheme</cite> equals
+<cite>DiscretizationType.Interpolation</cite> or
+<cite>DiscretizationType.Collocation</cite>. Interpolation scheme is more
+accurate but will be more computationally demanding. On the other
+hand, Collocation scheme is faster. However, remark that for simple
+problems the difference in computational time is negligible, while the
+solution qualities differ greatly.</p>
+<p>Other kinds of constraint can also be initialized and handled.
+<a class="reference internal" href="2_can_linear_constraints.html"><span class="doc">This tutorial</span></a> discusses other kinds
+of constraint, and show how to implement custom one.</p>
+<p>Lastly, the third and final step is to solve the instance using
+TOPP-RA.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">instance</span> <span class="o">=</span> <span class="n">algo</span><span class="o">.</span><span class="n">TOPPRA</span><span class="p">([</span><span class="n">pc_vel</span><span class="p">,</span> <span class="n">pc_acc</span><span class="p">],</span> <span class="n">path</span><span class="p">,</span> <span class="n">solver_wrapper</span><span class="o">=</span><span class="s1">&#39;seidel&#39;</span><span class="p">)</span>
+<span class="c1"># Retime the trajectory, only this step is necessary.</span>
+<span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">jnt_traj</span><span class="p">,</span> <span class="n">aux_traj</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">compute_trajectory</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Parameterization time: {:} secs&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span><span class="p">))</span>
+<span class="n">ts_sample</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">jnt_traj</span><span class="o">.</span><span class="n">get_duration</span><span class="p">(),</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">qs_sample</span> <span class="o">=</span> <span class="n">jnt_traj</span><span class="o">.</span><span class="n">evaldd</span><span class="p">(</span><span class="n">ts_sample</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>It is useful to remark that there are several solver wrappers
+available. Each solver has a different run time characteristics, and
+also, are applicable to different kinds or problems. For the simple
+example considered here, <cite>seidel</cite> is the fastest. This solver also
+comes bundled with TOPP-RA, without external dependencies.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">TOPP-RA</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">0: Basic examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="1_geometric_path.html">1: Path and Trajectory representation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="2_can_linear_constraints.html">2: Canonical Linear Constraint</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../hello.html">Welcome</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hello.html#mod1">mod1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hello.html#mod2">mod2</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../index.html" title="previous chapter">Welcome to TOPP-RA’s documentation!</a></li>
+      <li>Next: <a href="1_geometric_path.html" title="next chapter">1: Path and Trajectory representation</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Hung Pham.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/tutorials/0_kinematic_example.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

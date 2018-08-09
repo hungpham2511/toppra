@@ -15,6 +15,10 @@ mod1
 .. autoclass:: toppra.RaveTrajectoryWrapper
    :members:
 
+
 mod2
 ----
+
+.. autoclass:: toppra.constraint.CanonicalLinearConstraint
+   :members:
 
