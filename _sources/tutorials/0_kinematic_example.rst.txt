@@ -38,9 +38,9 @@ constraints. This can be done very easily as shown below:
    jnt_traj, aux_traj = instance.compute_trajectory(0, 0)
    print("Parameterization time: {:} secs".format(time.time() - t0))
    ts_sample = np.linspace(0, jnt_traj.get_duration(), 100)
-   qs_sample = jnt_traj.evaldd(ts_sample)
+   qdds_sample = jnt_traj.evaldd(ts_sample)
 
-   plt.plot(ts_sample, qs_sample)
+   plt.plot(ts_sample, qdds_sample)
    plt.xlabel("Time (s)")
    plt.ylabel("Joint acceleration (rad/s^2)")
    plt.show()
@@ -102,7 +102,7 @@ TOPP-RA.
    jnt_traj, aux_traj = instance.compute_trajectory(0, 0)
    print("Parameterization time: {:} secs".format(time.time() - t0))
    ts_sample = np.linspace(0, jnt_traj.get_duration(), 100)
-   qs_sample = jnt_traj.evaldd(ts_sample)
+   qdds_sample = jnt_traj.evaldd(ts_sample)
 
 
 It is useful to remark that there are several solver wrappers
@@ -110,3 +110,6 @@ available. Each solver has a different run time characteristics, and
 also, are applicable to different kinds or problems. For the simple
 example considered here, `seidel` is the fastest. This solver also
 comes bundled with TOPP-RA, without external dependencies.
+
+Download the example given this tutorial here :download:`kinematics.py
+<../../../examples/kinematics.py>`.

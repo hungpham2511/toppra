@@ -68,9 +68,9 @@ constraints. This can be done very easily as shown below:</p>
 <span class="n">jnt_traj</span><span class="p">,</span> <span class="n">aux_traj</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">compute_trajectory</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Parameterization time: {:} secs&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span><span class="p">))</span>
 <span class="n">ts_sample</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">jnt_traj</span><span class="o">.</span><span class="n">get_duration</span><span class="p">(),</span> <span class="mi">100</span><span class="p">)</span>
-<span class="n">qs_sample</span> <span class="o">=</span> <span class="n">jnt_traj</span><span class="o">.</span><span class="n">evaldd</span><span class="p">(</span><span class="n">ts_sample</span><span class="p">)</span>
+<span class="n">qdds_sample</span> <span class="o">=</span> <span class="n">jnt_traj</span><span class="o">.</span><span class="n">evaldd</span><span class="p">(</span><span class="n">ts_sample</span><span class="p">)</span>
 
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts_sample</span><span class="p">,</span> <span class="n">qs_sample</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ts_sample</span><span class="p">,</span> <span class="n">qdds_sample</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Time (s)&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Joint acceleration (rad/s^2)&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -122,7 +122,7 @@ TOPP-RA.</p>
 <span class="n">jnt_traj</span><span class="p">,</span> <span class="n">aux_traj</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">compute_trajectory</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Parameterization time: {:} secs&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span><span class="p">))</span>
 <span class="n">ts_sample</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">jnt_traj</span><span class="o">.</span><span class="n">get_duration</span><span class="p">(),</span> <span class="mi">100</span><span class="p">)</span>
-<span class="n">qs_sample</span> <span class="o">=</span> <span class="n">jnt_traj</span><span class="o">.</span><span class="n">evaldd</span><span class="p">(</span><span class="n">ts_sample</span><span class="p">)</span>
+<span class="n">qdds_sample</span> <span class="o">=</span> <span class="n">jnt_traj</span><span class="o">.</span><span class="n">evaldd</span><span class="p">(</span><span class="n">ts_sample</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>It is useful to remark that there are several solver wrappers
@@ -130,6 +130,7 @@ available. Each solver has a different run time characteristics, and
 also, are applicable to different kinds or problems. For the simple
 example considered here, <cite>seidel</cite> is the fastest. This solver also
 comes bundled with TOPP-RA, without external dependencies.</p>
+<p>Download the example given this tutorial here <a class="reference download internal" href="../_downloads/kinematics.py" download=""><code class="xref download docutils literal notranslate"><span class="pre">kinematics.py</span></code></a>.</p>
 </div>
 
 
