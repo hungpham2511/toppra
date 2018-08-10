@@ -45,7 +45,7 @@ class CanonicalLinearSecondOrderConstraint(CanonicalLinearConstraint):
     To evaluate the coefficients a(s), b(s), c(s), inv_dyn is called
     repeatedly with appropriate arguments.
     """
-    def __init__(self, inv_dyn, cnst_F, cnst_g, dof=None, discretization_scheme=DiscretizationType.Collocation):
+    def __init__(self, inv_dyn, cnst_F, cnst_g, dof, discretization_scheme=DiscretizationType.Interpolation):
         super(CanonicalLinearSecondOrderConstraint, self).__init__()
         self.set_discretization_type(discretization_scheme)
         self.inv_dyn = inv_dyn
@@ -54,16 +54,13 @@ class CanonicalLinearSecondOrderConstraint(CanonicalLinearConstraint):
         self.dof = dof
         self._format_string = "    Kind: Generalized Second-order constraint\n"
         self._format_string = "    Dimension:\n"
-        if dof is not None:
-            z_ = np.zeros(dof)
-            F_ = cnst_F(z_)
+        F_ = cnst_F(np.zeros(dof))
         self._format_string += "        F in R^({:d}, {:d})\n".format(*F_.shape)
 
     def compute_constraint_params(self, path, gridpoints):
-        if path.get_dof() != self.get_dof():
-            raise ValueError("Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
-                self.get_dof(), path.get_dof()
-            ))
+        assert path.get_dof() == self.get_dof(), ("Wrong dimension: constraint dof ({:d}) "
+                                                  "not equal to path dof ({:d})".format(
+                                                      self.get_dof(), path.get_dof()))
         v_zero = np.zeros(path.get_dof())
         p = path.eval(gridpoints)
         ps = path.evald(gridpoints)
