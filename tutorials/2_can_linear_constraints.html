@@ -17,7 +17,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Welcome" href="../hello.html" />
-    <link rel="prev" title="1: Representation of paths and trajectories" href="1_geometric_path.html" />
+    <link rel="prev" title="1: Path and Trajectory representation" href="1_geometric_path.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -34,11 +34,13 @@
             
   <div class="section" id="canonical-linear-constraint">
 <h1>2: Canonical Linear Constraint<a class="headerlink" href="#canonical-linear-constraint" title="Permalink to this headline">¶</a></h1>
-<p>TOPP-RA <em>can not</em> handle arbitrary constraint; it can only process
-specific kinds. This note concerns Second-Order constraint, a
-constraint type that is supported and is relatively general. Many
-commonly requested constraints, for example: joint acceleration and
-Cartesian acceleration, can be reformulated to this form.</p>
+<p>TOPP-RA <em>can not</em> account for arbitrary constraint; it can only handle
+those constraints of certain kinds. One class of constraints TOPP-RA
+supports is Second-Order constraint.</p>
+<p>This class of constraint is quite general.  Commonly accounted
+constraints such as joint acceleration, tool tip Cartesian
+acceleration, interaction force on the robot base, are all
+Second-Order constraints.</p>
 <div class="section" id="background">
 <h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
 <p>So what do I mean by Second-Order constraint? A Second-Order
@@ -48,15 +50,18 @@ constraint is one that can be written in the following form</p>
 \mathbf F(q) &amp; \mathcal I (q, \dot q, \ddot q) \leq \mathbf g(q),\end{split}\]</div>
 <p>where <span class="math notranslate nohighlight">\(\mathbf q\)</span> denotes the robot’s joint position and
 <span class="math notranslate nohighlight">\(\mathbf{A, B, c, F, g}\)</span> are arbitrary, user-defined functions.</p>
-<p>This constraint consists of two euations that are best viewed
-independently.  The first equation is an <em>inverse dynamics</em> equation
-that links the robot’s joint quantities to the quantity of
-interest. This could be joint torque, tool tip acceleration. Remark
-that it can not be tool tip velocity. The second equation represents a
-set of linear inequality on that quantity.</p>
+<p>This constraint consists of two equations that are best viewed
+independently.</p>
+<ol class="arabic simple">
+<li>The first equation is an <em>inverse dynamics</em> equation that links the
+robot’s joint quantities to the quantity of interest. This could be
+joint torque or tool tip acceleration.</li>
+<li>The second equation represents a set of linear inequality on that
+quantity.</li>
+</ol>
 </div>
-<div class="section" id="code">
-<h2>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="pseudo-code">
+<h2>Pseudo-code<a class="headerlink" href="#pseudo-code" title="Permalink to this headline">¶</a></h2>
 <p>TOPP-RA provides the class
 <code class="xref py py-class docutils literal notranslate"><span class="pre">CanonicalLinearSecondOrderConstraint</span></code> that
 accepts as its inputs:</p>
@@ -70,25 +75,110 @@ object, readied to be used with TOPP-RA. See below for code example:</p>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 
 <span class="k">def</span> <span class="nf">inverse_dynamic</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">qd</span><span class="p">,</span> <span class="n">qdd</span><span class="p">):</span>
-    <span class="c1"># defined your function</span>
-    <span class="k">return</span> <span class="n">value</span>
+    <span class="c1"># define your function</span>
+    <span class="k">return</span> <span class="n">I</span>
+
+<span class="k">def</span> <span class="nf">F</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>
+    <span class="c1"># define your function</span>
+    <span class="k">return</span> <span class="n">F_q</span>
+
+<span class="k">def</span> <span class="nf">g</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>
+    <span class="c1"># define your function</span>
+    <span class="k">return</span> <span class="n">g_q</span>
 
 <span class="c1"># Define a random path</span>
 <span class="n">way_pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">N_samples</span><span class="p">,</span> <span class="n">dof</span><span class="p">)</span>
 <span class="n">path</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">way_pts</span><span class="p">)</span>
 
-<span class="n">c</span> <span class="o">=</span> <span class="n">toppra</span><span class="o">.</span><span class="n">constraint</span><span class="o">.</span><span class="n">SecondOrderConstraint</span><span class="p">(</span><span class="n">inverse_dynamic</span><span class="p">)</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">toppra</span><span class="o">.</span><span class="n">constraint</span><span class="o">.</span><span class="n">CanonicalLinearSecondOrderConstraint</span><span class="p">(</span><span class="n">inverse_dynamic</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
 <span class="n">instance</span> <span class="o">=</span> <span class="n">algo</span><span class="o">.</span><span class="n">TOPPRA</span><span class="p">([</span><span class="n">c</span><span class="p">],</span> <span class="n">path</span><span class="p">)</span>
 
 <span class="n">traj</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">compute_trajectory</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="example-cartesian-velocity-and-acceleration-constraints">
-<h2>Example: Cartesian Velocity and Acceleration constraints<a class="headerlink" href="#example-cartesian-velocity-and-acceleration-constraints" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="example-cartesian-acceleration-constraints">
+<h2>Example: Cartesian Acceleration constraints<a class="headerlink" href="#example-cartesian-acceleration-constraints" title="Permalink to this headline">¶</a></h2>
+<p><em>Note</em>: to run this example, OpenRAVE is required for kinematic
+computations. However, it is easy to use any other programs.</p>
+<p>Consider a 7-dof manipulator with joint velocity and acceleration
+constraints. Suppose we want to constraint a point of interest (see
+below figure) to have bounded Cartesian acceleration:</p>
+<div class="math notranslate nohighlight">
+\[-0.5 \leq a_x, a_y, a_z \leq 0.5\]</div>
+<a class="reference internal image-reference" href="../_images/2_figure_2b.png"><img alt="../_images/2_figure_2b.png" class="align-center" src="../_images/2_figure_2b.png" style="height: 400px;" /></a>
+<p>Cartesian acceleration constraint is a Second-Order
+constraint. Therefore, one can simply use the class
+<code class="xref py py-class docutils literal notranslate"><span class="pre">CanonicalLinearSecondOrderConstraint</span></code> to
+setup a suitable constraint object. The linear inequality is put into
+the standard form as follows:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{bmatrix}
+1 &amp; 0&amp;0 \\ 0&amp; 1 &amp;0 \\ 0&amp;0&amp; 1 \\
+-1 &amp; 0&amp;0 \\ 0&amp; -1 &amp;0 \\ 0&amp;0&amp; -1
+\end{bmatrix}
+\begin{bmatrix}
+a_x \\ a_y \\ a_z
+\end{bmatrix}
+\leq
+\begin{bmatrix}
+0.5 \\
+0.5 \\
+0.5 \\
+0.5 \\
+0.5 \\
+0.5
+\end{bmatrix}\end{split}\]</div>
+<p>The left hand-side is <span class="math notranslate nohighlight">\(\mathbf F(q)\)</span>. The right
+hand-side is <span class="math notranslate nohighlight">\(\mathbf g(q)\)</span>.</p>
+<p>In the below code snippet, we use OpenRAVE to implement the inverse
+kinematic function that returns <span class="math notranslate nohighlight">\([a_x, a_y, a_z]\)</span> given
+<span class="math notranslate nohighlight">\(q, \dot q, \ddot q\)</span>. Then, we initialize a constraint object
+from these functions.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># setup Cartesian acceleration constraint to limit link 7</span>
+<span class="c1"># -1 &lt;= a &lt;= 1</span>
+<span class="c1"># Cartesian acceleration</span>
+<span class="k">def</span> <span class="nf">inverse_dynamics</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">qd</span><span class="p">,</span> <span class="n">qdd</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">robot</span><span class="p">:</span>
+        <span class="n">vlim_</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">GetDOFVelocityLimits</span><span class="p">()</span>
+        <span class="n">robot</span><span class="o">.</span><span class="n">SetDOFVelocityLimits</span><span class="p">(</span><span class="n">vlim_</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>  <span class="c1"># remove velocity limits to compute stuffs</span>
+        <span class="n">robot</span><span class="o">.</span><span class="n">SetActiveDOFValues</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+        <span class="n">robot</span><span class="o">.</span><span class="n">SetActiveDOFVelocities</span><span class="p">(</span><span class="n">qd</span><span class="p">)</span>
+
+        <span class="n">qdd_full</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">robot</span><span class="o">.</span><span class="n">GetDOF</span><span class="p">())</span>
+        <span class="n">qdd_full</span><span class="p">[:</span><span class="n">qdd</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">qdd</span>
+
+        <span class="n">accel_links</span> <span class="o">=</span> <span class="n">robot</span><span class="o">.</span><span class="n">GetLinkAccelerations</span><span class="p">(</span><span class="n">qdd_full</span><span class="p">)</span>
+        <span class="n">robot</span><span class="o">.</span><span class="n">SetDOFVelocityLimits</span><span class="p">(</span><span class="n">vlim_</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">accel_links</span><span class="p">[</span><span class="mi">6</span><span class="p">][:</span><span class="mi">3</span><span class="p">]</span>  <span class="c1"># only return the translational components</span>
+
+<span class="n">F_q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="n">F_q</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span> <span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">F_q</span><span class="p">[</span><span class="mi">3</span><span class="p">:,</span> <span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">g_q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span>
+<span class="k">def</span> <span class="nf">F</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">F_q</span>
+<span class="k">def</span> <span class="nf">g</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">g_q</span>
+
+<span class="n">pc_cart_acc</span> <span class="o">=</span> <span class="n">constraint</span><span class="o">.</span><span class="n">CanonicalLinearSecondOrderConstraint</span><span class="p">(</span>
+    <span class="n">inverse_dynamics</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+</pre></div>
 </div>
-<div class="section" id="example-waiter-motion-constraint">
-<h2>Example: Waiter Motion constraint<a class="headerlink" href="#example-waiter-motion-constraint" title="Permalink to this headline">¶</a></h2>
+<p>Using TOPP-RA to parametrize a given geometric path is
+straightforward. There is no difference between this case and the
+simple kinematic example, or any other situation.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">all_constraints</span> <span class="o">=</span> <span class="p">[</span><span class="n">pc_vel</span><span class="p">,</span> <span class="n">pc_acc</span><span class="p">,</span> <span class="n">pc_cart_acc</span><span class="p">]</span>
+<span class="n">instance</span> <span class="o">=</span> <span class="n">algo</span><span class="o">.</span><span class="n">TOPPRA</span><span class="p">(</span><span class="n">all_constraints</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">solver_wrapper</span><span class="o">=</span><span class="s1">&#39;seidel&#39;</span><span class="p">)</span>
+<span class="n">jnt_traj</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">compute_trajectory</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># resulting trajectory</span>
+</pre></div>
+</div>
+<p>On my computer the whole process including evaluation of the dynamic
+coefficients, which is quite costly, takes 5-8 ms.  Cartesian
+acceleration of the resulting trajectory is plotted below.</p>
+<img alt="../_images/2_figure_1.png" src="../_images/2_figure_1.png" />
+<p>Download the example given this tutorial here
+<a class="reference download internal" href="../_downloads/cartesian_accel.py" download=""><code class="xref download docutils literal notranslate"><span class="pre">cartesian_accel.py</span></code></a>.</p>
 </div>
 </div>
 
@@ -109,8 +199,8 @@ object, readied to be used with TOPP-RA. See below for code example:</p>
 
 <h3>Navigation</h3>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="0_kinematic_example.html">0: A basic example</a></li>
-<li class="toctree-l1"><a class="reference internal" href="1_geometric_path.html">1: Representation of paths and trajectories</a></li>
+<li class="toctree-l1"><a class="reference internal" href="0_kinematic_example.html">0: Basic examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="1_geometric_path.html">1: Path and Trajectory representation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">2: Canonical Linear Constraint</a></li>
 </ul>
 <ul>
@@ -123,7 +213,7 @@ object, readied to be used with TOPP-RA. See below for code example:</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="1_geometric_path.html" title="previous chapter">1: Representation of paths and trajectories</a></li>
+      <li>Previous: <a href="1_geometric_path.html" title="previous chapter">1: Path and Trajectory representation</a></li>
       <li>Next: <a href="../hello.html" title="next chapter">Welcome</a></li>
   </ul></li>
 </ul>
