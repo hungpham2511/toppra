@@ -9,20 +9,11 @@ TOPP-RA is a library for time-parameterizing robot trajectories subject to kinem
 
 If you use this library for your research, please reference the accompanying paper [«A new approach to Time-Optimal Path Parameterization based on Reachability Analysis»](https://arxiv.org/abs/1707.07239), *IEEE Transactions on Robotics*, vol. 34(3), pp. 645–659, 2018.
 
+For documentations and some tutorials, see [TOPP-RA's documentation](https://hungpham2511.github.io/toppra/).
+
 # Installation
 ## Basic functionality (robotic manipulators)
 
-
-Install
-[qpOASES](https://projects.coin-or.org/qpOASES/wiki/QpoasesInstallation) by
-following the steps below:
-``` shell
-git clone https://github.com/hungpham2511/qpOASES
-cd qpOASES/ && mkdir bin && make
-cd interfaces/python/
-pip install cython
-python setup.py install --user
-```
 
 Finally, install `toppra` with
 ``` sh

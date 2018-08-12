@@ -33,7 +33,6 @@ ext_2 = Extension(SRC_DIR + ".solverwrapper.cy_seidel_solverwrapper",
                   extra_compile_args=['-O1'],
                   include_dirs=[np.get_include()])
 
-
 EXTENSIONS = [ext_1, ext_2]
 
 if __name__ == "__main__":

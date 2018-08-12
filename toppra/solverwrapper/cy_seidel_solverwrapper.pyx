@@ -1,3 +1,4 @@
+# cython: embedsignature=True
 import numpy as np
 cimport numpy as np
 from libc.math cimport abs, pow, isnan
@@ -352,6 +353,20 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
     return sol
 
 cdef class seidelWrapper:
+    """ A solver wrapper that implements Seidel's LP algorithm.
+
+    This wrapper can only be used if there is only Canonical Linear
+    Constraints.
+
+    Parameters
+    ----------
+    constraint_list: list of :class:`.Constraint`
+        The constraints the robot is subjected to.
+    path: :class:`.Interpolator`
+        The geometric path.
+    path_discretization: array
+        The discretized path positions.
+    """
     cdef:
         list constraints, _params
         unsigned int N, nV, nC, nCons
@@ -367,6 +382,20 @@ cdef class seidelWrapper:
         
     # @cython.profile(True)
     def __init__(self, list constraint_list, path, path_discretization):
+        """ A solver wrapper that implements Seidel's LP algorithm.
+
+        This wrapper can only be used if there is only Canonical Linear
+        Constraints.
+
+        Parameters
+        ----------
+        constraint_list: list of :class:`.Constraint`
+            The constraints the robot is subjected to.
+        path: :class:`.Interpolator`
+            The geometric path.
+        path_discretization: array
+            The discretized path positions.
+        """
         self.constraints = constraint_list
         self.path = path
         path_discretization = np.array(path_discretization)
@@ -485,7 +514,7 @@ cdef class seidelWrapper:
                            & x_{min} \leq x \leq x_{max}             \\\\
                            & x_{next, min} \leq x + 2 \Delta_i u \leq x_{next, max},
 
-        NOTE: if x_min == x_max, one can solve an LP instead of a 2D
+        TODO if x_min == x_max, one can solve an LP instead of a 2D
         LP. This optimization is currently not implemented.
 
         Parameters

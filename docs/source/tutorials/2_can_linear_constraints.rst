@@ -1,12 +1,12 @@
-2: Canonical Linear Constraint
-========================================
+2: Simple [1]_ Second-Order Constraint
+====================================
 
 TOPP-RA *can not* account for arbitrary constraint; it can only handle
 those constraints of certain kinds. One class of constraints TOPP-RA
 supports is Second-Order constraint.
 
 This class of constraint is quite general.  Commonly found constraints
-such as joint acceleration, tool tip Cartesian acceleration,
+such as joint acceleration [2]_, tool tip Cartesian acceleration,
 interaction force on the robot base, are all Second-Order constraints.
 
 Background
@@ -177,6 +177,14 @@ Download the example given this tutorial here
 :download:`cartesian_accel.py <../../../examples/cartesian_accel.py>`.
 
 
+.. [1] The form of Second-Order constraint presented in this tutorial
+       is not the most general, hence, they are simple.
 
+.. [2] Cartesian velocity constraint, as well as joint velocity
+       constraint, are not Second-Order Constraint. They are
+       First-Order constraints. These constraints will be treated in
+       near future. For now, see how
+       :class:`toppra.constraint.JointVelocityConstraint` is
+       implemented.
 
 

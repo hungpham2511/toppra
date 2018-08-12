@@ -16,5 +16,6 @@ from .utils import smooth_singularities, setup_logging
 from .planning_utils import retime_active_joints_kinematics, create_rave_torque_path_constraint
 import constraint as constraint
 import algorithm as algorithm
+import solverwrapper as solverwrapper
 
 setup_logging()

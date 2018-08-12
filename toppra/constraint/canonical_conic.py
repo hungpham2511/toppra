@@ -52,17 +52,20 @@ class RobustCanonicalLinearConstraint(CanonicalConicConstraint):
     in a centered ellipsoid:
 
     .. math::
-        [\Delta a[i, j], \Delta b[i, j], \Delta c[i, j]]^\top = diag(ru, rx, rc) \mathbf e,
+
+        [\Delta a[i, j], \Delta b[i, j], \Delta c[i, j]]^\\top = diag(ru, rx, rc) \mathbf e,
 
     where \|\mathbf e\|_2 \leq 1.
 
     Parameters
     ----------
-    cnst: `CanonicalLinearConstraint`
-        The base CanonicalLinearConstraint.
+    cnst: :class:`~toppra.constraint.CanonicalLinearConstraint`
+        The base constraint to robustify.
     ellipsoid_axes_lengths: (3,)array
         Lengths of the axes of the perturbation ellipsoid. Must all be
         non-negative.
+    discretization_scheme: :class:`~.constraint.DiscretizationType`
+        Constraint discretization scheme to use.
     """
     def __init__(self, cnst, ellipsoid_axes_lengths, discretization_scheme=DiscretizationType.Collocation):
         super(RobustCanonicalLinearConstraint, self).__init__()
