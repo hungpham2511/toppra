@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>2: Canonical Linear Constraint &#8212; TOPP-RA 0.1 documentation</title>
+    <title>2: Simple Second-Order Constraint &#8212; TOPP-RA 0.1 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -16,7 +16,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Welcome" href="../hello.html" />
+    <link rel="next" title="Functions and classes reference" href="../hello.html" />
     <link rel="prev" title="1: Path and Trajectory representation" href="1_geometric_path.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -32,15 +32,14 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="canonical-linear-constraint">
-<h1>2: Canonical Linear Constraint<a class="headerlink" href="#canonical-linear-constraint" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="simple-1-second-order-constraint">
+<h1>2: Simple <a class="footnote-reference" href="#id3" id="id1">[1]</a> Second-Order Constraint<a class="headerlink" href="#simple-1-second-order-constraint" title="Permalink to this headline">¶</a></h1>
 <p>TOPP-RA <em>can not</em> account for arbitrary constraint; it can only handle
 those constraints of certain kinds. One class of constraints TOPP-RA
 supports is Second-Order constraint.</p>
-<p>This class of constraint is quite general.  Commonly accounted
-constraints such as joint acceleration, tool tip Cartesian
-acceleration, interaction force on the robot base, are all
-Second-Order constraints.</p>
+<p>This class of constraint is quite general.  Commonly found constraints
+such as joint acceleration <a class="footnote-reference" href="#id4" id="id2">[2]</a>, tool tip Cartesian acceleration,
+interaction force on the robot base, are all Second-Order constraints.</p>
 <div class="section" id="background">
 <h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
 <p>So what do I mean by Second-Order constraint? A Second-Order
@@ -136,7 +135,7 @@ kinematic function that returns <span class="math notranslate nohighlight">\([a_
 <span class="math notranslate nohighlight">\(q, \dot q, \ddot q\)</span>. Then, we initialize a constraint object
 from these functions.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># setup Cartesian acceleration constraint to limit link 7</span>
-<span class="c1"># -1 &lt;= a &lt;= 1</span>
+<span class="c1"># -0.5 &lt;= a &lt;= 0.5</span>
 <span class="c1"># Cartesian acceleration</span>
 <span class="k">def</span> <span class="nf">inverse_dynamics</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">qd</span><span class="p">,</span> <span class="n">qdd</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">robot</span><span class="p">:</span>
@@ -179,6 +178,24 @@ acceleration of the resulting trajectory is plotted below.</p>
 <img alt="../_images/2_figure_1.png" src="../_images/2_figure_1.png" />
 <p>Download the example given this tutorial here
 <a class="reference download internal" href="../_downloads/cartesian_accel.py" download=""><code class="xref download docutils literal notranslate"><span class="pre">cartesian_accel.py</span></code></a>.</p>
+<table class="docutils footnote" frame="void" id="id3" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>The form of Second-Order constraint presented in this tutorial
+is not the most general, hence, they are simple.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id4" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td>Cartesian velocity constraint, as well as joint velocity
+constraint, are not Second-Order Constraint. They are
+First-Order constraints. These constraints will be treated in
+near future. For now, see how
+<code class="xref py py-class docutils literal notranslate"><span class="pre">toppra.constraint.JointVelocityConstraint</span></code> is
+implemented.</td></tr>
+</tbody>
+</table>
 </div>
 </div>
 
@@ -198,15 +215,20 @@ acceleration of the resulting trajectory is plotted below.</p>
 
 
 <h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Full Installation</a></li>
+</ul>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="0_kinematic_example.html">0: Basic examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="1_geometric_path.html">1: Path and Trajectory representation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">2: Canonical Linear Constraint</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">2: Simple  Second-Order Constraint</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../hello.html">Welcome</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../hello.html#mod1">mod1</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../hello.html#mod2">mod2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hello.html">Functions and classes reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hello.html#interpolator">Interpolator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hello.html#constraints">Constraints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hello.html#algorithms">Algorithms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../hello.html#solver-wrapper">Solver Wrapper</a></li>
 </ul>
 
 <div class="relations">
@@ -214,7 +236,7 @@ acceleration of the resulting trajectory is plotted below.</p>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
       <li>Previous: <a href="1_geometric_path.html" title="previous chapter">1: Path and Trajectory representation</a></li>
-      <li>Next: <a href="../hello.html" title="next chapter">Welcome</a></li>
+      <li>Next: <a href="../hello.html" title="next chapter">Functions and classes reference</a></li>
   </ul></li>
 </ul>
 </div>

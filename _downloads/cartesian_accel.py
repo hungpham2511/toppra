@@ -40,7 +40,7 @@ def main():
         alim, discretization_scheme=constraint.DiscretizationType.Interpolation)
 
     # setup cartesian acceleration constraint to limit link 7
-    # -1 <= a <= 1
+    # -0.5 <= a <= 0.5
     # cartersian acceleration
     def inverse_dynamics(q, qd, qdd):
         with robot:

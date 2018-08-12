@@ -16,6 +16,8 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="0: Basic examples" href="tutorials/0_kinematic_example.html" />
+    <link rel="prev" title="Welcome to TOPP-RA’s documentation!" href="index.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -32,11 +34,48 @@
             
   <div class="section" id="full-installation">
 <h1>Full Installation<a class="headerlink" href="#full-installation" title="Permalink to this headline">¶</a></h1>
-<p>OpenRAVE (dynamic computation)</p>
-<p>toppra</p>
-<p>(Optional) hotqpoases</p>
-<p>(Optional) building docs</p>
-<p>(Optional) Testing</p>
+<div class="section" id="optional-qpoases">
+<h2>(Optional) qpoases<a class="headerlink" href="#optional-qpoases" title="Permalink to this headline">¶</a></h2>
+<p>It is possible to use <cite>qpoases</cite> instead of the default LP solver
+<cite>seidel</cite> as solverwrapper.  Install <a class="reference external" href="https://projects.coin-or.org/qpOASES/wiki/QpoasesInstallation">qpOASES</a> by
+entering the following commands in the terminal:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/hungpham2511/qpOASES
+<span class="nb">cd</span> qpOASES/ <span class="o">&amp;&amp;</span> mkdir bin <span class="o">&amp;&amp;</span> make
+<span class="nb">cd</span> interfaces/python/
+pip install cython
+python setup.py install --user
+</pre></div>
+</div>
+</div>
+<div class="section" id="advanced-functionality">
+<h2>Advanced functionality<a class="headerlink" href="#advanced-functionality" title="Permalink to this headline">¶</a></h2>
+<p>In order to run some of the examples, it is necesssary to install
+<a class="reference external" href="https://github.com/rdiankov/openrave">openRAVE</a>. A good instruction
+for installing this library on Ubuntu 16.04 can be found
+<a class="reference external" href="https://scaron.info/teaching/installing-openrave-on-ubuntu-16.04.html">here</a>.</p>
+<p><em>note</em>: the humanoid examples are not maintained.</p>
+</div>
+<div class="section" id="building-docs">
+<h2>Building docs<a class="headerlink" href="#building-docs" title="Permalink to this headline">¶</a></h2>
+<p>The lastest documentation is available at
+<a class="reference external" href="https://hungpham2511.github.io/toppra/">https://hungpham2511.github.io/toppra/</a>.</p>
+<p>To build and view the documentation, install <a class="reference external" href="http://www.sphinx-doc.org/en/stable/index.html">sphinx</a> then run the
+following commands in the terminal</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> &lt;toppra-dir&gt;/docs/
+make clean <span class="o">&amp;&amp;</span> make html
+&lt;browser&gt; build/index.html
+</pre></div>
+</div>
+</div>
+<div class="section" id="test">
+<h2>Test<a class="headerlink" href="#test" title="Permalink to this headline">¶</a></h2>
+<p><cite>toppra</cite> uses <cite>pytest</cite> for testing. To run all the tests, do:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">&lt;</span><span class="n">toppra</span><span class="o">-</span><span class="nb">dir</span><span class="o">&gt;/</span><span class="n">tests</span><span class="o">/</span>
+<span class="n">pytest</span> <span class="o">-</span><span class="n">v</span>
+</pre></div>
+</div>
+<p>if <cite>pytest</cite> is not installed, grab it from <cite>pip</cite>.</p>
+</div>
 </div>
 
 
@@ -55,9 +94,19 @@
 
 
 <h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Full Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#optional-qpoases">(Optional) qpoases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced-functionality">Advanced functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#building-docs">Building docs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#test">Test</a></li>
+</ul>
+</li>
+</ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/1_geometric_path.html">Tutorial 1: Representation of paths and trajectories</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/2_can_linear_constraints.html">Tutorial 2: Canonical Linear Constraint</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/0_kinematic_example.html">0: Basic examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/1_geometric_path.html">1: Path and Trajectory representation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/2_can_linear_constraints.html">2: Canonical Linear Constraint</a></li>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="hello.html">Welcome</a></li>
@@ -69,6 +118,8 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to TOPP-RA’s documentation!</a></li>
+      <li>Next: <a href="tutorials/0_kinematic_example.html" title="next chapter">0: Basic examples</a></li>
   </ul></li>
 </ul>
 </div>

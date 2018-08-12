@@ -41,6 +41,11 @@ parametrize trajectories subject to velocity and acceleration
 constraints. Some advanced functionalities require `openrave`, `cvxpy`
 and so on. See :doc:`installation` for the full instruction.
 
+.. toctree::
+   :maxdepth: 2
+
+   installation
+
 Tutorials
 ~~~~~~~~~~~~~~~~~~
 .. toctree::

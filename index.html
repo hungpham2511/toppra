@@ -16,7 +16,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="0: Basic examples" href="tutorials/0_kinematic_example.html" />
+    <link rel="next" title="Full Installation" href="installation.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -64,6 +64,17 @@ python setup.py install --user
 parametrize trajectories subject to velocity and acceleration
 constraints. Some advanced functionalities require <cite>openrave</cite>, <cite>cvxpy</cite>
 and so on. See <a class="reference internal" href="installation.html"><span class="doc">Full Installation</span></a> for the full instruction.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Full Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#optional-qpoases">(Optional) qpoases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#advanced-functionality">Advanced functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#building-docs">Building docs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#test">Test</a></li>
+</ul>
+</li>
+</ul>
+</div>
 </div>
 <div class="section" id="tutorials">
 <h2>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this headline">¶</a></h2>
@@ -71,7 +82,7 @@ and so on. See <a class="reference internal" href="installation.html"><span clas
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="tutorials/0_kinematic_example.html">0: Basic examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials/1_geometric_path.html">1: Path and Trajectory representation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/2_can_linear_constraints.html">2: Canonical Linear Constraint</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/2_can_linear_constraints.html">2: Simple  Second-Order Constraint</a></li>
 </ul>
 </div>
 </div>
@@ -79,9 +90,13 @@ and so on. See <a class="reference internal" href="installation.html"><span clas
 <h2>Package References<a class="headerlink" href="#package-references" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="hello.html">Welcome</a></li>
-<li class="toctree-l1"><a class="reference internal" href="hello.html#mod1">mod1</a></li>
-<li class="toctree-l1"><a class="reference internal" href="hello.html#mod2">mod2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hello.html">Functions and classes reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="hello.html#interpolator">Interpolator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hello.html#constraints">Constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hello.html#algorithms">Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hello.html#solver-wrapper">Solver Wrapper</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -112,21 +127,22 @@ and so on. See <a class="reference internal" href="installation.html"><span clas
 
 <h3>Navigation</h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/0_kinematic_example.html">0: Basic examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/1_geometric_path.html">1: Path and Trajectory representation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/2_can_linear_constraints.html">2: Canonical Linear Constraint</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Full Installation</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="hello.html">Welcome</a></li>
-<li class="toctree-l1"><a class="reference internal" href="hello.html#mod1">mod1</a></li>
-<li class="toctree-l1"><a class="reference internal" href="hello.html#mod2">mod2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/0_kinematic_example.html">0: Basic examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/1_geometric_path.html">1: Path and Trajectory representation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/2_can_linear_constraints.html">2: Simple  Second-Order Constraint</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="hello.html">Functions and classes reference</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="#">Documentation overview</a><ul>
-      <li>Next: <a href="tutorials/0_kinematic_example.html" title="next chapter">0: Basic examples</a></li>
+      <li>Next: <a href="installation.html" title="next chapter">Full Installation</a></li>
   </ul></li>
 </ul>
 </div>

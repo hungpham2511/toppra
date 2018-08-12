@@ -335,19 +335,19 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">cspld</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cspl</span><span class="o">.</span><span class="n">derivative</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cspldd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cspld</span><span class="o">.</span><span class="n">derivative</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">get_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span>
+<div class="viewcode-block" id="SplineInterpolator.get_duration"><a class="viewcode-back" href="../../hello.html#toppra.SplineInterpolator.get_duration">[docs]</a>    <span class="k">def</span> <span class="nf">get_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span></div>
 
-    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss_sam</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cspl</span><span class="p">(</span><span class="n">ss_sam</span><span class="p">)</span>
+<div class="viewcode-block" id="SplineInterpolator.eval"><a class="viewcode-back" href="../../hello.html#toppra.SplineInterpolator.eval">[docs]</a>    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss_sam</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cspl</span><span class="p">(</span><span class="n">ss_sam</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">evald</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss_sam</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cspld</span><span class="p">(</span><span class="n">ss_sam</span><span class="p">)</span>
+<div class="viewcode-block" id="SplineInterpolator.evald"><a class="viewcode-back" href="../../hello.html#toppra.SplineInterpolator.evald">[docs]</a>    <span class="k">def</span> <span class="nf">evald</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss_sam</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cspld</span><span class="p">(</span><span class="n">ss_sam</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">evaldd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss_sam</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cspldd</span><span class="p">(</span><span class="n">ss_sam</span><span class="p">)</span>
+<div class="viewcode-block" id="SplineInterpolator.evaldd"><a class="viewcode-back" href="../../hello.html#toppra.SplineInterpolator.evaldd">[docs]</a>    <span class="k">def</span> <span class="nf">evaldd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss_sam</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cspldd</span><span class="p">(</span><span class="n">ss_sam</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">compute_rave_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">):</span>
+<div class="viewcode-block" id="SplineInterpolator.compute_rave_trajectory"><a class="viewcode-back" href="../../hello.html#toppra.SplineInterpolator.compute_rave_trajectory">[docs]</a>    <span class="k">def</span> <span class="nf">compute_rave_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Compute an OpenRAVE trajectory equivalent to this trajectory.</span>
 
 <span class="sd">        Parameters</span>
@@ -380,7 +380,7 @@
             <span class="k">for</span> <span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">qd</span><span class="p">,</span> <span class="n">qdd</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">qs</span><span class="p">,</span> <span class="n">qds</span><span class="p">,</span> <span class="n">qdds</span><span class="p">,</span> <span class="n">deltas</span><span class="p">):</span>
                 <span class="n">traj</span><span class="o">.</span><span class="n">Insert</span><span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">GetNumWaypoints</span><span class="p">(),</span>
                             <span class="n">q</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="o">+</span> <span class="n">qd</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="o">+</span> <span class="n">qdd</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="o">+</span> <span class="p">[</span><span class="n">dt</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">traj</span></div>
+        <span class="k">return</span> <span class="n">traj</span></div></div>
 
 
 <span class="k">class</span> <span class="nc">UnivariateSplineInterpolator</span><span class="p">(</span><span class="n">Interpolator</span><span class="p">):</span>
@@ -514,14 +514,15 @@
 
 <h3>Navigation</h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/0_kinematic_example.html">0: Basic examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/1_geometric_path.html">1: Path and Trajectory representation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials/2_can_linear_constraints.html">2: Canonical Linear Constraint</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Full Installation</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../hello.html">Welcome</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../hello.html#mod1">mod1</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../hello.html#mod2">mod2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/0_kinematic_example.html">0: Basic examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/1_geometric_path.html">1: Path and Trajectory representation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/2_can_linear_constraints.html">2: Simple  Second-Order Constraint</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../hello.html">Functions and classes reference</a></li>
 </ul>
 
 <div class="relations">
