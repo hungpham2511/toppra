@@ -29,7 +29,7 @@ Remove this line from `interfaces/python/setup.py`:
 extra_params['extra_link_args'] = ["-Wl,-O1", "-Wl,--as-needed"]
 ```
 Install:
-```
+```bash
 mkdir bin && make
 cd interfaces/python/
 pip install cython
