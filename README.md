@@ -21,8 +21,7 @@ git clone https://github.com/hungpham2511/qpOASES
 cd qpOASES
 
 ```
-**Note:** On a Mac, two additional steps are required:
-Edit `make.mk`, comment out `include ${TOP}/make_linux.mk` and uncomment `include ${TOP}/make_osx.mk`.
+**Note:** On a Mac, am additional step is required:
 
 Remove this line from `interfaces/python/setup.py`:
 ```
