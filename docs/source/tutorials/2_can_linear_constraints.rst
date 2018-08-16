@@ -1,13 +1,16 @@
 2: Simple [1]_ Second-Order Constraint
 ====================================
 
-TOPP-RA *can not* account for arbitrary constraint; it can only handle
-those constraints of certain kinds. One class of constraints TOPP-RA
+TOPP-RA *can not* account for arbitrary constraints; it can only
+handle constraints of certain kinds. One class of constraints TOPP-RA
 supports is Second-Order constraint.
 
 This class of constraint is quite general.  Commonly found constraints
 such as joint acceleration [2]_, tool tip Cartesian acceleration,
 interaction force on the robot base, are all Second-Order constraints.
+
+If you want to apply TOPP-RA to do motion planning on your robot,
+which subject to one or multiple Second-Order constraints, read on.
 
 Background
 ------------------
@@ -20,23 +23,39 @@ constraint is one that can be written in the following form
    \mathbf A(q) \ddot q + q^\top \mathbf B(q) q + \mathbf c(q) = & \mathcal I (q, \dot q, \ddot q) ,\\
    \mathbf F(q) & \mathcal I (q, \dot q, \ddot q) \leq \mathbf g(q),
 
-where :math:`\mathbf q` denotes the robot's joint position and
-:math:`\mathbf{A, B, c, F, g}` are arbitrary, user-defined functions.
+where :math:`q` denotes the robot's joint position and
+:math:`\mathbf{A, B, c, F, g}` are arbitrary functions. Remark that
+you do not need to have an analytical expression for all these
+functions. More will be said about this later.
 
-This constraint consists of two equations that are best viewed
-independently.
+This constraint consists of two equations. These equations are best
+interpreted independently:
 
 1. The first equation is an *inverse dynamics* equation that links the
-   robot's joint quantities to the quantity of interest. This could be
-   joint torque or tool tip acceleration.
+   robot's joint quantities to the *quantity of interest* that is to
+   be constrained. For example, joint torque or tool tip Cartesian
+   acceleration.
 
 2. The second equation represents a set of linear inequality on that
    quantity.
 
+Defining a Second-Order constraint
+--------------------------------------
+
+To define a second-order constraint, you **need to be able to evaluate**
+three functions:
+
+1. Inverse-dynamic function :math:`\mathcal{I} (q, \dot q, \ddot q)`;
+
+2. Two constraint functions :math:`\mathbf F(q)` and :math:`\mathbf g(q)`.
+
+TOPP-RA receives these functions as inputs and produces a constraint
+object that it can use to parametrize geometric paths.
+
 Pseudo-code
 --------------------------
 
-TOPP-RA provides the class
+To be concrete, TOPP-RA provides the class
 :class:`~toppra.constraint.CanonicalLinearSecondOrderConstraint` that
 accepts as its inputs:
 
@@ -123,7 +142,8 @@ hand-side is :math:`\mathbf g(q)`.
 In the below code snippet, we use OpenRAVE to implement the inverse
 kinematic function that returns :math:`[a_x, a_y, a_z]` given
 :math:`q, \dot q, \ddot q`. Then, we initialize a constraint object
-from these functions.
+from these functions as shown in the below code. For your reference,
+the final constraint object is :code:`pc_cart_acc`.
 
 .. code-block:: python
    
