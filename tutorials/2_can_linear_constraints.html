@@ -34,12 +34,14 @@
             
   <div class="section" id="simple-1-second-order-constraint">
 <h1>2: Simple <a class="footnote-reference" href="#id3" id="id1">[1]</a> Second-Order Constraint<a class="headerlink" href="#simple-1-second-order-constraint" title="Permalink to this headline">¶</a></h1>
-<p>TOPP-RA <em>can not</em> account for arbitrary constraint; it can only handle
-those constraints of certain kinds. One class of constraints TOPP-RA
+<p>TOPP-RA <em>can not</em> account for arbitrary constraints; it can only
+handle constraints of certain kinds. One class of constraints TOPP-RA
 supports is Second-Order constraint.</p>
 <p>This class of constraint is quite general.  Commonly found constraints
 such as joint acceleration <a class="footnote-reference" href="#id4" id="id2">[2]</a>, tool tip Cartesian acceleration,
 interaction force on the robot base, are all Second-Order constraints.</p>
+<p>If you want to apply TOPP-RA to do motion planning on your robot,
+which subject to one or multiple Second-Order constraints, read on.</p>
 <div class="section" id="background">
 <h2>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
 <p>So what do I mean by Second-Order constraint? A Second-Order
@@ -47,21 +49,35 @@ constraint is one that can be written in the following form</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\mathbf A(q) \ddot q + q^\top \mathbf B(q) q + \mathbf c(q) = &amp; \mathcal I (q, \dot q, \ddot q) ,\\
 \mathbf F(q) &amp; \mathcal I (q, \dot q, \ddot q) \leq \mathbf g(q),\end{split}\]</div>
-<p>where <span class="math notranslate nohighlight">\(\mathbf q\)</span> denotes the robot’s joint position and
-<span class="math notranslate nohighlight">\(\mathbf{A, B, c, F, g}\)</span> are arbitrary, user-defined functions.</p>
-<p>This constraint consists of two equations that are best viewed
-independently.</p>
+<p>where <span class="math notranslate nohighlight">\(q\)</span> denotes the robot’s joint position and
+<span class="math notranslate nohighlight">\(\mathbf{A, B, c, F, g}\)</span> are arbitrary functions. Remark that
+you do not need to have an analytical expression for all these
+functions. More will be said about this later.</p>
+<p>This constraint consists of two equations. These equations are best
+interpreted independently:</p>
 <ol class="arabic simple">
 <li>The first equation is an <em>inverse dynamics</em> equation that links the
-robot’s joint quantities to the quantity of interest. This could be
-joint torque or tool tip acceleration.</li>
+robot’s joint quantities to the <em>quantity of interest</em> that is to
+be constrained. For example, joint torque or tool tip Cartesian
+acceleration.</li>
 <li>The second equation represents a set of linear inequality on that
 quantity.</li>
 </ol>
 </div>
+<div class="section" id="defining-a-second-order-constraint">
+<h2>Defining a Second-Order constraint<a class="headerlink" href="#defining-a-second-order-constraint" title="Permalink to this headline">¶</a></h2>
+<p>To define a second-order constraint, you <strong>need to be able to evaluate</strong>
+three functions:</p>
+<ol class="arabic simple">
+<li>Inverse-dynamic function <span class="math notranslate nohighlight">\(\mathcal{I} (q, \dot q, \ddot q)\)</span>;</li>
+<li>Two constraint functions <span class="math notranslate nohighlight">\(\mathbf F(q)\)</span> and <span class="math notranslate nohighlight">\(\mathbf g(q)\)</span>.</li>
+</ol>
+<p>TOPP-RA receives these functions as inputs and produces a constraint
+object that it can use to parametrize geometric paths.</p>
+</div>
 <div class="section" id="pseudo-code">
 <h2>Pseudo-code<a class="headerlink" href="#pseudo-code" title="Permalink to this headline">¶</a></h2>
-<p>TOPP-RA provides the class
+<p>To be concrete, TOPP-RA provides the class
 <code class="xref py py-class docutils literal notranslate"><span class="pre">CanonicalLinearSecondOrderConstraint</span></code> that
 accepts as its inputs:</p>
 <ol class="arabic simple">
@@ -133,7 +149,8 @@ hand-side is <span class="math notranslate nohighlight">\(\mathbf g(q)\)</span>.
 <p>In the below code snippet, we use OpenRAVE to implement the inverse
 kinematic function that returns <span class="math notranslate nohighlight">\([a_x, a_y, a_z]\)</span> given
 <span class="math notranslate nohighlight">\(q, \dot q, \ddot q\)</span>. Then, we initialize a constraint object
-from these functions.</p>
+from these functions as shown in the below code. For your reference,
+the final constraint object is <code class="code docutils literal notranslate"><span class="pre">pc_cart_acc</span></code></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># setup Cartesian acceleration constraint to limit link 7</span>
 <span class="c1"># -0.5 &lt;= a &lt;= 0.5</span>
 <span class="c1"># Cartesian acceleration</span>
@@ -192,7 +209,7 @@ is not the most general, hence, they are simple.</td></tr>
 constraint, are not Second-Order Constraint. They are
 First-Order constraints. These constraints will be treated in
 near future. For now, see how
-<code class="xref py py-class docutils literal notranslate"><span class="pre">toppra.constraint.JointVelocityConstraint</span></code> is
+<a class="reference internal" href="../hello.html#toppra.constraint.JointVelocityConstraint" title="toppra.constraint.JointVelocityConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">toppra.constraint.JointVelocityConstraint</span></code></a> is
 implemented.</td></tr>
 </tbody>
 </table>
@@ -225,10 +242,6 @@ implemented.</td></tr>
 </ul>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../hello.html">Functions and classes reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../hello.html#interpolator">Interpolator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../hello.html#constraints">Constraints</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../hello.html#algorithms">Algorithms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../hello.html#solver-wrapper">Solver Wrapper</a></li>
 </ul>
 
 <div class="relations">
