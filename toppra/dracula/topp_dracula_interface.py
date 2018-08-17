@@ -82,7 +82,7 @@ def RunTopp(knots_ext, vlim, alim,robot_command_rate, return_spline_parameters =
         alim, discretization_scheme=constraint.DiscretizationType.Interpolation)
 
     # Setup a parametrization instance with hot-qpOASES
-    instance = algo.TOPPRA([pc_vel, pc_acc], path, gridpoints=np.linspace(0, 1, topp_breaks_count),
+    instance = algo.TOPPRA([pc_vel, pc_acc], path, gridpoints=np.linspace(0, 1, int(topp_breaks_count)),
                            solver_wrapper='hotqpoases')
     print("yay we made an instance")
     X = instance.compute_feasible_sets()
@@ -107,7 +107,7 @@ def RunTopp(knots_ext, vlim, alim,robot_command_rate, return_spline_parameters =
 
     print("yay we are ready to compute the traj")
 
-    jnt_traj, aux_traj = instance.compute_trajectory(0, 0)
+    jnt_traj, aux_traj = instance.compute_trajectory(0, 0, False, 'not-a-knot')
     # print(jnt_traj.cspl)
     '''
     compute_trajectory(self, sd_start, sd_end, return_profile=False, bc_type='not-a-knot')
@@ -138,9 +138,9 @@ def RunTopp(knots_ext, vlim, alim,robot_command_rate, return_spline_parameters =
     if not return_spline_parameters:
         traj_duration = jnt_traj.get_duration()
         sample_number = int(math.ceil(traj_duration*robot_command_rate)+1)
-        print("just before printing traj duration... ")
-        print("trajectory duration:", traj_duration)
-        print("sample num:", sample_number)
+        # print("just before printing traj duration... ")
+        # print("trajectory duration:", traj_duration)
+        # print("sample num:", sample_number)
         ts_sample = np.linspace(0, traj_duration, sample_number)
         qs_sample = jnt_traj.evaldd(ts_sample)
         # print(ts_sample)
@@ -174,14 +174,14 @@ def RunTopp(knots_ext, vlim, alim,robot_command_rate, return_spline_parameters =
         # print(qs_sample)
         # print("coeff shape", jnt_traj.cspl.c.shape)
         # print("break shape", jnt_traj.cspl.x.shape)
-        print("Done!")
+        # print("Done!")
         return (xs_sample, ts_sample, sample_number)
 
     else:
         #return knot points of the spline
         # print("cspl_x", jnt_traj.cspl.x.shape)
         # print("cspl_c", jnt_traj.cspl.c.shape)
-        print("Done!(spline)")
+        # print("Done!(spline)")
         return (jnt_traj.cspl.x, jnt_traj.cspl.c)
 
 
