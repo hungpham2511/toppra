@@ -18,7 +18,18 @@ Install
 following the steps below:
 ``` shell
 git clone https://github.com/hungpham2511/qpOASES
-cd qpOASES/ && mkdir bin && make
+cd qpOASES
+
+```
+**Note:** On a Mac, am additional step is required:
+
+Remove this line from `interfaces/python/setup.py`:
+```
+extra_params['extra_link_args'] = ["-Wl,-O1", "-Wl,--as-needed"]
+```
+Install:
+```bash
+mkdir bin && make
 cd interfaces/python/
 pip install cython
 python setup.py install --user
