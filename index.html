@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Welcome to TOPP-RA’s documentation! &#8212; TOPP-RA 0.1 documentation</title>
+    <title>TOPP-RA: Fast path-parameterization for robots &#8212; TOPP-RA 0.1 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -16,7 +16,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Full Installation" href="installation.html" />
+    <link rel="next" title="Tutorials" href="tutorials.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -31,83 +31,66 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="welcome-to-topp-ra-s-documentation">
-<h1>Welcome to TOPP-RA’s documentation!<a class="headerlink" href="#welcome-to-topp-ra-s-documentation" title="Permalink to this headline">¶</a></h1>
-<p>TOPP-RA is a library for time-parameterizing robot trajectories
-subject to kinematic and dynamic constraints. It is able to compute
-the <em>time-optimal</em> time-parametrization of a given path, as well as a
-time-parametrization with a <em>specified duration</em>.  See the examples
-for more details.</p>
-<p>The current implementation supports the following constraints:</p>
+  <div class="section" id="topp-ra-fast-path-parameterization-for-robots">
+<h1>TOPP-RA: Fast path-parameterization for robots<a class="headerlink" href="#topp-ra-fast-path-parameterization-for-robots" title="Permalink to this headline">¶</a></h1>
+<p>TOPP-RA is a library for computing <a class="reference internal" href="#path-parametrization"><span class="std std-ref">path parametrizations</span></a> for arbitrary robot geometric
+paths/trajectories. It can account for several types of constraints:</p>
 <ol class="arabic simple">
-<li>joint velocity and acceleration bounds;</li>
-<li><em>robust</em> acceleration bounds;</li>
-<li>torque bounds (including redundantly-actuated manipulators);</li>
-<li><em>robust</em> torque bounds;</li>
+<li>joint torque, velocity and acceleration bounds;</li>
+<li><em>robust</em> joint torque, velocity and acceleration bounds;</li>
+<li>Cartesian acceleration bounds;</li>
 <li>contact stability for legged robots.</li>
+<li>Your constraint! See the tutorials to understand how to implement
+your own constraints and handle them with TOPP-RA.</li>
 </ol>
-<dl class="docutils">
-<dt>If you use this library for your research, please reference the accompanying paper:</dt>
-<dd><a class="reference external" href="https://arxiv.org/abs/1707.07239">«A new approach to Time-Optimal Path Parameterization based on Reachability Analysis»</a>,
-<em>IEEE Transactions on Robotics</em>, vol. 34(3), pp. 645–659, 2018.</dd>
-</dl>
-<p>See below for installation instructions and some tutorials.</p>
-<div class="section" id="quick-installation">
-<h2>Quick Installation<a class="headerlink" href="#quick-installation" title="Permalink to this headline">¶</a></h2>
-<p>TOPP-RA can be installed from source by the following steps:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/hungpham2511/toppra <span class="o">&amp;&amp;</span> <span class="nb">cd</span> toppra/
-pip install -r requirements.txt --user
-python setup.py install --user
-</pre></div>
-</div>
-<p>These lines implement the most basic functionalities, such as
-parametrize trajectories subject to velocity and acceleration
-constraints. Some advanced functionalities require <cite>openrave</cite>, <cite>cvxpy</cite>
-and so on. See <a class="reference internal" href="installation.html"><span class="doc">Full Installation</span></a> for the full instruction.</p>
+<p>For a given path, TOPP-RA can compute both its <em>time-optimal</em> path
+parametrization as well as a time-parametrization with a <em>specified
+duration</em>.</p>
+<p>TOPP-RA is efficient. For standard use cases, it should return a
+solution in 5ms-10ms.</p>
+<p>See below for some tutorials, modules reference and installation
+instructions.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Full Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#optional-qpoases">(Optional) qpoases</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#advanced-functionality">Advanced functionality</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#building-docs">Building docs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#test">Test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/0_kinematic_example.html">0: Basic examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/1_geometric_path.html">1: Path and Trajectory representation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/2_can_linear_constraints.html">2: Simple  Second-Order Constraint</a></li>
 </ul>
 </li>
-</ul>
-</div>
-</div>
-<div class="section" id="tutorials">
-<h2>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this headline">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/0_kinematic_example.html">0: Basic examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/1_geometric_path.html">1: Path and Trajectory representation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/2_can_linear_constraints.html">2: Simple  Second-Order Constraint</a></li>
-</ul>
-</div>
-</div>
-<div class="section" id="package-references">
-<h2>Package References<a class="headerlink" href="#package-references" title="Permalink to this headline">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="hello.html">Functions and classes reference</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="hello.html">Modules reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="hello.html#interpolator">Interpolator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="hello.html#constraints">Constraints</a></li>
 <li class="toctree-l2"><a class="reference internal" href="hello.html#algorithms">Algorithms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="hello.html#solver-wrapper">Solver Wrapper</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#core-functionality">Core functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#optional-qpoases">(Optional) qpoases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#advanced-functionality">Advanced functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#building-docs">Building docs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#testing">Testing</a></li>
+</ul>
+</li>
 </ul>
 </div>
+<div class="section" id="why-computing-path-parametrizations">
+<span id="path-parametrization"></span><h2>Why computing path parametrizations?<a class="headerlink" href="#why-computing-path-parametrizations" title="Permalink to this headline">¶</a></h2>
+<p>ab</p>
 </div>
+<div class="section" id="cite-topp-ra">
+<h2>Cite TOPP-RA<a class="headerlink" href="#cite-topp-ra" title="Permalink to this headline">¶</a></h2>
+<p>If you use this library for your research, we encourage you to</p>
+<ol class="arabic simple">
+<li>reference the accompanying paper <a class="reference external" href="https://arxiv.org/abs/1707.07239">«A new approach to Time-Optimal Path Parameterization based on Reachability Analysis»</a> <em>IEEE Transactions on Robotics</em>, vol. 34(3), pp. 645–659, 2018.</li>
+<li>put a star on this repository!</li>
+</ol>
 </div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
-<ul class="simple">
-<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
-<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
-<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
-</ul>
+<div class="section" id="bug-reports-and-supports">
+<h2>Bug reports and supports<a class="headerlink" href="#bug-reports-and-supports" title="Permalink to this headline">¶</a></h2>
+<p>Please report any issues, questions via <a class="reference external" href="https://github.com/hungpham2511/toppra/issues">Github issues tracker</a>.</p>
+</div>
 </div>
 
 
@@ -120,29 +103,44 @@ and so on. See <a class="reference internal" href="installation.html"><span clas
 
 
 
+<p class="blurb">A robotic motion planning library for path-parametrization</p>
 
 
 
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=hungpham2511&repo=toppra&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/hungpham2511/toppra">
+    <img
+        alt="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
+        src="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
+    />
+</a>
+</p>
 
 
 <h3>Navigation</h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Full Installation</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/0_kinematic_example.html">0: Basic examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/1_geometric_path.html">1: Path and Trajectory representation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/2_can_linear_constraints.html">2: Simple  Second-Order Constraint</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="hello.html">Functions and classes reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hello.html">Modules reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="#">Documentation overview</a><ul>
-      <li>Next: <a href="installation.html" title="next chapter">Full Installation</a></li>
+      <li>Next: <a href="tutorials.html" title="next chapter">Tutorials</a></li>
   </ul></li>
 </ul>
 </div>
@@ -163,7 +161,7 @@ and so on. See <a class="reference internal" href="installation.html"><span clas
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017, Hung Pham.
+      &copy;2018, Hung Pham.
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.6</a>
@@ -174,6 +172,10 @@ and so on. See <a class="reference internal" href="installation.html"><span clas
           rel="nofollow">Page source</a>
     </div>
 
+    
+    <a href="https://github.com/hungpham2511/toppra" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
     
 
     

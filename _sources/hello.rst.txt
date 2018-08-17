@@ -1,4 +1,4 @@
-Functions and classes reference
+Modules reference
 ===============================
 
 

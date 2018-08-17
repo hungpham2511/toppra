@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Full Installation &#8212; TOPP-RA 0.1 documentation</title>
+    <title>Installation &#8212; TOPP-RA 0.1 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -16,8 +16,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="0: Basic examples" href="tutorials/0_kinematic_example.html" />
-    <link rel="prev" title="Welcome to TOPP-RA’s documentation!" href="index.html" />
+    <link rel="prev" title="Functions and classes reference" href="hello.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -32,8 +31,21 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="full-installation">
-<h1>Full Installation<a class="headerlink" href="#full-installation" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="core-functionality">
+<h2>Core functionality<a class="headerlink" href="#core-functionality" title="Permalink to this headline">¶</a></h2>
+<p>TOPP-RA can be installed from source by the following steps:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/hungpham2511/toppra <span class="o">&amp;&amp;</span> <span class="nb">cd</span> toppra/
+pip install -r requirements.txt --user
+python setup.py install --user
+</pre></div>
+</div>
+<p>These lines implement the most basic functionalities, such as
+parametrize trajectories subject to velocity and acceleration
+constraints. Some advanced functionalities require <cite>openrave</cite>, <cite>cvxpy</cite>
+and so on. See <a class="reference internal" href="#"><span class="doc">Installation</span></a> for the full instruction.</p>
+</div>
 <div class="section" id="optional-qpoases">
 <h2>(Optional) qpoases<a class="headerlink" href="#optional-qpoases" title="Permalink to this headline">¶</a></h2>
 <p>It is possible to use <cite>qpoases</cite> instead of the default LP solver
@@ -67,14 +79,14 @@ make clean <span class="o">&amp;&amp;</span> make html
 </pre></div>
 </div>
 </div>
-<div class="section" id="test">
-<h2>Test<a class="headerlink" href="#test" title="Permalink to this headline">¶</a></h2>
-<p><cite>toppra</cite> uses <cite>pytest</cite> for testing. To run all the tests, do:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">&lt;</span><span class="n">toppra</span><span class="o">-</span><span class="nb">dir</span><span class="o">&gt;/</span><span class="n">tests</span><span class="o">/</span>
-<span class="n">pytest</span> <span class="o">-</span><span class="n">v</span>
+<div class="section" id="testing">
+<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
+<p>TOPP-RA uses <code class="code docutils literal notranslate"><span class="pre">pytest</span></code> for testing, which can be installed from
+<code class="code docutils literal notranslate"><span class="pre">pip</span></code>.  To run all the tests, do:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> &lt;toppra-dir&gt;/tests/
+pytest -v
 </pre></div>
 </div>
-<p>if <cite>pytest</cite> is not installed, grab it from <cite>pip</cite>.</p>
 </div>
 </div>
 
@@ -88,38 +100,51 @@ make clean <span class="o">&amp;&amp;</span> make html
 
 
 
+<p class="blurb">A robotic motion planning library for path-parametrization</p>
 
 
 
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=hungpham2511&repo=toppra&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/hungpham2511/toppra">
+    <img
+        alt="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
+        src="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
+    />
+</a>
+</p>
 
 
 <h3>Navigation</h3>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Full Installation</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hello.html">Functions and classes reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#core-functionality">Core functionality</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#optional-qpoases">(Optional) qpoases</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#advanced-functionality">Advanced functionality</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#building-docs">Building docs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#test">Test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a></li>
 </ul>
 </li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/0_kinematic_example.html">0: Basic examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/1_geometric_path.html">1: Path and Trajectory representation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/2_can_linear_constraints.html">2: Canonical Linear Constraint</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="hello.html">Welcome</a></li>
-<li class="toctree-l1"><a class="reference internal" href="hello.html#mod1">mod1</a></li>
-<li class="toctree-l1"><a class="reference internal" href="hello.html#mod2">mod2</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="index.html" title="previous chapter">Welcome to TOPP-RA’s documentation!</a></li>
-      <li>Next: <a href="tutorials/0_kinematic_example.html" title="next chapter">0: Basic examples</a></li>
+      <li>Previous: <a href="hello.html" title="previous chapter">Functions and classes reference</a></li>
   </ul></li>
 </ul>
 </div>
@@ -140,7 +165,7 @@ make clean <span class="o">&amp;&amp;</span> make html
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2017, Hung Pham.
+      &copy;2018, Hung Pham.
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.6</a>
@@ -151,6 +176,10 @@ make clean <span class="o">&amp;&amp;</span> make html
           rel="nofollow">Page source</a>
     </div>
 
+    
+    <a href="https://github.com/hungpham2511/toppra" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
     
 
     
