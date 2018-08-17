@@ -61,8 +61,9 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'TOPP-RA'
-copyright = '2017, Hung Pham'
+copyright = '2018, Hung Pham'
 author = 'Hung Pham'
+
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -104,7 +105,15 @@ html_theme = 'alabaster'
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-# html_theme_options = {}
+html_theme_options = {
+    'github_user': 'hungpham2511',
+    'github_repo': 'toppra',
+    'github_button': True,
+    'github_type': 'star',
+    'github_banner': True,
+    'travis_button': True,
+    'description': 'A robotic motion planning library for path-parametrization'
+    }
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -126,14 +135,6 @@ html_sidebars = {
     ]
 }
 
-
-# html_theme = 'sphinx_rtd_theme'
-# html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-# html_theme_options = {
-#     'collapse_navigation': False,
-#     'display_version': True,
-#     'logo_only': True,
-# }
 
 # -- Options for HTMLHelp output ------------------------------------------
 
