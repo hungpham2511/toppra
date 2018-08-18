@@ -39,8 +39,7 @@ instructions.
    
 Why computing path parametrizations?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-ab
+TODO 
 
 Cite TOPP-RA
 ~~~~~~~~~~~~~

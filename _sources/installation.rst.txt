@@ -1,10 +1,10 @@
 Installation
 =================
 
-
-Core functionality
+Core functionalities
 --------------------------
-TOPP-RA can be installed from source by the following steps:
+
+To install the core functionalities of TOPP-RA, simply do:
 
 .. code-block:: shell
 
@@ -12,18 +12,26 @@ TOPP-RA can be installed from source by the following steps:
    pip install -r requirements.txt --user
    python setup.py install --user
 
-These lines implement the most basic functionalities, such as
-parametrize trajectories subject to velocity and acceleration
-constraints. Some advanced functionalities require `openrave`, `cvxpy`
-and so on. See :doc:`installation` for the full instruction.
+You can now use TOPP-RA to parametrize trajectories/paths subject to
+the robot kinematic limits as well as tool tip Catesian limits. Try a
+basic example here: :doc:`tutorials`.
 
-(Optional) qpoases
+.. note:: Generally, Python packages should be installed in a `virtual
+	  environment
+	  <https://docs.python-guide.org/dev/virtualenvs/>`_. See the
+	  hyperlink for more details. To install TOPP-RA in a virtual
+	  environment, simply activate the environment and do the
+	  above steps omitting the :code:`--user` flag.
+
+
+(Optional) Install qpOASES
 --------------------------------
 
-It is possible to use `qpoases` instead of the default LP solver
-`seidel` as solverwrapper.  Install `qpOASES
-<https://projects.coin-or.org/qpOASES/wiki/QpoasesInstallation>`_ by
-entering the following commands in the terminal:
+It is possible to use `qpOASES
+<https://projects.coin-or.org/qpOASES/wiki/QpoasesInstallation>`_
+instead of the default LP solver ``seidel`` as a back-end solver
+wrapper running in background. To install run following commands in
+a terminal:
 
 .. code-block:: shell
 
@@ -33,15 +41,17 @@ entering the following commands in the terminal:
    pip install cython
    python setup.py install --user
    
-Advanced functionality 
+Advanced functionalities
 --------------------------------------
 
 In order to run some of the examples, it is necesssary to install
 `openRAVE <https://github.com/rdiankov/openrave>`_. A good instruction
-for installing this library on Ubuntu 16.04 can be found
-`here <https://scaron.info/teaching/installing-openrave-on-ubuntu-16.04.html>`_.
+for installing this library on Ubuntu 16.04 can be found `here
+<https://scaron.info/teaching/installing-openrave-on-ubuntu-16.04.html>`_.
 
-*note*: the humanoid examples are not maintained.
+.. note:: The humanoid and redudantly-actuated torque examples are not
+          yet included in the current library. See tag ``v0.1`` if you
+          want to run these examples.
 
 ..
    Multi-contact and torque bounds.  To use these functionality, the
@@ -63,14 +73,11 @@ for installing this library on Ubuntu 16.04 can be found
    export PYTHONPATH=$PYTHONPATH:$HOME/git/pymanoid
    ```
 
-
-
-
 Building docs
 ------------------------------
 
 The lastest documentation is available at
-`<https://hungpham2511.github.io/toppra/>`_. 
+`<https://hungpham2511.github.io/toppra/>`_.
 
 To build and view the documentation, install `sphinx
 <http://www.sphinx-doc.org/en/stable/index.html>`_ then run the
@@ -85,8 +92,8 @@ following commands in the terminal
 Testing
 -------------------------------
 
-TOPP-RA uses :code:`pytest` for testing, which can be installed from
-:code:`pip`.  To run all the tests, do:
+TOPP-RA makes use of :code:`pytest` and ``cvxpy`` for testing. Both
+can be installed from :code:`pip`.  To run all the tests, do:
 
 .. code-block:: sh
 
