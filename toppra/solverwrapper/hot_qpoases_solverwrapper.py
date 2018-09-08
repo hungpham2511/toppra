@@ -1,8 +1,12 @@
 from .solverwrapper import SolverWrapper
 import numpy as np
 from ..constraint import ConstraintType
-from qpoases import (PyOptions as Options, PyPrintLevel as PrintLevel,
-                     PyReturnValue as ReturnValue, PySQProblem as SQProblem)
+try:
+    from qpoases import (PyOptions as Options, PyPrintLevel as PrintLevel,
+                         PyReturnValue as ReturnValue, PySQProblem as SQProblem)
+    qpoases_FOUND = True
+except ImportError:
+    qpoases_FOUND = False
 import logging
 logger = logging.getLogger(__name__)
 
@@ -38,6 +42,7 @@ class hotqpOASESSolverWrapper(SolverWrapper):
 
     """
     def __init__(self, constraint_list, path, path_discretization, disable_check=False):
+        assert qpoases_FOUND, "toppra is unable to find any installation of qpoases!"
         super(hotqpOASESSolverWrapper, self).__init__(constraint_list, path, path_discretization)
         self._disable_check = disable_check
         # Currently only support Canonical Linear Constraint
