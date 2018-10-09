@@ -88,7 +88,7 @@ def basic_init_fixture(request):
     pcs = [pc_vel, pc_acc, pc_rand]
     yield pcs, path, ss, vlim, alim
 
-    print "\n [TearDown] Finish PP Fixture"
+    print("\n [TearDown] Finish PP Fixture")
 
 
 @pytest.mark.parametrize("solver_name", ['cvxpy', 'qpOASES', "ecos", 'hotqpOASES', 'seidel'])

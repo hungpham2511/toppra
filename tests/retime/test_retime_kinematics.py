@@ -19,9 +19,9 @@ def robot_fixture():
     iktype = orpy.IkParameterization.Type.Transform6D
     ikmodel = orpy.databases.inversekinematics.InverseKinematicsModel(robot, iktype=iktype)
     if not ikmodel.load():
-        print 'Generating IKFast {0}. It will take few minutes...'.format(iktype.name)
+        print('Generating IKFast {0}. It will take few minutes...'.format(iktype.name))
         ikmodel.autogenerate()
-        print 'IKFast {0} has been successfully generated'.format(iktype.name)
+        print('IKFast {0} has been successfully generated'.format(iktype.name))
     # env.SetViewer('qtosg')
     toppra.setup_logging("INFO")
     yield robot
