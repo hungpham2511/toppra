@@ -11,8 +11,20 @@ INF = 1e2
 
 
 class ecosWrapper(SolverWrapper):
-    """ A wrapper that handles linear and conic-quadratic constraints using ECOS.
+    """A solver wrapper that handles linear and conic-quadratic constraints using ECOS.
 
+    :class:`ecosWrapper` and :class:`cvxpyWrapper` are the only
+    wrappers that can handle conic-quadratic constraints, which are
+    necessary to compute robust path parameterization.
+
+    Attributes
+    ----------
+    constraints : list of `Constraint`
+        Constraints on the robot system.
+    path : Interpolator
+        The geometric path to be time-parametrized.
+    path_discretization: array
+        The discretization grid use to discretize the geometric path.
 
     """
     def __init__(self, constraint_list, path, path_discretization):

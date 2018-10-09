@@ -31,7 +31,7 @@ def main():
     pc_acc = constraint.JointAccelerationConstraint(
         alim, discretization_scheme=constraint.DiscretizationType.Interpolation)
 
-    # Setup a parametrization instance with hot-qpOASES
+    # Setup a parametrization instance
     instance = algo.TOPPRAsd([pc_vel, pc_acc], path, gridpoints=np.linspace(0, 1, 101),
                              solver_wrapper='seidel')
     instance.set_desired_duration(60)

@@ -39,7 +39,7 @@ def test_wrong_dimension(coefficients_functions):
         return A(q).dot(qdd) + np.dot(qd.T, np.dot(B(q), qd)) + C(q)
     constraint = toppra.constraint.CanonicalLinearSecondOrderConstraint(inv_dyn, cnst_F, cnst_g, dof=2)
     path_wrongdim = toppra.SplineInterpolator(np.linspace(0, 1, 5), np.random.randn(5, 10))
-    with pytest.raises(ValueError) as e_info:
+    with pytest.raises(AssertionError) as e_info:
         constraint.compute_constraint_params(path_wrongdim, np.r_[0, 0.5, 1])
     assert e_info.value.args[0] == "Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
         constraint.get_dof(), 10

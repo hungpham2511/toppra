@@ -30,18 +30,19 @@ def main():
     pc_acc = constraint.JointAccelerationConstraint(
         alim, discretization_scheme=constraint.DiscretizationType.Interpolation)
 
-    # Setup a parametrization instance with hot-qpOASES
-    instance = algo.TOPPRA([pc_vel, pc_acc], path, gridpoints=np.linspace(0, 1, 101),
-                           solver_wrapper='seidel')
+    # Setup a parametrization instance
+    instance = algo.TOPPRA([pc_vel, pc_acc], path, solver_wrapper='seidel')
 
     # Retime the trajectory, only this step is necessary.
     t0 = time.time()
     jnt_traj, aux_traj = instance.compute_trajectory(0, 0)
     print("Parameterization time: {:} secs".format(time.time() - t0))
     ts_sample = np.linspace(0, jnt_traj.get_duration(), 100)
-    qs_sample = jnt_traj.evaldd(ts_sample)
+    qs_sample = jnt_traj.eval(ts_sample)
+    qds_sample = jnt_traj.evald(ts_sample)
+    qdds_sample = jnt_traj.evaldd(ts_sample)
 
-    plt.plot(ts_sample, qs_sample)
+    plt.plot(ts_sample, qdds_sample)
     plt.xlabel("Time (s)")
     plt.ylabel("Joint acceleration (rad/s^2)")
     plt.show()
