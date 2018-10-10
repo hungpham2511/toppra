@@ -9,8 +9,6 @@ import numpy.testing as npt
 
 import toppra
 import toppra.constraint as constraint
-from toppra.solverwrapper import (cvxpyWrapper, qpOASESSolverWrapper, ecosWrapper,
-                                  hotqpOASESSolverWrapper, seidelWrapper)
 
 toppra.setup_logging(level="DEBUG")
 
@@ -112,14 +110,19 @@ def test_basic_init(basic_init_fixture, solver_name, i, H, g, x_ineq):
     """
     constraints, path, path_discretization, vlim, alim = basic_init_fixture
     if solver_name == "cvxpy":
+        from toppra.solverwrapper.cvxpy_solverwrapper import cvxpyWrapper
         solver = cvxpyWrapper(constraints, path, path_discretization)
     elif solver_name == 'qpOASES':
+        from toppra.solverwrapper.qpoases_solverwrapper import qpOASESSolverWrapper
         solver = qpOASESSolverWrapper(constraints, path, path_discretization)
     elif solver_name == 'hotqpOASES':
+        from toppra.solverwrapper.hot_qpoases_solverwrapper import hotqpOASESSolverWrapper
         solver = hotqpOASESSolverWrapper(constraints, path, path_discretization)
     elif solver_name == 'ecos' and H is None:
+        from toppra.solverwrapper.ecos_solverwrapper import ecosWrapper
         solver = ecosWrapper(constraints, path, path_discretization)
     elif solver_name == 'seidel' and H is None:
+        from toppra.solverwrapper.cy_seidel_solverwrapper import seidelWrapper
         solver = seidelWrapper(constraints, path, path_discretization)
     else:
         return True  # Skip all other tests
