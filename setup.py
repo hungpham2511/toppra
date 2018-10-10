@@ -9,7 +9,7 @@ DESCR = "An implementation of TOPP-RA (TOPP via Reachability Analysis) for time-
         "trajectories for robots subject to kinematic (velocity and acceleration) and dynamic" \
         "(torque) constraints. Some other kinds of constraints are also supported."
 URL = "https://github.com/hungpham2511/toppra"
-REQUIRES = ['numpy', 'cython', "scipy>0.18", "coloredlogs", "enum34", "cvxpy>=0.4.11, <1.0.0", "pytest"]
+REQUIRES = ['numpy', 'cython', "scipy>0.18", "coloredlogs", "enum34", "cvxpy>=0.4.11, <1.0.0", "pytest", "matplotlib"]
 
 AUTHOR = "Hung Pham"
 EMAIL = "hungpham2511@gmail.com"

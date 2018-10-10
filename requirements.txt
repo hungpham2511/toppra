@@ -6,4 +6,5 @@ enum34
 cvxpy>=0.4.11, <1.0.0
 pytest
 pytest-cov
+matplotlib
 
