@@ -50,9 +50,11 @@ def test_vel_robust_accel(vel_accel_robustaccel, path, solver_name, i, H, g, x_i
     vel_c, _, robust_acc_c = vel_accel_robustaccel
     path_dist = np.linspace(0, path.get_duration(), 10 + 1)
     if solver_name == "cvxpy":
-        solver = toppra.solverwrapper.cvxpyWrapper([vel_c, robust_acc_c], path, path_dist)
+        from toppra.solverwrapper.cvxpy_solverwrapper import cvxpyWrapper
+        solver = cvxpyWrapper([vel_c, robust_acc_c], path, path_dist)
     elif solver_name == "ECOS":
-        solver = toppra.solverwrapper.ecosWrapper([vel_c, robust_acc_c], path, path_dist)
+        from toppra.solverwrapper.ecos_solverwrapper import ecosWrapper
+        solver = ecosWrapper([vel_c, robust_acc_c], path, path_dist)
     else:
         assert False
 
@@ -116,11 +118,14 @@ def test_compare_accel_robust_accel(vel_accel_robustaccel, path, solver_name, i,
     path_dist = np.linspace(0, path.get_duration(), 10)
 
     if solver_name == "cvxpy":
-        solver = toppra.solverwrapper.cvxpyWrapper([vel_c, acc_c], path, path_dist)
-        ro_solver = toppra.solverwrapper.cvxpyWrapper([vel_c, robust_acc_c], path, path_dist)
+        from toppra.solverwrapper.cvxpy_solverwrapper import cvxpyWrapper
+        solver = cvxpyWrapper([vel_c, acc_c], path, path_dist)
+        ro_solver = cvxpyWrapper([vel_c, robust_acc_c], path, path_dist)
     elif solver_name == "ECOS":
-        solver = toppra.solverwrapper.cvxpyWrapper([vel_c, acc_c], path, path_dist)
-        ro_solver = toppra.solverwrapper.ecosWrapper([vel_c, robust_acc_c], path, path_dist)
+        from toppra.solverwrapper.cvxpy_solverwrapper import cvxpyWrapper
+        from toppra.solverwrapper.ecos_solverwrapper import ecosWrapper
+        solver = cvxpyWrapper([vel_c, acc_c], path, path_dist)
+        ro_solver = ecosWrapper([vel_c, robust_acc_c], path, path_dist)
     else:
         assert False
 

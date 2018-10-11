@@ -74,10 +74,10 @@ class ecosWrapper(SolverWrapper):
         # 4) conic constraints
         if i < self.N:
             nrow = 2 + 2 + self._linear_dim + self._conic_dim
-            dims = {"l": 2 + 2 + self._linear_dim, "q": [4] * (self._conic_dim / 4)}
+            dims = {"l": 2 + 2 + self._linear_dim, "q": [4] * (self._conic_dim // 4)}
         else:
             nrow = 2 + self._linear_dim + self._conic_dim
-            dims = {"l": 2 + self._linear_dim, "q": [4] * (self._conic_dim / 4)}
+            dims = {"l": 2 + self._linear_dim, "q": [4] * (self._conic_dim // 4)}
 
         G_lil = scipy.sparse.lil_matrix((nrow, 2))
         h = np.zeros(nrow)

@@ -61,7 +61,7 @@ def solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, double[:] low
         INT_t [:] idx_map
         double[:] a_1d
         double[:] b_1d
-    if len(a) != 0 and a is not None:
+    if a is not None and len(a) != 0:
         nrows = a.shape[0]
         idx_map = np.zeros_like(a, dtype=int)
         a_1d = np.zeros(nrows + 4)

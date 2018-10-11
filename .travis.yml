@@ -36,7 +36,7 @@ script:
   - pip install -r requirements.txt --user
   - python setup.py develop --user  # need to run the develop command to have coverage working. install command (below) should work just fine.
   # - python setup.py install --user
-  - py.test --cov=toppra tests
+  - py.test --cov=toppra tests -Wonce
 
 after_success:
   - coveralls

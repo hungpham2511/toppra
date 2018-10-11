@@ -1,6 +1,4 @@
 from ..algorithm import ParameterizationAlgorithm
-from ...solverwrapper import (cvxpyWrapper, qpOASESSolverWrapper, ecosWrapper,
-                              hotqpOASESSolverWrapper, seidelWrapper)
 from ...constants import LARGE, SMALL
 from ...constraint import ConstraintType
 
@@ -65,14 +63,19 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
 
         # Select
         if solver_wrapper.lower() == "cvxpy":
+            from toppra.solverwrapper.cvxpy_solverwrapper import cvxpyWrapper
             self.solver_wrapper = cvxpyWrapper(self.constraints, self.path, self.gridpoints)
         elif solver_wrapper.lower() == "qpoases":
+            from toppra.solverwrapper.qpoases_solverwrapper import qpOASESSolverWrapper
             self.solver_wrapper = qpOASESSolverWrapper(self.constraints, self.path, self.gridpoints)
         elif solver_wrapper.lower() == "hotqpoases":
+            from toppra.solverwrapper.hot_qpoases_solverwrapper import hotqpOASESSolverWrapper
             self.solver_wrapper = hotqpOASESSolverWrapper(self.constraints, self.path, self.gridpoints)
         elif solver_wrapper.lower() == "ecos":
+            from toppra.solverwrapper.ecos_solverwrapper import ecosWrapper
             self.solver_wrapper = ecosWrapper(self.constraints, self.path, self.gridpoints)
         elif solver_wrapper.lower() == "seidel":
+            from toppra.solverwrapper.cy_seidel_solverwrapper import seidelWrapper
             self.solver_wrapper = seidelWrapper(self.constraints, self.path, self.gridpoints)
         else:
             raise NotImplementedError("Solver wrapper {:} not found!".format(solver_wrapper))

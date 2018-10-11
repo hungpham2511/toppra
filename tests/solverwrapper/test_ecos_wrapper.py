@@ -5,6 +5,8 @@ import numpy as np
 import toppra
 import toppra.constraint as constraint
 from .test_basic_conic_can_linear import path, vel_accel_robustaccel
+from toppra.solverwrapper.ecos_solverwrapper import ecosWrapper
+from toppra.solverwrapper.qpoases_solverwrapper import qpOASESSolverWrapper
 
 toppra.setup_logging(level="DEBUG")
 
@@ -28,8 +30,8 @@ def test_linear_constraints_only(vel_accel_robustaccel, path, i, g, x_ineq):
     "Only canonical linear constraints."
     vel_c, acc_c, robust_acc_c = vel_accel_robustaccel
     path_dist = np.linspace(0, path.get_duration(), 10 + 1)
-    solver = toppra.solverwrapper.ecosWrapper([vel_c, acc_c], path, path_dist)
-    target_solver = toppra.solverwrapper.qpOASESSolverWrapper([vel_c, acc_c], path, path_dist)
+    solver = ecosWrapper([vel_c, acc_c], path, path_dist)
+    target_solver = qpOASESSolverWrapper([vel_c, acc_c], path, path_dist)
 
     xmin, xmax = x_ineq
     xnext_min = 0

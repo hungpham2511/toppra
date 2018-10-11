@@ -2,7 +2,6 @@ import pytest
 import numpy as np
 import toppra
 import toppra.constraint as constraint
-import matplotlib.pyplot as plt
 
 toppra.setup_logging(level="INFO")
 
