@@ -18,4 +18,4 @@ from . import constraint as constraint
 from . import algorithm as algorithm
 from . import solverwrapper as solverwrapper
 
-setup_logging()
+# setup_logging()  # libraries should never auto configure logging...
