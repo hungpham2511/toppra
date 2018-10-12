@@ -17,5 +17,3 @@ from .planning_utils import retime_active_joints_kinematics, create_rave_torque_
 from . import constraint as constraint
 from . import algorithm as algorithm
 from . import solverwrapper as solverwrapper
-
-# setup_logging()  # libraries should never auto configure logging, keep this commented out...
