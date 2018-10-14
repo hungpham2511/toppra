@@ -3,8 +3,6 @@ import toppra.constraint as constraint
 import toppra.algorithm as algo
 import numpy as np
 import matplotlib.pyplot as plt
-import time
-
 
 ta.setup_logging("INFO")
 
@@ -15,7 +13,10 @@ def main():
     waypts = [[0], [1], [10]]
     path = ta.SplineInterpolator([0, 0.1, 1.0], waypts)
     # NOTE: When constructing a path, you must "align" the waypoint
-    # properly yourself.
+    # properly yourself. For instance, if the waypoints are [0, 1, 10]
+    # like in the above example, the path position should be aligned
+    # like [0, 0.1, 1.0]. If this is not done, the CubicSpline
+    # Interpolator might result undesirable oscillating paths!
     vlim = np.array([[-3, 3]])
     alim = np.array([[-4, 4]])
     pc_vel = constraint.JointVelocityConstraint(vlim)
@@ -38,9 +39,12 @@ def main():
     axs[2].plot(ts, qdds)
     plt.show()
 
-    import IPython
-    if IPython.get_ipython() is None:
-        IPython.embed()
+    # NOTE: uncomment the below lines to drop into IPython for
+    # inspection. Note that you need to have IPython installed.
+
+    # import IPython
+    # if IPython.get_ipython() is None:
+        # IPython.embed()
 
 if __name__ == '__main__':
     main()
