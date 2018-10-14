@@ -1,4 +1,4 @@
-1: Path and Trajectory representation
+Path and Trajectory representation
 =====================================================
 
 In TOPP-RA, both geometric paths :math:`\mathbf q(s)_{s \in [0, 1]}`

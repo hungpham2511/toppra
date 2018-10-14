@@ -1,4 +1,4 @@
-0: Basic examples
+A basic example
 ==================================================
 
 The most basic usecase of TOPP-RA is compute time-optimal
