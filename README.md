@@ -23,3 +23,7 @@ If you use this library for your research, we encourage you to
 ## Bug reports and supports
 Please report any issues, questions via [Github issues tracker](https://github.com/hungpham2511/toppra/issues).
 
+It will be very helpful if you can provide more details on the
+errors/bugs that you encounter. In fact, the best way is to provide a
+Minimal Working Example that produces the reported bug and attach it
+with the issue report.
