@@ -53,6 +53,8 @@ class ParameterizationAlgorithm(object):
             Starting path velocity. Must be positive.
         sd_end: float
             Goal path velocity. Must be positive.
+        return_data: bool, optional
+            If is True, also return matrix K which contains the controllable sets.
 
         Returns
         -------
@@ -62,11 +64,13 @@ class ParameterizationAlgorithm(object):
             Path velocities.
         v_vec: (_N,) array or None
             Auxiliary variables.
+        K: (N+1, 2) array
+            Return the controllable set if `return_data` is True.
         """
         raise NotImplementedError
 
-    def compute_trajectory(self, sd_start, sd_end, return_profile=False, bc_type='not-a-knot'):
-        """ Compute the resulting joint trajectory and auxilliary trajectory.
+    def compute_trajectory(self, sd_start, sd_end, return_profile=False, bc_type='not-a-knot', return_data=False):
+        """Compute the resulting joint trajectory and auxilliary trajectory.
 
         If parameterization fails, return a tuple of None(s).
 
@@ -76,16 +80,31 @@ class ParameterizationAlgorithm(object):
             Starting path velocity.
         sd_end: float
             Goal path velocity.
+        return_profile: bool, optional
+            If true, return a tuple containing data. NOTE: This
+            function is obsolete, use return_data instead.
+        return_data: bool, optional
+            If true, return a dict containing the internal data.
+        bc_type: str, optional
+            Boundary condition for the resulting trajectory. Can be
+            'not-a-knot', 'clamped', 'natural' or 'periodic'.  See
+            scipy.CubicSpline documentation for more details.
 
         Returns
         -------
         :class:`Interpolator`
-            Time-parameterized joint position trajectory. If unable to parameterize, return None.
+            Time-parameterized joint position trajectory. If unable to
+            parameterize, return None.
         :class:`Interpolator`
-            Time-parameterized auxiliary variable trajectory. If unable to
-            parameterize or if there is no auxiliary variable, return None.
+            Time-parameterized auxiliary variable trajectory. If
+            unable to parameterize or if there is no auxiliary
+            variable, return None.
         profiles: tuple
-            Return if return_profile is True, results from compute_parameterization.
+            Return if return_profile is True, results from
+            compute_parameterization.
+        data: dict
+            Return if return_data is True.
+
         """
         sdd_grid, sd_grid, v_grid, K = self.compute_parameterization(sd_start, sd_end, return_data=True)
 
@@ -119,5 +138,11 @@ class ParameterizationAlgorithm(object):
 
         if return_profile:
             return traj_spline, v_spline, (sdd_grid, sd_grid, v_grid, K)
+        elif return_data:
+            # NOTE: the time stamps for each (original) waypoint are
+            #  evaluated by interpolating the grid points.
+            t_waypts = np.interp(self.path.ss_waypoints, self.gridpoints, t_grid)
+            return traj_spline, v_spline, {'sdd': sdd_grid, 'sd': sd_grid,
+                                           'v': v_grid, 'K': K, 't_waypts': t_waypts}
         else:
             return traj_spline, v_spline

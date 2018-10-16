@@ -35,16 +35,25 @@ def main():
 
     # Retime the trajectory, only this step is necessary.
     t0 = time.time()
-    jnt_traj, aux_traj = instance.compute_trajectory(0, 0)
+    jnt_traj, aux_traj, data = instance.compute_trajectory(0, 0, return_data=True)
+    # return_data flag outputs internal data obtained while computing
+    # the paramterization. This include the time stamps corresponding
+    # to the original waypoints. See below (line 53) to see how to
+    # extract the time stamps.
     print("Parameterization time: {:} secs".format(time.time() - t0))
-    ts_sample = np.linspace(0, jnt_traj.get_duration(), 100)
-    qs_sample = jnt_traj.eval(ts_sample)
-    qds_sample = jnt_traj.evald(ts_sample)
-    qdds_sample = jnt_traj.evaldd(ts_sample)
 
-    plt.plot(ts_sample, qdds_sample)
+    ts_sample = np.linspace(0, jnt_traj.get_duration(), 100)
+    qs_sample = jnt_traj.eval(ts_sample)  # sampled joint positions
+    qds_sample = jnt_traj.evald(ts_sample)  # sampled joint velocities
+    qdds_sample = jnt_traj.evaldd(ts_sample)  # sampled joint accelerations
+
+    for i in range(dof):
+        # plot the i-th joint trajectory
+        plt.plot(ts_sample, qs_sample[:, i], c="C{:d}".format(i))
+        # plot the i-th joint waypoints
+        plt.plot(data['t_waypts'], way_pts[:, i], 'x', c="C{:d}".format(i))
     plt.xlabel("Time (s)")
-    plt.ylabel("Joint acceleration (rad/s^2)")
+    plt.ylabel("Joint position (rad/s^2)")
     plt.show()
 
     # Compute the feasible sets and the controllable sets for viewing.
