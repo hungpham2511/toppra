@@ -199,7 +199,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         v_vec: (N,) array or None
             Auxiliary variables.
         K: (N+1, 2) array
-            Return if `return_data` is True. The controllable sets.
+            Return the controllable set if `return_data` is True.
         """
         assert sd_end >= 0 and sd_start >= 0, "Path velocities must be positive"
         K = self.compute_controllable_sets(sd_end, sd_end)
