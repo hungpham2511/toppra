@@ -47,10 +47,10 @@ class JointVelocityConstraintVarying(CanonicalLinearConstraint):
     Parameters
     ----------
     vlim_func: float -> array function
-        Output Shape (dof, 2). The lower and upper velocity bounds of
+        A function that receives a scalar (float) and produce an array
+        with shape (dof, 2). The lower and upper velocity bounds of
         the j-th joint are given by out[j, 0] and out[j, 1]
         respectively.
-
     """
 
     def __init__(self, vlim_func):

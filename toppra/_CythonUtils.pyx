@@ -20,7 +20,7 @@ cpdef _create_velocity_constraint(np.ndarray[double, ndim=2] qs,
     Args:
     ----
     qs: ndarray
-        Path derivatives at each path positions.
+        Path derivatives at each grid point.
     vlim: ndarray
         Velocity bounds.
     
@@ -61,9 +61,9 @@ cpdef _create_velocity_constraint_varying(np.ndarray[double, ndim=2] qs,
     Args:
     ----
     qs: (N,) ndarray
-        Path derivatives at each path positions.
+        Path derivatives at each grid point.
     vlim_grid: (N, dof, 2) ndarray
-        Velocity bounds at each path position.
+        Velocity bounds at each grid point.
     
     Returns:
     --------
