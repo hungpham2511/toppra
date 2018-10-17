@@ -91,3 +91,10 @@ class TestClass_JointVelocityConstraint(object):
         )
 
 
+def test_negative_velocity():
+    "illegal velocity limits input"
+    vlim = np.array([[-1., -2], [-2., 2]])
+    with pytest.raises(AssertionError) as e_info:
+        constraint = ta.constraint.JointVelocityConstraint(vlim)
+    print e_info
+    assert e_info.value.args[0][:19] == "Bad velocity limits"
