@@ -1,5 +1,6 @@
 from .canonical_linear import CanonicalLinearConstraint
-from toppra._CythonUtils import _create_velocity_constraint
+from toppra._CythonUtils import (_create_velocity_constraint,
+                                 _create_velocity_constraint_varying)
 import numpy as np
 
 
@@ -45,22 +46,18 @@ class JointVelocityConstraintVarying(CanonicalLinearConstraint):
 
     Parameters
     ----------
-    s_wpt: array
-        Shape (N). Path positions of the waypoints.
-    vlim_wpt: array
-        Shape (N, dof, 2). The 0-th waypoint lower and upper velocity
-        bounds of the j-th joint are given by vlim[0, j, 0] and vlim[0, j, 1]
+    vlim_func: float -> array function
+        Output Shape (dof, 2). The lower and upper velocity bounds of
+        the j-th joint are given by out[j, 0] and out[j, 1]
         respectively.
+
     """
 
-    def __init__(self, vlim):
-        super(JointVelocityConstraint, self).__init__()
-        self.vlim = np.array(vlim, dtype=float)
-        self.dof = self.vlim.shape[0]
-        assert self.vlim.shape[1] == 2, "Wrong input shape."
-        self._format_string = "    Velocity limit: \n"
-        for i in range(self.vlim.shape[0]):
-            self._format_string += "      J{:d}: {:}".format(i + 1, self.vlim[i]) + "\n"
+    def __init__(self, vlim_func):
+        super(JointVelocityConstraintVarying, self).__init__()
+        self.dof = vlim_func(0).shape[0]
+        self._format_string = "    Varying Velocity limit: \n"
+        self.vlim_func = vlim_func
 
     def compute_constraint_params(self, path, gridpoints):
         if path.get_dof() != self.get_dof():
@@ -68,7 +65,8 @@ class JointVelocityConstraintVarying(CanonicalLinearConstraint):
                 self.get_dof(), path.get_dof()
             ))
         qs = path.evald(gridpoints)
-        _, _, xbound_ = _create_velocity_constraint(qs, self.vlim)
+        vlim_grid = np.array([self.vlim_func(s) for s in gridpoints])
+        _, _, xbound_ = _create_velocity_constraint_varying(qs, vlim_grid)
         xbound = np.array(xbound_)
         xbound[:, 0] = xbound_[:, 1]
         xbound[:, 1] = - xbound_[:, 0]

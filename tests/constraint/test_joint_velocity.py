@@ -5,6 +5,7 @@ import numpy.testing as npt
 import toppra as ta
 import toppra.constraint as constraint
 from toppra.constants import TINY
+from scipy.interpolate import CubicSpline
 
 MAXSD = 10
 
@@ -98,3 +99,43 @@ def test_negative_velocity():
         constraint = ta.constraint.JointVelocityConstraint(vlim)
     print e_info
     assert e_info.value.args[0][:19] == "Bad velocity limits"
+
+
+def test_jnt_vel_varying_basic():
+    # constraint
+    ss_wpts = np.r_[0, 1, 2]
+    vlim_wpts = [[[-1, 2], [-1, 2]],
+                 [[-2, 3], [-2, 3]],
+                 [[-1, 0], [-1, 0]]]
+    vlim_spl = CubicSpline(ss_wpts, vlim_wpts)
+    constraint = ta.constraint.JointVelocityConstraintVarying(vlim_spl)
+    # path
+    coeff = [[1., 2, 3], [-2., -3., 4., 5.]]
+    path = ta.PolynomialPath(coeff)
+    gridpoints = np.linspace(0, 2, 10)
+    _, _, _, _, _, _, xlimit = constraint.compute_constraint_params(path, gridpoints)
+    # constraint splines
+    qs = path.evald(gridpoints)
+    # test
+    sd = cvx.Variable()
+    for i in range(ss_wpts.shape[0]):
+        vlim = vlim_spl(gridpoints[i])
+
+        # 2. compute max sd from the data
+        constraints = [qs[i] * sd <= vlim[:, 1],
+                       qs[i] * sd >= vlim[:, 0],
+                       sd >= 0, sd <= MAXSD]
+        prob = cvx.Problem(cvx.Maximize(sd), constraints)
+        prob.solve(solver=cvx.ECOS, abstol=1e-9)
+        xmax = sd.value ** 2
+
+        prob = cvx.Problem(cvx.Minimize(sd), constraints)
+        prob.solve(solver=cvx.ECOS, abstol=1e-9)
+        xmin = sd.value ** 2
+
+        # 3. they should agree
+        npt.assert_allclose([xmin, xmax], xlimit[i], atol=TINY)
+
+        # assert non-negativity
+        assert xlimit[i, 0] >= 0
+
