@@ -10,7 +10,7 @@ ctypedef np.float_t FLOAT_t
 
 from ..constraint import ConstraintType
 
-cdef double TINY = 1e-20
+cdef double TINY = 1e-10
 cdef double SMALL = 1e-8
 cdef double VAR_MIN = -100000000
 cdef double VAR_MAX =  100000000
@@ -84,7 +84,7 @@ cdef LpSol cy_solve_lp1d(double[:] v, int nrows, double[:] a, double[:] b, doubl
     """ Solve the following program
     
             dbl_max   v[0] x + v[1]
-            s.t.  a x <= b
+            s.t.  a x + b <= 0
                   low <= x <= high
 
     """
@@ -223,6 +223,8 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
                 sol.active_c[0] = -1
             else:
                 sol.active_c[1] = -3
+    # print("v: {:}".format(repr(np.array(v))))
+    # print("opt_var: {:}".format(repr(np.array(cur_optvar))))
 
     # If active_c contains valid entries, swap the first two indices
     # in index_map to these values.
@@ -241,6 +243,7 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
 
     # pre-process the inequalities, remove those that are redundant
     cdef cloned_index_map 
+    # print(np.array(index_map))
 
     # handle other constraints in a, b, c
     for k in range(nrows):
@@ -248,6 +251,8 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
         # if current optimal variable satisfies the i-th constraint, continue
         if a[i] * cur_optvar[0] + b[i] * cur_optvar[1] + c[i] < TINY:
             continue
+        # print("a[i] * cur_optvar[0] + b[i] * cur_optvar[1] + c[i] = {:f}".format(
+        #     a[i] * cur_optvar[0] + b[i] * cur_optvar[1] + c[i]))
         # print k
         # otherwise, project all constraints on the line defined by (a[i], b[i], c[i])
         n_wsr += 1
@@ -317,13 +322,16 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
                     return sol
                 # feasible constraints, specify 0 <= 1
                 a_1d[j] = 0
-                b_1d[j] = 1.0
+                b_1d[j] = - 1.0
 
         # solve the projected, 1 dimensional LP
         sol_1d = cy_solve_lp1d(v_1d, nrows_1d, a_1d, b_1d, low_1d, high_1d)
         
         # 1d lp infeasible
         if sol_1d.result == 0:
+            # print "v={:}\n a={:}\n b={:}\n low={:}\n high={:}".format(
+            #     *map(repr, map(np.asarray,
+            #                    [v_1d, a_1d, b_1d, low_1d, high_1d])))
             sol.result = 0
             return sol
         # feasible, wrapping up
@@ -331,6 +339,7 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
             # compute the current optimal solution
             cur_optvar[0] = zero_prj[0] + sol_1d.optvar[0] * d_tan[0]
             cur_optvar[1] = zero_prj[1] + sol_1d.optvar[0] * d_tan[1]
+            # print("opt_var: {:}".format(repr(np.array(cur_optvar))))
             # record the active constraint's index
             if sol_1d.active_c[0] < k:
                 sol.active_c[1] = index_map[sol_1d.active_c[0]]
@@ -579,12 +588,12 @@ cdef class seidelWrapper:
                 self.b_arr[i, 1] = 1.0
                 self.c_arr[i, 1] = - x_next_max
         else:
-            # at last stage, do not consider this constraint
+            # at the last stage, neglect this constraint
             self.a_arr[i, 0:2] = 0
             self.b_arr[i, 0:2] = 0
             self.c_arr[i, 0:2] = -1
 
-        # handle the objective function
+        # objective function
         self.v[0] = - g[0]
         self.v[1] = - g[1]
 
@@ -592,10 +601,15 @@ cdef class seidelWrapper:
         # depending on the sign of g[1]
            
         if g[1] > 0:  # choose upper solver
+            # print "v={:}\n a={:}\n b={:}\n c={:}\n low={:}\n high={:}\n active_c_up={:}".format(
+            #     *map(repr, map(np.asarray,
+            #                    [self.v, self.a_arr[i], self.b_arr[i], self.c_arr[i],
+            #                     low_arr, high_arr, self.active_c_up])))
             solution = cy_solve_lp2d(self.v, self.a_arr[i], self.b_arr[i], self.c_arr[i],
                                      low_arr, high_arr, self.active_c_up,
                                      True, self.index_map, self.a_1d, self.b_1d)
             if solution.result == 0:
+                # print("upper solver fails")
                 var[0] = NAN
                 var[1] = NAN
             else:
@@ -608,8 +622,8 @@ cdef class seidelWrapper:
                                      True, self.index_map, self.a_1d, self.b_1d)
             if solution.result == 0:
                 # print "v={:}\n a={:}\n b={:}\n c={:}\n low={:}\n high={:}".format(
-                #     *map(repr, map(np.asarray,
-                #                   [self.v, self.a_arr[i], self.b_arr[i], self.c_arr[i], self.low_arr[i], self.high_arr[i]])))
+                    # *map(repr, map(np.asarray,
+                                  # [self.v, self.a_arr[i], self.b_arr[i], self.c_arr[i], self.low_arr[i], self.high_arr[i]])))
                 var[0] = NAN
                 var[1] = NAN
             else:
