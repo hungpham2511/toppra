@@ -92,15 +92,7 @@ class cvxpyWrapper(SolverWrapper):
 
         objective = cvxpy.Minimize(0.5 * cvxpy.quad_form(ux, H) + g * ux)
         problem = cvxpy.Problem(objective, constraints=cvxpy_constraints)
-        # if FOUND_MOSEK:
-            # problem.solve(solver='MOSEK')
-        # else:
-            # problem.solve()
-        if logger.getEffectiveLevel() == logging.DEBUG:
-            verbose = True
-        else:
-            verbose = False
-        problem.solve(verbose=verbose)
+        problem.solve(verbose=False)
         if problem.status == cvxpy.OPTIMAL or problem.status == cvxpy.OPTIMAL_INACCURATE:
             return np.array(ux.value).flatten()
         else:

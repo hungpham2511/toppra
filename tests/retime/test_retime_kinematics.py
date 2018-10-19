@@ -30,7 +30,7 @@ def robot_fixture():
 
 @pytest.mark.skipif(not FOUND_OPENRAVE, reason="Not found openrave installation")
 @pytest.mark.parametrize("seed", range(90, 100), ids=["Seed=" + str(i) for i in range(90, 100)])
-@pytest.mark.parametrize("solver_wrapper", ["hotqpoases", "seidel", "ecos"])
+@pytest.mark.parametrize("solver_wrapper", ["hotqpoases", "seidel"])
 def test_retime_kinematics_ravetraj(robot_fixture, seed, solver_wrapper):
     env = robot_fixture.GetEnv()
     basemanip = orpy.interfaces.BaseManipulation(robot_fixture)
@@ -39,10 +39,8 @@ def test_retime_kinematics_ravetraj(robot_fixture, seed, solver_wrapper):
     arm_indices = robot_fixture.GetActiveDOFIndices()
     qlim_lower, qlim_upper = robot_fixture.GetActiveDOFLimits()
     np.random.seed(seed)
-    qseed = np.random.randint(1000000, size=(1000,))  # Try 1000 times
     qsel = []
-    for seed in qseed:
-        np.random.seed(seed)
+    for _ in range(1000):
         qrand = qlim_lower + (qlim_upper - qlim_lower) * np.random.rand(len(arm_indices))
         with robot_fixture:
             robot_fixture.SetActiveDOFValues(qrand)

@@ -39,7 +39,7 @@ def path(request):
     yield path
 
 
-@pytest.mark.parametrize("solver_wrapper", ["cvxpy", "ecos", "qpoases", "hotqpoases", "seidel"])
+@pytest.mark.parametrize("solver_wrapper", ["cvxpy", "qpoases", "hotqpoases", "seidel"])
 def test_toppra_linear(vel_accel_robustaccel, path, solver_wrapper):
     vel_c, acc_c, ro_acc_c = vel_accel_robustaccel
     instance = toppra.algorithm.TOPPRA([vel_c, acc_c], path, solver_wrapper=solver_wrapper)
@@ -93,13 +93,18 @@ def test_toppra_linear_compare(vel_accel_robustaccel, path, solver_wrapper):
     K = instance.compute_controllable_sets(0, 0)
     K2 = instance2.compute_controllable_sets(0, 0)
     for i in range(instance._N, -1, -1):
-        np.testing.assert_allclose(K[i], K2[i], atol=1e-8,
+        np.testing.assert_allclose(K[i], K2[i], atol=1e-6,
                                    err_msg="Mismatched at i={:} / N={:}".format(i, instance._N))
 
     X = instance.compute_feasible_sets()
     X2 = instance2.compute_feasible_sets()
-    np.testing.assert_allclose(X, X2, atol=1e-8)
+    for i in range(instance._N, -1, -1):
+        np.testing.assert_allclose(X[i], X2[i], atol=1e-6,
+                                   err_msg="Mismatched at i={:} / N={:}".format(i, instance._N))
 
     sd, sdd, _ = instance.compute_parameterization(0, 0)
     sd2, sdd2, _ = instance2.compute_parameterization(0, 0)
-    np.testing.assert_allclose(X, X2, atol=1e-8)
+    for i in range(instance._N - 1, -1, -1):
+        np.testing.assert_allclose(sd[i], sd2[i], atol=1e-6,
+                                   err_msg="Mismatched at i={:} / N={:}".format(i, instance._N))
+

@@ -166,10 +166,7 @@ def test_basic_init(basic_init_fixture, solver_name, i, H, g, x_ineq):
     else:
         objective = cvxpy.Minimize(g * ux)
     problem = cvxpy.Problem(objective, cvxpy_constraints)
-    if FOUND_MOSEK:
-        problem.solve(solver="MOSEK", verbose=True)
-    else:
-        problem.solve(solver="ECOS", verbose=True)
+    problem.solve(verbose=True)  # test with the same solver as cvxpywrapper
     if problem.status == "optimal":
         actual = np.array(ux.value).flatten()
         result = np.array(result).flatten()
