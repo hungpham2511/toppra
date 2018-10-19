@@ -4,10 +4,8 @@ import numpy as np
 import numpy.testing as npt
 import toppra as ta
 import toppra.constraint as constraint
-from toppra.constants import TINY
+from toppra.constants import TINY, MAXSD
 from scipy.interpolate import CubicSpline
-
-MAXSD = 10
 
 
 @pytest.fixture(scope="class", params=[2, 6], name='velocity_pc_data')

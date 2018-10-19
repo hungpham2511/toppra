@@ -1,5 +1,6 @@
 from .solverwrapper import SolverWrapper
 from ..constraint import ConstraintType
+from ..constants import INFTY
 import logging
 import numpy as np
 import scipy.sparse
@@ -7,7 +8,7 @@ import ecos
 
 logger = logging.getLogger(__name__)
 
-INF = 1e2
+INF = 1e3
 
 
 class ecosWrapper(SolverWrapper):

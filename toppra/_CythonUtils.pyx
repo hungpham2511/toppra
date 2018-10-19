@@ -11,11 +11,15 @@ cdef inline np.float64_t float64_abs(
     FLOAT_t a): return a if a > 0 else - a
 
 cdef float INFTY = 1e8
-cdef float MAXSD = 10  # Maximum allowable path velocity
+cdef float MAXSD = 100  # Maximum allowable path velocity
 
 cpdef _create_velocity_constraint(np.ndarray[double, ndim=2] qs,
                                   np.ndarray[double, ndim=2] vlim):
     """ Evaluate coefficient matrices for velocity constraints.
+
+    A maximum allowable value for the path velocity is defined with
+    `MAXSD`. This constant results in a lower bound on trajectory
+    duration obtain by toppra.
 
     Args:
     ----

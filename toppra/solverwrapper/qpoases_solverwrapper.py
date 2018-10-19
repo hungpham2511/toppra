@@ -1,12 +1,15 @@
 from .solverwrapper import SolverWrapper
 import numpy as np
 from ..constraint import ConstraintType
+from ..constants import INFTY
 try:
     from qpoases import (PyOptions as Options, PyPrintLevel as PrintLevel,
                          PyReturnValue as ReturnValue, PySQProblem as SQProblem)
     qpoases_FOUND = True
 except ImportError:
     qpoases_FOUND = False
+
+INF = INFTY
 
 
 class qpOASESSolverWrapper(SolverWrapper):
@@ -53,7 +56,6 @@ class qpOASESSolverWrapper(SolverWrapper):
         #  s.t    lA <= Ay <= hA
         #         l  <=  y <= h
         assert i <= self.N and 0 <= i
-        INF = 10000
 
         l = - np.ones(2) * INF
         h = np.ones(2) * INF
