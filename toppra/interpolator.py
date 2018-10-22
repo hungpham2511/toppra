@@ -383,6 +383,9 @@ class UnivariateSplineInterpolator(Interpolator):
         self.uspld = [spl.derivative() for spl in self.uspl]
         self.uspldd = [spl.derivative() for spl in self.uspld]
 
+    def get_duration(self):
+        return self.duration
+
     def eval(self, ss):
         data = []
         for spl in self.uspl:
@@ -430,6 +433,7 @@ class PolynomialPath(Interpolator):
         self.coeff = np.array(coeff)
         self.s_start = s_start
         self.s_end = s_end
+        self.duration = s_end - s_start
         if np.isscalar(self.coeff[0]):
             self.dof = 1
             self.poly = [np.polynomial.Polynomial(self.coeff)]
@@ -442,6 +446,9 @@ class PolynomialPath(Interpolator):
 
         self.polyd = [poly.deriv() for poly in self.poly]
         self.polydd = [poly.deriv() for poly in self.polyd]
+
+    def get_duration(self):
+        return self.duration
 
     def eval(self, ss_sam):
         res = [poly(np.array(ss_sam)) for poly in self.poly]
