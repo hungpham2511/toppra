@@ -115,7 +115,6 @@ class ParameterizationAlgorithm(object):
                 return None, None
 
         # Gridpoint time instances
-        q_grid = self.path.eval(self.gridpoints)
         t_grid = np.zeros(self._N + 1)
         skip_ent = []
         for i in range(1, self._N + 1):
@@ -129,7 +128,8 @@ class ParameterizationAlgorithm(object):
             if delta_t < TINY:  # if a time increment is too small, skip.
                 skip_ent.append(i)
         t_grid = np.delete(t_grid, skip_ent)
-        q_grid = np.delete(q_grid, skip_ent, axis=0)
+        gridpoints = np.delete(self.gridpoints, skip_ent)
+        q_grid = self.path.eval(gridpoints)
 
         traj_spline = SplineInterpolator(t_grid, q_grid, bc_type)
 
@@ -147,7 +147,7 @@ class ParameterizationAlgorithm(object):
         elif return_data:
             # NOTE: the time stamps for each (original) waypoint are
             #  evaluated by interpolating the grid points.
-            t_waypts = np.interp(self.path.ss_waypoints, self.gridpoints, t_grid)
+            t_waypts = np.interp(self.path.ss_waypoints, gridpoints, t_grid)
             return traj_spline, v_spline, {'sdd': sdd_grid, 'sd': sd_grid,
                                            'v': v_grid, 'K': K, 't_waypts': t_waypts}
         else:
