@@ -1,5 +1,5 @@
 from ..algorithm import ParameterizationAlgorithm
-from ...constants import LARGE, SMALL
+from ...constants import LARGE, SMALL, TINY
 from ...constraint import ConstraintType
 
 import numpy as np
@@ -137,6 +137,8 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
             K[i] = self._one_step(i, K[i + 1])
             if K[i, 0] < 0:
                 K[i, 0] = 0
+            if K[i, 1] < 1e-4:
+                logger.warn("Controllable set too small K[{:d}] = {:}. Might lead to numerical issue.".format(i, K[i]))
             if np.isnan(K[i]).any():
                 logger.warn("K[{:d}]={:}. Path not parametrizable.".format(i, K[i]))
                 return K
@@ -243,7 +245,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
                 # The below function min( , max( ,)) ensure that the state x_{i+1} is controllable.
                 # While this is ensured theoretically by the existence of the controllable sets,
                 # numerical errors might violate this condition.
-                xs[i + 1] = min(K[i + 1, 1], max(K[i + 1, 0], xs[i] + 2 * deltas[i] * us[i] - SMALL))
+                xs[i + 1] = min(K[i + 1, 1], max(K[i + 1, 0], xs[i] + 2 * deltas[i] * us[i] - TINY))
                 v_vec[i] = optim_res[2:]
             logger.debug("[Forward pass] u_{:d} = {:f}, x_{:d} = {:f}".format(i, us[i], i+1, xs[i+1]))
         self.solver_wrapper.close_solver()

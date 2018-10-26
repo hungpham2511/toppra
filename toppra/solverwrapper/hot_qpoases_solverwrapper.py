@@ -1,6 +1,7 @@
 from .solverwrapper import SolverWrapper
 import numpy as np
 from ..constraint import ConstraintType
+from ..constants import INFTY
 try:
     from qpoases import (PyOptions as Options, PyPrintLevel as PrintLevel,
                          PyReturnValue as ReturnValue, PySQProblem as SQProblem)
@@ -12,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 eps = 1e-8  # Coefficient to check for qpoases tolerances
-INF = 10000
+INF = INFTY
 
 
 class hotqpOASESSolverWrapper(SolverWrapper):
