@@ -135,10 +135,13 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         self.solver_wrapper.setup_solver()
         for i in range(self._N - 1, -1, -1):
             K[i] = self._one_step(i, K[i + 1])
+            # various checks
             if K[i, 0] < 0:
                 K[i, 0] = 0
             if K[i, 1] < 1e-4:
-                logger.warn("Controllable set too small K[{:d}] = {:}. Might lead to numerical issue.".format(i, K[i]))
+                logger.warn("Badly conditioned problem. Controllable set too small K[{:d}] = {:}".format(i, K[i]))
+            elif K[i, 1] > 1e4:
+                logger.warn("Badly conditioned problem. Controllable set too large K[{:d}] = {:}".format(i, K[i]))
             if np.isnan(K[i]).any():
                 logger.warn("K[{:d}]={:}. Path not parametrizable.".format(i, K[i]))
                 return K
