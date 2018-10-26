@@ -28,8 +28,10 @@ except ImportError:
 def vel_accel_constraints(request):
     "Velocity + Acceleration + Robust Acceleration constraint"
     dtype_a, dtype_ra = request.param
-    vlims = np.array([[-1, 1], [-1, 2], [-1, 4]], dtype=float)
-    alims = np.array([[-1, 1], [-1, 2], [-1, 4]], dtype=float)
+    vlims = np.array([[-1, 1], [-1, 2], [-1, 4], [-3, 4], [-2, 4], [-3, 4], [-2, 5]],
+                     dtype=float)
+    alims = np.array([[-1, 1], [-1, 2], [-1, 4], [-3, 4], [-2, 4], [-3, 4], [-2, 5]],
+                     dtype=float)
     vel_cnst = constraint.JointVelocityConstraint(vlims)
     accl_cnst = constraint.JointAccelerationConstraint(alims, dtype_a)
     robust_accl_cnst = constraint.RobustCanonicalLinearConstraint(
@@ -41,7 +43,7 @@ def vel_accel_constraints(request):
 def path(request):
     seed = request.param
     np.random.seed(seed)
-    path = toppra.SplineInterpolator(np.linspace(0, 1, 5), np.random.randn(5, 3))
+    path = toppra.SplineInterpolator(np.linspace(0, 1, 5), np.random.randn(5, 7))
     yield path
 
 

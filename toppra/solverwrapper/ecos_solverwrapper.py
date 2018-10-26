@@ -1,6 +1,6 @@
 from .solverwrapper import SolverWrapper
 from ..constraint import ConstraintType
-from ..constants import INFTY
+from ..constants import INFTY, ECOS_MAXX, ECOS_INFTY
 import logging
 import numpy as np
 import scipy.sparse
@@ -8,15 +8,18 @@ import ecos
 
 logger = logging.getLogger(__name__)
 
-INF = 1e3
-
-
 class ecosWrapper(SolverWrapper):
     """A solver wrapper that handles linear and conic-quadratic constraints using ECOS.
 
     :class:`ecosWrapper` and :class:`cvxpyWrapper` are the only
     wrappers that can handle conic-quadratic constraints, which are
     necessary to compute robust path parameterization.
+
+    Notes
+    -----
+    To reduce numerical-related issues, ECOS_MAXX is used to regulate
+    the magnitude of the solution.
+
 
     Attributes
     ----------
@@ -89,12 +92,12 @@ class ecosWrapper(SolverWrapper):
         if not np.isnan(x_min):
             h[currow] = - x_min
         else:
-            h[currow] = INF
+            h[currow] = ECOS_INFTY
         currow += 1
         if not np.isnan(x_max):
             h[currow] = x_max
         else:
-            h[currow] = INF
+            h[currow] = ECOS_INFTY
         currow += 1
         ## Fill 2)
         if i < self.N:
@@ -103,13 +106,13 @@ class ecosWrapper(SolverWrapper):
             if not np.isnan(x_next_min):
                 h[currow] = - x_next_min
             else:
-                h[currow] = INF
+                h[currow] = ECOS_INFTY
             currow += 1
             G_lil[currow, :] = [[2 * delta, 1]]
             if not np.isnan(x_next_max):
                 h[currow] = x_next_max
             else:
-                h[currow] = INF
+                h[currow] = ECOS_INFTY
             currow += 1
         ## Fill 3)
         for k in self._linear_idx:
@@ -138,7 +141,7 @@ class ecosWrapper(SolverWrapper):
             if _xbound is not None:
                 G_lil[currow, 1] = 1
                 G_lil[currow + 1, 1] = -1
-                h[currow: currow + 2] = [_xbound[i, 1], -_xbound[i, 0]]
+                h[currow: currow + 2] = [min(ECOS_MAXX, _xbound[i, 1]), -_xbound[i, 0]]
                 currow += 2
         ## Fill 4)
         for k in self._conic_idx:

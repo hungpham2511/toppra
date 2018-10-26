@@ -2,6 +2,8 @@ from .solverwrapper import SolverWrapper
 import logging
 import numpy as np
 from ..constraint import ConstraintType
+from ..constants import CVXPY_MAXX, CVXPY_MAXU
+
 
 logger = logging.getLogger(__name__)
 try:
@@ -19,7 +21,11 @@ except ImportError:
 
 
 class cvxpyWrapper(SolverWrapper):
-    """ A solver wrapper using `cvxpy`.
+    """A solver wrapper using `cvxpy`.
+
+    NOTE: the two constants CVXPY_MAXX and CVXPY_MAXU is used to
+    guarantee that the solution is not too large, in which case cvxpy
+    can't handle very well.
 
     Parameters
     ----------
@@ -29,6 +35,7 @@ class cvxpyWrapper(SolverWrapper):
         The geometric path.
     path_discretization: array
         The discretized path positions.
+
     """
 
     def __init__(self, constraint_list, path, path_discretization):
@@ -76,7 +83,7 @@ class cvxpyWrapper(SolverWrapper):
 
                 if xbound is not None:
                     cvxpy_constraints.append(xbound[i, 0] <= x)
-                    cvxpy_constraints.append(x <= xbound[i, 1])
+                    cvxpy_constraints.append(x <= min(CVXPY_MAXX, xbound[i, 1]))
 
             elif constraint.get_constraint_type() == ConstraintType.CanonicalConic:
                 a, b, c, P = self.params[k]
