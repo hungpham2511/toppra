@@ -1,3 +1,9 @@
+"""General cases
+
+This test suite guarantees that the basic functionalities provided by
+toppra and the many interfaces to optimization solvers contained with
+it work.
+"""
 import pytest
 import numpy as np
 import toppra
@@ -19,7 +25,7 @@ except ImportError:
 
 
 @pytest.fixture(params=[(0, 0)])
-def vel_accel_robustaccel(request):
+def vel_accel_constraints(request):
     "Velocity + Acceleration + Robust Acceleration constraint"
     dtype_a, dtype_ra = request.param
     vlims = np.array([[-1, 1], [-1, 2], [-1, 4]], dtype=float)
@@ -40,8 +46,13 @@ def path(request):
 
 
 @pytest.mark.parametrize("solver_wrapper", ["cvxpy", "qpoases", "hotqpoases", "seidel"])
-def test_toppra_linear(vel_accel_robustaccel, path, solver_wrapper):
-    vel_c, acc_c, ro_acc_c = vel_accel_robustaccel
+def test_toppra_linear(vel_accel_constraints, path, solver_wrapper):
+    """Basic problem instance.
+
+    Only check for validity of the feasible sets, controllable sets.
+
+    """
+    vel_c, acc_c, ro_acc_c = vel_accel_constraints
     instance = toppra.algorithm.TOPPRA([vel_c, acc_c], path, solver_wrapper=solver_wrapper)
     X = instance.compute_feasible_sets()
     assert np.all(X >= 0)
@@ -55,38 +66,17 @@ def test_toppra_linear(vel_accel_robustaccel, path, solver_wrapper):
     assert traj is not None
 
 
-@pytest.mark.parametrize("solver_wrapper", ["cvxpy", "ecos"])
-def test_toppra_conic(vel_accel_robustaccel, path, solver_wrapper):
-    vel_c, acc_c, ro_acc_c = vel_accel_robustaccel
-    acc_c.set_discretization_type(1)
-    ro_acc_c.set_discretization_type(1)
-    ro_instance = toppra.algorithm.TOPPRA([vel_c, ro_acc_c], path, solver_wrapper=solver_wrapper)
-
-    X = ro_instance.compute_feasible_sets()
-    assert np.all(X >= 0)
-    assert not np.any(np.isnan(X))
-
-    K = ro_instance.compute_controllable_sets(0, 0)
-    assert np.all(K >= 0)
-    assert not np.any(np.isnan(K))
-
-    traj, _ = ro_instance.compute_trajectory(0, 0)
-    assert traj is not None
-    assert traj.get_duration() < 20 and traj.get_duration() > 0
-
-
-
 @pytest.mark.parametrize("solver_wrapper", [
     ("cvxpy", "qpoases"),
     ("qpoases", "hotqpoases"),
     ("qpoases", "ecos"),
     ("qpoases", "seidel")
 ])
-def test_toppra_linear_compare(vel_accel_robustaccel, path, solver_wrapper):
+def test_toppra_linear_compare(vel_accel_constraints, path, solver_wrapper):
     """ Compare the output of the algorithm
     """
     print("compare {:} and {:}".format(*solver_wrapper))
-    vel_c, acc_c, ro_acc_c = vel_accel_robustaccel
+    vel_c, acc_c, ro_acc_c = vel_accel_constraints
     instance = toppra.algorithm.TOPPRA([vel_c, acc_c], path, solver_wrapper=solver_wrapper[0])
     instance2 = toppra.algorithm.TOPPRA([vel_c, acc_c], path, solver_wrapper=solver_wrapper[1])
 

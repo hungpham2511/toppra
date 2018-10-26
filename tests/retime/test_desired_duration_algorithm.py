@@ -30,10 +30,10 @@ def path_fixture(request):
 
 def test_specific_duration_parametrization(velacc_fixture, path_fixture):
     """A simple test for `TOPPRAsd`, a variant of TOPPRA that computes
-    parameterizations with specified duration. TOPPRAsd has an
-    identical interface to TOPPRA with an additional method
-    `set_desired_duration`.
+    parameterizations with specified duration.
 
+    TOPPRAsd has an identical interface to TOPPRA with an additional
+    method `set_desired_duration`.
     """
     t_desired = 50
     cvlim, calim = velacc_fixture
