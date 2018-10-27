@@ -55,7 +55,10 @@ class Interpolator(object):
     """
     def __init__(self):
         self.dof = None
+        # Note: do not use this attribute directly, use get_duration
+        # method instead.
         self.duration = None
+        self.scaling = 1.0
 
     def get_dof(self):
         """ Return the degree-of-freedom of the path.
@@ -67,11 +70,29 @@ class Interpolator(object):
         """
         return self.dof
 
-    def get_duration(self):
+    def set_scaling(self, scaling):
+        """Scale the path.
+
+        The if the original path duration is [0, s_end], then the
+        scaled duration is [0, s_end * gamma]. Remark that a scaled
+        path also have scaled derivatives. Using bar to denoted the
+        scaled path, by simple calculus one has:
+
+        duration_bar = duration * gamma
+        q_bar(s_bar) = q(s_bar / gamma)
+        dq_bar(s_bar) / ds_bar = dq(s_bar / gamma) / ds / gamma
+        d2q_bar(s_bar) / ds_bar^2 = d2q(s_bar / gamma) / ds^2 / gamma^2
         """
+        assert scaling > 0, "scaling must be a positive float!"
+        self.scaling = float(scaling)
+
+    def get_duration(self):
+        """ Return the duration of the path.
 
         Returns
         -------
+        out: float
+            Path duration.
 
         """
         raise NotImplementedError
@@ -303,16 +324,18 @@ class SplineInterpolator(Interpolator):
             self.cspldd = self.cspld.derivative()
 
     def get_duration(self):
-        return self.duration
+        return self.duration * self.scaling
 
     def eval(self, ss_sam):
-        return self.cspl(ss_sam)
+        return self.cspl(ss_sam / self.scaling)
 
     def evald(self, ss_sam):
-        return self.cspld(ss_sam)
+        return self.cspld(ss_sam / self.scaling) / self.scaling
 
     def evaldd(self, ss_sam):
-        return self.cspldd(ss_sam)
+        # See the `set_scaling` method of `Interpolator` for more
+        # details on scaling.
+        return self.cspldd(ss_sam / self.scaling) / self.scaling ** 2
 
     def compute_rave_trajectory(self, robot):
         """ Compute an OpenRAVE trajectory equivalent to this trajectory.
