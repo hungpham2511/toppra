@@ -4,6 +4,7 @@ from ...constraint import ConstraintType
 
 import numpy as np
 import logging
+from copy import deepcopy
 logger = logging.getLogger(__name__)
 
 
@@ -19,6 +20,8 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
     solver_wrapper: str, optional
         Name of solver to use. If leave to be None, will select the
         most suitable solver wrapper.
+    scaling: float, optional
+        Scale the given path's duration from [0, s_end] to [0, s_end * scaling].
 
     Notes
     -----
@@ -38,16 +41,38 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
     - compute_controllable_sets
     - compute_reachable_sets
     - compute_feasible_sets
-    """
-    def __init__(self, constraint_list, path, gridpoints=None, solver_wrapper=None):
-        super(ReachabilityAlgorithm, self).__init__(constraint_list, path, gridpoints=gridpoints)
 
-        logger.debug("Checking supplied constraints.")
+    """
+    def __init__(self, constraint_list, path, gridpoints=None, solver_wrapper=None, scaling=-1):
+        super(ReachabilityAlgorithm, self).__init__(constraint_list, path, gridpoints=gridpoints)
+        if gridpoints is None:
+            gridpoints = np.linspace(0, path.get_duration(), 100)
+        # gridpoint check
+        if path.get_path_interval()[0] != gridpoints[0]:
+            logger.fatal("Manually supplied gridpoints does not start from 0.")
+            raise ValueError("Bad manually supplied gridpoints.")
+        if path.get_path_interval()[1] != gridpoints[-1]:
+            logger.fatal("Manually supplied gridpoints have endpoint different from input path duration.")
+            raise ValueError("Bad manually supplied gridpoints.")
+        self.gridpoints = np.array(gridpoints)  # Attr
+        self._N = len(gridpoints) - 1  # Number of stages. Number of point is _N + 1
+        for i in range(self._N):
+            assert gridpoints[i + 1] > gridpoints[i]
+
+        # Check for conic constraints
         has_conic = False
         for c in constraint_list:
             if c.get_constraint_type() == ConstraintType.CanonicalConic:
                 has_conic = True
-    
+
+        # path scaling for numerical stability
+        if scaling < 0:  # automatic scaling factor selection
+            scaling = 1.0
+        self.path = deepcopy(path)  # deepcopy is needed to protect input path from change in scaling factor
+        self.path.set_scaling(scaling)
+        self.gridpoints = self.gridpoints * scaling
+        
+        # Select solver wrapper automatically
         if solver_wrapper is None:
             logger.debug("Solver wrapper not supplied. Choose solver wrapper automatically!")
             if has_conic:
@@ -61,7 +86,6 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
             else:
                 assert solver_wrapper.lower() in ['cvxpy', 'qpoases', 'ecos', 'hotqpoases', 'seidel'], "Solver {:} not found".format(solver_wrapper)
 
-        # Select
         if solver_wrapper.lower() == "cvxpy":
             from toppra.solverwrapper.cvxpy_solverwrapper import cvxpyWrapper
             self.solver_wrapper = cvxpyWrapper(self.constraints, self.path, self.gridpoints)

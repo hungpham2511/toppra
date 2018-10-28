@@ -428,7 +428,7 @@ cdef class seidelWrapper:
             if self.constraints[i].get_constraint_type() != ConstraintType.CanonicalLinear:
                 raise NotImplementedError
             a, b, c, F, v, ubnd, xbnd = self.constraints[i].compute_constraint_params(
-            self.path, self.path_discretization)
+            self.path, path_discretization)
             if a is not None:
                 if self.constraints[i].identical:
                     self.nC += F.shape[0]

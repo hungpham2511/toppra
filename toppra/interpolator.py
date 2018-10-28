@@ -106,7 +106,7 @@ class Interpolator(object):
             Shaped (2,).
 
         """
-        return np.array([self.s_start, self.s_end])
+        return np.array([self.s_start, self.s_end]) * self.scaling
 
     def eval(self, ss_sam):
         """ Evaluate joint positions at specified path positions.
@@ -291,6 +291,7 @@ class SplineInterpolator(Interpolator):
         assert ss_waypoints[0] == 0, "First index must equals zero."
         self.ss_waypoints = np.array(ss_waypoints)
         self.waypoints = np.array(waypoints)
+        self.bc_type = bc_type
         if np.isscalar(waypoints[0]):
             self.dof = 1
         else:
@@ -333,8 +334,7 @@ class SplineInterpolator(Interpolator):
         return self.cspld(ss_sam / self.scaling) / self.scaling
 
     def evaldd(self, ss_sam):
-        # See the `set_scaling` method of `Interpolator` for more
-        # details on scaling.
+        # See the `set_scaling` method of `Interpolator` for more details.
         return self.cspldd(ss_sam / self.scaling) / self.scaling ** 2
 
     def compute_rave_trajectory(self, robot):

@@ -31,16 +31,8 @@ class ParameterizationAlgorithm(object):
         If not given, automatically generate a grid with 100 steps.
     """
     def __init__(self, constraint_list, path, gridpoints=None):
-        if gridpoints is None:
-            gridpoints = np.linspace(0, path.get_duration(), 100)
         self.constraints = constraint_list  # Attr
         self.path = path  # Attr
-        self.gridpoints = np.array(gridpoints)  # Attr
-        self._N = len(gridpoints) - 1  # Number of stages. Number of point is _N + 1
-        assert path.get_path_interval()[0] == gridpoints[0]
-        assert path.get_path_interval()[1] == gridpoints[-1]
-        for i in range(self._N):
-            assert gridpoints[i + 1] > gridpoints[i]
 
     def compute_parameterization(self, sd_start, sd_end):
         """ Compute a path parameterization.
@@ -69,7 +61,7 @@ class ParameterizationAlgorithm(object):
         """
         raise NotImplementedError
 
-    def compute_trajectory(self, sd_start, sd_end, return_profile=False, bc_type='not-a-knot', return_data=False):
+    def compute_trajectory(self, sd_start=0, sd_end=0, return_profile=False, bc_type='not-a-knot', return_data=False):
         """Compute the resulting joint trajectory and auxilliary trajectory.
 
         If parameterization fails, return a tuple of None(s).
