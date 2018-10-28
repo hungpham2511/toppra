@@ -30,8 +30,9 @@ def main():
     pc_acc = constraint.JointAccelerationConstraint(
         alim, discretization_scheme=constraint.DiscretizationType.Interpolation)
 
-    # Setup a parametrization instance
-    instance = algo.TOPPRA([pc_vel, pc_acc], path, solver_wrapper='seidel')
+    # Setup a parametrization instance. The keyword arguments are
+    # optional.
+    instance = algo.TOPPRA([pc_vel, pc_acc], path)
 
     # Retime the trajectory, only this step is necessary.
     t0 = time.time()

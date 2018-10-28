@@ -98,7 +98,8 @@ class ParameterizationAlgorithm(object):
             Return if return_data is True.
 
         """
-        sdd_grid, sd_grid, v_grid, K = self.compute_parameterization(sd_start, sd_end, return_data=True)
+        sdd_grid, sd_grid, v_grid, K = self.compute_parameterization(
+            sd_start, sd_end, return_data=True)
 
         if sd_grid is None:
             if return_profile:
@@ -139,7 +140,7 @@ class ParameterizationAlgorithm(object):
         elif return_data:
             # NOTE: the time stamps for each (original) waypoint are
             #  evaluated by interpolating the grid points.
-            t_waypts = np.interp(self.path.ss_waypoints, gridpoints, t_grid)
+            t_waypts = np.interp(self.path.get_waypoints()[0], gridpoints, t_grid)
             return traj_spline, v_spline, {'sdd': sdd_grid, 'sd': sd_grid,
                                            'v': v_grid, 'K': K, 't_waypts': t_waypts}
         else:

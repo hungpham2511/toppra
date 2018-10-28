@@ -324,6 +324,12 @@ class SplineInterpolator(Interpolator):
             self.cspld = self.cspl.derivative()
             self.cspldd = self.cspld.derivative()
 
+
+    def get_waypoints(self):
+        """ Return the appropriate scaled waypoints.
+        """
+        return self.ss_waypoints * self.scaling, self.waypoints
+
     def get_duration(self):
         return self.duration * self.scaling
 
