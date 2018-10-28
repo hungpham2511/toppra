@@ -159,13 +159,19 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         self.solver_wrapper.setup_solver()
         for i in range(self._N - 1, -1, -1):
             K[i] = self._one_step(i, K[i + 1])
-            # various checks
             if K[i, 0] < 0:
                 K[i, 0] = 0
+            # check for potential numerical stability issues
             if K[i, 1] < 1e-4:
-                logger.warn("Badly conditioned problem. Controllable set too small K[{:d}] = {:}".format(i, K[i]))
+                logger.warn("Badly conditioned problem. Controllable sets are too small "
+                            "K[{:d}] = {:}. ".format(i, K[i]))
+                logger.warn("Consider set scaling to -1 when initiating TOPPRA for automatic"
+                            " problem scaling.")
             elif K[i, 1] > 1e4:
-                logger.warn("Badly conditioned problem. Controllable set too large K[{:d}] = {:}".format(i, K[i]))
+                logger.warn("Badly conditioned problem. Controllable sets are too large "
+                            "K[{:d}] = {:}".format(i, K[i]))
+                logger.warn("Consider set scaling to -1 when initiating TOPPRA for automatic"
+                            " problem scaling.")
             if np.isnan(K[i]).any():
                 logger.warn("K[{:d}]={:}. Path not parametrizable.".format(i, K[i]))
                 return K
@@ -259,22 +265,32 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         v_vec = np.zeros((N, self.solver_wrapper.get_no_vars() - 2))
 
         self.solver_wrapper.setup_solver()
-        for i in range(self._N):
+        i = 0
+        while i < self._N:
             optim_res = self._forward_step(i, xs[i], K[i + 1])
             if np.isnan(optim_res[0]):
-                logger.fatal("A numerical error occurs: The instance is controllable "
-                             "but forward pass fails.")
-                us[i] = np.nan
-                xs[i + 1] = np.nan
-                v_vec[i] = np.nan
+                logger.fatal("A numerical error occurs: the instance is controllable "
+                             "but forward pass fails. Attempt to try again with x[i]"
+                             " slightly reduced.")
+                # NOTE: This case happens due to the constraint
+                # K[i + 1, 0] <= x[i] + 2D u[i] <= K[i + 1, 1]
+                # being slightly infeasible.  This happens more often
+                # with ECOS, which is an interior point solver, than
+                # with qpoases or seidel, both of which are active set
+                # solvers.
+                xs[i] -= SMALL
+                logger.debug("x[{:d}] reduced from {:.6f} to {:.6f}".format(i, xs[i] + SMALL, xs[i]))
             else:
                 us[i] = optim_res[0]
-                # The below function min( , max( ,)) ensure that the state x_{i+1} is controllable.
-                # While this is ensured theoretically by the existence of the controllable sets,
-                # numerical errors might violate this condition.
+                # The below function min( , max( ,)) ensure that the
+                # state x_{i+1} is controllable.  While this is
+                # ensured theoretically by the existence of the
+                # controllable sets, numerical errors might violate
+                # this condition.
                 xs[i + 1] = min(K[i + 1, 1], max(K[i + 1, 0], xs[i] + 2 * deltas[i] * us[i] - TINY))
+                logger.debug("[Forward pass] u[{:d}] = {:f}, x[{:d}] = {:f}".format(i, us[i], i + 1, xs[i + 1]))
                 v_vec[i] = optim_res[2:]
-            logger.debug("[Forward pass] u_{:d} = {:f}, x_{:d} = {:f}".format(i, us[i], i+1, xs[i+1]))
+                i += 1
         self.solver_wrapper.close_solver()
 
         sd_vec = np.sqrt(xs)
