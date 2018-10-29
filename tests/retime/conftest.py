@@ -19,11 +19,15 @@ def vel_accel_constraints(request):
     yield vel_cnst, accl_cnst, robust_accl_cnst
 
 
-@pytest.fixture(params=[1, 2])
+@pytest.fixture(params=["spline", "poly"])
 def path(request):
-    seed = request.param
-    np.random.seed(seed)
-    path = toppra.SplineInterpolator(np.linspace(0, 1, 5), np.random.randn(5, 7))
+    """ A generic path factory.
+    """
+    if request.param == "spline":
+        np.random.seed(1)
+        path = toppra.SplineInterpolator(np.linspace(0, 1, 5), np.random.randn(5, 7))
+    elif request.param == "poly":
+        np.random.seed(1)
+        coeffs = np.random.randn(7, 3)  # 7 random quadratic equations
+        path = toppra.PolynomialPath(coeffs)
     yield path
-
-
