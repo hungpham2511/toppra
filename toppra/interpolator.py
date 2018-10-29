@@ -58,7 +58,6 @@ class Interpolator(object):
         # Note: do not use this attribute directly, use get_duration
         # method instead.
         self.duration = None
-        self.scaling = 1.0
 
     def get_dof(self):
         """ Return the degree-of-freedom of the path.
@@ -69,22 +68,6 @@ class Interpolator(object):
             Degree-of-freedom of the path.
         """
         return self.dof
-
-    def set_scaling(self, scaling):
-        """Scale the path.
-
-        The if the original path duration is [0, s_end], then the
-        scaled duration is [0, s_end * gamma]. Remark that a scaled
-        path also have scaled derivatives. Using bar to denoted the
-        scaled path, by simple calculus one has:
-
-        duration_bar = duration * gamma
-        q_bar(s_bar) = q(s_bar / gamma)
-        dq_bar(s_bar) / ds_bar = dq(s_bar / gamma) / ds / gamma
-        d2q_bar(s_bar) / ds_bar^2 = d2q(s_bar / gamma) / ds^2 / gamma^2
-        """
-        assert scaling > 0, "scaling must be a positive float!"
-        self.scaling = float(scaling)
 
     def get_duration(self):
         """ Return the duration of the path.
@@ -106,7 +89,7 @@ class Interpolator(object):
             Shaped (2,).
 
         """
-        return np.array([self.s_start, self.s_end]) * self.scaling
+        return np.array([self.s_start, self.s_end])
 
     def eval(self, ss_sam):
         """ Evaluate joint positions at specified path positions.
@@ -324,24 +307,22 @@ class SplineInterpolator(Interpolator):
             self.cspld = self.cspl.derivative()
             self.cspldd = self.cspld.derivative()
 
-
     def get_waypoints(self):
         """ Return the appropriate scaled waypoints.
         """
-        return self.ss_waypoints * self.scaling, self.waypoints
+        return self.ss_waypoints, self.waypoints
 
     def get_duration(self):
-        return self.duration * self.scaling
+        return self.duration
 
     def eval(self, ss_sam):
-        return self.cspl(ss_sam / self.scaling)
+        return self.cspl(ss_sam)
 
     def evald(self, ss_sam):
-        return self.cspld(ss_sam / self.scaling) / self.scaling
+        return self.cspld(ss_sam)
 
     def evaldd(self, ss_sam):
-        # See the `set_scaling` method of `Interpolator` for more details.
-        return self.cspldd(ss_sam / self.scaling) / self.scaling ** 2
+        return self.cspldd(ss_sam)
 
     def compute_rave_trajectory(self, robot):
         """ Compute an OpenRAVE trajectory equivalent to this trajectory.
