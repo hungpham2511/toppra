@@ -3,7 +3,7 @@ import numpy as np
 import toppra
 import toppra.constraint
 
-toppra.setup_logging(level="DEBUG")
+toppra.setup_logging(level="INFO")
 
 
 @pytest.fixture(params=[0, 1], name="velacc_fixture")

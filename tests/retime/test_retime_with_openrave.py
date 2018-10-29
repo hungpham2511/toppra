@@ -7,6 +7,7 @@ try:
 except ImportError:
     FOUND_OPENRAVE = False
 
+toppra.setup_logging("INFO")
 
 @pytest.fixture(scope='module')
 def robot_fixture():

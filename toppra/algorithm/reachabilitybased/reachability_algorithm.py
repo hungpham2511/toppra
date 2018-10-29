@@ -21,7 +21,17 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         Name of solver to use. If leave to be None, will select the
         most suitable solver wrapper.
     scaling: float, optional
-        Scale the given path's duration from [0, s_end] to [0, s_end * scaling].
+        Scale the problem instance as if the path's duration from [0,
+        s_end] to [0, s_end * scaling]. Note that the path is actually
+        kept unchanged; only the coefficients as evaluated is
+        modified. This is to make it easier on the user who wish to
+        implement an Interpolator class by herself (which she should
+        do).
+
+        The default value is 1.0, which means no scaling. Any positive
+        float is perfectly valid. However, one should attempt to
+        choose a scaling factor that leads to unit velocity
+        approximately. Choose -1 for automatic scaling.
 
     Notes
     -----
@@ -43,16 +53,17 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
     - compute_feasible_sets
 
     """
-    def __init__(self, constraint_list, path, gridpoints=None, solver_wrapper=None, scaling=-1):
+    def __init__(self, constraint_list, path, gridpoints=None, solver_wrapper=None, scaling=1):
         super(ReachabilityAlgorithm, self).__init__(constraint_list, path, gridpoints=gridpoints)
+        # gridpoint check
         if gridpoints is None:
             gridpoints = np.linspace(0, path.get_duration(), 100)
-        # gridpoint check
         if path.get_path_interval()[0] != gridpoints[0]:
             logger.fatal("Manually supplied gridpoints does not start from 0.")
             raise ValueError("Bad manually supplied gridpoints.")
         if path.get_path_interval()[1] != gridpoints[-1]:
-            logger.fatal("Manually supplied gridpoints have endpoint different from input path duration.")
+            logger.fatal("Manually supplied gridpoints have endpoint "
+                         "different from input path duration.")
             raise ValueError("Bad manually supplied gridpoints.")
         self.gridpoints = np.array(gridpoints)  # Attr
         self._N = len(gridpoints) - 1  # Number of stages. Number of point is _N + 1
@@ -68,10 +79,12 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         # path scaling for numerical stability
         if scaling < 0:  # automatic scaling factor selection
             scaling = 1.0
-        self.path = deepcopy(path)  # deepcopy is needed to protect input path from change in scaling factor
-        self.path.set_scaling(scaling)
+        # NOTE: by scaling the gridpoints, we indicate to the lower
+        # level solver wrapper that scaling is to be done. The solver
+        # wrapper will simply use
+        # scaling = self.gridpoints[-1] / path.duration
         self.gridpoints = self.gridpoints * scaling
-        
+
         # Select solver wrapper automatically
         if solver_wrapper is None:
             logger.debug("Solver wrapper not supplied. Choose solver wrapper automatically!")
@@ -269,17 +282,20 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         while i < self._N:
             optim_res = self._forward_step(i, xs[i], K[i + 1])
             if np.isnan(optim_res[0]):
-                logger.fatal("A numerical error occurs: the instance is controllable "
-                             "but forward pass fails. Attempt to try again with x[i]"
-                             " slightly reduced.")
-                # NOTE: This case happens due to the constraint
+                # NOTE: This case happens because the constraint
                 # K[i + 1, 0] <= x[i] + 2D u[i] <= K[i + 1, 1]
-                # being slightly infeasible.  This happens more often
+                # become just slightly infeasible.  This happens more often
                 # with ECOS, which is an interior point solver, than
                 # with qpoases or seidel, both of which are active set
-                # solvers.
-                xs[i] -= SMALL
-                logger.debug("x[{:d}] reduced from {:.6f} to {:.6f}".format(i, xs[i] + SMALL, xs[i]))
+                # solvers. The strategy used to handle this case is in the
+                # next line: simply reduce the current velocity by 0.1% or
+                # a very small value (TINY) and choose the large value.
+                xs[i] = max(xs[i] - TINY, 0.999 * xs[i])  # a slightly more aggressive reduction
+                logger.warn(
+                    "A numerical error occurs: the instance is controllable "
+                    "but forward pass fails. Attempt to try again with x[i] "
+                    "slightly reduced.\n"
+                    "x[{:d}] reduced from {:.6f} to {:.6f}".format(i, xs[i] + SMALL, xs[i]))
             else:
                 us[i] = optim_res[0]
                 # The below function min( , max( ,)) ensure that the
@@ -287,7 +303,10 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
                 # ensured theoretically by the existence of the
                 # controllable sets, numerical errors might violate
                 # this condition.
-                xs[i + 1] = min(K[i + 1, 1], max(K[i + 1, 0], xs[i] + 2 * deltas[i] * us[i] - TINY))
+                x_next = xs[i] + 2 * deltas[i] * us[i]
+                x_next = max(x_next - TINY, 0.9999 * x_next)
+                xs[i + 1] = min(K[i + 1, 1],
+                                max(K[i + 1, 0], x_next))
                 logger.debug("[Forward pass] u[{:d}] = {:f}, x[{:d}] = {:f}".format(i, us[i], i + 1, xs[i + 1]))
                 v_vec[i] = optim_res[2:]
                 i += 1

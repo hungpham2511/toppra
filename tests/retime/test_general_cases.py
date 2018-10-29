@@ -25,14 +25,14 @@ except ImportError:
 
 
 @pytest.mark.parametrize("solver_wrapper", ["cvxpy", "qpoases", "hotqpoases", "seidel"])
-def test_toppra_linear(vel_accel_constraints, path, solver_wrapper):
+def test_toppra_linear(basic_constraints, basic_path, solver_wrapper):
     """Basic problem instance.
 
     Only check for validity of the feasible sets, controllable sets.
 
     """
-    vel_c, acc_c, ro_acc_c = vel_accel_constraints
-    instance = toppra.algorithm.TOPPRA([vel_c, acc_c], path, solver_wrapper=solver_wrapper)
+    vel_c, acc_c, ro_acc_c = basic_constraints
+    instance = toppra.algorithm.TOPPRA([vel_c, acc_c], basic_path, solver_wrapper=solver_wrapper)
     X = instance.compute_feasible_sets()
     assert np.all(X >= 0)
     assert not np.any(np.isnan(X))
@@ -51,29 +51,29 @@ def test_toppra_linear(vel_accel_constraints, path, solver_wrapper):
     ("qpoases", "ecos"),
     ("qpoases", "seidel")
 ])
-def test_toppra_linear_compare(vel_accel_constraints, path, solver_wrapper):
+def test_toppra_linear_compare(basic_constraints, basic_path, solver_wrapper):
     """ Compare the output of the algorithm
     """
     print("compare {:} and {:}".format(*solver_wrapper))
-    vel_c, acc_c, ro_acc_c = vel_accel_constraints
-    instance = toppra.algorithm.TOPPRA([vel_c, acc_c], path, solver_wrapper=solver_wrapper[0])
-    instance2 = toppra.algorithm.TOPPRA([vel_c, acc_c], path, solver_wrapper=solver_wrapper[1])
+    vel_c, acc_c, ro_acc_c = basic_constraints
+    instance = toppra.algorithm.TOPPRA([vel_c, acc_c], basic_path, solver_wrapper=solver_wrapper[0])
+    instance2 = toppra.algorithm.TOPPRA([vel_c, acc_c], basic_path, solver_wrapper=solver_wrapper[1])
 
     K = instance.compute_controllable_sets(0, 0)
     K2 = instance2.compute_controllable_sets(0, 0)
     for i in range(instance._N, -1, -1):
-        np.testing.assert_allclose(K[i], K2[i], atol=1e-6,
+        np.testing.assert_allclose(K[i], K2[i], atol=1e-6, rtol=1e-3,
                                    err_msg="Mismatched at i={:} / N={:}".format(i, instance._N))
 
     X = instance.compute_feasible_sets()
     X2 = instance2.compute_feasible_sets()
     for i in range(instance._N, -1, -1):
-        np.testing.assert_allclose(X[i], X2[i], atol=1e-6,
+        np.testing.assert_allclose(X[i], X2[i], atol=1e-6, rtol=1e-3,
                                    err_msg="Mismatched at i={:} / N={:}".format(i, instance._N))
 
     sd, sdd, _ = instance.compute_parameterization(0, 0)
     sd2, sdd2, _ = instance2.compute_parameterization(0, 0)
     for i in range(instance._N - 1, -1, -1):
-        np.testing.assert_allclose(sd[i], sd2[i], atol=1e-6,
+        np.testing.assert_allclose(sd[i], sd2[i], atol=1e-6, rtol=1e-3,
                                    err_msg="Mismatched at i={:} / N={:}".format(i, instance._N))
 
