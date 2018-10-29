@@ -99,7 +99,11 @@ class cvxpyWrapper(SolverWrapper):
 
         objective = cvxpy.Minimize(0.5 * cvxpy.quad_form(ux, H) + g * ux)
         problem = cvxpy.Problem(objective, constraints=cvxpy_constraints)
-        problem.solve(verbose=False)
+        try:
+            problem.solve(verbose=False)
+        except cvxpy.SolverError:
+            # solve fail
+            pass
         if problem.status == cvxpy.OPTIMAL or problem.status == cvxpy.OPTIMAL_INACCURATE:
             return np.array(ux.value).flatten()
         else:

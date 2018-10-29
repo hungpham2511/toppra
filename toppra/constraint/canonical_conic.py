@@ -78,9 +78,9 @@ class RobustCanonicalLinearConstraint(CanonicalConicConstraint):
         self.ellipsoid_axes_lengths = ellipsoid_axes_lengths
         self._format_string += "    Robust constraint generated from a canonical linear constraint\n"
 
-    def compute_constraint_params(self, path, gridpoints):
+    def compute_constraint_params(self, path, gridpoints, scaling):
         self.base_constraint.set_discretization_type(self.discretization_type)
-        a_, b_, c_, F_, g_, u_, _ = self.base_constraint.compute_constraint_params(path, gridpoints)
+        a_, b_, c_, F_, g_, u_, _ = self.base_constraint.compute_constraint_params(path, gridpoints, scaling)
         N = len(gridpoints) - 1
         if self.base_constraint.identical:
             d = F_.shape[0]  # number of rows

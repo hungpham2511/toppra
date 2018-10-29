@@ -40,13 +40,13 @@ class JointAccelerationConstraint(CanonicalLinearConstraint):
             self._format_string += "      J{:d}: {:}".format(i + 1, self.alim[i]) + "\n"
         self.identical = True
 
-    def compute_constraint_params(self, path, gridpoints):
+    def compute_constraint_params(self, path, gridpoints, scaling):
         if path.get_dof() != self.get_dof():
             raise ValueError("Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
                 self.get_dof(), path.get_dof()
             ))
-        ps = path.evald(gridpoints)
-        pss = path.evaldd(gridpoints)
+        ps = path.evald(gridpoints / scaling) / scaling
+        pss = path.evaldd(gridpoints / scaling) / scaling ** 2
         N = gridpoints.shape[0] - 1
         dof = path.get_dof()
         I_dof = np.eye(dof)

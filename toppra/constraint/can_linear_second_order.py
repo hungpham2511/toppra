@@ -57,14 +57,14 @@ class CanonicalLinearSecondOrderConstraint(CanonicalLinearConstraint):
         F_ = cnst_F(np.zeros(dof))
         self._format_string += "        F in R^({:d}, {:d})\n".format(*F_.shape)
 
-    def compute_constraint_params(self, path, gridpoints):
+    def compute_constraint_params(self, path, gridpoints, scaling):
         assert path.get_dof() == self.get_dof(), ("Wrong dimension: constraint dof ({:d}) "
                                                   "not equal to path dof ({:d})".format(
                                                       self.get_dof(), path.get_dof()))
         v_zero = np.zeros(path.get_dof())
-        p = path.eval(gridpoints)
-        ps = path.evald(gridpoints)
-        pss = path.evaldd(gridpoints)
+        p = path.eval(gridpoints / scaling)
+        ps = path.evald(gridpoints / scaling) / scaling
+        pss = path.evaldd(gridpoints / scaling) / scaling ** 2
 
         F = np.array(list(map(self.cnst_F, p)))
         g = np.array(list(map(self.cnst_g, p)))

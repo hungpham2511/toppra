@@ -31,8 +31,8 @@ class CanonicalLinearConstraint(Constraint):
         self.n_extra_vars = 0
         self.identical = False
 
-    def compute_constraint_params(self, path, gridpoints):
-        """ Return constraint parameters.
+    def compute_constraint_params(self, path, gridpoints, scaling):
+        """Return constraint parameters.
 
         If a set of parameters are not available, None is returned.
 
@@ -42,6 +42,11 @@ class CanonicalLinearConstraint(Constraint):
             The geometric path.
         gridpoints: array
             (N+1,) array. The path discretization.
+        scaling: float
+            Path scaling. If this value is 1, return the parameter
+            normally. If this value is positive but not one, return
+            the parameters for a path that is scaled from the given
+            one by this value linearly.
 
         Returns
         -------

@@ -35,16 +35,18 @@ class SolverWrapper(object):
         self.constraints = constraint_list
         self.path = path
         self.path_discretization = np.array(path_discretization)
+        # path scaling: intuitively, if this value is not 1, the TOPP
+        # problem will be solved as if the input path is scaled linearly.
+        self.scaling = self.path_discretization[-1] / self.path.get_duration()
         # End main attributes
         self.N = len(path_discretization) - 1  # Number of stages. Number of point is _N + 1
         self.deltas = self.path_discretization[1:] - self.path_discretization[:-1]
-        assert path.get_path_interval()[0] == path_discretization[0]
-        assert path.get_path_interval()[1] == path_discretization[-1]
         for i in range(self.N):
             assert path_discretization[i + 1] > path_discretization[i]
 
-        self.params = [c.compute_constraint_params(self.path, self.path_discretization)
-                       for c in self.constraints]
+        self.params = [
+            c.compute_constraint_params(self.path, self.path_discretization, self.scaling)
+            for c in self.constraints]
         self.nV = 2 + sum([c.get_no_extra_vars() for c in self.constraints])
 
     def get_no_stages(self):

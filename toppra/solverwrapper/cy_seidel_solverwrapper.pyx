@@ -387,7 +387,7 @@ cdef class seidelWrapper:
         INT_t [:] index_map
         double [:, ::1] a_arr, b_arr, c_arr  # mmviews of coefficients of the 2D Lp
         double [:, :] low_arr, high_arr    # mmviews of coefficients of the 2D Lp
-
+        double scaling # path scaling
         
     # @cython.profile(True)
     def __init__(self, list constraint_list, path, path_discretization):
@@ -409,14 +409,10 @@ cdef class seidelWrapper:
         self.path = path
         path_discretization = np.array(path_discretization)
         self.path_discretization = path_discretization
+        self.scaling = path_discretization[-1] / path.get_duration()
         self.N = len(path_discretization) - 1  # Number of stages. Number of point is _N + 1
         self.deltas = path_discretization[1:] - path_discretization[:-1]
         cdef unsigned int cur_index, j, i, k
-        # safety checks
-        assert path.get_path_interval()[0] == path_discretization[0]
-        assert path.get_path_interval()[1] == path_discretization[-1]
-        for i in range(self.N):
-            assert path_discretization[i + 1] > path_discretization[i]
 
         # handle constraint parameters
         nCons = len(constraint_list)
@@ -428,7 +424,7 @@ cdef class seidelWrapper:
             if self.constraints[i].get_constraint_type() != ConstraintType.CanonicalLinear:
                 raise NotImplementedError
             a, b, c, F, v, ubnd, xbnd = self.constraints[i].compute_constraint_params(
-            self.path, path_discretization)
+                self.path, path_discretization, self.scaling)
             if a is not None:
                 if self.constraints[i].identical:
                     self.nC += F.shape[0]
