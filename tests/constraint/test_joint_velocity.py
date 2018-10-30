@@ -4,7 +4,7 @@ import numpy as np
 import numpy.testing as npt
 import toppra as ta
 import toppra.constraint as constraint
-from toppra.constants import TINY, MAXSD
+from toppra.constants import TINY, JVEL_MAXSD
 from scipy.interpolate import CubicSpline
 
 
@@ -53,7 +53,7 @@ class TestClass_JointVelocityConstraint(object):
         data, pc = velocity_pc_data
         path, ss, vlim = data
 
-        constraint_param = pc.compute_constraint_params(path, ss)
+        constraint_param = pc.compute_constraint_params(path, ss, 1.0)
         _, _, _, _, _, _, xlimit = constraint_param
 
         qs = path.evald(ss)
@@ -65,7 +65,7 @@ class TestClass_JointVelocityConstraint(object):
             # 2. Compute max sd from the data
             constraints = [qs[i] * sd <= vlim[:, 1],
                            qs[i] * sd >= vlim[:, 0],
-                           sd >= 0, sd <= MAXSD]
+                           sd >= 0, sd <= JVEL_MAXSD]
             prob = cvx.Problem(cvx.Maximize(sd), constraints)
             prob.solve(solver=cvx.ECOS, abstol=1e-9)
             xmax = sd.value ** 2
@@ -84,7 +84,7 @@ class TestClass_JointVelocityConstraint(object):
         data, pc = velocity_pc_data
         path_wrongdim = ta.SplineInterpolator(np.linspace(0, 1, 5), np.random.randn(5, 10))
         with pytest.raises(ValueError) as e_info:
-            pc.compute_constraint_params(path_wrongdim, [0, 0.5, 1])
+            pc.compute_constraint_params(path_wrongdim, [0, 0.5, 1], 1.0)
         assert e_info.value.args[0] == "Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
             pc.get_dof(), 10
         )
@@ -111,7 +111,7 @@ def test_jnt_vel_varying_basic():
     coeff = [[1., 2, 3], [-2., -3., 4., 5.]]
     path = ta.PolynomialPath(coeff)
     gridpoints = np.linspace(0, 2, 10)
-    _, _, _, _, _, _, xlimit = constraint.compute_constraint_params(path, gridpoints)
+    _, _, _, _, _, _, xlimit = constraint.compute_constraint_params(path, gridpoints, 1.0)
     # constraint splines
     qs = path.evald(gridpoints)
     # test
@@ -122,7 +122,7 @@ def test_jnt_vel_varying_basic():
         # 2. compute max sd from the data
         constraints = [qs[i] * sd <= vlim[:, 1],
                        qs[i] * sd >= vlim[:, 0],
-                       sd >= 0, sd <= MAXSD]
+                       sd >= 0, sd <= JVEL_MAXSD]
         prob = cvx.Problem(cvx.Maximize(sd), constraints)
         prob.solve(solver=cvx.ECOS, abstol=1e-9)
         xmax = sd.value ** 2

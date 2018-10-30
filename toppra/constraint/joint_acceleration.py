@@ -1,6 +1,6 @@
 from .canonical_linear import CanonicalLinearConstraint, canlinear_colloc_to_interpolate
 from ..constraint import DiscretizationType
-from ..constants import MAXU
+from ..constants import JACC_MAXU as MAXU
 import numpy as np
 
 
