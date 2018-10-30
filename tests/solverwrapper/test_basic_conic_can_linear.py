@@ -70,8 +70,8 @@ def test_vel_robust_accel(vel_accel_robustaccel, path, solver_name, i, H, g, x_i
     u = ux[0]
     x = ux[1]
 
-    _, _, _, _, _, _, xbound = vel_c.compute_constraint_params(path, path_dist)
-    a, b, c, P = robust_acc_c.compute_constraint_params(path, path_dist)
+    _, _, _, _, _, _, xbound = vel_c.compute_constraint_params(path, path_dist, 1.0)
+    a, b, c, P = robust_acc_c.compute_constraint_params(path, path_dist, 1.0)
     Di = path_dist[i + 1] - path_dist[i]
     cvx_constraints = [
         xbound[i, 0] <= x, x <= xbound[i, 1],
