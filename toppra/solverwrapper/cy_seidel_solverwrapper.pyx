@@ -10,12 +10,22 @@ ctypedef np.float_t FLOAT_t
 
 from ..constraint import ConstraintType
 
-cdef double TINY = 1e-10
-cdef double SMALL = 1e-8
-cdef double VAR_MIN = -100000000
-cdef double VAR_MAX =  100000000
 cdef inline double dbl_max(double a, double b): return a if a > b else b
 cdef inline double dbl_min(double a, double b): return a if a < b else b
+
+# constants
+cdef double TINY = 1e-10
+cdef double SMALL = 1e-8
+
+# bounds on variable used in seidel solver wrapper. u and x at every
+# stage is constrained to stay within this range.
+cdef double VAR_MIN = -100000000  
+cdef double VAR_MAX =  100000000
+
+# absolute largest value that a variable can have. This bound should
+# be never be reached, however, in order for the code to work properly.
+cdef double INF = 10000000000  
+
 cdef double NAN = float("NaN")
 
 
@@ -136,13 +146,16 @@ cdef LpSol cy_solve_lp1d(double[:] v, int nrows, double[:] a, double[:] b, doubl
 # @cython.profile(True)
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, double[:] low, double[:] high, INT_t[:] active_c, bint use_cache, INT_t [:] index_map, double[:] a_1d, double[:] b_1d) except *:
+cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c,
+                         double[:] low, double[:] high,
+                         INT_t[:] active_c, bint use_cache,
+                         INT_t [:] index_map, double[:] a_1d, double[:] b_1d) except *:
     """ Solve a LP with two variables.
 
     The LP is specified as follow:
-        dbl_max    v^T [x 1]
-        s.t.   a x[0] + b x[1] + c <= 0
-               low <= x <= high
+         dbl_max    v^T [x 1]
+            s.t.    a x[0] + b x[1] + c <= 0
+                    low <= x <= high
 
     NOTE: A possible optimization for this function is pruning linear
     constraints that are clearly infeasible. This is not implemented
@@ -181,18 +194,28 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
 
     """
     cdef:
-        unsigned int nrows = a.shape[0], nrows_1d, n_wsr = 0  # number of working set recomputation
+        # number of working set recomputation
+        unsigned int nrows = a.shape[0], nrows_1d, n_wsr = 0  
         unsigned int i, k, j
         double[2] cur_optvar, zero_prj
         double[2] d_tan  # vector parallel to the line
         double[2] v_1d_  # optimizing direction
         double [:] v_1d = v_1d_
         double aj, bj, cj  # temporary symbols
-        double low_1d = VAR_MIN
-        double high_1d = VAR_MAX
 
+        # absolute bounds used in solving the 1 dimensional
+        # optimization sub-problems. These bounds needs to be very
+        # large, so that they are never active at the optimization
+        # solution of these 1D subproblem..
+        double low_1d = - INF  
+        double high_1d = INF
         LpSol sol, sol_1d
+
     v_1d_[:] = [0, 0]
+    # print all input to the algorithm
+    # print "v={:}\n a={:}\n b={:}\n c={:}\n low={:}\n high={:}\n active_c {:}".format(
+    #     *map(repr, map(np.asarray,
+    #                    [v, a, b, c, low, high, active_c])))
 
     if not use_cache:
         index_map = np.arange(nrows)
@@ -206,7 +229,6 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
     # adhered to: fixed bounds are assigned the numbers: -1, -2, -3,
     # -4 according to the following order: low[0], high[0], low[1],
     # high[1].
-
     for i in range(2):
         if low[i] > high[i]:
             sol.result = 0
@@ -329,13 +351,13 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
         
         # 1d lp infeasible
         if sol_1d.result == 0:
-            # print "v={:}\n a={:}\n b={:}\n low={:}\n high={:}".format(
-            #     *map(repr, map(np.asarray,
-            #                    [v_1d, a_1d, b_1d, low_1d, high_1d])))
             sol.result = 0
             return sol
         # feasible, wrapping up
         else:
+            # print "v={:}\n a={:}\n b={:}\n low={:}\n high={:}\n nrows={:}".format(
+            #     *map(repr, map(np.asarray,
+            #                    [v_1d, a_1d, b_1d, low_1d, high_1d, nrows_1d])))
             # compute the current optimal solution
             cur_optvar[0] = zero_prj[0] + sol_1d.optvar[0] * d_tan[0]
             cur_optvar[1] = zero_prj[1] + sol_1d.optvar[0] * d_tan[1]
@@ -352,7 +374,13 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
             elif sol_1d.active_c[0] == k + 3:
                 sol.active_c[1] = -4
             else:
-                assert False
+                # the algorithm should not reach this point. If it
+                # does, this means the active constraint at the
+                # optimal solution is the fixed bound used in the 1
+                # dimensional subproblem. This should not happen
+                # though.
+                sol.result = 0
+                return sol
 
     # Fill the solution struct
     sol.result = 1
