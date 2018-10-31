@@ -10,7 +10,7 @@ import toppra.constraint as constraint
 toppra.setup_logging(level="INFO")
 
 
-@pytest.mark.parametrize("solver_wrapper", ["ecos", "hotqpoases", "seidel"])
+@pytest.mark.parametrize("solver_wrapper", ["cvxpy", "hotqpoases", "seidel"])
 def test_linear_case1(basic_constraints, basic_path, solver_wrapper):
     """A generic test case.
 

@@ -14,16 +14,16 @@ class CanonicalConicConstraint(Constraint):
         [da[i, j], db[i, j], dc[i, j]]^\top = P[i, j] u, \|u\|_2 \leq 1,
 
     where P[i, j] is a 3x3 matrix. Notice that by setting P[i, j] to
-    the zero matrix,
+    the zero matrix, this is the same as the original constraint.
 
     Constraints of this form can be translated to conic-quadratic
     constraints. This transformation can be found in [1]. The
     resulting conic-quadratic constraint is given below
-    
+
     .. math::
         a[i, j]u + b[i, j]x + c[i, j] + \|P[i, j]^T [u, x, 1]^T \|_2 \leq 0,
 
-    where i is the stage index, and j is the constraint index. 
+    where i is the stage index, and j is the constraint index.
 
     Refs:
     ----
@@ -46,7 +46,7 @@ class CanonicalConicConstraint(Constraint):
 class RobustCanonicalLinearConstraint(CanonicalConicConstraint):
     """The simple canonical conic constraint.
 
-    This constraint can be seen as a more robust version of a
+    This constraint can be seen as a robustified version of a
     CanonicalLinear constraint. In particular, the perturbations term,
     [\Delta a[i, j], \Delta b[i, j], \Delta c[i, j]] is assumed to lie
     in a centered ellipsoid:
@@ -66,6 +66,7 @@ class RobustCanonicalLinearConstraint(CanonicalConicConstraint):
         non-negative.
     discretization_scheme: :class:`~.constraint.DiscretizationType`
         Constraint discretization scheme to use.
+
     """
     def __init__(self, cnst, ellipsoid_axes_lengths, discretization_scheme=DiscretizationType.Collocation):
         super(RobustCanonicalLinearConstraint, self).__init__()
@@ -80,33 +81,30 @@ class RobustCanonicalLinearConstraint(CanonicalConicConstraint):
 
     def compute_constraint_params(self, path, gridpoints, scaling):
         self.base_constraint.set_discretization_type(self.discretization_type)
-        a_, b_, c_, F_, g_, u_, _ = self.base_constraint.compute_constraint_params(path, gridpoints, scaling)
+        a_, b_, c_, F_, g_, u_, x_ = self.base_constraint.compute_constraint_params(
+            path, gridpoints, scaling)
         N = len(gridpoints) - 1
         if self.base_constraint.identical:
             d = F_.shape[0]  # number of rows
         else:
             d = F_.shape[1]
 
-        a = np.zeros((N + 1, d + 2))
-        b = np.zeros((N + 1, d + 2))
-        c = np.zeros((N + 1, d + 2))
+        a = np.zeros((N + 1, d))
+        b = np.zeros((N + 1, d))
+        c = np.zeros((N + 1, d))
 
         if self.base_constraint.identical:
             for i in range(len(gridpoints)):
                 a[i, :d] = F_.dot(a_[i])
                 b[i, :d] = F_.dot(b_[i])
                 c[i, :d] = F_.dot(c_[i]) - g_
-                a[i, d:] = [1, -1]
-                c[i, d:] = [- u_[i, 1], u_[i, 0]]
         else:
             for i in range(len(gridpoints)):
                 a[i, :d] = F_[i].dot(a_[i])
                 b[i, :d] = F_[i].dot(b_[i])
                 c[i, :d] = F_[i].dot(c_[i]) - g_[i]
-                a[i, d:] = [1, -1]
-                c[i, d:] = [- u_[i, 1], u_[i, 0]]
 
         P = np.zeros((N + 1, d + 2, 3, 3))
         diag_ = np.diag(self.ellipsoid_axes_lengths)
         P[:] = diag_
-        return a, b, c, P
+        return a, b, c, P, u_, x_

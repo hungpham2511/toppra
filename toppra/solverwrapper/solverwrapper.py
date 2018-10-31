@@ -20,6 +20,10 @@ class SolverWrapper(object):
     which should be called before and after any call to
     `solve_stagewise_optim`, so that necessary setups can be made.
 
+    Each solver wrapper should provide solver-specific constraint,
+    such as ultimate bound the variable u, x. For some solvers such as
+    ECOS, this is very important.
+    
     Attributes
     ----------
     constraints : list of `Constraint`
@@ -28,6 +32,7 @@ class SolverWrapper(object):
         The geometric path to be time-parametrized.
     path_discretization: array
         The discretization grid use to discretize the geometric path.
+
     """
 
     def __init__(self, constraint_list, path, path_discretization):

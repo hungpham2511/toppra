@@ -8,6 +8,7 @@ import ecos
 
 logger = logging.getLogger(__name__)
 
+
 class ecosWrapper(SolverWrapper):
     """A solver wrapper that handles linear and conic-quadratic constraints using ECOS.
 
@@ -19,6 +20,11 @@ class ecosWrapper(SolverWrapper):
     -----
     To reduce numerical-related issues, ECOS_MAXX is used to regulate
     the magnitude of the solution.
+
+    ECOS is not very well implemented. There are many cases in which
+    the solver fails simply because there is a very large bound
+    (>1e6). Because of this, the test suites included in toppra do not
+    include many tests for ecos.
 
 
     Attributes
@@ -145,7 +151,7 @@ class ecosWrapper(SolverWrapper):
                 currow += 2
         ## Fill 4)
         for k in self._conic_idx:
-            _a, _b, _c, _P = self.params[k]
+            _a, _b, _c, _P, _, _ = self.params[k]
 
             # NOTE: Here the following arrangement is used.
             # G_i = [  a_ij        b_ij  ]

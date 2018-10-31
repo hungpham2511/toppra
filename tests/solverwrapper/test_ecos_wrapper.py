@@ -4,7 +4,6 @@ import pytest
 import numpy as np
 import toppra
 import toppra.constraint as constraint
-from .test_basic_conic_can_linear import path, vel_accel_robustaccel
 from toppra.solverwrapper.ecos_solverwrapper import ecosWrapper
 from toppra.solverwrapper.qpoases_solverwrapper import qpOASESSolverWrapper
 

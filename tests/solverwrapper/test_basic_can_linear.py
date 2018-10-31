@@ -10,7 +10,7 @@ import numpy.testing as npt
 import toppra
 import toppra.constraint as constraint
 
-toppra.setup_logging(level="DEBUG")
+toppra.setup_logging(level="INFO")
 
 try:
     import cvxpy
@@ -150,8 +150,6 @@ def test_basic_init(basic_init_fixture, solver_name, i, H, g, x_ineq):
     v = a[i] * u + b[i] * x + c[i]
     v2 = a2[i] * u + b2[i] * x + c2[i]
     cvxpy_constraints = [
-        u <= ubound[i, 1],
-        u >= ubound[i, 0],
         x <= xbound[i, 1],
         x >= xbound[i, 0],
         F * v <= h,

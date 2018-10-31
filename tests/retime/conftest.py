@@ -6,7 +6,8 @@ import toppra.constraint as constraint
 
 @pytest.fixture(params=[(0, 0)])
 def basic_constraints(request):
-    "Velocity + Acceleration + Robust Acceleration constraint"
+    """ Return a set of relatively simple constraints.
+    """
     dtype_a, dtype_ra = request.param
     vlims = np.array([[-1, 1], [-1, 2], [-1, 4], [-3, 4], [-2, 4], [-3, 4], [-2, 5]],
                      dtype=float) * 10
@@ -22,7 +23,7 @@ def basic_constraints(request):
 
 @pytest.fixture(params=["spline", "poly"])
 def basic_path(request):
-    """ A generic path factory.
+    """ Return a generic path.
     """
     if request.param == "spline":
         np.random.seed(1)

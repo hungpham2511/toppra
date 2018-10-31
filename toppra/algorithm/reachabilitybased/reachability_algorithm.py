@@ -1,5 +1,5 @@
 from ..algorithm import ParameterizationAlgorithm
-from ...constants import LARGE, SMALL, TINY
+from ...constants import LARGE, SMALL, TINY, INFTY, CVXPY_MAXX
 from ...constraint import ConstraintType
 
 import numpy as np
@@ -137,12 +137,12 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         X = np.zeros((self._N + 1, 2))
         self.solver_wrapper.setup_solver()
         for i in range(self._N + 1):
-            X[i, 0] = self.solver_wrapper.solve_stagewise_optim(i, Hzero, g_lower,
-                                                                -LARGE, LARGE, -LARGE, LARGE)[1]
-            X[i, 1] = self.solver_wrapper.solve_stagewise_optim(i, Hzero, -g_lower,
-                                                                -LARGE, LARGE, -LARGE, LARGE)[1]
+            X[i, 0] = self.solver_wrapper.solve_stagewise_optim(
+                i, Hzero, g_lower, -CVXPY_MAXX, CVXPY_MAXX, -CVXPY_MAXX, CVXPY_MAXX)[1]
+            X[i, 1] = self.solver_wrapper.solve_stagewise_optim(
+                i, Hzero, -g_lower, -CVXPY_MAXX, CVXPY_MAXX, -CVXPY_MAXX, CVXPY_MAXX)[1]
             if logger.getEffectiveLevel() == logging.DEBUG:
-                logger.debug("X[i]={:}".format(X[i]))
+                logger.debug("X[{:d}]={:}".format(i, X[i]))
         self.solver_wrapper.close_solver()
         for i in range(self._N + 1):
             if X[i, 0] < 0:

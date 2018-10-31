@@ -84,4 +84,3 @@ class CanonicalLinearSecondOrderConstraint(CanonicalLinearConstraint):
             return canlinear_colloc_to_interpolate(a, b, c, F, g, None, None, gridpoints)
         else:
             raise NotImplementedError("Other form of discretization not supported!")
-

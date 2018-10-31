@@ -27,9 +27,8 @@ def test_basic(accel_constraint, dist_scheme):
     assert ro_cnst.get_constraint_type() == toppra.constraint.ConstraintType.CanonicalConic
     assert ro_cnst.get_dof() == 5
 
-    a, b, c, P = ro_cnst.compute_constraint_params(
+    a, b, c, P, _, _ = ro_cnst.compute_constraint_params(
         path, np.linspace(0, path.get_duration(), 10), 1.0)
-    d = a.shape[1] - 2
 
     # assert a.shape == (10, 2 * path.get_dof())
     # assert b.shape == (10, 2 * path.get_dof())
@@ -43,13 +42,12 @@ def test_basic(accel_constraint, dist_scheme):
 
     # Assert values
     for i in range(10):
-        np.testing.assert_allclose(a[i, :d], F0.dot(a0[i]))
-        np.testing.assert_allclose(b[i, :d], F0.dot(b0[i]))
-        np.testing.assert_allclose(c[i, :d], F0.dot(c0[i]) - g0)
+        np.testing.assert_allclose(a[i], F0.dot(a0[i]))
+        np.testing.assert_allclose(b[i], F0.dot(b0[i]))
+        np.testing.assert_allclose(c[i], F0.dot(c0[i]) - g0)
     for i in range(10):
         for j in range(a0.shape[1]):
             np.testing.assert_allclose(P[i, j], np.diag([0.1, 2, .3]))
-
 
 def test_negative_perb(accel_constraint):
     "If negative pertubations are given, raise ValueError"

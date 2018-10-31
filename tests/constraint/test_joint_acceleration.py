@@ -88,7 +88,8 @@ class TestClass_JointAccelerationConstraint(object):
             npt.assert_allclose(a[i], ps[i])
             npt.assert_allclose(b[i], pss[i])
             npt.assert_allclose(c[i], np.zeros_like(ps[i]))
-            npt.assert_allclose(ubound[i], [-JACC_MAXU, JACC_MAXU])
+            assert ubound is None
+            assert xbound is None
 
     def test_wrong_dimension(self, acceleration_pc_data):
         data, pc = acceleration_pc_data

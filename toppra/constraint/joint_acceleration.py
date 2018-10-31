@@ -1,6 +1,5 @@
 from .canonical_linear import CanonicalLinearConstraint, canlinear_colloc_to_interpolate
 from ..constraint import DiscretizationType
-from ..constants import JACC_MAXU as MAXU
 import numpy as np
 
 
@@ -26,8 +25,6 @@ class JointAccelerationConstraint(CanonicalLinearConstraint):
     - `b` := q''(s)
     - `F` := [I, -I]^T
     - `b` := [qdd_max, -qdd_min]
-    - `ubound` := [-UMAX, UMAX]
-
     """
     def __init__(self, alim, discretization_scheme=DiscretizationType.Collocation):
         super(JointAccelerationConstraint, self).__init__()
@@ -57,12 +54,10 @@ class JointAccelerationConstraint(CanonicalLinearConstraint):
         g[dof:] = - self.alim[:, 0]
         F[0:dof, :] = I_dof
         F[dof:, :] = -I_dof
-        ubound[:, 0] = - MAXU
-        ubound[:, 1] = MAXU
         if self.discretization_type == DiscretizationType.Collocation:
-            return ps, pss, np.zeros_like(ps), F, g, ubound, None
+            return ps, pss, np.zeros_like(ps), F, g, None, None
         elif self.discretization_type == DiscretizationType.Interpolation:
-            return canlinear_colloc_to_interpolate(ps, pss, np.zeros_like(ps), F, g, ubound, None,
+            return canlinear_colloc_to_interpolate(ps, pss, np.zeros_like(ps), F, g, None, None,
                                                    gridpoints, identical=True)
         else:
             raise NotImplementedError("Other form of discretization not supported!")
