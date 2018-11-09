@@ -27,3 +27,7 @@ It will be very helpful if you can provide more details on the
 errors/bugs that you encounter. In fact, the best way is to provide a
 Minimal Working Example that produces the reported bug and attach it
 with the issue report.
+
+## Contributions
+
+Pull Requests are welcomed! Go ahead and create a Pull Request and we will review your proposal! For new features, or bug fixes, preferably the request should contain unit tests. Note that `toppra` uses [pytest](https://docs.pytest.org/en/latest/contents.html) for all tests. Check out the test folder for more details.
