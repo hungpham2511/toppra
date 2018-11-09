@@ -621,10 +621,12 @@ cdef class seidelWrapper:
         self.v[0] = - g[0]
         self.v[1] = - g[1]
 
-        # warmstarting: two solvers can be selected, upper or lower,
-        # depending on the sign of g[1]
-           
-        if g[1] > 0:  # choose upper solver
+        # warmstarting feature: one in two solvers, upper and lower,
+        # is be selected depending on the sign of g[1]
+
+        # solver selected: upper solver. This is selected when
+        # computing the lower bound of the controllable set.
+        if g[1] > 0:  
             # print "v={:}\n a={:}\n b={:}\n c={:}\n low={:}\n high={:}\n active_c_up={:}".format(
             #     *map(repr, map(np.asarray,
             #                    [self.v, self.a_arr[i], self.b_arr[i], self.c_arr[i],
@@ -640,11 +642,16 @@ cdef class seidelWrapper:
                 var[:] = solution.optvar
                 self.active_c_up[0] = solution.active_c[0]
                 self.active_c_up[1] = solution.active_c[1]
-        else:  # chose lower solver
+
+        # solver selected: lower solver. This is when computing the
+        # lower bound of the controllable set, or computing the
+        # parametrization in the forward pass
+        else:
             solution = cy_solve_lp2d(self.v, self.a_arr[i], self.b_arr[i], self.c_arr[i],
                                      low_arr, high_arr, self.active_c_down,
                                      True, self.index_map, self.a_1d, self.b_1d)
             if solution.result == 0:
+                # print("lower solver fails")
                 # print "v={:}\n a={:}\n b={:}\n c={:}\n low={:}\n high={:}".format(
                     # *map(repr, map(np.asarray,
                                   # [self.v, self.a_arr[i], self.b_arr[i], self.c_arr[i], self.low_arr[i], self.high_arr[i]])))

@@ -9,10 +9,17 @@ import toppra
 toppra.setup_logging(level="INFO")
 
 
-@pytest.mark.parametrize("scaling", [1e-1, 1e-2, 1e-3])
+@pytest.mark.parametrize("scaling", [1e-3, 1e-4])
 @pytest.mark.parametrize("Ngrid", [101, 501, 1001])
 def test_scalar_zero_motion(scaling, Ngrid):
-    """ The simple zero motion trajectory
+    """The simple zero motion trajectory
+
+    Note: Paths with very small displacement, like the one given in
+    this example, are pathological: the optimal path velocities and
+    accelerations tend to be extremely large and have orders of
+    magnitudes difference. Because of this reason, seidel solver
+    wrapper is unlikely to work well and therefore is not tested.
+
     """
     waypts = [[0], [1e-8], [0]]
     path = toppra.SplineInterpolator([0, 0.5, 1.0], waypts)
@@ -28,9 +35,11 @@ def test_scalar_zero_motion(scaling, Ngrid):
         alim, discretization_scheme=toppra.constraint.DiscretizationType.Interpolation)
 
     instance = toppra.algorithm.TOPPRA(
-        [pc_vel, pc_acc], path, solver_wrapper='seidel',
+        [pc_vel, pc_acc], path, solver_wrapper='hotqpoases',
         gridpoints=np.linspace(0, 1.0, Ngrid), scaling=scaling)
     jnt_traj, aux_traj, data = instance.compute_trajectory(0, 0, return_data=True)
     # Simply assert success
     assert jnt_traj is not None
+    assert jnt_traj.get_duration() < 1e-3
+    print jnt_traj.get_duration()
 
