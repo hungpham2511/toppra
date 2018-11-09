@@ -35,9 +35,12 @@ class ParameterizationAlgorithm(object):
         self.path = path  # Attr
 
     def compute_parameterization(self, sd_start, sd_end):
-        """ Compute a path parameterization.
+        """Compute a path parameterization.
 
-        If there is no valid parameterization, simply return None(s).
+        If fail, whether because there is no valid parameterization or
+        because of numerical error, the arrays returns should contain
+        np.nan.
+
 
         Parameters
         ----------
@@ -58,6 +61,7 @@ class ParameterizationAlgorithm(object):
             Auxiliary variables.
         K: (N+1, 2) array
             Return the controllable set if `return_data` is True.
+
         """
         raise NotImplementedError
 
@@ -101,7 +105,8 @@ class ParameterizationAlgorithm(object):
         sdd_grid, sd_grid, v_grid, K = self.compute_parameterization(
             sd_start, sd_end, return_data=True)
 
-        if sd_grid is None:
+        # fail condition: sd_grid is None, or there is nan in sd_grid
+        if sd_grid is None or np.isnan(sd_grid).any():
             if return_profile:
                 return None, None, (sdd_grid, sd_grid, v_grid, K)
             else:

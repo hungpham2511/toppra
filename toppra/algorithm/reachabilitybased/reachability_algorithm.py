@@ -1,5 +1,5 @@
 from ..algorithm import ParameterizationAlgorithm
-from ...constants import LARGE, SMALL, TINY, INFTY, CVXPY_MAXX
+from ...constants import LARGE, SMALL, TINY, INFTY, CVXPY_MAXX, MAX_TRIES
 from ...constraint import ConstraintType
 
 import numpy as np
@@ -227,9 +227,11 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         return res
 
     def compute_parameterization(self, sd_start, sd_end, return_data=False):
-        """ Compute a path parameterization.
+        """Compute a path parameterization.
 
-        If there is no valid parameterization, simply return None(s).
+        If fail, whether because there is no valid parameterization or
+        because of numerical error, the arrays returns should contain
+        np.nan.
 
         Parameters
         ----------
@@ -242,14 +244,15 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
 
         Returns
         -------
-        sdd_vec: (N,) array or None
-            Path accelerations.
-        sd_vec: (N+1,) array None
-            Path velocities.
+        sdd_vec: (N,) array
+            Path accelerations. Double array. Will contain nan(s) if failed.
+        sd_vec: (N+1,) array
+            Path velocities. Double array. Will contain nan(s) if failed.
         v_vec: (N,) array or None
             Auxiliary variables.
         K: (N+1, 2) array
             Return the controllable set if `return_data` is True.
+
         """
         assert sd_end >= 0 and sd_start >= 0, "Path velocities must be positive"
         K = self.compute_controllable_sets(sd_end, sd_end)
@@ -277,6 +280,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         us = np.zeros(N)
         v_vec = np.zeros((N, self.solver_wrapper.get_no_vars() - 2))
 
+        tries = 0
         self.solver_wrapper.setup_solver()
         i = 0
         while i < self._N:
@@ -290,13 +294,21 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
                 # solvers. The strategy used to handle this case is in the
                 # next line: simply reduce the current velocity by 0.1% or
                 # a very small value (TINY) and choose the large value.
-                xs[i] = max(xs[i] - TINY, 0.999 * xs[i])  # a slightly more aggressive reduction
-                logger.warn(
-                    "A numerical error occurs: the instance is controllable "
-                    "but forward pass fails. Attempt to try again with x[i] "
-                    "slightly reduced.\n"
-                    "x[{:d}] reduced from {:.6f} to {:.6f}".format(i, xs[i] + SMALL, xs[i]))
+                if tries < MAX_TRIES:
+                    xs[i] = max(xs[i] - TINY, 0.999 * xs[i])  # a slightly more aggressive reduction
+                    tries += 1
+                    logger.warn(
+                        "A numerical error occurs: the instance is controllable "
+                        "but forward pass fails. Attempt to try again with x[i] "
+                        "slightly reduced.\n"
+                        "x[{:d}] reduced from {:.6f} to {:.6f}".format(i, xs[i] + SMALL, xs[i]))
+                else:
+                    logger.warn("Number of trials (to reduce xs[i]) reaches limits. "
+                                "Compute parametrization fails!")
+                    xs[i + 1:] = np.nan
+                    break
             else:
+                tries = 0
                 us[i] = optim_res[0]
                 # The below function min( , max( ,)) ensure that the
                 # state x_{i+1} is controllable.  While this is

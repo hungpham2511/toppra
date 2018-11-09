@@ -5,6 +5,10 @@ SMALL = 1e-5
 LARGE = 1000.0
 INFTY = 1e8
 
+# Number of times xs[i] is lowered during the forward pass to
+# accomodate for numerical error from solvers.
+MAX_TRIES = 10
+
 # TODO: What are these constant used for?
 MAXU = 10000  # Max limit for `u`
 MAXX = 10000  # Max limit for `x`
