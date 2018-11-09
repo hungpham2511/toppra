@@ -10,7 +10,7 @@ import numpy.testing as npt
 import toppra
 import toppra.constraint as constraint
 
-toppra.setup_logging(level="DEBUG")
+toppra.setup_logging(level="INFO")
 
 try:
     import cvxpy
@@ -41,7 +41,8 @@ class RandomSecondOrderLinearConstraint(constraint.CanonicalLinearConstraint):
         self._format_string = "    Random Second-Order constraint (dof={:d}) \n".format(
             self.dof)
 
-    def compute_constraint_params(self, path, gridpoints):
+    def compute_constraint_params(self, path, gridpoints, scaling=1.0):
+        assert scaling == 1.0, "In this mock class scaling needs to be 1"
         N = gridpoints.shape[0] - 1
         a = np.random.randn(N + 1, self.dof)
         b = np.random.randn(N + 1, self.dof)
@@ -149,8 +150,6 @@ def test_basic_init(basic_init_fixture, solver_name, i, H, g, x_ineq):
     v = a[i] * u + b[i] * x + c[i]
     v2 = a2[i] * u + b2[i] * x + c2[i]
     cvxpy_constraints = [
-        u <= ubound[i, 1],
-        u >= ubound[i, 0],
         x <= xbound[i, 1],
         x >= xbound[i, 0],
         F * v <= h,

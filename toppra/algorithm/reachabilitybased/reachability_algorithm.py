@@ -1,9 +1,10 @@
 from ..algorithm import ParameterizationAlgorithm
-from ...constants import LARGE, SMALL, TINY
+from ...constants import LARGE, SMALL, TINY, INFTY, CVXPY_MAXX, MAX_TRIES
 from ...constraint import ConstraintType
 
 import numpy as np
 import logging
+from copy import deepcopy
 logger = logging.getLogger(__name__)
 
 
@@ -19,6 +20,18 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
     solver_wrapper: str, optional
         Name of solver to use. If leave to be None, will select the
         most suitable solver wrapper.
+    scaling: float, optional
+        Scale the problem instance as if the path's duration from [0,
+        s_end] to [0, s_end * scaling]. Note that the path is actually
+        kept unchanged; only the coefficients as evaluated is
+        modified. This is to make it easier on the user who wish to
+        implement an Interpolator class by herself (which she should
+        do).
+
+        The default value is 1.0, which means no scaling. Any positive
+        float is perfectly valid. However, one should attempt to
+        choose a scaling factor that leads to unit velocity
+        approximately. Choose -1 for automatic scaling.
 
     Notes
     -----
@@ -38,16 +51,46 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
     - compute_controllable_sets
     - compute_reachable_sets
     - compute_feasible_sets
-    """
-    def __init__(self, constraint_list, path, gridpoints=None, solver_wrapper=None):
-        super(ReachabilityAlgorithm, self).__init__(constraint_list, path, gridpoints=gridpoints)
 
-        logger.debug("Checking supplied constraints.")
+    """
+    def __init__(self, constraint_list, path, gridpoints=None, solver_wrapper=None, scaling=1):
+        super(ReachabilityAlgorithm, self).__init__(constraint_list, path, gridpoints=gridpoints)
+        # gridpoint check
+        if gridpoints is None:
+            gridpoints = np.linspace(0, path.get_duration(), 100)
+        if path.get_path_interval()[0] != gridpoints[0]:
+            logger.fatal("Manually supplied gridpoints does not start from 0.")
+            raise ValueError("Bad manually supplied gridpoints.")
+        if path.get_path_interval()[1] != gridpoints[-1]:
+            logger.fatal("Manually supplied gridpoints have endpoint "
+                         "different from input path duration.")
+            raise ValueError("Bad manually supplied gridpoints.")
+        self.gridpoints = np.array(gridpoints)  # Attr
+        self._N = len(gridpoints) - 1  # Number of stages. Number of point is _N + 1
+        for i in range(self._N):
+            assert gridpoints[i + 1] > gridpoints[i]
+
+        # Check for conic constraints
         has_conic = False
         for c in constraint_list:
             if c.get_constraint_type() == ConstraintType.CanonicalConic:
                 has_conic = True
-    
+
+        # path scaling for numerical stability
+        if scaling < 0:  # automatic scaling factor selection
+            # sample a few gradient and compute the average derivatives
+            qs_sam = path.evald(np.linspace(0, 1, 5) * path.get_duration())
+            qs_average = np.sum(np.abs(qs_sam)) / path.get_dof() / 5
+            scaling = np.sqrt(qs_average)
+            logger.debug("[auto-scaling] Average path derivative: {:}".format(qs_average))
+            logger.debug("[auto-scaling] Selected Scaling factor: {:}".format(scaling))
+        # NOTE: by scaling the gridpoints, we indicate to the lower
+        # level solver wrapper that scaling is to be done. The solver
+        # wrapper will simply use
+        # scaling = self.gridpoints[-1] / path.duration
+        self.gridpoints = self.gridpoints * scaling
+
+        # Select solver wrapper automatically
         if solver_wrapper is None:
             logger.debug("Solver wrapper not supplied. Choose solver wrapper automatically!")
             if has_conic:
@@ -61,7 +104,6 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
             else:
                 assert solver_wrapper.lower() in ['cvxpy', 'qpoases', 'ecos', 'hotqpoases', 'seidel'], "Solver {:} not found".format(solver_wrapper)
 
-        # Select
         if solver_wrapper.lower() == "cvxpy":
             from toppra.solverwrapper.cvxpy_solverwrapper import cvxpyWrapper
             self.solver_wrapper = cvxpyWrapper(self.constraints, self.path, self.gridpoints)
@@ -100,12 +142,12 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         X = np.zeros((self._N + 1, 2))
         self.solver_wrapper.setup_solver()
         for i in range(self._N + 1):
-            X[i, 0] = self.solver_wrapper.solve_stagewise_optim(i, Hzero, g_lower,
-                                                                -LARGE, LARGE, -LARGE, LARGE)[1]
-            X[i, 1] = self.solver_wrapper.solve_stagewise_optim(i, Hzero, -g_lower,
-                                                                -LARGE, LARGE, -LARGE, LARGE)[1]
+            X[i, 0] = self.solver_wrapper.solve_stagewise_optim(
+                i, Hzero, g_lower, -CVXPY_MAXX, CVXPY_MAXX, -CVXPY_MAXX, CVXPY_MAXX)[1]
+            X[i, 1] = self.solver_wrapper.solve_stagewise_optim(
+                i, Hzero, -g_lower, -CVXPY_MAXX, CVXPY_MAXX, -CVXPY_MAXX, CVXPY_MAXX)[1]
             if logger.getEffectiveLevel() == logging.DEBUG:
-                logger.debug("X[i]={:}".format(X[i]))
+                logger.debug("X[{:d}]={:}".format(i, X[i]))
         self.solver_wrapper.close_solver()
         for i in range(self._N + 1):
             if X[i, 0] < 0:
@@ -137,10 +179,22 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
             K[i] = self._one_step(i, K[i + 1])
             if K[i, 0] < 0:
                 K[i, 0] = 0
+            # check for potential numerical stability issues
             if K[i, 1] < 1e-4:
-                logger.warn("Controllable set too small K[{:d}] = {:}. Might lead to numerical issue.".format(i, K[i]))
+                logger.warn("Badly conditioned problem. Controllable sets are too small "
+                            "K[{:d}] = {:}. ".format(i, K[i]))
+                logger.warn("Consider set `scaling` to -1 when initiating TOPPRA for automatic"
+                            " problem scaling.")
+            elif K[i, 1] > 1e4:
+                logger.warn("Badly conditioned problem. Controllable sets are too large "
+                            "K[{:d}] = {:}".format(i, K[i]))
+                logger.warn("Consider set `scaling` to -1 when initiating TOPPRA for automatic"
+                            " problem scaling.")
             if np.isnan(K[i]).any():
-                logger.warn("K[{:d}]={:}. Path not parametrizable.".format(i, K[i]))
+                logger.warn("An numerical error occur. The controllable set at step "
+                            "[{:d}] can't be computed. Consider using solver wrapper "
+                            "[hotqpoases] or scaling the problem for better numerical "
+                            "stability.".format(i))
                 return K
             if logger.isEnabledFor(logging.DEBUG):
                 logger.debug("[Compute controllable sets] K_{:d}={:}".format(i, K[i]))
@@ -181,9 +235,11 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         return res
 
     def compute_parameterization(self, sd_start, sd_end, return_data=False):
-        """ Compute a path parameterization.
+        """Compute a path parameterization.
 
-        If there is no valid parameterization, simply return None(s).
+        If fail, whether because there is no valid parameterization or
+        because of numerical error, the arrays returns should contain
+        np.nan.
 
         Parameters
         ----------
@@ -196,14 +252,15 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
 
         Returns
         -------
-        sdd_vec: (N,) array or None
-            Path accelerations.
-        sd_vec: (N+1,) array None
-            Path velocities.
+        sdd_vec: (N,) array
+            Path accelerations. Double array. Will contain nan(s) if failed.
+        sd_vec: (N+1,) array
+            Path velocities. Double array. Will contain nan(s) if failed.
         v_vec: (N,) array or None
             Auxiliary variables.
         K: (N+1, 2) array
             Return the controllable set if `return_data` is True.
+
         """
         assert sd_end >= 0 and sd_start >= 0, "Path velocities must be positive"
         K = self.compute_controllable_sets(sd_end, sd_end)
@@ -231,23 +288,48 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         us = np.zeros(N)
         v_vec = np.zeros((N, self.solver_wrapper.get_no_vars() - 2))
 
+        tries = 0
         self.solver_wrapper.setup_solver()
-        for i in range(self._N):
+        i = 0
+        while i < self._N:
             optim_res = self._forward_step(i, xs[i], K[i + 1])
             if np.isnan(optim_res[0]):
-                logger.fatal("A numerical error occurs: The instance is controllable "
-                             "but forward pass fails.")
-                us[i] = np.nan
-                xs[i + 1] = np.nan
-                v_vec[i] = np.nan
+                # NOTE: This case happens because the constraint
+                # K[i + 1, 0] <= x[i] + 2D u[i] <= K[i + 1, 1]
+                # become just slightly infeasible.  This happens more often
+                # with ECOS, which is an interior point solver, than
+                # with qpoases or seidel, both of which are active set
+                # solvers. The strategy used to handle this case is in the
+                # next line: simply reduce the current velocity by 0.1% or
+                # a very small value (TINY) and choose the large value.
+                if tries < MAX_TRIES:
+                    xs[i] = max(xs[i] - TINY, 0.999 * xs[i])  # a slightly more aggressive reduction
+                    tries += 1
+                    logger.warn(
+                        "A numerical error occurs: the instance is controllable "
+                        "but forward pass fails. Attempt to try again with x[i] "
+                        "slightly reduced.\n"
+                        "x[{:d}] reduced from {:.6f} to {:.6f}".format(i, xs[i] + SMALL, xs[i]))
+                else:
+                    logger.warn("Number of trials (to reduce xs[i]) reaches limits. "
+                                "Compute parametrization fails!")
+                    xs[i + 1:] = np.nan
+                    break
             else:
+                tries = 0
                 us[i] = optim_res[0]
-                # The below function min( , max( ,)) ensure that the state x_{i+1} is controllable.
-                # While this is ensured theoretically by the existence of the controllable sets,
-                # numerical errors might violate this condition.
-                xs[i + 1] = min(K[i + 1, 1], max(K[i + 1, 0], xs[i] + 2 * deltas[i] * us[i] - TINY))
+                # The below function min( , max( ,)) ensure that the
+                # state x_{i+1} is controllable.  While this is
+                # ensured theoretically by the existence of the
+                # controllable sets, numerical errors might violate
+                # this condition.
+                x_next = xs[i] + 2 * deltas[i] * us[i]
+                x_next = max(x_next - TINY, 0.9999 * x_next)
+                xs[i + 1] = min(K[i + 1, 1],
+                                max(K[i + 1, 0], x_next))
+                logger.debug("[Forward pass] u[{:d}] = {:f}, x[{:d}] = {:f}".format(i, us[i], i + 1, xs[i + 1]))
                 v_vec[i] = optim_res[2:]
-            logger.debug("[Forward pass] u_{:d} = {:f}, x_{:d} = {:f}".format(i, us[i], i+1, xs[i+1]))
+                i += 1
         self.solver_wrapper.close_solver()
 
         sd_vec = np.sqrt(xs)

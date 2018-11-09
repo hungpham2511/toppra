@@ -31,21 +31,16 @@ class ParameterizationAlgorithm(object):
         If not given, automatically generate a grid with 100 steps.
     """
     def __init__(self, constraint_list, path, gridpoints=None):
-        if gridpoints is None:
-            gridpoints = np.linspace(0, path.get_duration(), 100)
         self.constraints = constraint_list  # Attr
         self.path = path  # Attr
-        self.gridpoints = np.array(gridpoints)  # Attr
-        self._N = len(gridpoints) - 1  # Number of stages. Number of point is _N + 1
-        assert path.get_path_interval()[0] == gridpoints[0]
-        assert path.get_path_interval()[1] == gridpoints[-1]
-        for i in range(self._N):
-            assert gridpoints[i + 1] > gridpoints[i]
 
     def compute_parameterization(self, sd_start, sd_end):
-        """ Compute a path parameterization.
+        """Compute a path parameterization.
 
-        If there is no valid parameterization, simply return None(s).
+        If fail, whether because there is no valid parameterization or
+        because of numerical error, the arrays returns should contain
+        np.nan.
+
 
         Parameters
         ----------
@@ -66,10 +61,11 @@ class ParameterizationAlgorithm(object):
             Auxiliary variables.
         K: (N+1, 2) array
             Return the controllable set if `return_data` is True.
+
         """
         raise NotImplementedError
 
-    def compute_trajectory(self, sd_start, sd_end, return_profile=False, bc_type='not-a-knot', return_data=False):
+    def compute_trajectory(self, sd_start=0, sd_end=0, return_profile=False, bc_type='not-a-knot', return_data=False):
         """Compute the resulting joint trajectory and auxilliary trajectory.
 
         If parameterization fails, return a tuple of None(s).
@@ -106,9 +102,11 @@ class ParameterizationAlgorithm(object):
             Return if return_data is True.
 
         """
-        sdd_grid, sd_grid, v_grid, K = self.compute_parameterization(sd_start, sd_end, return_data=True)
+        sdd_grid, sd_grid, v_grid, K = self.compute_parameterization(
+            sd_start, sd_end, return_data=True)
 
-        if sd_grid is None:
+        # fail condition: sd_grid is None, or there is nan in sd_grid
+        if sd_grid is None or np.isnan(sd_grid).any():
             if return_profile:
                 return None, None, (sdd_grid, sd_grid, v_grid, K)
             else:
@@ -147,7 +145,7 @@ class ParameterizationAlgorithm(object):
         elif return_data:
             # NOTE: the time stamps for each (original) waypoint are
             #  evaluated by interpolating the grid points.
-            t_waypts = np.interp(self.path.ss_waypoints, gridpoints, t_grid)
+            t_waypts = np.interp(self.path.get_waypoints()[0], gridpoints, t_grid)
             return traj_spline, v_spline, {'sdd': sdd_grid, 'sd': sd_grid,
                                            'v': v_grid, 'K': K, 't_waypts': t_waypts}
         else:

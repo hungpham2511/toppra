@@ -144,3 +144,56 @@ def test_err1():
     else:
         assert False, "Solve this LP with cvxpy returns status: {:}".format(prob.status)
 
+
+def test_err2():
+    """ A case that fails. Discovered on 31/10/2018.
+    """
+    v=array([-1.e-09,  1.e+00,  0.e+00])
+    a=array([-0.04281662,  0.04281662,  0.        ,  0.        ,  0.        ,
+             0.        ,  0.        ,  0.        ,  0.        ,  0.        ,
+             0.        ,  0.        ,  0.        ,  0.        ,  0.        ,
+             0.        , -1.27049648,  0.63168407,  0.54493736, -0.17238098,
+             0.22457236,  0.6543007 ,  1.24159883,  1.27049648, -0.63168407,
+             -0.54493736,  0.17238098, -0.22457236, -0.6543007 , -1.24159883])
+    b=array([ -1.        ,   1.        , -70.14534325,  35.42759706,
+              31.23305996,  -9.04430553,  12.51402852,  36.71562421,
+              68.63795557,  70.14534325, -35.42759706, -31.23305996,
+              9.04430553, -12.51402852, -36.71562421, -68.63795557,
+              -9.70931351,   4.71707751,   3.93518034,  -1.41196299,
+              1.69317949,   4.88204872,   9.47085771,   9.70931351,
+              -4.71707751,  -3.93518034,   1.41196299,  -1.69317949,
+              -4.88204872,  -9.47085771])
+    c=array([  0.        ,  -1.56875277, -50.        , -50.        ,
+               -50.        , -50.        , -50.        , -50.        ,
+               -50.        , -50.        , -50.        , -50.        ,
+               -50.        , -50.        , -50.        , -50.        ,
+               -50.        , -50.        , -50.        , -50.        ,
+               -50.        , -50.        , -50.        , -50.        ,
+               -50.        , -50.        , -50.        , -50.        ,
+               -50.        , -50.        ])
+    low=array([-1.e+08,  0.e+00])
+    high=array([1.e+08, 1.e+08])
+    active_c=np.array([ 0, -4])
+
+    data = seidel.solve_lp2d(
+        v, a, b, c, low, high, np.array([0, -4]))  # only break at this active constraints
+    res, optval, optvar, active_c = data
+
+    # solve with cvxpy
+    x = cvx.Variable(2)
+    constraints = [a * x[0] + b * x[1] + c <= 0,
+                   low <= x, x <= high]
+    obj = cvx.Maximize(v[0] * x[0] + v[1] * x[1] + v[2])
+    prob = cvx.Problem(obj, constraints)
+    prob.solve(solver='CVXOPT')
+    # solve with the method to test and assert correctness
+    if prob.status == "optimal":
+        assert res == 1
+        np.testing.assert_allclose(optval, prob.value)
+        np.testing.assert_allclose(optvar[1], np.asarray(x.value).flatten()[1])
+    elif prob.status == "infeasible":
+        assert res == 0
+    else:
+        assert False, "Solve this LP with cvxpy returns status: {:}".format(prob.status)
+
+   

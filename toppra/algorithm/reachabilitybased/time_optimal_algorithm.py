@@ -9,6 +9,7 @@ class TOPPRA(ReachabilityAlgorithm):
     """Time-Optimal Path Parameterization based on Reachability
     Analysis (TOPPRA).
 
+
     Parameters
     ----------
     constraint_list: :class:`~toppra.constraint.Constraint` list
@@ -22,6 +23,15 @@ class TOPPRA(ReachabilityAlgorithm):
         Name of the solver wrapper to use.
         See :class:`toppra.solverwrapper.hotqpOASESSolverWrapper`,
         :class:`toppra.solverwrapper.seidelWrapper`
+
+    Notes
+    -----
+    In addition to the input constraints, there might be additional
+    constraints on the solutions. These constraints usually come from
+    the solver wrapper. Therefore, don't be suprise if different
+    parametrizations are returned for different solver
+    wrappers. However, the different should be very small, especially
+    for well-conditioned problems.
 
     """
 

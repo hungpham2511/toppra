@@ -55,6 +55,8 @@ class Interpolator(object):
     """
     def __init__(self):
         self.dof = None
+        # Note: do not use this attribute directly, use get_duration
+        # method instead.
         self.duration = None
 
     def get_dof(self):
@@ -68,10 +70,12 @@ class Interpolator(object):
         return self.dof
 
     def get_duration(self):
-        """
+        """ Return the duration of the path.
 
         Returns
         -------
+        out: float
+            Path duration.
 
         """
         raise NotImplementedError
@@ -270,6 +274,7 @@ class SplineInterpolator(Interpolator):
         assert ss_waypoints[0] == 0, "First index must equals zero."
         self.ss_waypoints = np.array(ss_waypoints)
         self.waypoints = np.array(waypoints)
+        self.bc_type = bc_type
         if np.isscalar(waypoints[0]):
             self.dof = 1
         else:
@@ -301,6 +306,11 @@ class SplineInterpolator(Interpolator):
             self.cspl = CubicSpline(ss_waypoints, waypoints, bc_type=bc_type)
             self.cspld = self.cspl.derivative()
             self.cspldd = self.cspld.derivative()
+
+    def get_waypoints(self):
+        """ Return the appropriate scaled waypoints.
+        """
+        return self.ss_waypoints, self.waypoints
 
     def get_duration(self):
         return self.duration
