@@ -78,7 +78,12 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
 
         # path scaling for numerical stability
         if scaling < 0:  # automatic scaling factor selection
-            scaling = 1.0
+            # sample a few gradient and compute the average derivatives
+            qs_sam = path.evald(np.linspace(0, 1, 5) * path.get_duration())
+            qs_average = np.sum(np.abs(qs_sam)) / path.get_dof() / 5
+            scaling = np.sqrt(qs_average)
+            logger.debug("[auto-scaling] Average path derivative: {:}".format(qs_average))
+            logger.debug("[auto-scaling] Selected Scaling factor: {:}".format(scaling))
         # NOTE: by scaling the gridpoints, we indicate to the lower
         # level solver wrapper that scaling is to be done. The solver
         # wrapper will simply use
@@ -178,15 +183,18 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
             if K[i, 1] < 1e-4:
                 logger.warn("Badly conditioned problem. Controllable sets are too small "
                             "K[{:d}] = {:}. ".format(i, K[i]))
-                logger.warn("Consider set scaling to -1 when initiating TOPPRA for automatic"
+                logger.warn("Consider set `scaling` to -1 when initiating TOPPRA for automatic"
                             " problem scaling.")
             elif K[i, 1] > 1e4:
                 logger.warn("Badly conditioned problem. Controllable sets are too large "
                             "K[{:d}] = {:}".format(i, K[i]))
-                logger.warn("Consider set scaling to -1 when initiating TOPPRA for automatic"
+                logger.warn("Consider set `scaling` to -1 when initiating TOPPRA for automatic"
                             " problem scaling.")
             if np.isnan(K[i]).any():
-                logger.warn("K[{:d}]={:}. Path not parametrizable.".format(i, K[i]))
+                logger.warn("An numerical error occur. The controllable set at step "
+                            "[{:d}] can't be computed. Consider using solver wrapper "
+                            "[hotqpoases] or scaling the problem for better numerical "
+                            "stability.".format(i))
                 return K
             if logger.isEnabledFor(logging.DEBUG):
                 logger.debug("[Compute controllable sets] K_{:d}={:}".format(i, K[i]))
