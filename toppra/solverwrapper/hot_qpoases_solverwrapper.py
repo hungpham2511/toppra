@@ -185,6 +185,9 @@ class hotqpOASESSolverWrapper(SolverWrapper):
                 # relevant code (in qpOASES wrapper)
             else:
                 return var
+        else:
+            logger.debug("qpOASES error code: {:d}")
+
 
         res = np.empty(self.get_no_vars())
         res[:] = np.nan

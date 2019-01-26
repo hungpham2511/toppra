@@ -53,3 +53,9 @@ Bug reports and supports
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 Please report any issues, questions via `Github issues tracker <https://github.com/hungpham2511/toppra/issues>`_.
 
+
+qpOASES error codes
+~~~~~~~~~~~~~~~~~~~~~
+
+37: RET_INIT_FAILED_INFEASIBILITY
+

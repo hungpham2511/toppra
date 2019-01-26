@@ -185,7 +185,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
                             "K[{:d}] = {:}. ".format(i, K[i]))
                 logger.warn("Consider set `scaling` to -1 when initiating TOPPRA for automatic"
                             " problem scaling.")
-            elif K[i, 1] > 1e4:
+            elif K[i, 1] > 1e4: # TODO: random constant?
                 logger.warn("Badly conditioned problem. Controllable sets are too large "
                             "K[{:d}] = {:}".format(i, K[i]))
                 logger.warn("Consider set `scaling` to -1 when initiating TOPPRA for automatic"
