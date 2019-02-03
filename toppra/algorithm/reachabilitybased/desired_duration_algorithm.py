@@ -17,13 +17,13 @@ def _compute_duration(xs, deltas):
 
 
 class TOPPRAsd(ReachabilityAlgorithm):
-    """An algorithm that parametrizes paths to given durations.
+    """TOPPRA with specified duration.
 
-    The key idea is to compute the fastest parametrization and the
-    slowest one, then use bisection search to find a convex
-    combination of the parametrizations with the desired duration.
+    NOTE: The key technical idea underlying this class is to compute the fastest
+    parametrization and the slowest one, then use bisection search to find a convex
+    combination of the parametrizations that has the desired duration.
 
-    TODO: Optimize this. Not the most efficient implementation.
+    TODO: The current implementation is inefficient.
     """
 
     def set_desired_duration(self, desired_duration):

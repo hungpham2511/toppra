@@ -12,7 +12,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-eps = 1e-8  # Coefficient to check for qpoases tolerances
+eps = 1e-8  # Coefficient to check for qpoases tolerances TODO: shift this to constants.py
 INF = INFTY
 
 

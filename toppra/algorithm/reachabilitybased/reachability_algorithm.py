@@ -4,32 +4,32 @@ from ...constraint import ConstraintType
 
 import numpy as np
 import logging
-from copy import deepcopy
 logger = logging.getLogger(__name__)
 
 
 class ReachabilityAlgorithm(ParameterizationAlgorithm):
-    """Base class for all Reachability Analysis-based parameterization algorithms.
-
+    """Base class for Reachability Analysis-based path parameterization algorithms.
 
     Parameters
     ----------
-    constraint_list: list of Constraint
+    constraint_list: List[:class:`~toppra.constraint.Constraint`]
+        List of constraints on the robot dynamics.
     path: Interpolator
-    gridpoints: (N+1,)array, optional
+        
+    gridpoints: np.ndarray, optional
+        Shape (N+1,). Gridpoints for discretization of the path position.
     solver_wrapper: str, optional
-        Name of solver to use. If leave to be None, will select the
-        most suitable solver wrapper.
+        Name of solver to use. If is None, select the most suitable wrapper.
     scaling: float, optional
-        Scale the problem instance as if the path's duration from [0,
-        s_end] to [0, s_end * scaling]. Note that the path is actually
-        kept unchanged; only the coefficients as evaluated is
-        modified. This is to make it easier on the user who wish to
+        Scale input path such that its position changes from [0, s_end] to [0, s_end * scaling].
+
+        Note that the path is unchanged; only the numerical coefficients evaluated.
+        This is to make it easier on the user who wish to
         implement an Interpolator class by herself (which she should
         do).
 
         The default value is 1.0, which means no scaling. Any positive
-        float is perfectly valid. However, one should attempt to
+        float is valid. However, one should attempt to
         choose a scaling factor that leads to unit velocity
         approximately. Choose -1 for automatic scaling.
 
@@ -51,7 +51,6 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
     - compute_controllable_sets
     - compute_reachable_sets
     - compute_feasible_sets
-
     """
     def __init__(self, constraint_list, path, gridpoints=None, solver_wrapper=None, scaling=1):
         super(ReachabilityAlgorithm, self).__init__(constraint_list, path, gridpoints=gridpoints)
@@ -82,10 +81,14 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
             qs_sam = path.evald(np.linspace(0, 1, 5) * path.get_duration())
             qs_average = np.sum(np.abs(qs_sam)) / path.get_dof() / 5
             scaling = np.sqrt(qs_average)
-            logger.debug("[auto-scaling] Average path derivative: {:}".format(qs_average))
-            logger.debug("[auto-scaling] Selected Scaling factor: {:}".format(scaling))
-        # NOTE: by scaling the gridpoints, we indicate to the lower
-        # level solver wrapper that scaling is to be done. The solver
+            logger.info("[auto-scaling] Average path derivative: {:}".format(qs_average))
+            logger.info("[auto-scaling] Selected scaling factor: {:}".format(scaling))
+        else:
+            logger.info("Scaling factor: {:f}".format(
+                scaling
+            ))
+        # NOTE: Scaling `gridpoints` making the two endpoints different from the domain of the given path
+        # signal to the lower level solver wrapper that it has to scale the problem. The solver
         # wrapper will simply use
         # scaling = self.gridpoints[-1] / path.duration
         self.gridpoints = self.gridpoints * scaling
@@ -166,9 +169,9 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
 
         Returns
         -------
-        K: (N+1,2)array
-            K[i] contains the upper and lower bounds of the set of
-            controllable squared velocities at position s[i].
+        K : ndarray
+            Shape (N+1, 2). Element K[i] contains the squared upper and lower
+            controllable velocities at position s[i].
         """
         assert sdmin <= sdmax and 0 <= sdmin
         K = np.zeros((self._N + 1, 2))
@@ -179,22 +182,9 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
             K[i] = self._one_step(i, K[i + 1])
             if K[i, 0] < 0:
                 K[i, 0] = 0
-            # check for potential numerical stability issues
-            if K[i, 1] < 1e-4:
-                logger.warn("Badly conditioned problem. Controllable sets are too small "
-                            "K[{:d}] = {:}. ".format(i, K[i]))
-                logger.warn("Consider set `scaling` to -1 when initiating TOPPRA for automatic"
-                            " problem scaling.")
-            elif K[i, 1] > 1e4: # TODO: random constant?
-                logger.warn("Badly conditioned problem. Controllable sets are too large "
-                            "K[{:d}] = {:}".format(i, K[i]))
-                logger.warn("Consider set `scaling` to -1 when initiating TOPPRA for automatic"
-                            " problem scaling.")
             if np.isnan(K[i]).any():
-                logger.warn("An numerical error occur. The controllable set at step "
-                            "[{:d}] can't be computed. Consider using solver wrapper "
-                            "[hotqpoases] or scaling the problem for better numerical "
-                            "stability.".format(i))
+                logger.warn("A numerical error occurs: The controllable set at step "
+                            "[{:d} / {:d}] can't be computed.".format(i, self._N + 1))
                 return K
             if logger.isEnabledFor(logging.DEBUG):
                 logger.debug("[Compute controllable sets] K_{:d}={:}".format(i, K[i]))
@@ -265,7 +255,8 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         assert sd_end >= 0 and sd_start >= 0, "Path velocities must be positive"
         K = self.compute_controllable_sets(sd_end, sd_end)
         if np.isnan(K).any():
-            logger.warn("The set of controllable velocities at the beginning is empty!")
+            logger.warn("An error occurred when computing controllable velocities. "
+                        "The path is not controllable, or is badly conditioned.")
             if return_data:
                 return None, None, None, K
             else:

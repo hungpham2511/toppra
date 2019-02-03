@@ -32,21 +32,16 @@ class CanonicalLinearConstraint(Constraint):
         self.identical = False
 
     def compute_constraint_params(self, path, gridpoints, scaling):
-        """Return constraint parameters.
-
-        If a set of parameters are not available, None is returned.
+        """Compute numerical coefficients of the given constraint.
 
         Parameters
         ----------
         path: `Interpolator`
             The geometric path.
-        gridpoints: array
-            (N+1,) array. The path discretization.
+        gridpoints: np.ndarray
+            Shape (N+1,). Gridpoint use for discretizing path.
         scaling: float
-            Path scaling. If this value is 1, return the parameter
-            normally. If this value is positive but not one, return
-            the parameters for a path that is scaled from the given
-            one by this value linearly.
+            Numerical scaling. If is 1, no scaling is performed.
 
         Returns
         -------

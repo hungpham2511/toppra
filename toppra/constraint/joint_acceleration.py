@@ -15,7 +15,10 @@ class JointAccelerationConstraint(CanonicalLinearConstraint):
     ----------
     alim: array
         Shape (dof, 2). The lower and upper acceleration bounds of the j-th joint
-        are given by alim[j, 0] and alim[j, 1] respectively.
+        are alim[j, 0] and alim[j, 1] respectively.
+    discretization_scheme: DiscretizationType
+        Can be either Collocation or Interpolation. Interpolation gives more accurate results with
+        slightly higher computational cost.
 
     Notes
     -----
