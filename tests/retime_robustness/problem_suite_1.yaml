@@ -17,7 +17,7 @@ prob1:
   alim: [100, 100, 100]
 
   desired_duration: [0, 1.0]
-  solver_wrapper: ['hotqpoases']
+  solver_wrapper: ['hotqpoases', 'seidel']
 
 prob2:
   waypoints:
@@ -31,7 +31,7 @@ prob2:
   alim: [100, 100, 100]
 
   desired_duration: [0, 1.0]
-  solver_wrapper: ['hotqpoases']
+  solver_wrapper: ['hotqpoases', 'seidel']
 
 
 prob3:
@@ -53,5 +53,5 @@ prob3:
   alim: [1000, 2000, 1000]
 
   desired_duration: [0, 1.0e-4]
-  solver_wrapper: ['hotqpoases']
+  solver_wrapper: ['hotqpoases', 'seidel']
 
