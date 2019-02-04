@@ -96,12 +96,13 @@ def basic_init_fixture(request):
 @pytest.mark.parametrize("g", [np.array([0.2, -1]), np.array([0.5, 1]), np.array([2.0, 1])])
 @pytest.mark.parametrize("x_ineq", [(-1, 1), (0.2, 0.2), (0.4, 0.3), (np.nan, np.nan)])
 @pytest.mark.skipif(not FOUND_CXPY, reason="This test requires cvxpy to validate results.")
-def test_basic_init(basic_init_fixture, solver_name, i, H, g, x_ineq):
-    """ A basic test case for wrappers.
+def test_basic_correctness(basic_init_fixture, solver_name, i, H, g, x_ineq):
+    """Basic test case for solver wrappers.
 
-    Notice that the input fixture `basic_init_fixture` is known to have two constraints,
-    one velocity and one acceleration. Hence, in this test, I directly formulate
-    an optimization with cvxpy to test the result.
+    The input fixture `basic_init_fixture` is known to have two
+    constraints, one velocity and one acceleration. Hence, in this
+    test, I directly formulate an optimization with cvxpy and compare
+    the result with the result obtained from the solver wrapper.
 
     Parameters
     ----------
