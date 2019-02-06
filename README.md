@@ -16,7 +16,7 @@ constraints can be computed.
 ## Citing TOPP-RA
 If you use this library for your research, we encourage you to 
 
-1. reference the accompanying paper [«A new approach to Time-Optimal Path Parameterization based on Reachability Analysis»](https://arxiv.org/abs/1707.07239), *IEEE Transactions on Robotics*, vol. 34(3), pp. 645–659, 2018.
+1. reference the accompanying paper [«A new approach to Time-Optimal Path Parameterization based on Reachability Analysis»](https://www.researchgate.net/publication/318671280_A_New_Approach_to_Time-Optimal_Path_Parameterization_Based_on_Reachability_Analysis), *IEEE Transactions on Robotics*, vol. 34(3), pp. 645–659, 2018.
 2. put a star on this repository.
 
 
