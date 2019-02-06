@@ -65,6 +65,7 @@ def test_robustness_main():
         if jnt_traj is None:
             all_success = False
             parsed_problems_df.loc[row_index, "status"] = "FAIL"
+            parsed_problems_df.loc[row_index, "duration"] = None
         else:
             parsed_problems_df.loc[row_index, "status"] = "SUCCESS"
             parsed_problems_df.loc[row_index,
@@ -72,6 +73,6 @@ def test_robustness_main():
 
     # get all rows with status different from NaN, then reports other columns.
     result_df = parsed_problems_df[parsed_problems_df["status"].notna()][
-        ["status", "duration", "name", "solver_wrapper", "nb_gridpoints"]]
+        ["status", "duration", "name", "solver_wrapper", "nb_gridpoints", "problem_id"]]
     print(result_df)
     assert all_success, "Unable to solve some problems in the test suite"
