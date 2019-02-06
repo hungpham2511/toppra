@@ -165,24 +165,16 @@ class hotqpOASESSolverWrapper(SolverWrapper):
                 return np.array([u_min, x_min + 2 * u_min * delta])
 
         if H is None:
-            H = np.zeros((self.get_no_vars(), self.get_no_vars()))
-
-        # check the ratio of A[:, 0] and A[:, 1], if this is too far
-        # from 1, the problem is badly scaled.
-        if logger.isEnabledFor(logging.DEBUG):
-            A_abs = np.abs(self._A)
-            ratios = np.mean(A_abs[:, 0] / A_abs[:, 1])
-            logger.debug("Coefficient ratio: A[:, 0] / A[:, 1] = {:f}".format(ratios))
-            ratio_col1 = 10 / np.sum(np.abs(self._A[2:, 0]))
-            ratio_col2 = 10 / np.sum(np.abs(self._A[2:, 1]))
-            logger.debug("min ratio col 1 {:f}, col 2 {:f}".format(ratio_col1, ratio_col2))
+            H = np.ones((self.get_no_vars(), self.get_no_vars())) * 1e-8  # regularizatioin
 
         ratio_col1 = 1 / (np.sum(np.abs(self._A[2:, 0])) + 1e-5)  # the maximum possible value for both ratios is 100000
         ratio_col2 = 1 / (np.sum(np.abs(self._A[2:, 1])) + 1e-5)
-
         variable_scales = np.array([ratio_col1, ratio_col2])
         # variable_scales = np.array([5000.0, 2000.0])
         variable_scales_mat = np.diag(variable_scales)
+
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug("min ratio col 1 {:f}, col 2 {:f}".format(ratio_col1, ratio_col2))
 
         # ratio scaling
         self._A = self._A.dot(variable_scales_mat)
