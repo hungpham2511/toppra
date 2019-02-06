@@ -23,7 +23,7 @@ JACC_MAXU = 1000000  # max u when creating joint acceleration constraint
 # NOTE: Read the wrapper's documentation for more details.
 
 # qpoases
-QPOASES_INFTY = 1e12
+QPOASES_INFTY = 1e16
 
 # cvxpy
 CVXPY_MAXX = 10000
