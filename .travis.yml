@@ -34,7 +34,7 @@ install:
 script:
   - cd $CI_SOURCE_PATH
   - pip install -r requirements.txt --user
-  - pip install pandas  # for testing
+  - pip install pandas  --user # for testing
   - python setup.py develop --user  # need to run the develop command to have coverage working. install command (below) should work just fine.
   # - python setup.py install --user
   - py.test --cov=toppra tests -Wonce
