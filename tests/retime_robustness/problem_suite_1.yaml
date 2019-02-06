@@ -27,10 +27,10 @@ small_joint_2:
 
   ss_waypoints: [0, 1]
   nb_gridpoints: [51, 101]
-  vlim: [100, 100, 100]
-  alim: [100, 100, 100]
+  vlim: [100, 10000, 100]
+  alim: [100, 10000, 100]
 
-  desired_duration: [0, 1.0]
+  desired_duration: [0]
   solver_wrapper: ['hotqpoases', 'seidel']
 
 
