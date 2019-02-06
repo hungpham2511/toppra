@@ -19,7 +19,7 @@ def test_robustness_main():
     """
     # parse problems from a configuration file
     parsed_problems = []
-    with open("retime_robustness/problem_suite_1.yaml", "r") as f:
+    with open("tests/retime_robustness/problem_suite_1.yaml", "r") as f:
         problem_dict = yaml.load(f.read())
     for key in problem_dict:
         if len(problem_dict[key]['ss_waypoints']) == 2:
