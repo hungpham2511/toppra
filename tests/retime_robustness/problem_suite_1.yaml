@@ -50,11 +50,10 @@ small_joint_3:
   ss_waypoints: [0, 1]
   nb_gridpoints: [51, 101]
   vlim: [1000, 1000, 1000]
-  alim: [1000, 2000, 1000]
+  alim: [1000, 2000, 10000]
 
-  desired_duration: [0, 1.0e-4]
+  desired_duration: [0, 1.0]
   solver_wrapper: ['hotqpoases', 'seidel']
-
 
 two_points_1:
   waypoints:
@@ -62,10 +61,25 @@ two_points_1:
     - [0, 1, 0]
 
   ss_waypoints: [0, 1]
-  nb_gridpoints: [51, 101]
+  nb_gridpoints: [51, 101, 501]
   vlim: [100, 100, 100]
   alim: [100, 100, 100]
 
   desired_duration: [0, 1.0]
+  optimal_duration: 0.2
+  solver_wrapper: ['hotqpoases', 'seidel']
+
+two_points_2:
+  waypoints:
+    - [0, 0, 0]
+    - [0, 1e-4, 0]
+
+  ss_waypoints: [0, 1]
+  nb_gridpoints: [51, 101, 1001]
+  vlim: [100, 100, 100]
+  alim: [100, 100, 100]
+
+  desired_duration: [0]
+  optimal_duration: 0.002
   solver_wrapper: ['hotqpoases', 'seidel']
 

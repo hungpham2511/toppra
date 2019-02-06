@@ -165,7 +165,7 @@ class hotqpOASESSolverWrapper(SolverWrapper):
                 return np.array([u_min, x_min + 2 * u_min * delta])
 
         if H is None:
-            H = np.ones((self.get_no_vars(), self.get_no_vars())) * 1e-8  # regularizatioin
+            H = np.ones((self.get_no_vars(), self.get_no_vars())) * 1e-18  # regularization,  very important
 
         ratio_col1 = 1 / (np.sum(np.abs(self._A[2:, 0])) + 1e-5)  # the maximum possible value for both ratios is 100000
         ratio_col2 = 1 / (np.sum(np.abs(self._A[2:, 1])) + 1e-5)

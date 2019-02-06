@@ -8,7 +8,7 @@ import toppra
 import toppra.constraint as constraint
 import toppra.algorithm as algo
 
-toppra.setup_logging(level="FATAL")
+# toppra.setup_logging(level="DEBUG")
 
 # NOTE: Select problems to test with this regex.
 problem_regex = ".*oa.*"
@@ -58,8 +58,14 @@ def test_robustness_main():
         pc_acc = constraint.JointAccelerationConstraint(
             alim, discretization_scheme=constraint.DiscretizationType.Interpolation)
 
-        instance = algo.TOPPRA([pc_vel, pc_acc], path, gridpoints=problem_data['gridpoints'],
-                               solver_wrapper=problem_data['solver_wrapper'])
+        if problem_data['desired_duration'] == 0:
+            instance = algo.TOPPRA([pc_vel, pc_acc], path, gridpoints=problem_data['gridpoints'],
+                                   solver_wrapper=problem_data['solver_wrapper'])
+        else:
+            instance = algo.TOPPRAsd([pc_vel, pc_acc], path, gridpoints=problem_data['gridpoints'],
+                                     solver_wrapper=problem_data['solver_wrapper'])
+            instance.set_desired_duration(problem_data['desired_duration'])
+
         jnt_traj, aux_traj, data = instance.compute_trajectory(0, 0, return_data=True)
 
         if jnt_traj is None:
@@ -73,6 +79,7 @@ def test_robustness_main():
 
     # get all rows with status different from NaN, then reports other columns.
     result_df = parsed_problems_df[parsed_problems_df["status"].notna()][
-        ["status", "duration", "name", "solver_wrapper", "nb_gridpoints", "problem_id"]]
+        ["status", "duration", "desired_duration", "name", "solver_wrapper", "nb_gridpoints", "problem_id"]]
+    print("\n")
     print(result_df)
     assert all_success, "Unable to solve some problems in the test suite"
