@@ -4,13 +4,13 @@ import numpy as np
 class SolverWrapper(object):
     """The base class for all solver wrappers.
 
-    Solver wrappers implement a core method needed by all
-    Reachability-based algorithms: The method
+    All SolverWrapper have to implement a core method needed by all
+    Reachability Analysis-based algorithms:
     `solve_stagewise_optim`. This methods solves a Linear/Quadratic
-    Program subject to linear constraints at a given stage, and
+    Program subject to linear constraints at the given stage, and
     possibly with additional auxiliary constraints.
 
-    Note that some solver wrappers only handle Linear Program while
+    Note that some SolverWrappers only handle Linear Program while
     some handle both.
 
     Certain solver wrappers need to be setup and close down before and
@@ -105,10 +105,10 @@ class SolverWrapper(object):
 
         Returns
         -------
-        double array, or list
+        double array
              If successes, return an array containing the optimal
-             variable.  Since NaN is also a valid double, this list
-             contains NaN if the optimization problem is infeasible.
+             variable.
+             Otherwise, return a NaN array if fails to solve.
         """
         raise NotImplementedError
 

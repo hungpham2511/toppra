@@ -137,7 +137,7 @@ def test_basic_correctness(basic_init_fixture, solver_name, i, H, g, x_ineq):
     solver.setup_solver()
     result_ = solver.solve_stagewise_optim(i - 2, H, g, xmin, xmax, xnext_min, xnext_max)
     result_ = solver.solve_stagewise_optim(i - 1, H, g, xmin, xmax, xnext_min, xnext_max)
-    result = solver.solve_stagewise_optim(i, H, g, xmin, xmax, xnext_min, xnext_max)
+    solverwrapper_result = solver.solve_stagewise_optim(i, H, g, xmin, xmax, xnext_min, xnext_max)
     solver.close_solver()
 
     # Results from cvxpy, used as the actual, desired values
@@ -168,11 +168,11 @@ def test_basic_correctness(basic_init_fixture, solver_name, i, H, g, x_ineq):
     problem = cvxpy.Problem(objective, cvxpy_constraints)
     problem.solve(verbose=True)  # test with the same solver as cvxpywrapper
     if problem.status == "optimal":
-        actual = np.array(ux.value).flatten()
-        result = np.array(result).flatten()
-        npt.assert_allclose(result, actual, atol=5e-3, rtol=1e-5)  # Very bad accuracy? why?
+        cvxpy_result = np.array(ux.value).flatten()
+        solverwrapper_result = np.array(solverwrapper_result).flatten()
+        npt.assert_allclose(solverwrapper_result, cvxpy_result, atol=5e-3, rtol=1e-5)  # Very bad accuracy? why?
     else:
-        assert np.all(np.isnan(result))
+        assert np.all(np.isnan(solverwrapper_result))
 
 
 @pytest.mark.parametrize("solver_name", ['cvxpy', 'qpOASES', 'ecos', 'hotqpOASES', 'seidel'])
