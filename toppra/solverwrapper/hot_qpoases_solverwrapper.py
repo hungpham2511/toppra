@@ -159,6 +159,9 @@ class hotqpOASESSolverWrapper(SolverWrapper):
                     u_max = min(u_max, (self._hA[i] - self._A[i, 1] * x_min) / self._A[i, 0])
                 elif self._A[i, 0] < 0:
                     u_min = max(u_min, (self._hA[i] - self._A[i, 1] * x_min) / self._A[i, 0])
+            if u_min > u_max:  # problem infeasible
+                return np.array([np.nan, np.nan])
+
             if g[0] < 0:
                 return np.array([u_max, x_min + 2 * u_max * delta])
             else:
