@@ -4,14 +4,14 @@
 
 **Documentation and tutorials** are available at (https://hungpham2511.github.io/toppra/).
 
-TOPP-RA is a library for time-parameterizing robot trajectories subject to kinematic and dynamic constraints. 
+TOPP-RA is a library for computing the time-optimal path parametrization for robots subject to kinematic and dynamic constraints. 
 In general, given the inputs:
 
-1. a geometric path `q(s)`, `s` in `[0, s_end]` ;
+1. a geometric path `p(s)`, `s` in `[0, s_end]` ;
 2. a list of constraints on joint velocity, joint accelerations, tool Cartesian velocity, et cetera.
 
-TOPP-RA returns the time-parameterization: `s_dot (s)`, from which a trajectory `q(t)` that satisfies the given
-constraints can be computed.
+TOPP-RA returns the time-optimal path parameterization: `s_dot (s)`, from which the fastest trajectory `q(t)` that satisfies the given
+constraints can be found.
 
 ## Citing TOPP-RA
 If you use this library for your research, we encourage you to 
