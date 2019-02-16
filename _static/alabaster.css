@@ -65,7 +65,7 @@ body {
 
 
 div.document {
-    width: 1240px;
+    width: 940px;
     margin: 30px auto 0 auto;
 }
 
@@ -75,11 +75,11 @@ div.documentwrapper {
 }
 
 div.bodywrapper {
-    margin: 0 0 0 270px;
+    margin: 0 0 0 220px;
 }
 
 div.sphinxsidebar {
-    width: 270px;
+    width: 220px;
     font-size: 14px;
     line-height: 1.5;
 }
@@ -99,7 +99,7 @@ div.body > .section {
 }
 
 div.footer {
-    width: 1240px;
+    width: 940px;
     margin: 20px auto 30px auto;
     font-size: 14px;
     color: #888;
