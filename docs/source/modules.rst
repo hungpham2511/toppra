@@ -1,51 +1,75 @@
-Modules reference
-===============================
+TOPP-RA Module references
+=========================
 
-
-Interpolator
+Interpolators
 -------------
 
-.. autoclass:: toppra.Interpolator
-   :members:
-
+SplineInterplator
+^^^^^^^^^^^^^^^^^^^
 .. autoclass:: toppra.SplineInterpolator
    :members:
 
+RaveTrajectoryWrapper
+^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: toppra.RaveTrajectoryWrapper
    :members:
 
+Interpolator (base class)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: toppra.Interpolator
+   :members:
 
 Constraints
 ------------
 
-.. autoclass:: toppra.constraint.DiscretizationType
+JointAccelerationConstraint
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: toppra.constraint.JointAccelerationConstraint
    :members:
 
-Linear constraints
-^^^^^^^^^^^^^^^^^^^
+JointVelocityConstraint
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: toppra.constraint.JointVelocityConstraint
+   :members:
+
+SecondOrderConstraint
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: toppra.constraint.CanonicalLinearSecondOrderConstraint
+   :members:
+
+CanonicalLinearConstraint (base class)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: toppra.constraint.CanonicalLinearConstraint
    :members:
 
-.. autoclass:: toppra.constraint.JointAccelerationConstraint
-   :members:
-
-.. autoclass:: toppra.constraint.JointVelocityConstraint
-   :members:
-
-Conic constraints
-^^^^^^^^^^^^^^^^^^^
+RobustLinearConstraint
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: toppra.constraint.RobustCanonicalLinearConstraint
+   :members:
+
+Constraints (base class)
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: toppra.constraint.Constraint
+
+DiscretizationType (enum)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: toppra.constraint.DiscretizationType
    :members:
 
 Algorithms
 ------------
 
+TOPPRA (time-optimal)
+^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: toppra.algorithm.TOPPRA
-   :members: compute_feasible_sets, compute_controllable_sets, compute_parameterization
+   :members: compute_parameterization, compute_trajectory, compute_feasible_sets, compute_controllable_sets
 
-
+TOPPRAsd (specific-duration)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: toppra.algorithm.TOPPRAsd
+   :members: set_desired_duration, compute_parameterization, compute_trajectory, compute_feasible_sets, compute_controllable_sets
 
 Solver Wrapper
 ----------------

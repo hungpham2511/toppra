@@ -7,9 +7,10 @@ TOPP-RA: Fast path-parameterization for robots
 ===================================================
 
 TOPP-RA is a library for computing `path parameterizations` of
-arbitrary geometric paths/trajectories for robots, which can be either
-industrial robot manipulators or humanoids!  TOPP-RA can account for
-several types of constraints on robot dynamics:
+arbitrary geometric paths/trajectories for robots!
+
+TOPP-RA can account for several types of constraints on robot
+dynamics:
 
 1. joint torque, velocity and acceleration bounds;
 2. *robust* joint torque, velocity and acceleration bounds;
@@ -30,11 +31,13 @@ See below for some tutorials, modules reference and installation
 instructions.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
 
-   tutorials
-   modules
    installation
+   tutorials
+   notes
+   modules
+
 
 .. _path-parameterization:
  
@@ -44,7 +47,7 @@ Citing TOPP-RA!
 If you find TOPP-RA useful and use it in your research, we encourage
 you to
 
-1. reference the accompanying paper `«A new approach to Time-Optimal Path Parameterization based on Reachability Analysis» <https://arxiv.org/abs/1707.07239>`_ *IEEE Transactions on Robotics*, vol. 34(3), pp. 645–659, 2018.
+1. reference the accompanying paper `«A new approach to Time-Optimal Path Parameterization based on Reachability Analysis» <https://www.researchgate.net/publication/318671280_A_New_Approach_to_Time-Optimal_Path_Parameterization_Based_on_Reachability_Analysis>`_ *IEEE Transactions on Robotics*, vol. 34(3), pp. 645–659, 2018.
 2. put a star on this repository!
 
 

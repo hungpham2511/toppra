@@ -100,6 +100,7 @@ todo_include_todos = True
 # a list of builtin themes.
 #
 html_theme = 'alabaster'
+# html_theme = "sphinx_rtd_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -112,7 +113,10 @@ html_theme_options = {
     'github_type': 'star',
     'github_banner': True,
     'travis_button': True,
-    'description': 'A robotic motion planning library for path-parametrization'
+    'description': 'A robotic motion planning library for path-parametrization',
+    'fixed_sidebar': True,
+    "sidebar_width": "270px",
+    "page_width": "1240px",
     }
 
 # Add any paths that contain custom static files (such as style sheets) here,

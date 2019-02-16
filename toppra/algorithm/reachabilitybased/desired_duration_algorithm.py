@@ -19,11 +19,13 @@ def _compute_duration(xs, deltas):
 class TOPPRAsd(ReachabilityAlgorithm):
     """TOPPRA with specified duration.
 
-    NOTE: The key technical idea underlying this class is to compute the fastest
-    parametrization and the slowest one, then use bisection search to find a convex
-    combination of the parametrizations that has the desired duration.
+    The key technical idea is to compute the **fastest** and the
+    **slowest** time parameterizations. Then use bisection search to
+    find a convex combination of the parametrizations that has the
+    desired duration.
 
     TODO: The current implementation is inefficient.
+
     """
 
     def set_desired_duration(self, desired_duration):
@@ -31,7 +33,8 @@ class TOPPRAsd(ReachabilityAlgorithm):
 
         Parameters
         ----------
-        desired_duration: float
+        desired_duration: float,
+            Abc
         """
         self.desired_duration = desired_duration
 
@@ -55,14 +58,14 @@ class TOPPRAsd(ReachabilityAlgorithm):
 
         Returns
         -------
-        sdd_vec: (N,) array or None
-            Path accelerations.
-        sd_vec: (N+1,) array None
-            Path velocities.
-        v_vec: (N,) array or None
-            Auxiliary variables.
-        K: (N+1, 2) array
-            Return if `return_data` is True. The controllable sets.
+        sdd_vec: array or None
+            Shape (N,). Path accelerations.
+        sd_vec: array None
+            Shape (N+1,). Path velocities.
+        v_vec: array or None
+            Shape (N,). Auxiliary variables.
+        K: array
+            Shape (N+1, 2). Return if `return_data` is True. The controllable sets.
 
         """
         assert sd_end >= 0 and sd_start >= 0, "Path velocities must be positive"

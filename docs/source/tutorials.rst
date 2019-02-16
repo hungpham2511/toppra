@@ -1,6 +1,6 @@
 Tutorials
 ~~~~~~~~~~~~~~~~~~
-Hello
+Some tutorials to get you used to TOPP-RA
 
 .. toctree::
    :maxdepth: 1

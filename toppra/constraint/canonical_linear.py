@@ -5,24 +5,41 @@ import numpy as np
 
 
 class CanonicalLinearConstraint(Constraint):
-    """Base class for all canonical linear constraints.
+    """A core type of constraints.
 
-    A canonical linear constraint has following form
+    Also known as Second-order Constraint.
+
+    A Canonical Linear Constraint has the following form:
 
     .. math::
 
-        a[i] u + b[i] x + c[i] &= v, \\\\
-        F[i] v &\\leq h[i], \\\\
-        xbound[i, 0] \\leq x \\leq xbound[i, 1], \\\\
-        ubound[i, 0] \\leq u \\leq ubound[i, 1].
+        \mathbf a_i u + \mathbf b_i x + \mathbf c_i &= v, \\\\
+        \mathbf F_i v &\\leq \mathbf h_i, \\\\
+        x^{bound}_{i, 0} \\leq x &\\leq x^{bound}_{i, 1}, \\\\
+        u^{bound}_{i, 0} \\leq u &\\leq u^{bound}_{i, 1}.
 
-    Derived classes implement the method `compute_constraint_params`.
+    Alternatively, if :math:`\mathbf F_i` is constant for all values
+    of :math:`i`, then we can consider the simpler constraint:
 
-    Remark that if F[i], h[i] are identical for any value of index i,
-    then parameter F that is returned by `compute_constraint_params`
-    might has shape (k, m) instead of (N, k, m), in which case
-    parameter g has shape (k) instead of (N, k) and the attribute
+    .. math::
+        \mathbf F v &\\leq \mathbf h, \\\\
+
+    In this case, the returned value of :math:`F` by
+    `compute_constraint_params` has shape (k, m) instead of (N, k, m),
+    :math:`h` shape (k) instead of (N, k) and the class attribute
     `identical` will be True.
+
+    .. note::
+
+        Derived classes of :class:`CanonicalLinearConstraint` should at
+        least implement the method :func:`compute_constraint_params`.
+
+
+    .. seealso::
+
+        :class:`JointAccelerationConstraint`
+        :class:`JointVelocityConstraint`
+        :class:`CanonicalLinearSecondOrderConstraint`
 
     """
     def __init__(self):

@@ -130,10 +130,10 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
 
         Returns
         -------
-        X: (N+1,2)array,
-            X[i] contains the lower and upper bound of the feasible
-            squared path velocity at s[i].  If there is no feasible
-            state, X[i] equals (np.nan, np.nan).
+        X: array
+            Shape (N+1,2). X[i] contains the lower and upper bound of
+            the feasible squared path velocity at s[i].  If there is
+            no feasible state, X[i] equals (np.nan, np.nan).
 
         """
         logger.debug("Start computing the feasible sets")
@@ -169,9 +169,10 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
 
         Returns
         -------
-        K : ndarray
-            Shape (N+1, 2). Element K[i] contains the squared upper and lower
-            controllable velocities at position s[i].
+        K : array
+            Shape (N+1, 2). Element K[i] contains the squared upper
+            and lower controllable velocities at position s[i].
+
         """
         assert sdmin <= sdmax and 0 <= sdmin
         K = np.zeros((self._N + 1, 2))
@@ -193,19 +194,22 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         return K
 
     def _one_step(self, i, K_next):
-        """ Perform the one-step operation.
+        """Perform the one-step operation.
 
         Parameters
         ----------
         i: int
             Stage index.
-        K_next: (2,)array
-            Two ends of the set of controllable path velocities at stage (i+1).
+        K_next: array
+            Shape(2,).Two ends of the set of controllable path
+            velocities at stage (i+1).
 
         Returns
         -------
-        res: (2,)array
-            Set of controllable squared path velocities K[i].
+        res: array
+            Shape (2,). Set of controllable squared path velocities
+            K[i].
+
         """
         res = np.zeros(2)
         if np.isnan(K_next).any() or i < 0 or i > self._N:
@@ -242,14 +246,19 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
 
         Returns
         -------
-        sdd_vec: (N,) array
-            Path accelerations. Double array. Will contain nan(s) if failed.
-        sd_vec: (N+1,) array
-            Path velocities. Double array. Will contain nan(s) if failed.
-        v_vec: (N,) array or None
-            Auxiliary variables.
-        K: (N+1, 2) array
-            Return the controllable set if `return_data` is True.
+        sdd_vec: array
+            Shape (N,). Path accelerations. Double array. Will contain
+            nan(s) if failed.
+
+        sd_vec: array
+            Shape (N+1,). Path velocities. Double array. Will contain nan(s) if failed.
+
+        v_vec: array or None
+            Shape (N,). Auxiliary variables.
+
+        K: array
+            Shape (N+1, 2). Return the controllable set if
+            `return_data` is True.
 
         """
         assert sd_end >= 0 and sd_start >= 0, "Path velocities must be positive"

@@ -9,7 +9,7 @@ except ImportError:
     OPENRAVEPY_AVAILABLE = False
 
 from ..constants import TINY
-from ..interpolator import SplineInterpolator
+from ..interpolator import SplineInterpolator, Interpolator
 
 import logging
 logger = logging.getLogger(__name__)
@@ -88,10 +88,10 @@ class ParameterizationAlgorithm(object):
 
         Returns
         -------
-        :class:`Interpolator`
+        :class:`.Interpolator`
             Time-parameterized joint position trajectory. If unable to
             parameterize, return None.
-        :class:`Interpolator`
+        :class:`.Interpolator`
             Time-parameterized auxiliary variable trajectory. If
             unable to parameterize or if there is no auxiliary
             variable, return None.

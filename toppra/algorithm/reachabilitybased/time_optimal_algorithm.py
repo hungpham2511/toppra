@@ -12,7 +12,7 @@ class TOPPRA(ReachabilityAlgorithm):
 
     Parameters
     ----------
-    constraint_list: :class:`~toppra.constraint.Constraint` list
+    constraint_list: :class:`~toppra.constraint.Constraint` []
         List of constraints to which the robotic system is subjected to.
     path: :class:`~toppra.Interpolator`
         Input geometric path.
