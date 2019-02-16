@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>0: Basic examples &#8212; TOPP-RA 0.1 documentation</title>
+    <title>A basic example &#8212; TOPP-RA 0.1 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -16,8 +16,8 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="1: Path and Trajectory representation" href="1_geometric_path.html" />
-    <link rel="prev" title="Full Installation" href="../installation.html" />
+    <link rel="next" title="Recreating the Trapezoidal Velocity Profile" href="0a_trapezoidal_scalar.html" />
+    <link rel="prev" title="Tutorials" href="../tutorials.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -25,15 +25,85 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head><body>
-  
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">TOPP-RA</a></h1>
 
-    <div class="document">
+
+
+<p class="blurb">A robotic motion planning library for path-parametrization</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=hungpham2511&repo=toppra&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/hungpham2511/toppra">
+    <img
+        alt="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
+        src="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">A basic example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="0a_trapezoidal_scalar.html">Recreating the Trapezoidal Velocity Profile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="1_geometric_path.html">Path and Trajectory representation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="2_can_linear_constraints.html">Simple  Second-Order Constraint</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../notes.html">Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">TOPP-RA Module references</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../tutorials.html">Tutorials</a><ul>
+      <li>Previous: <a href="../tutorials.html" title="previous chapter">Tutorials</a></li>
+      <li>Next: <a href="0a_trapezoidal_scalar.html" title="next chapter">Recreating the Trapezoidal Velocity Profile</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="basic-examples">
-<h1>0: Basic examples<a class="headerlink" href="#basic-examples" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="a-basic-example">
+<h1>A basic example<a class="headerlink" href="#a-basic-example" title="Permalink to this headline">¶</a></h1>
 <p>The most basic usecase of TOPP-RA is compute time-optimal
 time-parameterization subject to joint velocity and acceleration
 constraints. This can be done very easily as shown below:</p>
@@ -78,7 +148,7 @@ constraints. This can be done very easily as shown below:</p>
 </div>
 <p>Solving any problem with TOPP-RA follows a simple process. There are
 three steps. The first is initializing an
-<a class="reference internal" href="../hello.html#toppra.Interpolator" title="toppra.Interpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Interpolator</span></code></a> to represents the geometric path of
+<a class="reference internal" href="../modules.html#toppra.Interpolator" title="toppra.Interpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Interpolator</span></code></a> to represents the geometric path of
 interest. This is performed in the following lines.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">way_pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">N_samples</span><span class="p">,</span> <span class="n">dof</span><span class="p">)</span>
 <span class="n">path</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">way_pts</span><span class="p">)</span>
@@ -86,7 +156,7 @@ interest. This is performed in the following lines.</p>
 </div>
 <p>Here, we simply choose random waypoints and define a geometric path as
 the cubic spline interpolation over the waypoints using
-<a class="reference internal" href="../hello.html#toppra.SplineInterpolator" title="toppra.SplineInterpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">SplineInterpolator</span></code></a>.  Details on other kinds of
+<a class="reference internal" href="../modules.html#toppra.SplineInterpolator" title="toppra.SplineInterpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">SplineInterpolator</span></code></a>.  Details on other kinds of
 interpolator, as well as how to implement a new kind, will be
 represented in <a class="reference internal" href="1_geometric_path.html"><span class="doc">a later tutorial</span></a>.</p>
 <p>The second step is defining the constraints. In this example we
@@ -137,76 +207,8 @@ comes bundled with TOPP-RA, without external dependencies.</p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../index.html">TOPP-RA</a></h1>
-
-
-
-<p class="blurb">A robotic motion planning library for path-parametrization</p>
-
-
-
-
-<p>
-<iframe src="https://ghbtns.com/github-btn.html?user=hungpham2511&repo=toppra&type=star&count=true&size=large&v=2"
-  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
-</p>
-
-
-
-
-
-    
-
-<p>
-<a href="https://travis-ci.org/hungpham2511/toppra">
-    <img
-        alt="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
-        src="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
-    />
-</a>
-</p>
-
-
-<h3>Navigation</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../installation.html">Full Installation</a></li>
-</ul>
-<ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">0: Basic examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="1_geometric_path.html">1: Path and Trajectory representation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="2_can_linear_constraints.html">2: Simple  Second-Order Constraint</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../hello.html">Functions and classes reference</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="../installation.html" title="previous chapter">Full Installation</a></li>
-      <li>Next: <a href="1_geometric_path.html" title="next chapter">1: Path and Trajectory representation</a></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
+    <div class="clearer"></div>
+  </div>
     <div class="footer">
       &copy;2018, Hung Pham.
       

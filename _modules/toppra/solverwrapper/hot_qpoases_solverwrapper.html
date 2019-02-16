@@ -23,9 +23,71 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head><body>
-  
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">TOPP-RA</a></h1>
 
-    <div class="document">
+
+
+<p class="blurb">A robotic motion planning library for path-parametrization</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=hungpham2511&repo=toppra&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/hungpham2511/toppra">
+    <img
+        alt="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
+        src="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes.html">Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">TOPP-RA Module references</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
@@ -34,17 +96,22 @@
 <span></span><span class="kn">from</span> <span class="nn">.solverwrapper</span> <span class="k">import</span> <span class="n">SolverWrapper</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">..constraint</span> <span class="k">import</span> <span class="n">ConstraintType</span>
-<span class="kn">from</span> <span class="nn">qpoases</span> <span class="k">import</span> <span class="p">(</span><span class="n">PyOptions</span> <span class="k">as</span> <span class="n">Options</span><span class="p">,</span> <span class="n">PyPrintLevel</span> <span class="k">as</span> <span class="n">PrintLevel</span><span class="p">,</span>
-                     <span class="n">PyReturnValue</span> <span class="k">as</span> <span class="n">ReturnValue</span><span class="p">,</span> <span class="n">PySQProblem</span> <span class="k">as</span> <span class="n">SQProblem</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">..constants</span> <span class="k">import</span> <span class="n">INFTY</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">qpoases</span> <span class="k">import</span> <span class="p">(</span><span class="n">PyOptions</span> <span class="k">as</span> <span class="n">Options</span><span class="p">,</span> <span class="n">PyPrintLevel</span> <span class="k">as</span> <span class="n">PrintLevel</span><span class="p">,</span>
+                         <span class="n">PyReturnValue</span> <span class="k">as</span> <span class="n">ReturnValue</span><span class="p">,</span> <span class="n">PySQProblem</span> <span class="k">as</span> <span class="n">SQProblem</span><span class="p">)</span>
+    <span class="n">qpoases_FOUND</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">qpoases_FOUND</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-8</span>  <span class="c1"># Coefficient to check for qpoases tolerances</span>
-<span class="n">INF</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-8</span>  <span class="c1"># Coefficient to check for qpoases tolerances TODO: shift this to constants.py</span>
+<span class="n">INF</span> <span class="o">=</span> <span class="n">INFTY</span>
 
 
-<div class="viewcode-block" id="hotqpOASESSolverWrapper"><a class="viewcode-back" href="../../../hello.html#toppra.solverwrapper.hotqpOASESSolverWrapper">[docs]</a><span class="k">class</span> <span class="nc">hotqpOASESSolverWrapper</span><span class="p">(</span><span class="n">SolverWrapper</span><span class="p">):</span>
+<div class="viewcode-block" id="hotqpOASESSolverWrapper"><a class="viewcode-back" href="../../../modules.html#toppra.solverwrapper.hot_qpoases_solverwrapper.hotqpOASESSolverWrapper">[docs]</a><span class="k">class</span> <span class="nc">hotqpOASESSolverWrapper</span><span class="p">(</span><span class="n">SolverWrapper</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A solver wrapper using `qpOASES`.</span>
 
 <span class="sd">    This wrapper takes advantage of the warm-start capability of</span>
@@ -71,6 +138,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraint_list</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">path_discretization</span><span class="p">,</span> <span class="n">disable_check</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">qpoases_FOUND</span><span class="p">,</span> <span class="s2">&quot;toppra is unable to find any installation of qpoases!&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">hotqpOASESSolverWrapper</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">constraint_list</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">path_discretization</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_disable_check</span> <span class="o">=</span> <span class="n">disable_check</span>
         <span class="c1"># Currently only support Canonical Linear Constraint</span>
@@ -110,7 +178,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">solver_up</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver_down</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="hotqpOASESSolverWrapper.solve_stagewise_optim"><a class="viewcode-back" href="../../../hello.html#toppra.solverwrapper.hotqpOASESSolverWrapper.solve_stagewise_optim">[docs]</a>    <span class="k">def</span> <span class="nf">solve_stagewise_optim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">x_next_min</span><span class="p">,</span> <span class="n">x_next_max</span><span class="p">):</span>
+<div class="viewcode-block" id="hotqpOASESSolverWrapper.solve_stagewise_optim"><a class="viewcode-back" href="../../../modules.html#toppra.solverwrapper.hot_qpoases_solverwrapper.hotqpOASESSolverWrapper.solve_stagewise_optim">[docs]</a>    <span class="k">def</span> <span class="nf">solve_stagewise_optim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">x_next_min</span><span class="p">,</span> <span class="n">x_next_max</span><span class="p">):</span>
         <span class="c1"># NOTE: qpOASES solve QPs of the following form:</span>
         <span class="c1">#  min    0.5 y^T H y + g^T y</span>
         <span class="c1">#  s.t    lA &lt;= Ay &lt;= hA</span>
@@ -212,6 +280,9 @@
                 <span class="c1"># relevant code (in qpOASES wrapper)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">var</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;qpOASES error code: </span><span class="si">{:d}</span><span class="s2">&quot;</span><span class="p">)</span>
+
 
         <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_no_vars</span><span class="p">())</span>
         <span class="n">res</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
@@ -221,70 +292,8 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../../index.html">TOPP-RA</a></h1>
-
-
-
-<p class="blurb">A robotic motion planning library for path-parametrization</p>
-
-
-
-
-<p>
-<iframe src="https://ghbtns.com/github-btn.html?user=hungpham2511&repo=toppra&type=star&count=true&size=large&v=2"
-  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
-</p>
-
-
-
-
-
-    
-
-<p>
-<a href="https://travis-ci.org/hungpham2511/toppra">
-    <img
-        alt="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
-        src="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
-    />
-</a>
-</p>
-
-
-<h3>Navigation</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../hello.html">Modules reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../../index.html">Documentation overview</a><ul>
-  <li><a href="../../index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
+    <div class="clearer"></div>
+  </div>
     <div class="footer">
       &copy;2018, Hung Pham.
       

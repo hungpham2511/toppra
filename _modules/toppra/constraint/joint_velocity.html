@@ -23,55 +23,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head><body>
-  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <h1>Source code for toppra.constraint.joint_velocity</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">.canonical_linear</span> <span class="k">import</span> <span class="n">CanonicalLinearConstraint</span>
-<span class="kn">from</span> <span class="nn">toppra._CythonUtils</span> <span class="k">import</span> <span class="n">_create_velocity_constraint</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-
-<div class="viewcode-block" id="JointVelocityConstraint"><a class="viewcode-back" href="../../../hello.html#toppra.constraint.JointVelocityConstraint">[docs]</a><span class="k">class</span> <span class="nc">JointVelocityConstraint</span><span class="p">(</span><span class="n">CanonicalLinearConstraint</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; A Joint Velocity Constraint class.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    vlim: array</span>
-<span class="sd">        Shape (dof, 2). The lower and upper velocity bounds of the j-th joint</span>
-<span class="sd">        are given by alim[j, 0] and alim[j, 1] respectively.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vlim</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">JointVelocityConstraint</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">vlim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">vlim</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dof</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vlim</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">vlim</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Wrong input shape.&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_format_string</span> <span class="o">=</span> <span class="s2">&quot;    Velocity limit: </span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vlim</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_format_string</span> <span class="o">+=</span> <span class="s2">&quot;      J</span><span class="si">{:d}</span><span class="s2">: </span><span class="si">{:}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vlim</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-
-<div class="viewcode-block" id="JointVelocityConstraint.compute_constraint_params"><a class="viewcode-back" href="../../../hello.html#toppra.constraint.JointVelocityConstraint.compute_constraint_params">[docs]</a>    <span class="k">def</span> <span class="nf">compute_constraint_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">gridpoints</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">get_dof</span><span class="p">()</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dof</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Wrong dimension: constraint dof (</span><span class="si">{:d}</span><span class="s2">) not equal to path dof (</span><span class="si">{:d}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">get_dof</span><span class="p">(),</span> <span class="n">path</span><span class="o">.</span><span class="n">get_dof</span><span class="p">()</span>
-            <span class="p">))</span>
-        <span class="n">qs</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">evald</span><span class="p">(</span><span class="n">gridpoints</span><span class="p">)</span>
-        <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">xbound_</span> <span class="o">=</span> <span class="n">_create_velocity_constraint</span><span class="p">(</span><span class="n">qs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vlim</span><span class="p">)</span>
-        <span class="n">xbound</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xbound_</span><span class="p">)</span>
-        <span class="n">xbound</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">xbound_</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
-        <span class="n">xbound</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">xbound_</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
-        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">xbound</span></div></div>
-</pre></div>
-
-          </div>
-        </div>
-      </div>
+  <div class="document">
+    
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
 <h1 class="logo"><a href="../../../index.html">TOPP-RA</a></h1>
@@ -106,9 +59,10 @@
 
 <h3>Navigation</h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../hello.html">Modules reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes.html">Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">TOPP-RA Module references</a></li>
 </ul>
 
 <div class="relations">
@@ -134,8 +88,91 @@
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for toppra.constraint.joint_velocity</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">.canonical_linear</span> <span class="k">import</span> <span class="n">CanonicalLinearConstraint</span>
+<span class="kn">from</span> <span class="nn">toppra._CythonUtils</span> <span class="k">import</span> <span class="p">(</span><span class="n">_create_velocity_constraint</span><span class="p">,</span>
+                                 <span class="n">_create_velocity_constraint_varying</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="JointVelocityConstraint"><a class="viewcode-back" href="../../../modules.html#toppra.constraint.JointVelocityConstraint">[docs]</a><span class="k">class</span> <span class="nc">JointVelocityConstraint</span><span class="p">(</span><span class="n">CanonicalLinearConstraint</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; A Joint Velocity Constraint class.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vlim: array</span>
+<span class="sd">        Shape (dof, 2). The lower and upper velocity bounds of the j-th joint</span>
+<span class="sd">        are given by alim[j, 0] and alim[j, 1] respectively.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vlim</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">JointVelocityConstraint</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vlim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">vlim</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dof</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vlim</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">vlim</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Wrong input shape.&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dof</span><span class="p">):</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">vlim</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">vlim</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;Bad velocity limits: </span><span class="si">{:}</span><span class="s2"> (lower limit) &gt; </span><span class="si">{:}</span><span class="s2"> (higher limit)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vlim</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">vlim</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_format_string</span> <span class="o">=</span> <span class="s2">&quot;    Velocity limit: </span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vlim</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_format_string</span> <span class="o">+=</span> <span class="s2">&quot;      J</span><span class="si">{:d}</span><span class="s2">: </span><span class="si">{:}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vlim</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+<div class="viewcode-block" id="JointVelocityConstraint.compute_constraint_params"><a class="viewcode-back" href="../../../modules.html#toppra.constraint.JointVelocityConstraint.compute_constraint_params">[docs]</a>    <span class="k">def</span> <span class="nf">compute_constraint_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">gridpoints</span><span class="p">,</span> <span class="n">scaling</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">get_dof</span><span class="p">()</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dof</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Wrong dimension: constraint dof (</span><span class="si">{:d}</span><span class="s2">) not equal to path dof (</span><span class="si">{:d}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_dof</span><span class="p">(),</span> <span class="n">path</span><span class="o">.</span><span class="n">get_dof</span><span class="p">()</span>
+            <span class="p">))</span>
+        <span class="n">qs</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">evald</span><span class="p">(</span><span class="n">gridpoints</span> <span class="o">/</span> <span class="n">scaling</span><span class="p">)</span> <span class="o">/</span> <span class="n">scaling</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">xbound_</span> <span class="o">=</span> <span class="n">_create_velocity_constraint</span><span class="p">(</span><span class="n">qs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vlim</span><span class="p">)</span>
+        <span class="n">xbound</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xbound_</span><span class="p">)</span>
+        <span class="n">xbound</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">xbound_</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">xbound</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">xbound_</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">xbound</span></div></div>
+
+
+<span class="k">class</span> <span class="nc">JointVelocityConstraintVarying</span><span class="p">(</span><span class="n">CanonicalLinearConstraint</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A Joint Velocity Constraint class.</span>
+
+<span class="sd">    This class handle velocity constraints that vary along the path.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vlim_func: float -&gt; array function</span>
+<span class="sd">        A function that receives a scalar (float) and produce an array</span>
+<span class="sd">        with shape (dof, 2). The lower and upper velocity bounds of</span>
+<span class="sd">        the j-th joint are given by out[j, 0] and out[j, 1]</span>
+<span class="sd">        respectively.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vlim_func</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">JointVelocityConstraintVarying</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dof</span> <span class="o">=</span> <span class="n">vlim_func</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_format_string</span> <span class="o">=</span> <span class="s2">&quot;    Varying Velocity limit: </span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vlim_func</span> <span class="o">=</span> <span class="n">vlim_func</span>
+
+    <span class="k">def</span> <span class="nf">compute_constraint_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">gridpoints</span><span class="p">,</span> <span class="n">scaling</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">get_dof</span><span class="p">()</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dof</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Wrong dimension: constraint dof (</span><span class="si">{:d}</span><span class="s2">) not equal to path dof (</span><span class="si">{:d}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_dof</span><span class="p">(),</span> <span class="n">path</span><span class="o">.</span><span class="n">get_dof</span><span class="p">()</span>
+            <span class="p">))</span>
+        <span class="n">qs</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">evald</span><span class="p">(</span><span class="n">gridpoints</span> <span class="o">/</span> <span class="n">scaling</span><span class="p">)</span> <span class="o">/</span> <span class="n">scaling</span>
+        <span class="n">vlim_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">vlim_func</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">gridpoints</span><span class="p">])</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">xbound_</span> <span class="o">=</span> <span class="n">_create_velocity_constraint_varying</span><span class="p">(</span><span class="n">qs</span><span class="p">,</span> <span class="n">vlim_grid</span><span class="p">)</span>
+        <span class="n">xbound</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xbound_</span><span class="p">)</span>
+        <span class="n">xbound</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">xbound_</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">xbound</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">xbound_</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">xbound</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
     <div class="footer">
       &copy;2018, Hung Pham.
       

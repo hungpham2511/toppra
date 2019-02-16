@@ -23,9 +23,71 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head><body>
-  
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">TOPP-RA</a></h1>
 
-    <div class="document">
+
+
+<p class="blurb">A robotic motion planning library for path-parametrization</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=hungpham2511&repo=toppra&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/hungpham2511/toppra">
+    <img
+        alt="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
+        src="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes.html">Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">TOPP-RA Module references</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
@@ -37,25 +99,42 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
-<div class="viewcode-block" id="CanonicalLinearConstraint"><a class="viewcode-back" href="../../../hello.html#toppra.constraint.CanonicalLinearConstraint">[docs]</a><span class="k">class</span> <span class="nc">CanonicalLinearConstraint</span><span class="p">(</span><span class="n">Constraint</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base class for all canonical linear constraints.</span>
+<div class="viewcode-block" id="CanonicalLinearConstraint"><a class="viewcode-back" href="../../../modules.html#toppra.constraint.CanonicalLinearConstraint">[docs]</a><span class="k">class</span> <span class="nc">CanonicalLinearConstraint</span><span class="p">(</span><span class="n">Constraint</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A core type of constraints.</span>
 
-<span class="sd">    A canonical linear constraint has following form</span>
+<span class="sd">    Also known as Second-order Constraint.</span>
+
+<span class="sd">    A Canonical Linear Constraint has the following form:</span>
 
 <span class="sd">    .. math::</span>
 
-<span class="sd">        a[i] u + b[i] x + c[i] &amp;= v, \\\\</span>
-<span class="sd">        F[i] v &amp;\\leq h[i], \\\\</span>
-<span class="sd">        xbound[i, 0] \\leq x \\leq xbound[i, 1], \\\\</span>
-<span class="sd">        ubound[i, 0] \\leq u \\leq ubound[i, 1].</span>
+<span class="sd">        \mathbf a_i u + \mathbf b_i x + \mathbf c_i &amp;= v, \\\\</span>
+<span class="sd">        \mathbf F_i v &amp;\\leq \mathbf h_i, \\\\</span>
+<span class="sd">        x^{bound}_{i, 0} \\leq x &amp;\\leq x^{bound}_{i, 1}, \\\\</span>
+<span class="sd">        u^{bound}_{i, 0} \\leq u &amp;\\leq u^{bound}_{i, 1}.</span>
 
-<span class="sd">    Derived classes implement the method `compute_constraint_params`.</span>
+<span class="sd">    Alternatively, if :math:`\mathbf F_i` is constant for all values</span>
+<span class="sd">    of :math:`i`, then we can consider the simpler constraint:</span>
 
-<span class="sd">    Remark that if F[i], h[i] are identical for any value of index i,</span>
-<span class="sd">    then parameter F that is returned by `compute_constraint_params`</span>
-<span class="sd">    might has shape (k, m) instead of (N, k, m), in which case</span>
-<span class="sd">    parameter g has shape (k) instead of (N, k) and the attribute</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \mathbf F v &amp;\\leq \mathbf h, \\\\</span>
+
+<span class="sd">    In this case, the returned value of :math:`F` by</span>
+<span class="sd">    `compute_constraint_params` has shape (k, m) instead of (N, k, m),</span>
+<span class="sd">    :math:`h` shape (k) instead of (N, k) and the class attribute</span>
 <span class="sd">    `identical` will be True.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        Derived classes of :class:`CanonicalLinearConstraint` should at</span>
+<span class="sd">        least implement the method :func:`compute_constraint_params`.</span>
+
+
+<span class="sd">    .. seealso::</span>
+
+<span class="sd">        :class:`JointAccelerationConstraint`</span>
+<span class="sd">        :class:`JointVelocityConstraint`</span>
+<span class="sd">        :class:`CanonicalLinearSecondOrderConstraint`</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -64,17 +143,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">n_extra_vars</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">identical</span> <span class="o">=</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="CanonicalLinearConstraint.compute_constraint_params"><a class="viewcode-back" href="../../../hello.html#toppra.constraint.CanonicalLinearConstraint.compute_constraint_params">[docs]</a>    <span class="k">def</span> <span class="nf">compute_constraint_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">gridpoints</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Return constraint parameters.</span>
-
-<span class="sd">        If a set of parameters are not available, None is returned.</span>
+<div class="viewcode-block" id="CanonicalLinearConstraint.compute_constraint_params"><a class="viewcode-back" href="../../../modules.html#toppra.constraint.CanonicalLinearConstraint.compute_constraint_params">[docs]</a>    <span class="k">def</span> <span class="nf">compute_constraint_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">gridpoints</span><span class="p">,</span> <span class="n">scaling</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute numerical coefficients of the given constraint.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        path: `Interpolator`</span>
 <span class="sd">            The geometric path.</span>
-<span class="sd">        gridpoints: array</span>
-<span class="sd">            (N+1,) array. The path discretization.</span>
+<span class="sd">        gridpoints: np.ndarray</span>
+<span class="sd">            Shape (N+1,). Gridpoint use for discretizing path.</span>
+<span class="sd">        scaling: float</span>
+<span class="sd">            Numerical scaling. If is 1, no scaling is performed.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -210,70 +289,8 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../../index.html">TOPP-RA</a></h1>
-
-
-
-<p class="blurb">A robotic motion planning library for path-parametrization</p>
-
-
-
-
-<p>
-<iframe src="https://ghbtns.com/github-btn.html?user=hungpham2511&repo=toppra&type=star&count=true&size=large&v=2"
-  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
-</p>
-
-
-
-
-
-    
-
-<p>
-<a href="https://travis-ci.org/hungpham2511/toppra">
-    <img
-        alt="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
-        src="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
-    />
-</a>
-</p>
-
-
-<h3>Navigation</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../hello.html">Modules reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../../index.html">Documentation overview</a><ul>
-  <li><a href="../../index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
+    <div class="clearer"></div>
+  </div>
     <div class="footer">
       &copy;2018, Hung Pham.
       

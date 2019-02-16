@@ -23,9 +23,71 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head><body>
-  
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">TOPP-RA</a></h1>
 
-    <div class="document">
+
+
+<p class="blurb">A robotic motion planning library for path-parametrization</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=hungpham2511&repo=toppra&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/hungpham2511/toppra">
+    <img
+        alt="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
+        src="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notes.html">Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">TOPP-RA Module references</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
@@ -83,14 +145,16 @@
     <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">ss_waypoints</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span>
 
 
-<div class="viewcode-block" id="Interpolator"><a class="viewcode-back" href="../../hello.html#toppra.Interpolator">[docs]</a><span class="k">class</span> <span class="nc">Interpolator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Interpolator"><a class="viewcode-back" href="../../modules.html#toppra.Interpolator">[docs]</a><span class="k">class</span> <span class="nc">Interpolator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot; Abstract class for interpolators.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dof</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># Note: do not use this attribute directly, use get_duration</span>
+        <span class="c1"># method instead.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="Interpolator.get_dof"><a class="viewcode-back" href="../../hello.html#toppra.Interpolator.get_dof">[docs]</a>    <span class="k">def</span> <span class="nf">get_dof</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Interpolator.get_dof"><a class="viewcode-back" href="../../modules.html#toppra.Interpolator.get_dof">[docs]</a>    <span class="k">def</span> <span class="nf">get_dof</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Return the degree-of-freedom of the path.</span>
 
 <span class="sd">        Returns</span>
@@ -100,16 +164,18 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dof</span></div>
 
-<div class="viewcode-block" id="Interpolator.get_duration"><a class="viewcode-back" href="../../hello.html#toppra.Interpolator.get_duration">[docs]</a>    <span class="k">def</span> <span class="nf">get_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Interpolator.get_duration"><a class="viewcode-back" href="../../modules.html#toppra.Interpolator.get_duration">[docs]</a>    <span class="k">def</span> <span class="nf">get_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return the duration of the path.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
+<span class="sd">        out: float</span>
+<span class="sd">            Path duration.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Interpolator.get_path_interval"><a class="viewcode-back" href="../../hello.html#toppra.Interpolator.get_path_interval">[docs]</a>    <span class="k">def</span> <span class="nf">get_path_interval</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Interpolator.get_path_interval"><a class="viewcode-back" href="../../modules.html#toppra.Interpolator.get_path_interval">[docs]</a>    <span class="k">def</span> <span class="nf">get_path_interval</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Return the starting and ending path positions.</span>
 
 <span class="sd">        Returns</span>
@@ -120,7 +186,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">s_start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">s_end</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="Interpolator.eval"><a class="viewcode-back" href="../../hello.html#toppra.Interpolator.eval">[docs]</a>    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss_sam</span><span class="p">):</span>
+<div class="viewcode-block" id="Interpolator.eval"><a class="viewcode-back" href="../../modules.html#toppra.Interpolator.eval">[docs]</a>    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss_sam</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Evaluate joint positions at specified path positions.</span>
 
 <span class="sd">        Parameters</span>
@@ -136,7 +202,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Interpolator.evald"><a class="viewcode-back" href="../../hello.html#toppra.Interpolator.evald">[docs]</a>    <span class="k">def</span> <span class="nf">evald</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss_sam</span><span class="p">):</span>
+<div class="viewcode-block" id="Interpolator.evald"><a class="viewcode-back" href="../../modules.html#toppra.Interpolator.evald">[docs]</a>    <span class="k">def</span> <span class="nf">evald</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss_sam</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Evaluate the first derivative of the geometric path.</span>
 
 <span class="sd">        Parameters</span>
@@ -151,7 +217,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="Interpolator.evaldd"><a class="viewcode-back" href="../../hello.html#toppra.Interpolator.evaldd">[docs]</a>    <span class="k">def</span> <span class="nf">evaldd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss_sam</span><span class="p">):</span>
+<div class="viewcode-block" id="Interpolator.evaldd"><a class="viewcode-back" href="../../modules.html#toppra.Interpolator.evaldd">[docs]</a>    <span class="k">def</span> <span class="nf">evaldd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss_sam</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Evaluate the 2nd derivative of the geometric path.</span>
 
 <span class="sd">        Parameters</span>
@@ -173,7 +239,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 
-<div class="viewcode-block" id="RaveTrajectoryWrapper"><a class="viewcode-back" href="../../hello.html#toppra.RaveTrajectoryWrapper">[docs]</a><span class="k">class</span> <span class="nc">RaveTrajectoryWrapper</span><span class="p">(</span><span class="n">Interpolator</span><span class="p">):</span>
+<div class="viewcode-block" id="RaveTrajectoryWrapper"><a class="viewcode-back" href="../../modules.html#toppra.RaveTrajectoryWrapper">[docs]</a><span class="k">class</span> <span class="nc">RaveTrajectoryWrapper</span><span class="p">(</span><span class="n">Interpolator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;An interpolator that wraps OpenRAVE&#39;s :class:`GenericTrajectory`.</span>
 
 <span class="sd">    Only trajectories using quadratic interpolation or cubic interpolation are supported.</span>
@@ -257,20 +323,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ppoly_d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ppoly</span><span class="o">.</span><span class="n">derivative</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ppoly_dd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ppoly</span><span class="o">.</span><span class="n">derivative</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 
-<div class="viewcode-block" id="RaveTrajectoryWrapper.get_duration"><a class="viewcode-back" href="../../hello.html#toppra.RaveTrajectoryWrapper.get_duration">[docs]</a>    <span class="k">def</span> <span class="nf">get_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="RaveTrajectoryWrapper.get_duration"><a class="viewcode-back" href="../../modules.html#toppra.RaveTrajectoryWrapper.get_duration">[docs]</a>    <span class="k">def</span> <span class="nf">get_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_duration</span></div>
 
-<div class="viewcode-block" id="RaveTrajectoryWrapper.eval"><a class="viewcode-back" href="../../hello.html#toppra.RaveTrajectoryWrapper.eval">[docs]</a>    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss_sam</span><span class="p">):</span>
+<div class="viewcode-block" id="RaveTrajectoryWrapper.eval"><a class="viewcode-back" href="../../modules.html#toppra.RaveTrajectoryWrapper.eval">[docs]</a>    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss_sam</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ppoly</span><span class="p">(</span><span class="n">ss_sam</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RaveTrajectoryWrapper.evald"><a class="viewcode-back" href="../../hello.html#toppra.RaveTrajectoryWrapper.evald">[docs]</a>    <span class="k">def</span> <span class="nf">evald</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss_sam</span><span class="p">):</span>
+<div class="viewcode-block" id="RaveTrajectoryWrapper.evald"><a class="viewcode-back" href="../../modules.html#toppra.RaveTrajectoryWrapper.evald">[docs]</a>    <span class="k">def</span> <span class="nf">evald</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss_sam</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ppoly_d</span><span class="p">(</span><span class="n">ss_sam</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="RaveTrajectoryWrapper.evaldd"><a class="viewcode-back" href="../../hello.html#toppra.RaveTrajectoryWrapper.evaldd">[docs]</a>    <span class="k">def</span> <span class="nf">evaldd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss_sam</span><span class="p">):</span>
+<div class="viewcode-block" id="RaveTrajectoryWrapper.evaldd"><a class="viewcode-back" href="../../modules.html#toppra.RaveTrajectoryWrapper.evaldd">[docs]</a>    <span class="k">def</span> <span class="nf">evaldd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss_sam</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ppoly_dd</span><span class="p">(</span><span class="n">ss_sam</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="SplineInterpolator"><a class="viewcode-back" href="../../hello.html#toppra.SplineInterpolator">[docs]</a><span class="k">class</span> <span class="nc">SplineInterpolator</span><span class="p">(</span><span class="n">Interpolator</span><span class="p">):</span>
+<div class="viewcode-block" id="SplineInterpolator"><a class="viewcode-back" href="../../modules.html#toppra.SplineInterpolator">[docs]</a><span class="k">class</span> <span class="nc">SplineInterpolator</span><span class="p">(</span><span class="n">Interpolator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Interpolate the given waypoints by cubic spline.</span>
 
 <span class="sd">    This interpolator is implemented as a simple wrapper over scipy&#39;s</span>
@@ -303,6 +369,7 @@
         <span class="k">assert</span> <span class="n">ss_waypoints</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;First index must equals zero.&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ss_waypoints</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ss_waypoints</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">waypoints</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">waypoints</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bc_type</span> <span class="o">=</span> <span class="n">bc_type</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">waypoints</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dof</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">else</span><span class="p">:</span>
@@ -335,19 +402,24 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">cspld</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cspl</span><span class="o">.</span><span class="n">derivative</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cspldd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cspld</span><span class="o">.</span><span class="n">derivative</span><span class="p">()</span>
 
-<div class="viewcode-block" id="SplineInterpolator.get_duration"><a class="viewcode-back" href="../../hello.html#toppra.SplineInterpolator.get_duration">[docs]</a>    <span class="k">def</span> <span class="nf">get_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SplineInterpolator.get_waypoints"><a class="viewcode-back" href="../../modules.html#toppra.SplineInterpolator.get_waypoints">[docs]</a>    <span class="k">def</span> <span class="nf">get_waypoints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return the appropriate scaled waypoints.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ss_waypoints</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">waypoints</span></div>
+
+<div class="viewcode-block" id="SplineInterpolator.get_duration"><a class="viewcode-back" href="../../modules.html#toppra.SplineInterpolator.get_duration">[docs]</a>    <span class="k">def</span> <span class="nf">get_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span></div>
 
-<div class="viewcode-block" id="SplineInterpolator.eval"><a class="viewcode-back" href="../../hello.html#toppra.SplineInterpolator.eval">[docs]</a>    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss_sam</span><span class="p">):</span>
+<div class="viewcode-block" id="SplineInterpolator.eval"><a class="viewcode-back" href="../../modules.html#toppra.SplineInterpolator.eval">[docs]</a>    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss_sam</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cspl</span><span class="p">(</span><span class="n">ss_sam</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SplineInterpolator.evald"><a class="viewcode-back" href="../../hello.html#toppra.SplineInterpolator.evald">[docs]</a>    <span class="k">def</span> <span class="nf">evald</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss_sam</span><span class="p">):</span>
+<div class="viewcode-block" id="SplineInterpolator.evald"><a class="viewcode-back" href="../../modules.html#toppra.SplineInterpolator.evald">[docs]</a>    <span class="k">def</span> <span class="nf">evald</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss_sam</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cspld</span><span class="p">(</span><span class="n">ss_sam</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SplineInterpolator.evaldd"><a class="viewcode-back" href="../../hello.html#toppra.SplineInterpolator.evaldd">[docs]</a>    <span class="k">def</span> <span class="nf">evaldd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss_sam</span><span class="p">):</span>
+<div class="viewcode-block" id="SplineInterpolator.evaldd"><a class="viewcode-back" href="../../modules.html#toppra.SplineInterpolator.evaldd">[docs]</a>    <span class="k">def</span> <span class="nf">evaldd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss_sam</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cspldd</span><span class="p">(</span><span class="n">ss_sam</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SplineInterpolator.compute_rave_trajectory"><a class="viewcode-back" href="../../hello.html#toppra.SplineInterpolator.compute_rave_trajectory">[docs]</a>    <span class="k">def</span> <span class="nf">compute_rave_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">):</span>
+<div class="viewcode-block" id="SplineInterpolator.compute_rave_trajectory"><a class="viewcode-back" href="../../modules.html#toppra.SplineInterpolator.compute_rave_trajectory">[docs]</a>    <span class="k">def</span> <span class="nf">compute_rave_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">robot</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Compute an OpenRAVE trajectory equivalent to this trajectory.</span>
 
 <span class="sd">        Parameters</span>
@@ -416,6 +488,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">uspld</span> <span class="o">=</span> <span class="p">[</span><span class="n">spl</span><span class="o">.</span><span class="n">derivative</span><span class="p">()</span> <span class="k">for</span> <span class="n">spl</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">uspl</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">uspldd</span> <span class="o">=</span> <span class="p">[</span><span class="n">spl</span><span class="o">.</span><span class="n">derivative</span><span class="p">()</span> <span class="k">for</span> <span class="n">spl</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">uspld</span><span class="p">]</span>
 
+    <span class="k">def</span> <span class="nf">get_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span>
+
     <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss</span><span class="p">):</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">spl</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">uspl</span><span class="p">:</span>
@@ -463,6 +538,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">coeff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">coeff</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">s_start</span> <span class="o">=</span> <span class="n">s_start</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">s_end</span> <span class="o">=</span> <span class="n">s_end</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">s_end</span> <span class="o">-</span> <span class="n">s_start</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coeff</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dof</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">poly</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">polynomial</span><span class="o">.</span><span class="n">Polynomial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coeff</span><span class="p">)]</span>
@@ -475,6 +551,9 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">polyd</span> <span class="o">=</span> <span class="p">[</span><span class="n">poly</span><span class="o">.</span><span class="n">deriv</span><span class="p">()</span> <span class="k">for</span> <span class="n">poly</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">poly</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">polydd</span> <span class="o">=</span> <span class="p">[</span><span class="n">poly</span><span class="o">.</span><span class="n">deriv</span><span class="p">()</span> <span class="k">for</span> <span class="n">poly</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">polyd</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">get_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span>
 
     <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss_sam</span><span class="p">):</span>
         <span class="n">res</span> <span class="o">=</span> <span class="p">[</span><span class="n">poly</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ss_sam</span><span class="p">))</span> <span class="k">for</span> <span class="n">poly</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">poly</span><span class="p">]</span>
@@ -501,70 +580,8 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../index.html">TOPP-RA</a></h1>
-
-
-
-<p class="blurb">A robotic motion planning library for path-parametrization</p>
-
-
-
-
-<p>
-<iframe src="https://ghbtns.com/github-btn.html?user=hungpham2511&repo=toppra&type=star&count=true&size=large&v=2"
-  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
-</p>
-
-
-
-
-
-    
-
-<p>
-<a href="https://travis-ci.org/hungpham2511/toppra">
-    <img
-        alt="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
-        src="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
-    />
-</a>
-</p>
-
-
-<h3>Navigation</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../tutorials.html">Tutorials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../hello.html">Modules reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
+    <div class="clearer"></div>
+  </div>
     <div class="footer">
       &copy;2018, Hung Pham.
       

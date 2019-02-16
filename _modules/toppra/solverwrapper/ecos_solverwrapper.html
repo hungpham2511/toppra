@@ -23,9 +23,71 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head><body>
-  
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">TOPP-RA</a></h1>
 
-    <div class="document">
+
+
+<p class="blurb">A robotic motion planning library for path-parametrization</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=hungpham2511&repo=toppra&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/hungpham2511/toppra">
+    <img
+        alt="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
+        src="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes.html">Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">TOPP-RA Module references</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
@@ -33,6 +95,7 @@
   <h1>Source code for toppra.solverwrapper.ecos_solverwrapper</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">.solverwrapper</span> <span class="k">import</span> <span class="n">SolverWrapper</span>
 <span class="kn">from</span> <span class="nn">..constraint</span> <span class="k">import</span> <span class="n">ConstraintType</span>
+<span class="kn">from</span> <span class="nn">..constants</span> <span class="k">import</span> <span class="n">INFTY</span><span class="p">,</span> <span class="n">ECOS_MAXX</span><span class="p">,</span> <span class="n">ECOS_INFTY</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">scipy.sparse</span>
@@ -40,15 +103,24 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<span class="n">INF</span> <span class="o">=</span> <span class="mf">1e2</span>
 
-
-<div class="viewcode-block" id="ecosWrapper"><a class="viewcode-back" href="../../../hello.html#toppra.solverwrapper.ecosWrapper">[docs]</a><span class="k">class</span> <span class="nc">ecosWrapper</span><span class="p">(</span><span class="n">SolverWrapper</span><span class="p">):</span>
+<div class="viewcode-block" id="ecosWrapper"><a class="viewcode-back" href="../../../modules.html#toppra.solverwrapper.ecos_solverwrapper.ecosWrapper">[docs]</a><span class="k">class</span> <span class="nc">ecosWrapper</span><span class="p">(</span><span class="n">SolverWrapper</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A solver wrapper that handles linear and conic-quadratic constraints using ECOS.</span>
 
 <span class="sd">    :class:`ecosWrapper` and :class:`cvxpyWrapper` are the only</span>
 <span class="sd">    wrappers that can handle conic-quadratic constraints, which are</span>
 <span class="sd">    necessary to compute robust path parameterization.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    To reduce numerical-related issues, ECOS_MAXX is used to regulate</span>
+<span class="sd">    the magnitude of the solution.</span>
+
+<span class="sd">    ECOS is not very well implemented. There are many cases in which</span>
+<span class="sd">    the solver fails simply because there is a very large bound</span>
+<span class="sd">    (&gt;1e6). Because of this, the test suites included in toppra do not</span>
+<span class="sd">    include many tests for ecos.</span>
+
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -96,7 +168,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Nb of row for linear constraints: </span><span class="si">{:d}</span><span class="s2"> rows&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_linear_dim</span><span class="p">))</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Nb of row for conic constraints : </span><span class="si">{:d}</span><span class="s2"> rows&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_conic_dim</span><span class="p">))</span>
 
-<div class="viewcode-block" id="ecosWrapper.solve_stagewise_optim"><a class="viewcode-back" href="../../../hello.html#toppra.solverwrapper.ecosWrapper.solve_stagewise_optim">[docs]</a>    <span class="k">def</span> <span class="nf">solve_stagewise_optim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">x_next_min</span><span class="p">,</span> <span class="n">x_next_max</span><span class="p">):</span>
+<div class="viewcode-block" id="ecosWrapper.solve_stagewise_optim"><a class="viewcode-back" href="../../../modules.html#toppra.solverwrapper.ecos_solverwrapper.ecosWrapper.solve_stagewise_optim">[docs]</a>    <span class="k">def</span> <span class="nf">solve_stagewise_optim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">x_next_min</span><span class="p">,</span> <span class="n">x_next_max</span><span class="p">):</span>
         <span class="k">assert</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="ow">and</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">i</span>
         <span class="k">assert</span> <span class="n">H</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
 
@@ -107,10 +179,10 @@
         <span class="c1"># 4) conic constraints</span>
         <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">:</span>
             <span class="n">nrow</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_linear_dim</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conic_dim</span>
-            <span class="n">dims</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;l&quot;</span><span class="p">:</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_linear_dim</span><span class="p">,</span> <span class="s2">&quot;q&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_conic_dim</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)}</span>
+            <span class="n">dims</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;l&quot;</span><span class="p">:</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_linear_dim</span><span class="p">,</span> <span class="s2">&quot;q&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_conic_dim</span> <span class="o">//</span> <span class="mi">4</span><span class="p">)}</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">nrow</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_linear_dim</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conic_dim</span>
-            <span class="n">dims</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;l&quot;</span><span class="p">:</span> <span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_linear_dim</span><span class="p">,</span> <span class="s2">&quot;q&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_conic_dim</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)}</span>
+            <span class="n">dims</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;l&quot;</span><span class="p">:</span> <span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_linear_dim</span><span class="p">,</span> <span class="s2">&quot;q&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_conic_dim</span> <span class="o">//</span> <span class="mi">4</span><span class="p">)}</span>
 
         <span class="n">G_lil</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">lil_matrix</span><span class="p">((</span><span class="n">nrow</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
         <span class="n">h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nrow</span><span class="p">)</span>
@@ -121,12 +193,12 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x_min</span><span class="p">):</span>
             <span class="n">h</span><span class="p">[</span><span class="n">currow</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">x_min</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">h</span><span class="p">[</span><span class="n">currow</span><span class="p">]</span> <span class="o">=</span> <span class="n">INF</span>
+            <span class="n">h</span><span class="p">[</span><span class="n">currow</span><span class="p">]</span> <span class="o">=</span> <span class="n">ECOS_INFTY</span>
         <span class="n">currow</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x_max</span><span class="p">):</span>
             <span class="n">h</span><span class="p">[</span><span class="n">currow</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_max</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">h</span><span class="p">[</span><span class="n">currow</span><span class="p">]</span> <span class="o">=</span> <span class="n">INF</span>
+            <span class="n">h</span><span class="p">[</span><span class="n">currow</span><span class="p">]</span> <span class="o">=</span> <span class="n">ECOS_INFTY</span>
         <span class="n">currow</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="c1">## Fill 2)</span>
         <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">:</span>
@@ -135,13 +207,13 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x_next_min</span><span class="p">):</span>
                 <span class="n">h</span><span class="p">[</span><span class="n">currow</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">x_next_min</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">h</span><span class="p">[</span><span class="n">currow</span><span class="p">]</span> <span class="o">=</span> <span class="n">INF</span>
+                <span class="n">h</span><span class="p">[</span><span class="n">currow</span><span class="p">]</span> <span class="o">=</span> <span class="n">ECOS_INFTY</span>
             <span class="n">currow</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="n">G_lil</span><span class="p">[</span><span class="n">currow</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">delta</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x_next_max</span><span class="p">):</span>
                 <span class="n">h</span><span class="p">[</span><span class="n">currow</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_next_max</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">h</span><span class="p">[</span><span class="n">currow</span><span class="p">]</span> <span class="o">=</span> <span class="n">INF</span>
+                <span class="n">h</span><span class="p">[</span><span class="n">currow</span><span class="p">]</span> <span class="o">=</span> <span class="n">ECOS_INFTY</span>
             <span class="n">currow</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="c1">## Fill 3)</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_linear_idx</span><span class="p">:</span>
@@ -170,11 +242,11 @@
             <span class="k">if</span> <span class="n">_xbound</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">G_lil</span><span class="p">[</span><span class="n">currow</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
                 <span class="n">G_lil</span><span class="p">[</span><span class="n">currow</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-                <span class="n">h</span><span class="p">[</span><span class="n">currow</span><span class="p">:</span> <span class="n">currow</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">_xbound</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="o">-</span><span class="n">_xbound</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+                <span class="n">h</span><span class="p">[</span><span class="n">currow</span><span class="p">:</span> <span class="n">currow</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">ECOS_MAXX</span><span class="p">,</span> <span class="n">_xbound</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="o">-</span><span class="n">_xbound</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
                 <span class="n">currow</span> <span class="o">+=</span> <span class="mi">2</span>
         <span class="c1">## Fill 4)</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_conic_idx</span><span class="p">:</span>
-            <span class="n">_a</span><span class="p">,</span> <span class="n">_b</span><span class="p">,</span> <span class="n">_c</span><span class="p">,</span> <span class="n">_P</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="n">_a</span><span class="p">,</span> <span class="n">_b</span><span class="p">,</span> <span class="n">_c</span><span class="p">,</span> <span class="n">_P</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
 
             <span class="c1"># NOTE: Here the following arrangement is used.</span>
             <span class="c1"># G_i = [  a_ij        b_ij  ]</span>
@@ -211,70 +283,8 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../../index.html">TOPP-RA</a></h1>
-
-
-
-<p class="blurb">A robotic motion planning library for path-parametrization</p>
-
-
-
-
-<p>
-<iframe src="https://ghbtns.com/github-btn.html?user=hungpham2511&repo=toppra&type=star&count=true&size=large&v=2"
-  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
-</p>
-
-
-
-
-
-    
-
-<p>
-<a href="https://travis-ci.org/hungpham2511/toppra">
-    <img
-        alt="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
-        src="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
-    />
-</a>
-</p>
-
-
-<h3>Navigation</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../hello.html">Modules reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../../index.html">Documentation overview</a><ul>
-  <li><a href="../../index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
+    <div class="clearer"></div>
+  </div>
     <div class="footer">
       &copy;2018, Hung Pham.
       

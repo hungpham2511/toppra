@@ -16,7 +16,8 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Modules reference" href="hello.html" />
+    <link rel="next" title="Tutorials" href="tutorials.html" />
+    <link rel="prev" title="TOPP-RA: Fast path-parameterization for robots" href="index.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -24,88 +25,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head><body>
-  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <div class="section" id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="core-functionalities">
-<h2>Core functionalities<a class="headerlink" href="#core-functionalities" title="Permalink to this headline">¶</a></h2>
-<p>To install the core functionalities of TOPP-RA, simply do:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/hungpham2511/toppra <span class="o">&amp;&amp;</span> <span class="nb">cd</span> toppra/
-pip install -r requirements.txt --user
-python setup.py install --user
-</pre></div>
-</div>
-<p>You can now use TOPP-RA to parametrize trajectories/paths subject to
-the robot kinematic limits as well as tool tip Catesian limits. Try a
-basic example here: <a class="reference internal" href="tutorials.html"><span class="doc">Tutorials</span></a>.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Generally, Python packages should be installed in a <a class="reference external" href="https://docs.python-guide.org/dev/virtualenvs/">virtual
-environment</a>. See the
-hyperlink for more details. To install TOPP-RA in a virtual
-environment, simply activate the environment and do the
-above steps omitting the <code class="code docutils literal notranslate"><span class="pre">--user</span></code> flag.</p>
-</div>
-</div>
-<div class="section" id="optional-install-qpoases">
-<h2>(Optional) Install qpOASES<a class="headerlink" href="#optional-install-qpoases" title="Permalink to this headline">¶</a></h2>
-<p>It is possible to use <a class="reference external" href="https://projects.coin-or.org/qpOASES/wiki/QpoasesInstallation">qpOASES</a>
-instead of the default LP solver <code class="docutils literal notranslate"><span class="pre">seidel</span></code> as a back-end solver
-wrapper running in background. To install run following commands in
-a terminal:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/hungpham2511/qpOASES
-<span class="nb">cd</span> qpOASES/ <span class="o">&amp;&amp;</span> mkdir bin <span class="o">&amp;&amp;</span> make
-<span class="nb">cd</span> interfaces/python/
-pip install cython
-python setup.py install --user
-</pre></div>
-</div>
-</div>
-<div class="section" id="advanced-functionalities">
-<h2>Advanced functionalities<a class="headerlink" href="#advanced-functionalities" title="Permalink to this headline">¶</a></h2>
-<p>In order to run some of the examples, it is necesssary to install
-<a class="reference external" href="https://github.com/rdiankov/openrave">openRAVE</a>. A good instruction
-for installing this library on Ubuntu 16.04 can be found <a class="reference external" href="https://scaron.info/teaching/installing-openrave-on-ubuntu-16.04.html">here</a>.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">The humanoid and redudantly-actuated torque examples are not
-yet included in the current library. See tag <code class="docutils literal notranslate"><span class="pre">v0.1</span></code> if you
-want to run these examples.</p>
-</div>
-</div>
-<div class="section" id="building-docs">
-<h2>Building docs<a class="headerlink" href="#building-docs" title="Permalink to this headline">¶</a></h2>
-<p>The lastest documentation is available at
-<a class="reference external" href="https://hungpham2511.github.io/toppra/">https://hungpham2511.github.io/toppra/</a>.</p>
-<p>To build and view the documentation, install <a class="reference external" href="http://www.sphinx-doc.org/en/stable/index.html">sphinx</a> then run the
-following commands in the terminal</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> &lt;toppra-dir&gt;/docs/
-make clean <span class="o">&amp;&amp;</span> make html
-&lt;browser&gt; build/index.html
-</pre></div>
-</div>
-</div>
-<div class="section" id="testing">
-<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
-<p>TOPP-RA makes use of <code class="code docutils literal notranslate"><span class="pre">pytest</span></code> and <code class="docutils literal notranslate"><span class="pre">cvxpy</span></code> for testing. Both
-can be installed from <code class="code docutils literal notranslate"><span class="pre">pip</span></code>.  To run all the tests, do:</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> &lt;toppra-dir&gt;/tests/
-pytest -v
-</pre></div>
-</div>
-</div>
-</div>
-
-
-          </div>
-        </div>
-      </div>
+  <div class="document">
+    
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
 <h1 class="logo"><a href="index.html">TOPP-RA</a></h1>
@@ -140,23 +61,25 @@ pytest -v
 
 <h3>Navigation</h3>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="hello.html">Modules reference</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#core-functionalities">Core functionalities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#basic-functionality">Basic functionality</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#optional-install-qpoases">(Optional) Install qpOASES</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#advanced-functionalities">Advanced functionalities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced-functionality">Advanced functionality</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#building-docs">Building docs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notes.html">Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">TOPP-RA Module references</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="hello.html" title="previous chapter">Modules reference</a></li>
+      <li>Previous: <a href="index.html" title="previous chapter">TOPP-RA: Fast path-parameterization for robots</a></li>
+      <li>Next: <a href="tutorials.html" title="next chapter">Tutorials</a></li>
   </ul></li>
 </ul>
 </div>
@@ -174,8 +97,87 @@ pytest -v
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="basic-functionality">
+<h2>Basic functionality<a class="headerlink" href="#basic-functionality" title="Permalink to this headline">¶</a></h2>
+<p>To install the core functionality of TOPP-RA, simply do:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/hungpham2511/toppra <span class="o">&amp;&amp;</span> <span class="nb">cd</span> toppra/
+pip install -r requirements.txt --user
+python setup.py install --user
+</pre></div>
+</div>
+<p>You can now use TOPP-RA to parametrize trajectories/paths subject to
+the robot kinematic limits as well as tool tip Cartesian limits. Try a
+basic example here: <a class="reference internal" href="tutorials.html"><span class="doc">Tutorials</span></a>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Generally, Python packages should be installed in a <a class="reference external" href="https://docs.python-guide.org/dev/virtualenvs/">virtual
+environment</a>. See the
+hyperlink for more details. To install TOPP-RA in a virtual
+environment, simply activate the environment and do the
+above steps omitting the <code class="code docutils literal notranslate"><span class="pre">--user</span></code> flag.</p>
+</div>
+</div>
+<div class="section" id="optional-install-qpoases">
+<h2>(Optional) Install qpOASES<a class="headerlink" href="#optional-install-qpoases" title="Permalink to this headline">¶</a></h2>
+<p>It is possible to use <a class="reference external" href="https://projects.coin-or.org/qpOASES/wiki/QpoasesInstallation">qpOASES</a>
+instead of the default LP solver <code class="docutils literal notranslate"><span class="pre">seidel</span></code> as a back-end solver
+wrapper running in background. To install run following commands in
+a terminal:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/hungpham2511/qpOASES
+<span class="nb">cd</span> qpOASES/ <span class="o">&amp;&amp;</span> mkdir bin <span class="o">&amp;&amp;</span> make
+<span class="nb">cd</span> interfaces/python/
+pip install cython
+python setup.py install --user
+</pre></div>
+</div>
+</div>
+<div class="section" id="advanced-functionality">
+<h2>Advanced functionality<a class="headerlink" href="#advanced-functionality" title="Permalink to this headline">¶</a></h2>
+<p>In order to run some of the examples, it is necessary to install
+<a class="reference external" href="https://github.com/rdiankov/openrave">openRAVE</a>. A good instruction
+for installing this library on Ubuntu 16.04 can be found <a class="reference external" href="https://scaron.info/teaching/installing-openrave-on-ubuntu-16.04.html">here</a>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The humanoid and redundantly-actuated torque examples are not
+yet included in the current library. See tag <code class="docutils literal notranslate"><span class="pre">v0.1</span></code> if you
+want to run these examples.</p>
+</div>
+</div>
+<div class="section" id="building-docs">
+<h2>Building docs<a class="headerlink" href="#building-docs" title="Permalink to this headline">¶</a></h2>
+<p>The latest documentation is available at
+<a class="reference external" href="https://hungpham2511.github.io/toppra/">https://hungpham2511.github.io/toppra/</a>.</p>
+<p>To build and view the documentation, install <a class="reference external" href="http://www.sphinx-doc.org/en/stable/index.html">sphinx</a> then run the
+following commands in the terminal</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> &lt;toppra-dir&gt;/docs/
+make clean <span class="o">&amp;&amp;</span> make html
+&lt;browser&gt; build/index.html
+</pre></div>
+</div>
+</div>
+<div class="section" id="testing">
+<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
+<p>TOPP-RA makes use of <code class="code docutils literal notranslate"><span class="pre">pytest</span></code> and <code class="docutils literal notranslate"><span class="pre">cvxpy</span></code> for testing. Both
+can be installed from <code class="code docutils literal notranslate"><span class="pre">pip</span></code>.  To run all the tests, do:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> &lt;toppra-dir&gt;/tests/
+pytest -v
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
     <div class="footer">
       &copy;2018, Hung Pham.
       

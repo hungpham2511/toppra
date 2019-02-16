@@ -1,4 +1,4 @@
-2: Simple [1]_ Second-Order Constraint
+Simple [1]_ Second-Order Constraint
 ====================================
 
 TOPP-RA *can not* account for arbitrary constraints; it can only
