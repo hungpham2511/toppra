@@ -397,14 +397,14 @@ JointAccelerationConstraint(
 <h2>Solve TOPP<a class="headerlink" href="#Solve-TOPP" title="Permalink to this headline">¶</a></h2>
 <p>We now solve for the time-optimal path parametrization:</p>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
 <span></span><span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 <span class="c1"># Setup a parametrization instance, then retime</span>
 <span class="n">instance</span> <span class="o">=</span> <span class="n">algo</span><span class="o">.</span><span class="n">TOPPRA</span><span class="p">([</span><span class="n">pc_vel</span><span class="p">,</span> <span class="n">pc_acc</span><span class="p">],</span> <span class="n">path</span><span class="p">,</span> <span class="n">solver_wrapper</span><span class="o">=</span><span class="s1">&#39;seidel&#39;</span><span class="p">)</span>
-<span class="n">jnt_traj</span><span class="p">,</span> <span class="n">aux_traj</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">compute_trajectory</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">jnt_traj</span><span class="p">,</span> <span class="n">aux_traj</span><span class="p">,</span> <span class="n">int_data</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">compute_trajectory</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">return_data</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Parameterization time: {:} secs&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span><span class="p">))</span>
 </pre></div>
 </div>
@@ -414,10 +414,11 @@ JointAccelerationConstraint(
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Parameterization time: 0.0289750099182 secs
+Parameterization time: 0.00753903388977 secs
 </pre></div></div>
 </div>
-<p>There are muliple solver wrapper to choose from: <code class="docutils literal notranslate"><span class="pre">seidel</span></code>, <code class="docutils literal notranslate"><span class="pre">hotqpoases</span></code>, <code class="docutils literal notranslate"><span class="pre">cvxpy</span></code>, etc. In general you should choose sedel because it is much faster than <code class="docutils literal notranslate"><span class="pre">hotqpoases</span></code>. However be warned that seidel can fail for ill-posed path parametrization instances. Below we solve the same problem using different solver wrappers and compare their speeds. All solvers, however, should outputs similar solutions.</p>
+<p>There are muliple solver wrapper to choose from: <code class="docutils literal notranslate"><span class="pre">seidel</span></code>, <code class="docutils literal notranslate"><span class="pre">hotqpoases</span></code>, <code class="docutils literal notranslate"><span class="pre">cvxpy</span></code>, etc. In general you should choose <code class="docutils literal notranslate"><span class="pre">seidel</span></code> because it is much faster than <code class="docutils literal notranslate"><span class="pre">hotqpoases</span></code>. However, be warned that <code class="docutils literal notranslate"><span class="pre">seidel</span></code> can fail for ill-posed path parametrization instances.</p>
+<p>Below we solve the same problem using different solver wrappers and compare their speeds.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
@@ -444,7 +445,7 @@ cvxpy               : comp. time 1.4635 secs: traj dur. 16.428993 sec
 </div>
 <div class="section" id="Inspect-solution">
 <h2>Inspect solution<a class="headerlink" href="#Inspect-solution" title="Permalink to this headline">¶</a></h2>
-<p>The retimed geometric path can be recovered easily.</p>
+<p>The time-optimally retimed geometric path can be recovered easily.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
@@ -473,6 +474,39 @@ cvxpy               : comp. time 1.4635 secs: traj dur. 16.428993 sec
 </div>
 <div class="output_area docutils container">
 <img alt="../_images/tutorials_tut1_basic_example_11_0.png" src="../_images/tutorials_tut1_basic_example_11_0.png" />
+</div>
+</div>
+<p>We can also inspect the solution in detail by looking at the returned <code class="docutils literal notranslate"><span class="pre">int_data</span></code> dictionary: The controllable sets and the time-optimal parametrization are plotted below.</p>
+<p>It is not hard to see that the returned parametrization (blue) is the fastest possible!</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[33]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">int_data</span><span class="p">[</span><span class="s1">&#39;K&#39;</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;C3&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Controllable sets K[]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">int_data</span><span class="p">[</span><span class="s1">&#39;K&#39;</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;C3&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">int_data</span><span class="p">[</span><span class="s1">&#39;sd&#39;</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Parametrization x*&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Stage i&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Squared path velocity $x:=\dot s^2$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_tut1_basic_example_13_0.png" src="../_images/tutorials_tut1_basic_example_13_0.png" />
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython2 notranslate"><div class="highlight"><pre>
+<span></span>
+</pre></div>
 </div>
 </div>
 </div>
