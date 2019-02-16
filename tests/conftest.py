@@ -1,10 +1,10 @@
-
 try:
     import openravepy as orpy
 except:
-    pass
+    # Unable to find openrave
+    FOUND_OPENRAVEPY = False
 import pytest
-    
+
 
 @pytest.fixture(scope="session")
 def rave_env():
