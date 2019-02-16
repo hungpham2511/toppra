@@ -1,8 +1,11 @@
-TOPP-RA Module references
+.. _module_ref:
+
+Module references
 =========================
 
 Interpolators
 -------------
+
 
 SplineInterplator
 ^^^^^^^^^^^^^^^^^^^

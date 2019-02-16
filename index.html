@@ -16,7 +16,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Installation" href="installation.html" />
+    <link rel="next" title="Installation instructions" href="installation.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -60,17 +60,17 @@
 
 <h3>Navigation</h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation instructions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notes.html">Notes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">TOPP-RA Module references</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">Module references</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="#">Documentation overview</a><ul>
-      <li>Next: <a href="installation.html" title="next chapter">Installation</a></li>
+      <li>Next: <a href="installation.html" title="next chapter">Installation instructions</a></li>
   </ul></li>
 </ul>
 </div>
@@ -106,75 +106,24 @@ dynamics:</p>
 <li>Your constraint! See the tutorials to understand how to implement
 your own constraints and handle them with TOPP-RA.</li>
 </ol>
-<p>You can use TOPP-RA to compute the <em>time-optimal</em> path parameterization
-– the fastest possible movement the robot can realize – or a path
-parameterization with <em>a specified duration</em>. See the tutorials for
-more details.</p>
-<p>TOPP-RA is efficient. For standard use cases, it should return a
-solution in 5ms-10ms.</p>
-<p>See below for some tutorials, modules reference and installation
-instructions.</p>
+<p>You can use TOPP-RA to compute the <em>time-optimal</em> path
+parameterization – the fastest possible movement the robot can
+realize – or a path parameterization with <em>a specified duration</em>. See
+the tutorials for more details.</p>
+<p>A last remark, TOPP-RA is efficient. For standard use cases, it should
+return a solution in 5ms-10ms.</p>
+<p><strong>Update (Feb, 2019)</strong> I have used TOPP-RA to plan <em>critically fast</em>
+motions for robots doing bin picking with suction cup. Here
+<em>critically fast</em> motions are those that are fastest possible given
+the limited suction power and object weight. See the video below for
+more detail!</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/b9H-zOYWLbY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><p>If you find this intereting, feel free to check out the paper: <a class="reference external" href="https://www.researchgate.net/publication/327570258_Critically_fast_pick-and-place_with_suction_cups">«Critically fast pick-and-place with suction cups»</a>. This paper will be presented at ICRA 2019. Feel free to come over to our poster for a chat!</p>
+<p>You can find on this page <a class="reference internal" href="installation.html#installation"><span class="std std-ref">Installation instructions</span></a>, <a class="reference internal" href="tutorials.html#tutorials"><span class="std std-ref">Tutorials</span></a>, some
+<a class="reference internal" href="notes.html#notes"><span class="std std-ref">Notes</span></a> and <a class="reference internal" href="modules.html#module-ref"><span class="std std-ref">Module references</span></a>.</p>
 <div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#basic-functionality">Basic functionality</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#optional-install-qpoases">(Optional) Install qpOASES</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#advanced-functionality">Advanced functionality</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#building-docs">Building docs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#testing">Testing</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/0_kinematic_example.html">A basic example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/0a_trapezoidal_scalar.html">Recreating the Trapezoidal Velocity Profile</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/1_geometric_path.html">Path and Trajectory representation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/1_geometric_path.html#spline-interpolator">Spline Interpolator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/1_geometric_path.html#implement-your-own-interpolator">Implement your own Interpolator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/1_geometric_path.html#other-interpolators">Other Interpolators</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="tutorials/2_can_linear_constraints.html">Simple  Second-Order Constraint</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/2_can_linear_constraints.html#background">Background</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/2_can_linear_constraints.html#defining-a-second-order-constraint">Defining a Second-Order constraint</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/2_can_linear_constraints.html#pseudo-code">Pseudo-code</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/2_can_linear_constraints.html#example-cartesian-acceleration-constraints">Example: Cartesian Acceleration constraints</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="notes.html">Notes</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="notes.html#derivation-of-kinematical-quantities">Derivation of kinematical quantities</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">TOPP-RA Module references</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="modules.html#interpolators">Interpolators</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="modules.html#splineinterplator">SplineInterplator</a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules.html#ravetrajectorywrapper">RaveTrajectoryWrapper</a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules.html#interpolator-base-class">Interpolator (base class)</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="modules.html#constraints">Constraints</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="modules.html#jointaccelerationconstraint">JointAccelerationConstraint</a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules.html#jointvelocityconstraint">JointVelocityConstraint</a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules.html#secondorderconstraint">SecondOrderConstraint</a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules.html#canonicallinearconstraint-base-class">CanonicalLinearConstraint (base class)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules.html#robustlinearconstraint">RobustLinearConstraint</a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules.html#constraints-base-class">Constraints (base class)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules.html#discretizationtype-enum">DiscretizationType (enum)</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="modules.html#algorithms">Algorithms</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="modules.html#toppra-time-optimal">TOPPRA (time-optimal)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules.html#topprasd-specific-duration">TOPPRAsd (specific-duration)</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="modules.html#solver-wrapper">Solver Wrapper</a></li>
-</ul>
-</li>
-</ul>
 </div>
 <div class="section" id="citing-topp-ra">
-<span id="path-parameterization"></span><h2>Citing TOPP-RA!<a class="headerlink" href="#citing-topp-ra" title="Permalink to this headline">¶</a></h2>
+<h2>Citing TOPP-RA!<a class="headerlink" href="#citing-topp-ra" title="Permalink to this headline">¶</a></h2>
 <p>If you find TOPP-RA useful and use it in your research, we encourage
 you to</p>
 <ol class="arabic simple">
