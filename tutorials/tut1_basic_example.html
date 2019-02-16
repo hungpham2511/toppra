@@ -16,7 +16,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="A basic example" href="0_kinematic_example.html" />
+    <link rel="next" title="Recreating the Trapezoidal Velocity Profile" href="0a_trapezoidal_scalar.html" />
     <link rel="prev" title="Tutorials" href="../tutorials.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -64,11 +64,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation instructions</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">A basic example</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Solve">Solve</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Setup-the-problem">Setup the problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Solve-TOPP">Solve TOPP</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Inspect-solution">Inspect solution</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="0_kinematic_example.html">A basic example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="0a_trapezoidal_scalar.html">Recreating the Trapezoidal Velocity Profile</a></li>
 <li class="toctree-l2"><a class="reference internal" href="1_geometric_path.html">Path and Trajectory representation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="2_can_linear_constraints.html">Simple  Second-Order Constraint</a></li>
@@ -84,7 +84,7 @@
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="../tutorials.html">Tutorials</a><ul>
       <li>Previous: <a href="../tutorials.html" title="previous chapter">Tutorials</a></li>
-      <li>Next: <a href="0_kinematic_example.html" title="next chapter">A basic example</a></li>
+      <li>Next: <a href="0a_trapezoidal_scalar.html" title="next chapter">Recreating the Trapezoidal Velocity Profile</a></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -310,6 +310,8 @@ div.rendered_html tbody tr:hover {
 <div class="section" id="A-basic-example">
 <h1>A basic example<a class="headerlink" href="#A-basic-example" title="Permalink to this headline">¶</a></h1>
 <p>The most basic usecase of TOPP-RA is compute the time-optimal time-parameterization subject to joint velocity and acceleration constraints.</p>
+<div class="section" id="Setup-the-problem">
+<h2>Setup the problem<a class="headerlink" href="#Setup-the-problem" title="Permalink to this headline">¶</a></h2>
 <p>First, we need to load <code class="docutils literal notranslate"><span class="pre">toppra</span></code>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -390,8 +392,9 @@ JointAccelerationConstraint(
 </pre></div></div>
 </div>
 <p>Notice that in the above printout, we have 6 acceleration joint limits with <code class="docutils literal notranslate"><span class="pre">Interpolation</span></code> <code class="docutils literal notranslate"><span class="pre">discretization_scheme</span></code>.</p>
-<div class="section" id="Solve">
-<h2>Solve<a class="headerlink" href="#Solve" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="Solve-TOPP">
+<h2>Solve TOPP<a class="headerlink" href="#Solve-TOPP" title="Permalink to this headline">¶</a></h2>
 <p>We now solve for the time-optimal path parametrization:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:

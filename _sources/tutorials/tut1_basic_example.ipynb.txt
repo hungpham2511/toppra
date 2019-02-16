@@ -10,6 +10,8 @@
     "time-parameterization subject to joint velocity and acceleration\n",
     "constraints. \n",
     "\n",
+    "## Setup the problem\n",
+    "\n",
     "First, we need to load `toppra`."
    ]
   },
@@ -112,7 +114,7 @@
    "source": [
     "Notice that in the above printout, we have 6 acceleration joint limits with `Interpolation` `discretization_scheme`.\n",
     "\n",
-    "## Solve\n",
+    "## Solve TOPP\n",
     "\n",
     "We now solve for the time-optimal path parametrization:"
    ]
