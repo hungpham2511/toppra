@@ -38,7 +38,7 @@ more detail!
    <iframe width="560" height="315" src="https://www.youtube.com/embed/b9H-zOYWLbY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 
-If you find this intereting, feel free to check out the paper: `«Critically fast pick-and-place with suction cups» <https://www.researchgate.net/publication/327570258_Critically_fast_pick-and-place_with_suction_cups>`_. This paper will be presented at ICRA 2019. Feel free to come over to our poster for a chat!
+If you find this interesting, feel free to check out the paper: `«Critically fast pick-and-place with suction cups» <https://www.researchgate.net/publication/327570258_Critically_fast_pick-and-place_with_suction_cups>`_. This paper will be presented at ICRA 2019. Feel free to come over to our poster for a chat!
   
 You can find on this page :ref:`installation`, :ref:`tutorials`, some
 :ref:`notes` and :ref:`module_ref`.
