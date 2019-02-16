@@ -1,5 +1,7 @@
-Installation
-=================
+.. _installation:
+
+Installation instructions
+==========================
 
 Basic functionality
 --------------------------

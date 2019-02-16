@@ -117,6 +117,7 @@ html_theme_options = {
     'fixed_sidebar': True,
     "sidebar_width": "270px",
     "page_width": "1240px",
+    "show_related": True
     }
 
 # Add any paths that contain custom static files (such as style sheets) here,

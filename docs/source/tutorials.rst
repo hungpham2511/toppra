@@ -1,3 +1,5 @@
+.. _tutorials:
+
 Tutorials
 ~~~~~~~~~~~~~~~~~~
 Some tutorials to get you used to TOPP-RA
