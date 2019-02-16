@@ -1,0 +1,195 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>toppra.algorithm.reachabilitybased.time_optimal_algorithm &#8212; TOPP-RA 0.1 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">TOPP-RA</a></h1>
+
+
+
+<p class="blurb">A robotic motion planning library for path-parametrization</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=hungpham2511&repo=toppra&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/hungpham2511/toppra">
+    <img
+        alt="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
+        src="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notes.html">Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../modules.html">TOPP-RA Module references</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for toppra.algorithm.reachabilitybased.time_optimal_algorithm</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">.reachability_algorithm</span> <span class="k">import</span> <span class="n">ReachabilityAlgorithm</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="TOPPRA"><a class="viewcode-back" href="../../../../modules.html#toppra.algorithm.TOPPRA">[docs]</a><span class="k">class</span> <span class="nc">TOPPRA</span><span class="p">(</span><span class="n">ReachabilityAlgorithm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Time-Optimal Path Parameterization based on Reachability</span>
+<span class="sd">    Analysis (TOPPRA).</span>
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    constraint_list: :class:`~toppra.constraint.Constraint` []</span>
+<span class="sd">        List of constraints to which the robotic system is subjected to.</span>
+<span class="sd">    path: :class:`~toppra.Interpolator`</span>
+<span class="sd">        Input geometric path.</span>
+<span class="sd">    gridpoints: array, optional</span>
+<span class="sd">        Gridpoints for discretization of the geometric path. The start</span>
+<span class="sd">        and end points must agree with the geometric path&#39;s domain.</span>
+<span class="sd">    solver_wrapper: str, optional</span>
+<span class="sd">        Name of the solver wrapper to use.</span>
+<span class="sd">        See :class:`toppra.solverwrapper.hotqpOASESSolverWrapper`,</span>
+<span class="sd">        :class:`toppra.solverwrapper.seidelWrapper`</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    In addition to the input constraints, there might be additional</span>
+<span class="sd">    constraints on the solutions. These constraints usually come from</span>
+<span class="sd">    the solver wrapper. Therefore, don&#39;t be suprise if different</span>
+<span class="sd">    parametrizations are returned for different solver</span>
+<span class="sd">    wrappers. However, the different should be very small, especially</span>
+<span class="sd">    for well-conditioned problems.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_forward_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">K_next</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Compute the highest possible path velocity that is controllable.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        i: int</span>
+<span class="sd">            Current stage index</span>
+<span class="sd">        x: float</span>
+<span class="sd">            The squared velocity at the current stage.</span>
+<span class="sd">        K_next: list</span>
+<span class="sd">            The lower and upper bounds of the set of controllable squared velocities</span>
+<span class="sd">            in the next stage.</span>
+<span class="sd">        eps: float, optional</span>
+<span class="sd">            A numerical constant to avoid propagating numerical errors.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        optim_var: array</span>
+<span class="sd">            Optimal variable, which has this format (u, x, v).</span>
+<span class="sd">            If this step fails, `optim_var` contains only nans.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Immediate return</span>
+        <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">K_next</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_N</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">or</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">])</span>
+
+        <span class="n">nV</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_wrapper</span><span class="o">.</span><span class="n">get_no_vars</span><span class="p">()</span>
+        <span class="n">g_upper</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nV</span><span class="p">)</span>
+        <span class="n">g_upper</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">g_upper</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_wrapper</span><span class="o">.</span><span class="n">get_deltas</span><span class="p">()[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="c1"># Account for propagating numerical errors</span>
+        <span class="n">K_next_max</span> <span class="o">=</span> <span class="n">K_next</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">K_next_min</span> <span class="o">=</span> <span class="n">K_next</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">optim_var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_wrapper</span><span class="o">.</span><span class="n">solve_stagewise_optim</span><span class="p">(</span>
+            <span class="n">i</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">g_upper</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">K_next_min</span><span class="p">,</span> <span class="n">K_next_max</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">optim_var</span></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2018, Hung Pham.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+    <a href="https://github.com/hungpham2511/toppra" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

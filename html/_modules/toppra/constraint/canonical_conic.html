@@ -1,0 +1,230 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>toppra.constraint.canonical_conic &#8212; TOPP-RA 0.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">TOPP-RA</a></h1>
+
+
+
+<p class="blurb">A robotic motion planning library for path-parametrization</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=hungpham2511&repo=toppra&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/hungpham2511/toppra">
+    <img
+        alt="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
+        src="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes.html">Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">TOPP-RA Module references</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for toppra.constraint.canonical_conic</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">.constraint</span> <span class="k">import</span> <span class="n">Constraint</span>
+<span class="kn">from</span> <span class="nn">.constraint</span> <span class="k">import</span> <span class="n">ConstraintType</span><span class="p">,</span> <span class="n">DiscretizationType</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<span class="k">class</span> <span class="nc">CanonicalConicConstraint</span><span class="p">(</span><span class="n">Constraint</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for all canonical conic constraints.</span>
+
+<span class="sd">    A canonical conic constraint is one with the following form</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        (a[i] + da[i]) u + (b[i] + db[i]) x + (c[i] + dc[i]) \leq 0, \\\\</span>
+<span class="sd">        [da[i, j], db[i, j], dc[i, j]]^\top = P[i, j] u, \|u\|_2 \leq 1,</span>
+
+<span class="sd">    where P[i, j] is a 3x3 matrix. Notice that by setting P[i, j] to</span>
+<span class="sd">    the zero matrix, this is the same as the original constraint.</span>
+
+<span class="sd">    Constraints of this form can be translated to conic-quadratic</span>
+<span class="sd">    constraints. This transformation can be found in [1]. The</span>
+<span class="sd">    resulting conic-quadratic constraint is given below</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        a[i, j]u + b[i, j]x + c[i, j] + \|P[i, j]^T [u, x, 1]^T \|_2 \leq 0,</span>
+
+<span class="sd">    where i is the stage index, and j is the constraint index.</span>
+
+<span class="sd">    Refs:</span>
+<span class="sd">    ----</span>
+<span class="sd">    [1] Ben-Tal, A., &amp; Nemirovski, A. (2001). Lectures on modern convex</span>
+<span class="sd">        optimization: analysis, algorithms, and engineering applications</span>
+<span class="sd">        (Vol. 2). Siam.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constraint_type</span> <span class="o">=</span> <span class="n">ConstraintType</span><span class="o">.</span><span class="n">CanonicalConic</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">discretization_type</span> <span class="o">=</span> <span class="n">DiscretizationType</span><span class="o">.</span><span class="n">Collocation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_extra_vars</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dof</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_format_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">compute_constraint_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">gridpoints</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+
+<div class="viewcode-block" id="RobustCanonicalLinearConstraint"><a class="viewcode-back" href="../../../modules.html#toppra.constraint.RobustCanonicalLinearConstraint">[docs]</a><span class="k">class</span> <span class="nc">RobustCanonicalLinearConstraint</span><span class="p">(</span><span class="n">CanonicalConicConstraint</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The simple canonical conic constraint.</span>
+
+<span class="sd">    This constraint can be seen as a robustified version of a</span>
+<span class="sd">    CanonicalLinear constraint. In particular, the perturbations term,</span>
+<span class="sd">    [\Delta a[i, j], \Delta b[i, j], \Delta c[i, j]] is assumed to lie</span>
+<span class="sd">    in a centered ellipsoid:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        [\Delta a[i, j], \Delta b[i, j], \Delta c[i, j]]^\\top = diag(ru, rx, rc) \mathbf e,</span>
+
+<span class="sd">    where \|\mathbf e\|_2 \leq 1.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cnst: :class:`~toppra.constraint.CanonicalLinearConstraint`</span>
+<span class="sd">        The base constraint to robustify.</span>
+<span class="sd">    ellipsoid_axes_lengths: (3,)array</span>
+<span class="sd">        Lengths of the axes of the perturbation ellipsoid. Must all be</span>
+<span class="sd">        non-negative.</span>
+<span class="sd">    discretization_scheme: :class:`~.constraint.DiscretizationType`</span>
+<span class="sd">        Constraint discretization scheme to use.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cnst</span><span class="p">,</span> <span class="n">ellipsoid_axes_lengths</span><span class="p">,</span> <span class="n">discretization_scheme</span><span class="o">=</span><span class="n">DiscretizationType</span><span class="o">.</span><span class="n">Collocation</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">RobustCanonicalLinearConstraint</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dof</span> <span class="o">=</span> <span class="n">cnst</span><span class="o">.</span><span class="n">get_dof</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">cnst</span><span class="o">.</span><span class="n">get_constraint_type</span><span class="p">()</span> <span class="o">==</span> <span class="n">ConstraintType</span><span class="o">.</span><span class="n">CanonicalLinear</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_discretization_type</span><span class="p">(</span><span class="n">discretization_scheme</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="n">ellipsoid_axes_lengths</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Perturbation must be non-negative. Input </span><span class="si">{:}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ellipsoid_axes_lengths</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_constraint</span> <span class="o">=</span> <span class="n">cnst</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ellipsoid_axes_lengths</span> <span class="o">=</span> <span class="n">ellipsoid_axes_lengths</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_format_string</span> <span class="o">+=</span> <span class="s2">&quot;    Robust constraint generated from a canonical linear constraint</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+    <span class="k">def</span> <span class="nf">compute_constraint_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">gridpoints</span><span class="p">,</span> <span class="n">scaling</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_constraint</span><span class="o">.</span><span class="n">set_discretization_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">discretization_type</span><span class="p">)</span>
+        <span class="n">a_</span><span class="p">,</span> <span class="n">b_</span><span class="p">,</span> <span class="n">c_</span><span class="p">,</span> <span class="n">F_</span><span class="p">,</span> <span class="n">g_</span><span class="p">,</span> <span class="n">u_</span><span class="p">,</span> <span class="n">x_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_constraint</span><span class="o">.</span><span class="n">compute_constraint_params</span><span class="p">(</span>
+            <span class="n">path</span><span class="p">,</span> <span class="n">gridpoints</span><span class="p">,</span> <span class="n">scaling</span><span class="p">)</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">gridpoints</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_constraint</span><span class="o">.</span><span class="n">identical</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">F_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># number of rows</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">F_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_constraint</span><span class="o">.</span><span class="n">identical</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">gridpoints</span><span class="p">)):</span>
+                <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">F_</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a_</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">F_</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">b_</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">F_</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">c_</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">-</span> <span class="n">g_</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">gridpoints</span><span class="p">)):</span>
+                <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">F_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a_</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">F_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">b_</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">F_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">c_</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">-</span> <span class="n">g_</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="n">P</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">d</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="n">diag_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ellipsoid_axes_lengths</span><span class="p">)</span>
+        <span class="n">P</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">diag_</span>
+        <span class="k">return</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">u_</span><span class="p">,</span> <span class="n">x_</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2018, Hung Pham.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+    <a href="https://github.com/hungpham2511/toppra" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>
