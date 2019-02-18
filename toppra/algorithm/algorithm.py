@@ -65,7 +65,7 @@ class ParameterizationAlgorithm(object):
         """
         raise NotImplementedError
 
-    def compute_trajectory(self, sd_start=0, sd_end=0, return_profile=False, bc_type='not-a-knot', return_data=False):
+    def compute_trajectory(self, sd_start=0, sd_end=0, return_profile=False, bc_type=None, return_data=False):
         """Compute the resulting joint trajectory and auxilliary trajectory.
 
         If parameterization fails, return a tuple of None(s).
@@ -111,6 +111,12 @@ class ParameterizationAlgorithm(object):
                 return None, None, (sdd_grid, sd_grid, v_grid, K)
             else:
                 return None, None
+
+        if bc_type is None:
+            if sd_start == 0 and sd_end == 0:
+                bc_type = "clamped"
+            else:
+                bc_type = "not-a-knot"
 
         # Gridpoint time instances
         t_grid = np.zeros(self._N + 1)
