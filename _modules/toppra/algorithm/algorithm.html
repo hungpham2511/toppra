@@ -160,7 +160,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-    <span class="k">def</span> <span class="nf">compute_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sd_start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sd_end</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">return_profile</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">bc_type</span><span class="o">=</span><span class="s1">&#39;not-a-knot&#39;</span><span class="p">,</span> <span class="n">return_data</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">compute_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sd_start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sd_end</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">return_profile</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">bc_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_data</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Compute the resulting joint trajectory and auxilliary trajectory.</span>
 
 <span class="sd">        If parameterization fails, return a tuple of None(s).</span>
@@ -206,6 +206,12 @@
                 <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">(</span><span class="n">sdd_grid</span><span class="p">,</span> <span class="n">sd_grid</span><span class="p">,</span> <span class="n">v_grid</span><span class="p">,</span> <span class="n">K</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">bc_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">sd_start</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">sd_end</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">bc_type</span> <span class="o">=</span> <span class="s2">&quot;clamped&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">bc_type</span> <span class="o">=</span> <span class="s2">&quot;not-a-knot&quot;</span>
 
         <span class="c1"># Gridpoint time instances</span>
         <span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
