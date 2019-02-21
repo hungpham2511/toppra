@@ -3,20 +3,21 @@ import numpy as np
 import yaml
 import re
 import pandas
+import tabulate
 
 import toppra
 import toppra.constraint as constraint
 import toppra.algorithm as algo
 
-# toppra.setup_logging(level="DEBUG")
-
-# NOTE: Select problems to test with this regex.
-problem_regex = ".*oa.*"
+import matplotlib.pyplot as plt
 
 
-def test_robustness_main():
+def test_robustness_main(request):
     """ Load problem suite based on regex, run test and report results.
     """
+    toppra.setup_logging(request.config.getoption("--loglevel"))
+    problem_regex = request.config.getoption("--robust_regex")
+    visualize = request.config.getoption("--visualize")
     # parse problems from a configuration file
     parsed_problems = []
     with open("tests/retime_robustness/problem_suite_1.yaml", "r") as f:
@@ -67,6 +68,23 @@ def test_robustness_main():
             instance.set_desired_duration(problem_data['desired_duration'])
 
         jnt_traj, aux_traj, data = instance.compute_trajectory(0, 0, return_data=True)
+        
+        if visualize:
+            _t = np.linspace(0, jnt_traj.get_duration(), 100)
+            fig, axs = plt.subplots(2, 2)
+            axs[0, 0].plot(data["K"][:, 0], c="C0")
+            axs[0, 0].plot(data["K"][:, 1], c="C0")
+            axs[0, 0].plot(data["sd"] ** 2, c="C1")
+            axs[0, 1].plot(_t, jnt_traj.eval(_t))
+            axs[1, 0].plot(_t, jnt_traj.evald(_t))
+            axs[1, 1].plot(_t, jnt_traj.evaldd(_t))
+
+            axs[0, 0].set_title("param")
+            axs[0, 1].set_title("jnt. pos.")
+            axs[1, 0].set_title("jnt. vel.")
+            axs[1, 1].set_title("jnt. acc.")
+            plt.show()
+            
 
         if jnt_traj is None:
             all_success = False
@@ -79,7 +97,9 @@ def test_robustness_main():
 
     # get all rows with status different from NaN, then reports other columns.
     result_df = parsed_problems_df[parsed_problems_df["status"].notna()][
-        ["status", "duration", "desired_duration", "name", "solver_wrapper", "nb_gridpoints", "problem_id"]]
-    print("\n")
-    print(result_df)
+        ["status", "duration", "desired_duration", "name", "solver_wrapper",
+         "nb_gridpoints", "problem_id"]]
+
+    print("Test summary\n")
+    print(tabulate.tabulate(result_df, result_df.columns))
     assert all_success, "Unable to solve some problems in the test suite"

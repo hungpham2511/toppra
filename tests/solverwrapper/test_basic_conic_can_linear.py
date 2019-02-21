@@ -8,7 +8,6 @@ import numpy as np
 import toppra
 import toppra.constraint as constraint
 
-toppra.setup_logging(level="DEBUG")
 
 try:
     import mosek

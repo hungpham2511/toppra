@@ -33,8 +33,23 @@ small_joint_2:
   desired_duration: [0]
   solver_wrapper: ['hotqpoases', 'seidel']
 
-
 small_joint_3:
+  waypoints:
+    - [0, 0, 0]
+    - [0, 1e-7, 0]
+    - [0, 0, 0]
+
+  ss_waypoints: [0, 1]
+  nb_gridpoints: [51, 101]
+  vlim: [100, 1000, 100]
+  alim: [100, 1000, 100]
+
+  desired_duration: [0]
+  solver_wrapper: ['hotqpoases', 'seidel']
+
+
+issue26:
+  remark: "From JadBadMobile. https://github.com/hungpham2511/toppra/issues/26"
   waypoints:
     - [-3.85929168e-04, -3.85929168e-04, -3.85929168e-04]
     - [-2.13610365e-04, -2.13610365e-04, -2.13610365e-04]

@@ -3,7 +3,8 @@ SUPERTINY = 1e-10
 TINY = 1e-8
 SMALL = 1e-5
 LARGE = 1000.0
-INFTY = 1e8
+VERYLARGE = 1e8
+INFTY = 1e16
 
 # Number of times xs[i] is lowered during the forward pass to
 # accomodate for numerical error from solvers.
@@ -15,8 +16,8 @@ MAXX = 10000  # Max limit for `x`
 MAXSD = 100   # square root of maxx
 
 # constraint creation
-JVEL_MAXSD = 10000   # max sd when creating joint velocity constraints
-JACC_MAXU = 1000000  # max u when creating joint acceleration constraint
+JVEL_MAXSD = 1e8   # max sd when creating joint velocity constraints
+JACC_MAXU = 1e16  # max u when creating joint acceleration constraint
 
 
 # solver wrapper related constants.

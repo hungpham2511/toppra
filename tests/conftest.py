@@ -13,3 +13,21 @@ def rave_env():
     env.Destroy()
     orpy.RaveDestroy()
 
+
+def pytest_addoption(parser):
+    parser.addoption(
+        "--loglevel", action="store", default="WARNING",
+        help="Set toppra loglevel during testing."
+    )
+
+    parser.addoption(
+        "--robust_regex", action="store", default=".*",
+        help="Regex to choose problems to test when running test_robustness_main.py. "
+             "Select '.*oa.*' to run only tests for hotqpoases."
+    )
+
+    parser.addoption(
+        "--visualize", action="store_true", default=False,
+        help="If True visualize test instance."
+    )
+

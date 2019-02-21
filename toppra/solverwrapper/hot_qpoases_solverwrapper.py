@@ -1,7 +1,7 @@
 from .solverwrapper import SolverWrapper
 import numpy as np
 from ..constraint import ConstraintType
-from ..constants import QPOASES_INFTY
+from ..constants import QPOASES_INFTY, TINY
 
 try:
     from qpoases import (PyOptions as Options, PyPrintLevel as PrintLevel,
@@ -12,8 +12,6 @@ except ImportError:
 import logging
 
 logger = logging.getLogger(__name__)
-
-eps = 1e-8  # Coefficient to check for qpoases tolerances TODO: shift this to constants.py
 
 
 class hotqpOASESSolverWrapper(SolverWrapper):
@@ -150,7 +148,7 @@ class hotqpOASESSolverWrapper(SolverWrapper):
                 self._h[1] = min(self._h[1], xbound[i, 1])
 
         # if x_min == x_max, do not solve the 2D linear program, instead, do a line search
-        if abs(x_min - x_max) < eps and H is None and self.get_no_vars() == 2:
+        if abs(x_min - x_max) < TINY and H is None and self.get_no_vars() == 2:
             logger.debug("x_min ({:f}) equals x_max ({:f})".format(x_min, x_max))
             u_min = - QPOASES_INFTY
             u_max = QPOASES_INFTY
@@ -160,7 +158,7 @@ class hotqpOASESSolverWrapper(SolverWrapper):
                 elif self._A[i, 0] < 0:
                     u_min = max(u_min, (self._hA[i] - self._A[i, 1] * x_min) / self._A[i, 0])
             if u_min > u_max:  # problem infeasible
-                return np.array([np.nan, np.nan])
+                logger.debug("u_min > u_max by {:f}. Might not be critical. Ignore if the difference is small.".format(u_min - u_max))
 
             if g[0] < 0:
                 return np.array([u_max, x_min + 2 * u_max * delta])
@@ -229,9 +227,9 @@ class hotqpOASESSolverWrapper(SolverWrapper):
                 return var * variable_scales
 
             # Check for constraint feasibility
-            success = (np.all(self._l <= var + eps) and np.all(var <= self._h + eps)
-                       and np.all(np.dot(self._A, var) <= self._hA + eps)
-                       and np.all(np.dot(self._A, var) >= self._lA - eps))
+            success = (np.all(self._l <= var + TINY) and np.all(var <= self._h + TINY)
+                       and np.all(np.dot(self._A, var) <= self._hA + TINY)
+                       and np.all(np.dot(self._A, var) >= self._lA - TINY))
             if not success:
                 # import ipdb; ipdb.set_trace()
                 logger.fatal("Hotstart fails but qpOASES does not report correctly. \n "
