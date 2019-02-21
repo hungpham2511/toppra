@@ -42,7 +42,8 @@ extensions = ['sphinx.ext.autodoc',
 intersphinx_mapping = {
     'urllib3': ('http://urllib3.readthedocs.org/en/latest', None),
     'python': ('http://docs.python.org/3', None),
-    "scipy": ('http://docs.scipy.org/doc/scipy/reference', None)
+    "scipy": ('http://docs.scipy.org/doc/scipy/reference', None),
+    'numpy': ('http://docs.scipy.org/doc/numpy/', None)
 }
 
 napoleon_google_docstring = False

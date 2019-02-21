@@ -77,12 +77,21 @@ TOPPRAsd (specific-duration)
 Solver Wrapper
 ----------------
 
-.. autoclass:: toppra.solverwrapper.hot_qpoases_solverwrapper.hotqpOASESSolverWrapper
-   :members:
-	       
-.. autoclass:: toppra.solverwrapper.cy_seidel_solverwrapper.seidelWrapper	       
+All computations in TOPP-RA algorithms are done by the linear and
+quadratic solvers, wrapped in solver wrappers.
+
+qpOASES (with hot-start)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: toppra.solverwrapper.hotqpOASESSolverWrapper
+   :members: close_solver, setup_solver, solve_stagewise_optim
+
+seidel
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: toppra.solverwrapper.seidelWrapper	       
    :members: solve_stagewise_optim
 
-.. autoclass:: toppra.solverwrapper.ecos_solverwrapper.ecosWrapper
+ecos
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: toppra.solverwrapper.ecosWrapper
    :members: solve_stagewise_optim
 	       
