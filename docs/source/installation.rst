@@ -94,12 +94,13 @@ following commands in the terminal
 Testing
 -------------------------------
 
-TOPP-RA makes use of :code:`pytest` and ``cvxpy`` for testing. Both
-can be installed from :code:`pip`.  To run all the tests, do:
+TOPP-RA test suites use :code:`pytest` for running unittests and
+:code:`cvxpy` to verify computational results. Both libraries can be
+installed from :code:`pip`.  To run all the tests, do:
 
 .. code-block:: sh
 
-   cd <toppra-dir>/tests/
+   cd <toppra-dir>/
    pytest -v
 
 
