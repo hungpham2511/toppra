@@ -4,6 +4,7 @@ import yaml
 import re
 import pandas
 import tabulate
+import time
 
 import toppra
 import toppra.constraint as constraint
@@ -50,6 +51,7 @@ def test_robustness_main(request):
     for row_index, problem_data in parsed_problems_df.iterrows():
         if re.match(problem_regex, problem_data['problem_id']) is None:
             continue
+        t0 = time.time()
         path = toppra.SplineInterpolator(
             problem_data['ss_waypoints'],
             problem_data['waypoints'])
@@ -58,6 +60,7 @@ def test_robustness_main(request):
         pc_vel = constraint.JointVelocityConstraint(vlim)
         pc_acc = constraint.JointAccelerationConstraint(
             alim, discretization_scheme=constraint.DiscretizationType.Interpolation)
+        t1 = time.time()
 
         if problem_data['desired_duration'] == 0:
             instance = algo.TOPPRA([pc_vel, pc_acc], path, gridpoints=problem_data['gridpoints'],
@@ -67,7 +70,9 @@ def test_robustness_main(request):
                                      solver_wrapper=problem_data['solver_wrapper'])
             instance.set_desired_duration(problem_data['desired_duration'])
 
+        t2 = time.time()
         jnt_traj, aux_traj, data = instance.compute_trajectory(0, 0, return_data=True)
+        t3 = time.time()
         
         if visualize:
             _t = np.linspace(0, jnt_traj.get_duration(), 100)
@@ -84,7 +89,6 @@ def test_robustness_main(request):
             axs[1, 0].set_title("jnt. vel.")
             axs[1, 1].set_title("jnt. acc.")
             plt.show()
-            
 
         if jnt_traj is None:
             all_success = False
@@ -94,11 +98,13 @@ def test_robustness_main(request):
             parsed_problems_df.loc[row_index, "status"] = "SUCCESS"
             parsed_problems_df.loc[row_index,
                                    "duration"] = jnt_traj.get_duration()
-
+        parsed_problems_df.loc[row_index, "t_init"] = (t1 - t0) * 1e3
+        parsed_problems_df.loc[row_index, "t_setup"] = (t2 - t1) * 1e3
+        parsed_problems_df.loc[row_index, "t_solve"] = (t3 - t2) * 1e3
     # get all rows with status different from NaN, then reports other columns.
     result_df = parsed_problems_df[parsed_problems_df["status"].notna()][
         ["status", "duration", "desired_duration", "name", "solver_wrapper",
-         "nb_gridpoints", "problem_id"]]
+         "nb_gridpoints", "problem_id", "t_init", "t_setup", "t_solve"]]
 
     print("Test summary\n")
     print(tabulate.tabulate(result_df, result_df.columns))
