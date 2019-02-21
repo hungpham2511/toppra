@@ -7,8 +7,6 @@ import toppra.constraint as constraint
 from toppra.solverwrapper.ecos_solverwrapper import ecosWrapper
 from toppra.solverwrapper.qpoases_solverwrapper import qpOASESSolverWrapper
 
-toppra.setup_logging(level="DEBUG")
-
 try:
     import mosek
     FOUND_MOSEK = True

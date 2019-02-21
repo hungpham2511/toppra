@@ -4,6 +4,7 @@ except:
     # Unable to find openrave
     FOUND_OPENRAVEPY = False
 import pytest
+import toppra
 
 
 @pytest.fixture(scope="session")
@@ -21,7 +22,7 @@ def pytest_addoption(parser):
     )
 
     parser.addoption(
-        "--robust_regex", action="store", default=".*",
+        "--robust_regex", action="store", default=".*oa.*",
         help="Regex to choose problems to test when running test_robustness_main.py. "
              "Select '.*oa.*' to run only tests for hotqpoases."
     )
@@ -31,3 +32,6 @@ def pytest_addoption(parser):
         help="If True visualize test instance."
     )
 
+
+def pytest_collection_modifyitems(config, items):
+    toppra.setup_logging(config.getoption("--loglevel"))
