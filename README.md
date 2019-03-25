@@ -37,7 +37,7 @@ python setup.py install --user
 
 Finally, install `toppra` with
 ``` sh
-git clone https://github.com/MobileManipulation/toppra.git
+git clone https://github.com/DexaiRobotics/toppra.git
 cd toppra/
 pip install -r requirements.txt --user
 python setup.py install --user
