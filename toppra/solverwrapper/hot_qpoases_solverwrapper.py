@@ -15,13 +15,15 @@ logger = logging.getLogger(__name__)
 
 
 class hotqpOASESSolverWrapper(SolverWrapper):
-    """A solver wrapper using `qpOASES`.
+    """`qpOASES` solver wrapper with hot-start.
 
     This wrapper takes advantage of the warm-start capability of the
     qpOASES quadratic programming solver. It uses two different
     qp solvers. One to solve for maximized controllable sets and one to
     solve for minimized controllable sets. The wrapper selects which solver
     to use by looking at the optimization direction.
+
+    This solver wrapper also scale data before invoking `qpOASES`.
 
     If the logger "toppra" is set to debug level, qpoases solvers are
     initialized with PrintLevel.HIGH. Otherwise, these are initialized
@@ -31,7 +33,7 @@ class hotqpOASESSolverWrapper(SolverWrapper):
 
     Parameters
     ----------
-    constraint_list: list of :class:`.Constraint`
+    constraint_list: :class:`.Constraint` []
         The constraints the robot is subjected to.
     path: :class:`.Interpolator`
         The geometric path.
@@ -71,6 +73,8 @@ class hotqpOASESSolverWrapper(SolverWrapper):
         self._h = np.ones(2) * QPOASES_INFTY
 
     def setup_solver(self):
+        """Initiate two internal solvers for warm-start.
+        """
         option = Options()
         if logger.getEffectiveLevel() == logging.DEBUG:
             # option.printLevel = PrintLevel.HIGH

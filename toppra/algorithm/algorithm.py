@@ -131,7 +131,8 @@ class ParameterizationAlgorithm(object):
             if delta_t < TINY:  # if a time increment is too small, skip.
                 skip_ent.append(i)
         t_grid = np.delete(t_grid, skip_ent)
-        gridpoints = np.delete(self.gridpoints, skip_ent)
+        scaling = self.gridpoints[-1] / self.path.duration
+        gridpoints = np.delete(self.gridpoints, skip_ent) / scaling
         q_grid = self.path.eval(gridpoints)
 
         traj_spline = SplineInterpolator(t_grid, q_grid, bc_type)
