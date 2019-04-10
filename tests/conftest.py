@@ -1,11 +1,5 @@
-try:
-    import openravepy as orpy
-except:
-    # Unable to find openrave
-    FOUND_OPENRAVEPY = False
-import pytest
 import toppra
-
+import pytest
 
 @pytest.fixture(scope="session")
 def rave_env():

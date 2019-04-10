@@ -6,23 +6,13 @@ canonical linear constraints. Wrapppers considered include:
 import pytest
 import numpy as np
 import numpy.testing as npt
-
 import toppra
 import toppra.constraint as constraint
+import cvxpy
+
+from ..testing_flags import FOUND_CXPY, FOUND_MOSEK, FOUND_OPENRAVEPY
 
 toppra.setup_logging(level="INFO")
-
-try:
-    import cvxpy
-    FOUND_CXPY = True
-except ImportError:
-    FOUND_CXPY = False
-
-try:
-    import mosek
-    FOUND_MOSEK = True
-except ImportError:
-    FOUND_MOSEK = False
 
 
 class RandomSecondOrderLinearConstraint(constraint.CanonicalLinearConstraint):

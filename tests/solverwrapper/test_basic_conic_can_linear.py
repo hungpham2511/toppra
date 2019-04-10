@@ -7,20 +7,11 @@ import pytest
 import numpy as np
 import toppra
 import toppra.constraint as constraint
+import cvxpy
+from ..testing_flags import FOUND_MOSEK
 
 
-try:
-    import mosek
-    FOUND_MOSEK = True
-except ImportError:
-    FOUND_MOSEK = False
-
-try:
-    import cvxpy
-    FOUND_CXPY = True
-except ImportError:
-    FOUND_CXPY = False
-
+@pytest.mark.skip(reason="Skip because it is hard to solve conic problems reliably.")
 @pytest.mark.parametrize("i", [0, 5, 9])
 @pytest.mark.parametrize("H", [None])
 @pytest.mark.parametrize("g", [np.array([0.2, -1]), np.array([0.5, 1]), np.array([2.0, 1])])
@@ -85,6 +76,8 @@ def test_vel_robust_accel(vel_accel_robustaccel, path, solver_name, i, H, g, x_i
     else:
         assert np.all(np.isnan(result))
 
+
+@pytest.mark.skip(reason="Skip because it is hard to solve conic problems reliably.")
 @pytest.mark.parametrize("i", [0, 5, 9])
 @pytest.mark.parametrize("H", [np.array([[1.5, 0], [0, 1.0]]), None])
 @pytest.mark.parametrize("g", [np.array([0.2, -1])])

@@ -7,18 +7,6 @@ import toppra.constraint as constraint
 from toppra.solverwrapper.ecos_solverwrapper import ecosWrapper
 from toppra.solverwrapper.qpoases_solverwrapper import qpOASESSolverWrapper
 
-try:
-    import mosek
-    FOUND_MOSEK = True
-except ImportError:
-    FOUND_MOSEK = False
-
-try:
-    import cvxpy
-    FOUND_CXPY = True
-except ImportError:
-    FOUND_CXPY = False
-
 
 @pytest.mark.parametrize("i", [0, 5, 9])
 @pytest.mark.parametrize("g", [np.array([0.2, -1]), np.array([0.5, 1]), np.array([2.0, 1])])
