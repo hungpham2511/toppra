@@ -1,5 +1,6 @@
 import toppra
 import pytest
+import openravepy as orpy
 
 @pytest.fixture(scope="session")
 def rave_env():

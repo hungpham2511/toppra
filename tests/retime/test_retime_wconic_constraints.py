@@ -5,18 +5,6 @@ import toppra.constraint as constraint
 
 toppra.setup_logging(level="INFO")
 
-try:
-    import mosek
-    FOUND_MOSEK = True
-except ImportError:
-    FOUND_MOSEK = False
-
-try:
-    import cvxpy
-    FOUND_CXPY = True
-except ImportError:
-    FOUND_CXPY = False
-
 
 @pytest.fixture(params=[(0, 0)])
 def vel_accel_robustaccel(request):
