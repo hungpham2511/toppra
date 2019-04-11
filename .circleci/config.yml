@@ -7,14 +7,7 @@ jobs:
         - /feat-*/
         - circleci
     docker:
-      # specify the version you desire here
-      # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
-      - image: circleci/python:3.6.1
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
+      - image: hungpham2511/toppra-dep:0.0.1
 
     working_directory: ~/repo
 
@@ -24,32 +17,34 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "requirements.txt" }}
+            - v1-dependencies-{{ checksum "requirements3.txt" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
       - run:
           name: install dependencies
           command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install -r requirements.txt
+            python3 -m venv toppra-venv
+            . toppra-venv/bin/activate
+            pip install -q -r requirements3.txt
 
       - save_cache:
           paths:
-            - ./venv
-          key: v1-dependencies-{{ checksum "requirements.txt" }}
+            - ./toppra-venv
+          key: v1-dependencies-{{ checksum "requirements3.txt" }}
 
-      # run tests!
-      # this example uses Django's built-in test-runner
-      # other common Python testing frameworks include pytest and nose
-      # https://pytest.org
-      # https://nose.readthedocs.io
+      # build install
       - run:
-          name: run tests
+          name: build and install
           command: |
             . venv/bin/activate
-            python manage.py test
+            python setup.py install
+
+      - run:
+          name: test
+          command: |
+            . venv/bin/activate
+            pytest -xv
 
       - store_artifacts:
           path: test-reports
