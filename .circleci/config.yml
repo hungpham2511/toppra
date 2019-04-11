@@ -37,13 +37,13 @@ jobs:
       - run:
           name: build and install
           command: |
-            . venv/bin/activate
-            python setup.py install
+            . toppra-venv/bin/activate
+            python setup.py develop
 
       - run:
           name: test
           command: |
-            . venv/bin/activate
+            . toppra-venv/bin/activate
             pytest -xv
 
       - store_artifacts:
