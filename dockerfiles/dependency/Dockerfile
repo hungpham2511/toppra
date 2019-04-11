@@ -42,6 +42,9 @@ RUN cd /usr/src \
     && make -j `nproc` && make install  \
     && rm -rf /usr/src/openrave-${RAVE_COMMIT}/build
 
+# Other deps
+RUN sudo apt-get install -y --no-install-recommends python-dev python3-dev
+
 # User
 ARG user=hung
 ARG group=toppra
