@@ -1,5 +1,6 @@
-numpy
 cython>=0.22.0
+PyYAML
+numpy
 scipy>0.18
 coloredlogs
 enum34
