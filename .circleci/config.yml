@@ -83,7 +83,6 @@ jobs:
             - ./venv
           key: v1-dependencies2-{{ checksum "requirements.txt" }}
 
-      # build install
       - run:
           name: build and install
           command: |
@@ -96,6 +95,13 @@ jobs:
             . venv/bin/activate
             export PYTHONPATH=$PYTHONPATH:`openrave-config --python-dir`
             pytest tests
+
+      - run:
+          name: lint
+          command: |
+            . venv/bin/activate
+            export PYTHONPATH=$PYTHONPATH:`openrave-config --python-dir`
+            make lint
 
       - store_artifacts:
           path: test-reports
