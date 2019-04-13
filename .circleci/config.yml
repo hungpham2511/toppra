@@ -75,6 +75,9 @@ jobs:
             pip install -q -r requirements.txt 
             # test deps
             pip install cvxpy==0.4.11 pytest pytest-cov pandas tabulate
+            # qpOAses
+            
+            git clone https://github.com/hungpham2511/qpOASES && cd qpOASES/ && mkdir bin && make && cd interfaces/python/ && python setup.py install
 
       - save_cache:
           paths:
@@ -93,7 +96,7 @@ jobs:
           command: |
             . venv/bin/activate
             export PYTHONPATH=$PYTHONPATH:`openrave-config --python-dir`
-            pytest -xv
+            pytest -xv tests
 
       - store_artifacts:
           path: test-reports
