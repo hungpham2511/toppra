@@ -1,7 +1,7 @@
 #!/bin/bash
 USER=hungpham2511
 IMAGE=toppra-dep
-VERSION=0.0.1
+VERSION=0.0.2
 
 echo "Building docker image: $USER/$IMAGE:$VERSION"
 docker build -t ${IMAGE} .

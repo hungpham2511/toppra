@@ -1,7 +1,7 @@
 FROM ubuntu:18.04
 MAINTAINER Hung Pham <hungpham2511@gmail.com>
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Install dependencies
 RUN rm -rf /var/lib/apt/lists/* && apt-get update  \
@@ -43,7 +43,8 @@ RUN cd /usr/src \
     && rm -rf /usr/src/openrave-${RAVE_COMMIT}/build
 
 # Other deps
-RUN sudo apt-get install -y --no-install-recommends python-dev python3-dev python3-venv
+RUN sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends python-dev python3-dev python3-venv python-tk
+# RUN sudo apt-get install -y --no-install-recommends python-dev python3-dev python3-venv
 
 # User
 ARG user=hung
