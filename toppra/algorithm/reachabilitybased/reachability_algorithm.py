@@ -341,3 +341,51 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
             return sdd_vec, sd_vec, v_vec, K
         else:
             return sdd_vec, sd_vec, v_vec
+
+
+    def _one_step_forward(self, i, L_current, feasible_set_next):
+        res = np.zeros(2)
+        if np.isnan(L_current).any() or i < 0 or i > self._N:
+            res[:] = np.nan
+            return res
+        nV = self.solver_wrapper.get_no_vars()
+        g_upper = np.zeros(nV)
+        deltas = self.solver_wrapper.get_deltas()[i-1]
+        g_upper[0] = - 2 * deltas
+        g_upper[1] = - 1
+
+        x_next_min = feasible_set_next[0]
+        x_next_max = feasible_set_next[1]
+
+        opt_1 = self.solver_wrapper.solve_stagewise_optim(i, None, g_upper, L_current[0], L_current[1], x_next_min, x_next_max)
+        x_opt_1 = opt_1[1]
+        u_opt_1 = opt_1[0]
+        x_upper = x_opt_1 + 2 * deltas * u_opt_1
+
+        opt_0 = self.solver_wrapper.solve_stagewise_optim(i, None, - g_upper, L_current[0], L_current[1], x_next_min, x_next_max)
+        x_opt_0 = opt_0[1]
+        u_opt_0 = opt_0[0]
+        x_lower = x_opt_0 + 2 * deltas * u_opt_0
+
+        res[:] = [x_lower, x_upper]
+        return res
+
+    def compute_reachable_sets(self, sdmin, sdmax):
+        assert sdmin <= sdmax and 0 <= sdmin
+        feasible_sets = self.compute_feasible_sets()
+        L = np.zeros((self._N + 1, 2))
+        L[0] = [sdmin ** 2, sdmax ** 2]
+        logger.debug("Start computing the reachable sets")
+        self.solver_wrapper.setup_solver()
+        for i in range(0, self._N):
+            L[i + 1] = self._one_step_forward(i, L[i], feasible_sets[i+1])
+            if L[i + 1, 0] < 0:
+                L[i + 1, 0] = 0
+            if np.isnan(L[i + 1]).any():
+                logger.warn("L[{:d}]={:}. Path not parametrizable.".format(i+1, L[i+1]))
+                return L
+            if logger.isEnabledFor(logging.DEBUG):
+                logger.debug("[Compute reachable sets] L_{:d}={:}".format(i+1, L[i+1]))
+        
+        self.solver_wrapper.close_solver()
+        return L
