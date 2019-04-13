@@ -2,16 +2,22 @@ from setuptools import setup, Extension
 from Cython.Distutils import build_ext
 from Cython.Build import cythonize
 import numpy as np
+import sys
 
 NAME = "toppra"
-VERSION = "0.3.0"
+VERSION = "0.2.2"
 DESCR = "An implementation of TOPP-RA (TOPP via Reachability Analysis) for time-parametrizing" \
         "trajectories for robots subject to kinematic (velocity and acceleration) and dynamic" \
         "(torque) constraints. Some other kinds of constraints are also supported."
 URL = "https://github.com/hungpham2511/toppra"
 
-with open("requirements.txt", "r") as f:
-    REQUIRES = [line.strip() for line in f if line.strip()]
+# requirements
+if sys.version[0] == '2':
+    with open("requirements.txt", "r") as f:
+        REQUIRES = [line.strip() for line in f if line.strip()]
+else:
+    with open("requirements3.txt", "r") as f:
+        REQUIRES = [line.strip() for line in f if line.strip()]
 
 AUTHOR = "Hung Pham"
 EMAIL = "hungpham2511@gmail.com"

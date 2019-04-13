@@ -1,0 +1,110 @@
+version: 2
+jobs:
+  test-python-3:
+    docker:
+      - image: hungpham2511/toppra-dep:0.0.2
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies3-{{ checksum "requirements3.txt" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies3-
+
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . toppra-venv/bin/activate
+             # main deps
+            pip install -q -r requirements3.txt
+            # test deps
+            pip install cvxpy pytest pytest-cov pandas tabulate
+
+      - save_cache:
+          paths:
+            - ./toppra-venv
+          key: v1-dependencies3-{{ checksum "requirements3.txt" }}
+
+      # build install
+      - run:
+          name: build and install
+          command: |
+            . venv/bin/activate
+            python setup.py develop
+
+      - run:
+          name: test
+          command: |
+            . venv/bin/activate
+            export PYTHONPATH=$PYTHONPATH:`openrave-config --python-dir`
+            pytest -xv
+
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports
+
+  test-python-2:
+    docker:
+      - image: hungpham2511/toppra-dep:0.0.2
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies2-{{ checksum "requirements.txt" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies2-
+
+      - run:
+          name: install dependencies
+          command: |
+            pip install virtualenv
+            python -m virtualenv venv
+            . venv/bin/activate
+            # main deps
+            pip install -r requirements.txt 
+            # test deps
+            pip install cvxpy==0.4.11 cvxopt pytest pytest-cov pandas tabulate
+            # qpOAses
+            git clone https://github.com/hungpham2511/qpOASES && cd qpOASES/ && mkdir bin && make && cd interfaces/python/ && python setup.py install
+
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-dependencies2-{{ checksum "requirements.txt" }}
+
+      # build install
+      - run:
+          name: build and install
+          command: |
+            . venv/bin/activate
+            python setup.py develop
+
+      - run:
+          name: test
+          command: |
+            . venv/bin/activate
+            export PYTHONPATH=$PYTHONPATH:`openrave-config --python-dir`
+            pytest tests
+
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports
+
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test-python-2
+      # - test-python-3
