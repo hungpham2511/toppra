@@ -12,7 +12,7 @@ except ImportError:
 @pytest.fixture(scope='module')
 def robot_fixture(rave_env):
     rave_env.Reset()
-    rave_env.Load("data/lab1.rave_env.xml")
+    rave_env.Load("data/lab1.env.xml")
     robot = rave_env.GetRobots()[0]
     manipulator = robot.GetManipulators()[0]
     robot.SetActiveDOFs(manipulator.GetArmIndices())
