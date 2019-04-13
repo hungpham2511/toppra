@@ -4,7 +4,7 @@ import numpy as np
 import numpy.testing as npt
 import toppra as ta
 import toppra.constraint as constraint
-from toppra.constants import TINY, JVEL_MAXSD
+from toppra.constants import TINY, JVEL_MAXSD, SMALL
 from scipy.interpolate import CubicSpline
 
 
@@ -67,15 +67,18 @@ class TestClass_JointVelocityConstraint(object):
                            qs[i] * sd >= vlim[:, 0],
                            sd >= 0, sd <= JVEL_MAXSD]
             prob = cvx.Problem(cvx.Maximize(sd), constraints)
-            prob.solve(solver=cvx.ECOS, abstol=1e-9)
-            xmax = sd.value ** 2
-
-            prob = cvx.Problem(cvx.Minimize(sd), constraints)
-            prob.solve(solver=cvx.ECOS, abstol=1e-9)
-            xmin = sd.value ** 2
+            try:
+                prob.solve(solver=cvx.ECOS, abstol=1e-9)
+                xmax = sd.value ** 2
+                
+                prob = cvx.Problem(cvx.Minimize(sd), constraints)
+                prob.solve(solver=cvx.ECOS, abstol=1e-9)
+                xmin = sd.value ** 2
+            except cvx.SolverError:
+                continue
 
             # 3. They should agree
-            npt.assert_allclose([xmin, xmax], xlimit[i], atol=TINY)
+            npt.assert_allclose([xmin, xmax], xlimit[i], atol=SMALL)
 
             # Assert non-negativity
             assert xlimit[i, 0] >= 0
@@ -123,16 +126,20 @@ def test_jnt_vel_varying_basic():
         constraints = [qs[i] * sd <= vlim[:, 1],
                        qs[i] * sd >= vlim[:, 0],
                        sd >= 0, sd <= JVEL_MAXSD]
-        prob = cvx.Problem(cvx.Maximize(sd), constraints)
-        prob.solve(solver=cvx.ECOS, abstol=1e-9)
-        xmax = sd.value ** 2
 
-        prob = cvx.Problem(cvx.Minimize(sd), constraints)
-        prob.solve(solver=cvx.ECOS, abstol=1e-9)
-        xmin = sd.value ** 2
+        try:
+            prob = cvx.Problem(cvx.Maximize(sd), constraints)
+            prob.solve(solver=cvx.ECOS, abstol=1e-9)
+            xmax = sd.value ** 2
+            
+            prob = cvx.Problem(cvx.Minimize(sd), constraints)
+            prob.solve(solver=cvx.ECOS, abstol=1e-9)
+            xmin = sd.value ** 2
+        except cvx.SolverError:
+            continue  # ECOS can't solve this problem.
 
         # 3. they should agree
-        npt.assert_allclose([xmin, xmax], xlimit[i], atol=TINY)
+        npt.assert_allclose([xmin, xmax], xlimit[i], atol=SMALL)
 
         # assert non-negativity
         assert xlimit[i, 0] >= 0

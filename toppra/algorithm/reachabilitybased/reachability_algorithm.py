@@ -54,28 +54,26 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
     """
     def __init__(self, constraint_list, path, gridpoints=None, solver_wrapper=None, scaling=1):
         super(ReachabilityAlgorithm, self).__init__(constraint_list, path, gridpoints=gridpoints)
-        # gridpoint check
+
+        # Handle gridpoints
         if gridpoints is None:
             gridpoints = np.linspace(0, path.get_duration(), 100)
+            logger.info("Automatically choose a gridpoint with 100 segments/stages, spaning the input path domain uniformly.")
         if path.get_path_interval()[0] != gridpoints[0]:
             logger.fatal("Manually supplied gridpoints does not start from 0.")
-            raise ValueError("Bad manually supplied gridpoints.")
+            raise ValueError("Bad input gridpoints.")
         if path.get_path_interval()[1] != gridpoints[-1]:
             logger.fatal("Manually supplied gridpoints have endpoint "
                          "different from input path duration.")
-            raise ValueError("Bad manually supplied gridpoints.")
-        self.gridpoints = np.array(gridpoints)  # Attr
+            raise ValueError("Bad input gridpoints.")
+        self.gridpoints = np.array(gridpoints)
         self._N = len(gridpoints) - 1  # Number of stages. Number of point is _N + 1
         for i in range(self._N):
-            assert gridpoints[i + 1] > gridpoints[i]
+            if gridpoints[i + 1] <= gridpoints[i]:
+                logger.fatal("Input gridpoints are not monotonically increasing.")
+                raise ValueError("Bad input gridpoints.")
 
-        # Check for conic constraints
-        has_conic = False
-        for c in constraint_list:
-            if c.get_constraint_type() == ConstraintType.CanonicalConic:
-                has_conic = True
-
-        # path scaling for numerical stability
+        # path scaling (for numerical stability)
         if scaling < 0:  # automatic scaling factor selection
             # sample a few gradient and compute the average derivatives
             qs_sam = path.evald(np.linspace(0, 1, 5) * path.get_duration())
@@ -84,14 +82,19 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
             logger.info("[auto-scaling] Average path derivative: {:}".format(qs_average))
             logger.info("[auto-scaling] Selected scaling factor: {:}".format(scaling))
         else:
-            logger.info("Scaling factor: {:f}".format(
-                scaling
-            ))
+            logger.info("Scaling factor: {:f}".format(scaling))
+
         # NOTE: Scaling `gridpoints` making the two endpoints different from the domain of the given path
         # signal to the lower level solver wrapper that it has to scale the problem. The solver
         # wrapper will simply use
         # scaling = self.gridpoints[-1] / path.duration
         self.gridpoints = self.gridpoints * scaling
+
+        # Check for conic constraints
+        has_conic = False
+        for c in constraint_list:
+            if c.get_constraint_type() == ConstraintType.CanonicalConic:
+                has_conic = True
 
         # Select solver wrapper automatically
         if solver_wrapper is None:
@@ -101,11 +104,12 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
             else:
                 solver_wrapper = "qpOASES"
             logger.debug("Select solver {:}".format(solver_wrapper))
+
+        # Check solver-wrapper suitability
+        if has_conic:
+            assert solver_wrapper.lower() in ['cvxpy', 'ecos'], "Problem has conic constraints, solver {:} is not suitable".format(solver_wrapper)
         else:
-            if has_conic:
-                assert solver_wrapper.lower() in ['cvxpy', 'ecos'], "Problem has conic constraints, solver {:} is not suitable".format(solver_wrapper)
-            else:
-                assert solver_wrapper.lower() in ['cvxpy', 'qpoases', 'ecos', 'hotqpoases', 'seidel'], "Solver {:} not found".format(solver_wrapper)
+            assert solver_wrapper.lower() in ['cvxpy', 'qpoases', 'ecos', 'hotqpoases', 'seidel'], "Solver {:} not found".format(solver_wrapper)
 
         if solver_wrapper.lower() == "cvxpy":
             from toppra.solverwrapper.cvxpy_solverwrapper import cvxpyWrapper
@@ -259,7 +263,6 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         K: array
             Shape (N+1, 2). Return the controllable set if
             `return_data` is True.
-
         """
         assert sd_end >= 0 and sd_start >= 0, "Path velocities must be positive"
         K = self.compute_controllable_sets(sd_end, sd_end)

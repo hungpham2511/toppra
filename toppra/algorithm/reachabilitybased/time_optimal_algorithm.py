@@ -26,13 +26,11 @@ class TOPPRA(ReachabilityAlgorithm):
 
     Notes
     -----
-    In addition to the input constraints, there might be additional
-    constraints on the solutions. These constraints usually come from
-    the solver wrapper. Therefore, don't be suprise if different
-    parametrizations are returned for different solver
+    In addition to the given constraints, there are additional
+    constraints on the solutions enforced by the solver-warpper.
+    Therefore, different parametrizations are returned for different solver
     wrappers. However, the different should be very small, especially
     for well-conditioned problems.
-
     """
 
     def _forward_step(self, i, x, K_next):

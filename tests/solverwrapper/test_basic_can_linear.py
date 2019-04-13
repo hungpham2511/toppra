@@ -6,23 +6,13 @@ canonical linear constraints. Wrapppers considered include:
 import pytest
 import numpy as np
 import numpy.testing as npt
-
 import toppra
 import toppra.constraint as constraint
+import cvxpy
+
+from ..testing_flags import FOUND_CXPY, FOUND_MOSEK, FOUND_OPENRAVEPY
 
 toppra.setup_logging(level="INFO")
-
-try:
-    import cvxpy
-    FOUND_CXPY = True
-except ImportError:
-    FOUND_CXPY = False
-
-try:
-    import mosek
-    FOUND_MOSEK = True
-except ImportError:
-    FOUND_MOSEK = False
 
 
 class RandomSecondOrderLinearConstraint(constraint.CanonicalLinearConstraint):
@@ -96,12 +86,13 @@ def basic_init_fixture(request):
 @pytest.mark.parametrize("g", [np.array([0.2, -1]), np.array([0.5, 1]), np.array([2.0, 1])])
 @pytest.mark.parametrize("x_ineq", [(-1, 1), (0.2, 0.2), (0.4, 0.3), (np.nan, np.nan)])
 @pytest.mark.skipif(not FOUND_CXPY, reason="This test requires cvxpy to validate results.")
-def test_basic_init(basic_init_fixture, solver_name, i, H, g, x_ineq):
-    """ A basic test case for wrappers.
+def test_basic_correctness(basic_init_fixture, solver_name, i, H, g, x_ineq):
+    """Basic test case for solver wrappers.
 
-    Notice that the input fixture `basic_init_fixture` is known to have two constraints,
-    one velocity and one acceleration. Hence, in this test, I directly formulate
-    an optimization with cvxpy to test the result.
+    The input fixture `basic_init_fixture` is known to have two
+    constraints, one velocity and one acceleration. Hence, in this
+    test, I directly formulate an optimization with cvxpy and compare
+    the result with the result obtained from the solver wrapper.
 
     Parameters
     ----------
@@ -136,7 +127,7 @@ def test_basic_init(basic_init_fixture, solver_name, i, H, g, x_ineq):
     solver.setup_solver()
     result_ = solver.solve_stagewise_optim(i - 2, H, g, xmin, xmax, xnext_min, xnext_max)
     result_ = solver.solve_stagewise_optim(i - 1, H, g, xmin, xmax, xnext_min, xnext_max)
-    result = solver.solve_stagewise_optim(i, H, g, xmin, xmax, xnext_min, xnext_max)
+    solverwrapper_result = solver.solve_stagewise_optim(i, H, g, xmin, xmax, xnext_min, xnext_max)
     solver.close_solver()
 
     # Results from cvxpy, used as the actual, desired values
@@ -167,11 +158,11 @@ def test_basic_init(basic_init_fixture, solver_name, i, H, g, x_ineq):
     problem = cvxpy.Problem(objective, cvxpy_constraints)
     problem.solve(verbose=True)  # test with the same solver as cvxpywrapper
     if problem.status == "optimal":
-        actual = np.array(ux.value).flatten()
-        result = np.array(result).flatten()
-        npt.assert_allclose(result, actual, atol=5e-3, rtol=1e-5)  # Very bad accuracy? why?
+        cvxpy_result = np.array(ux.value).flatten()
+        solverwrapper_result = np.array(solverwrapper_result).flatten()
+        npt.assert_allclose(solverwrapper_result, cvxpy_result, atol=5e-2, rtol=1e-5)  # Very bad accuracy? why?
     else:
-        assert np.all(np.isnan(result))
+        assert np.all(np.isnan(solverwrapper_result))
 
 
 @pytest.mark.parametrize("solver_name", ['cvxpy', 'qpOASES', 'ecos', 'hotqpOASES', 'seidel'])

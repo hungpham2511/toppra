@@ -4,11 +4,12 @@ from Cython.Build import cythonize
 import numpy as np
 
 NAME = "toppra"
-VERSION = "0.2"
+VERSION = "0.3.0"
 DESCR = "An implementation of TOPP-RA (TOPP via Reachability Analysis) for time-parametrizing" \
         "trajectories for robots subject to kinematic (velocity and acceleration) and dynamic" \
         "(torque) constraints. Some other kinds of constraints are also supported."
 URL = "https://github.com/hungpham2511/toppra"
+
 with open("requirements.txt", "r") as f:
     REQUIRES = [line.strip() for line in f if line.strip()]
 

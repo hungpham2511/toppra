@@ -102,12 +102,11 @@ class ParameterizationAlgorithm(object):
             Return if return_data is True.
 
         """
-        sdd_grid, sd_grid, v_grid, K = self.compute_parameterization(
-            sd_start, sd_end, return_data=True)
+        sdd_grid, sd_grid, v_grid, K = self.compute_parameterization(sd_start, sd_end, return_data=True)
 
         # fail condition: sd_grid is None, or there is nan in sd_grid
         if sd_grid is None or np.isnan(sd_grid).any():
-            if return_profile:
+            if return_profile or return_data:
                 return None, None, (sdd_grid, sd_grid, v_grid, K)
             else:
                 return None, None
