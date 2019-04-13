@@ -24,7 +24,7 @@ jobs:
              # main deps
             pip install -q -r requirements3.txt
             # test deps
-            pip install cvxpy pytest pytest-cov pandas tabulate
+            pip install cvxpy cvxopt pytest pytest-cov pandas tabulate pylint pydocstyle pycodestyle
 
       - save_cache:
           paths:
@@ -74,7 +74,7 @@ jobs:
             # main deps
             pip install -r requirements.txt 
             # test deps
-            pip install cvxpy==0.4.11 cvxopt pytest pytest-cov pandas tabulate
+            pip install cvxpy==0.4.11 cvxopt pytest pytest-cov pandas tabulate pylint pydocstyle pycodestyle
             # qpOAses
             git clone https://github.com/hungpham2511/qpOASES && cd qpOASES/ && mkdir bin && make && cd interfaces/python/ && python setup.py install
 
