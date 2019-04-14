@@ -28,7 +28,7 @@ jobs:
 
       - save_cache:
           paths:
-            - ./toppra-venv
+            - ./venv3
           key: v1-dependencies3-{{ checksum "requirements3.txt" }}
 
       # build install
