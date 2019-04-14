@@ -37,7 +37,7 @@ def test_wrong_dimension(coefficients_functions):
     A, B, C, cnst_F, cnst_g, path = coefficients_functions
     def inv_dyn(q, qd, qdd):
         return A(q).dot(qdd) + np.dot(qd.T, np.dot(B(q), qd)) + C(q)
-    constraint = toppra.constraint.CanonicalLinearSecondOrderConstraint(inv_dyn, cnst_F, cnst_g, dof=2)
+    constraint = toppra.constraint.SecondOrderConstraint(inv_dyn, cnst_F, cnst_g, dof=2)
     path_wrongdim = toppra.SplineInterpolator(np.linspace(0, 1, 5), np.random.randn(5, 10))
     with pytest.raises(AssertionError) as e_info:
         constraint.compute_constraint_params(path_wrongdim, np.r_[0, 0.5, 1], 1.0)
@@ -54,7 +54,7 @@ def test_assemble_ABCFg(coefficients_functions):
 
     def inv_dyn(q, qd, qdd):
         return A(q).dot(qdd) + np.dot(qd.T, np.dot(B(q), qd)) + C(q)
-    constraint = toppra.constraint.CanonicalLinearSecondOrderConstraint(inv_dyn, cnst_F, cnst_g, dof=2)
+    constraint = toppra.constraint.SecondOrderConstraint(inv_dyn, cnst_F, cnst_g, dof=2)
     constraint.set_discretization_type(0)
     a, b, c, F, g, _, _ = constraint.compute_constraint_params(
         path, np.linspace(0, path.get_duration(), 10), 1.0)

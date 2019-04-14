@@ -1,12 +1,15 @@
 import numpy as np
 import pytest
+import toppra
 from ..testing_utils import IMPORT_OPENRAVEPY, IMPORT_OPENRAVEPY_MSG
+
+if IMPORT_OPENRAVEPY:
+    import openravepy as orpy
 
 
 @pytest.fixture(scope='module')
 def env():
     """Simple openrave environment."""
-    import openravepy as orpy
     rave_env = orpy.Environment()
     rave_env.Load('data/lab1.env.xml')
     rave_env.GetRobots()[0].SetActiveDOFs(range(7))

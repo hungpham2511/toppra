@@ -15,7 +15,7 @@ from ..testing_flags import FOUND_CXPY, FOUND_MOSEK, FOUND_OPENRAVEPY
 toppra.setup_logging(level="INFO")
 
 
-class RandomSecondOrderLinearConstraint(constraint.CanonicalLinearConstraint):
+class RandomSecondOrderLinearConstraint(constraint.LinearConstraint):
     """A random Second-Order non-identical constraint.
 
     This contraint is defined solely for testing purposes. It accepts

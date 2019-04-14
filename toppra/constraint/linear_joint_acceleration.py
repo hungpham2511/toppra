@@ -1,9 +1,9 @@
-from .canonical_linear import CanonicalLinearConstraint, canlinear_colloc_to_interpolate
+from .linear_constraint import LinearConstraint, canlinear_colloc_to_interpolate
 from ..constraint import DiscretizationType
 import numpy as np
 
 
-class JointAccelerationConstraint(CanonicalLinearConstraint):
+class JointAccelerationConstraint(LinearConstraint):
     """Joint Acceleration Constraint.
 
     A joint acceleration constraint is given by

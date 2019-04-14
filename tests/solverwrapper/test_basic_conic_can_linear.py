@@ -89,7 +89,7 @@ def test_compare_accel_robust_accel(vel_accel_robustaccel, path, solver_name, i,
     """
     vel_c, acc_c, _ = vel_accel_robustaccel
 
-    robust_acc_c = toppra.constraint.RobustCanonicalLinearConstraint(
+    robust_acc_c = toppra.constraint.RobustLinearConstraint(
         acc_c, [0, 0, 0], discretization_scheme=acc_c.get_discretization_type())
     path_dist = np.linspace(0, path.get_duration(), 10)
 

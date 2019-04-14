@@ -1,6 +1,6 @@
 from .interpolator import RaveTrajectoryWrapper, SplineInterpolator
 from .constraint import JointAccelerationConstraint, JointVelocityConstraint, \
-    DiscretizationType, CanonicalLinearSecondOrderConstraint
+    DiscretizationType, SecondOrderConstraint
 from .algorithm import TOPPRA
 import numpy as np
 import logging
@@ -164,6 +164,6 @@ def create_rave_torque_path_constraint(
 
     def cnst_g(q): return g
 
-    cnst = CanonicalLinearSecondOrderConstraint(inv_dyn, cnst_F, cnst_g, dof=robot.GetActiveDOF(),
-                                                discretization_scheme=discretization_scheme)
+    cnst = SecondOrderConstraint(inv_dyn, cnst_F, cnst_g, dof=robot.GetActiveDOF(),
+                                 discretization_scheme=discretization_scheme)
     return cnst
