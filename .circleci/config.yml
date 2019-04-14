@@ -74,7 +74,7 @@ jobs:
             # main deps
             pip install -r requirements.txt 
             # test deps
-            pip install cvxpy==0.4.11 cvxopt pytest pytest-cov pandas tabulate pylint pydocstyle pycodestyle
+            pip install cvxpy==0.4.11 cvxopt pytest pytest-cov pandas tabulate pylint pydocstyle pycodestyle pathlib2
             # qpOAses
             git clone https://github.com/hungpham2511/qpOASES && cd qpOASES/ && mkdir bin && make && cd interfaces/python/ && python setup.py install
 

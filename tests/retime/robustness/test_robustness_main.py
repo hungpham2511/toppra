@@ -5,7 +5,10 @@ import re
 import pandas
 import tabulate
 import time
-import pathlib2
+try:
+    import pathlib
+except ImportError:
+    import pathlib2 as pathlib
 
 import toppra
 import toppra.constraint as constraint
@@ -22,7 +25,7 @@ def test_robustness_main(request):
     visualize = request.config.getoption("--visualize")
     # parse problems from a configuration file
     parsed_problems = []
-    path = pathlib2.Path(__file__)
+    path = pathlib.Path(__file__)
     path = path / '../problem_suite_1.yaml'
     problem_dict = yaml.load(path.resolve().read_text())
     for key in problem_dict:
