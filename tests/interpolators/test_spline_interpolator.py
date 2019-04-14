@@ -2,15 +2,12 @@ import numpy as np
 import numpy.testing as npt
 import pytest
 from toppra import SplineInterpolator
-try:
-    import openravepy as orpy
-    FOUND_OPENRAVE = True
-except ImportError:
-    FOUND_OPENRAVE = False
+from ..testing_utils import IMPORT_OPENRAVEPY, IMPORT_OPENRAVEPY_MSG
 
 
 @pytest.fixture(scope='module')
 def robot_fixture(rave_env):
+    import openravepy as orpy
     rave_env.Reset()
     rave_env.Load("data/lab1.env.xml")
     robot = rave_env.GetRobots()[0]
@@ -82,7 +79,7 @@ def test_2waypoints(xs, ys, yd):
     npt.assert_allclose(pi.evaldd(0), np.zeros_like(ys[0]))
 
 
-@pytest.mark.skipif(not FOUND_OPENRAVE, reason="Not found openrave installation")
+@pytest.mark.skipif(not IMPORT_OPENRAVEPY, reason=IMPORT_OPENRAVEPY_MSG)
 @pytest.mark.parametrize("ss_waypoints, waypoints", [
     [[0, 0.2, 0.5, 0.9],  [[0.377, -0.369,  1.042, -0.265, -0.35, -0.105, -0.74],
                            [1.131,  0.025,  0.778,  0.781,  0.543, -0.139,  0.222],

@@ -4,6 +4,7 @@ import numpy as np
 import toppra
 import toppra.constraint as constraint
 
+
 @pytest.fixture(params=[(0, 0)])
 def vel_accel_robustaccel(request):
     "Velocity + Acceleration + Robust Acceleration constraint"
