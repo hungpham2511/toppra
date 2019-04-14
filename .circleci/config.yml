@@ -44,7 +44,13 @@ jobs:
           command: |
             . venv3/bin/activate
             export PYTHONPATH=$PYTHONPATH:`openrave-config --python-dir`
-            pytest -xv
+            pytest tests -W ignore::PendingDeprecationWarning
+
+      - run:
+          name: lint
+          command: |
+            . venv3/bin/activate
+            make lint
 
       - store_artifacts:
           path: test-reports
