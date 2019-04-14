@@ -27,7 +27,7 @@ def path(request):
     yield path
 
 
-@pytest.mark.parametrize("solver_wrapper", ["cvxpy", "ecos"])
+@pytest.mark.parametrize("solver_wrapper", ["ecos"])
 def test_toppra_conic(vel_accel_robustaccel, path, solver_wrapper):
     vel_c, acc_c, ro_acc_c = vel_accel_robustaccel
     acc_c.set_discretization_type(1)

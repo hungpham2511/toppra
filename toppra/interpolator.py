@@ -6,10 +6,13 @@ import numpy as np
 from scipy.interpolate import UnivariateSpline, CubicSpline, PPoly
 import logging
 logger = logging.getLogger(__name__)
+
 try:
     import openravepy as orpy
-except ImportError:
-    logger.warn("Openravepy not found!")
+except ImportError as err:
+    logger.warning("Unable to import openravepy. Exception: %s" % err.args[0])
+except SyntaxError as err:
+    logger.warning("Unable to import openravepy. Exception: %s" % err.args[0])
 
 
 def normalize(ss):

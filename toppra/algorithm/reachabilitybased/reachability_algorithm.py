@@ -188,7 +188,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
             if K[i, 0] < 0:
                 K[i, 0] = 0
             if np.isnan(K[i]).any():
-                logger.warn("A numerical error occurs: The controllable set at step "
+                logger.warning("A numerical error occurs: The controllable set at step "
                             "[{:d} / {:d}] can't be computed.".format(i, self._N + 1))
                 return K
             if logger.isEnabledFor(logging.DEBUG):
@@ -267,7 +267,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         assert sd_end >= 0 and sd_start >= 0, "Path velocities must be positive"
         K = self.compute_controllable_sets(sd_end, sd_end)
         if np.isnan(K).any():
-            logger.warn("An error occurred when computing controllable velocities. "
+            logger.warning("An error occurred when computing controllable velocities. "
                         "The path is not controllable, or is badly conditioned.")
             if return_data:
                 return None, None, None, K
@@ -276,7 +276,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
 
         x_start = sd_start ** 2
         if x_start + SMALL < K[0, 0] or K[0, 1] + SMALL < x_start:
-            logger.warn("The initial velocity is not controllable. {:f} not in ({:f}, {:f})".format(
+            logger.warning("The initial velocity is not controllable. {:f} not in ({:f}, {:f})".format(
                 x_start, K[0, 0], K[0, 1]
             ))
             if return_data:
@@ -308,13 +308,13 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
                 if tries < MAX_TRIES:
                     xs[i] = max(xs[i] - TINY, 0.999 * xs[i])  # a slightly more aggressive reduction
                     tries += 1
-                    logger.warn(
+                    logger.warning(
                         "A numerical error occurs: the instance is controllable "
                         "but forward pass fails. Attempt to try again with x[i] "
                         "slightly reduced.\n"
                         "x[{:d}] reduced from {:.6f} to {:.6f}".format(i, xs[i] + SMALL, xs[i]))
                 else:
-                    logger.warn("Number of trials (to reduce xs[i]) reaches limits. "
+                    logger.warning("Number of trials (to reduce xs[i]) reaches limits. "
                                 "Compute parametrization fails!")
                     xs[i + 1:] = np.nan
                     break

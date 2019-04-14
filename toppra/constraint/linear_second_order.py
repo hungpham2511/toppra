@@ -35,7 +35,7 @@ class SecondOrderConstraint(LinearConstraint):
     """
 
     def __init__(self, inv_dyn, cnst_F, cnst_g, dof, discretization_scheme=DiscretizationType.Interpolation):
-        # type: ((np.array, np.array, np.array) -> np.ndarray)->None
+        # type: ((np.array, np.array, np.array) -> np.ndarray) -> None
         """Initialize the constraint.
 
         Parameters

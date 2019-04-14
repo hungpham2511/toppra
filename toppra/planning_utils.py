@@ -50,7 +50,7 @@ def retime_active_joints_kinematics(traj, robot, output_interpolator=False, vmul
         ss_waypoints = np.linspace(0, 1, len(traj))
         path = SplineInterpolator(ss_waypoints, traj, bc_type='natural')
     elif use_ravewrapper:
-        logger.warn("Use RaveTrajectoryWrapper. This might not work properly!")
+        logger.warning("Use RaveTrajectoryWrapper. This might not work properly!")
         path = RaveTrajectoryWrapper(traj, robot)
     elif isinstance(traj, SplineInterpolator):
         path = traj
@@ -108,7 +108,7 @@ def retime_active_joints_kinematics(traj, robot, output_interpolator=False, vmul
         (_t1 - _t0) * 1e3, (_t2 - _t1) * 1e3, (_t2 - _t0) * 1e3
     ))
     if traj_ra is None:
-        logger.warn("Retime fails.")
+        logger.warning("Retime fails.")
         traj_rave = None
     else:
         logger.debug("Retime successes!")

@@ -99,14 +99,15 @@ def test_random_constraints(seed):
                    low <= x, x <= high]
     obj = cvx.Maximize(v[0] * x[0] + v[1] * x[1] + v[2])
     prob = cvx.Problem(obj, constraints)
-    prob.solve()
+    prob.solve(solver='CVXOPT')
+
     # solve with the method to test and assert correctness
     data = seidel.solve_lp2d(v, a, b, c, low, high, active_c)
     res, optval, optvar, active_c = data
     if prob.status == "optimal":
         assert res == 1
-        np.testing.assert_allclose(optval, prob.value)
-        np.testing.assert_allclose(optvar, np.asarray(x.value).flatten())
+        np.testing.assert_allclose(optval, prob.value, atol=1e-6)
+        np.testing.assert_allclose(optvar, np.asarray(x.value).flatten(), atol=1e-6)
     elif prob.status == "infeasible":
         assert res == 0
     else:
