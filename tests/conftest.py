@@ -1,6 +1,13 @@
 import toppra
 import pytest
-import openravepy as orpy
+try:
+    import openravepy as orpy
+    IMPORT_OPENRAVE = True
+except ImportError as err:
+    IMPORT_OPENRAVE = False
+except SyntaxError as err:
+    IMPORT_OPENRAVE = False
+
 
 @pytest.fixture(scope="session")
 def rave_env():

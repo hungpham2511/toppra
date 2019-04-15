@@ -14,7 +14,7 @@ def vel_accel_robustaccel(request):
     alims = np.array([[-1, 1], [-1, 2], [-1, 4]], dtype=float)
     vel_cnst = constraint.JointVelocityConstraint(vlims)
     accl_cnst = constraint.JointAccelerationConstraint(alims, dtype_a)
-    robust_accl_cnst = constraint.RobustCanonicalLinearConstraint(
+    robust_accl_cnst = constraint.RobustLinearConstraint(
         accl_cnst, [1e-4, 1e-4, 5e-4], dtype_ra)
     yield vel_cnst, accl_cnst, robust_accl_cnst
 
@@ -27,7 +27,7 @@ def path(request):
     yield path
 
 
-@pytest.mark.parametrize("solver_wrapper", ["cvxpy", "ecos"])
+@pytest.mark.parametrize("solver_wrapper", ["ecos"])
 def test_toppra_conic(vel_accel_robustaccel, path, solver_wrapper):
     vel_c, acc_c, ro_acc_c = vel_accel_robustaccel
     acc_c.set_discretization_type(1)

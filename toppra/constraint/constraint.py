@@ -1,16 +1,18 @@
+"""Base class for all path parametrization contraints. """
 from enum import Enum
 import logging
 logger = logging.getLogger(__name__)
 
 
 class ConstraintType(Enum):
+    """Type of path parametrization constraint."""
     Unknown = -1
     CanonicalLinear = 0
     CanonicalConic = 1
 
 
 class DiscretizationType(Enum):
-    """Enum to mark different Discretization Scheme for constraint. 
+    """Enum to mark different Discretization Scheme for constraint.
 
     1. `Collocation`: smaller problem size, but lower accuracy.
     2. `Interplation`: larger problem size, but higher accuracy.
@@ -23,7 +25,7 @@ class DiscretizationType(Enum):
 
 
 class Constraint(object):
-    """ Base class for all parameterization constraints.
+    """Base class for all parameterization constraints.
 
     This class has two main functions: first, to tell its type and second, to produce
     the parameters given the geometric path and the gridpoints.

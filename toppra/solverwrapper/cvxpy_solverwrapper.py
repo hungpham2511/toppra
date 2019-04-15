@@ -27,6 +27,9 @@ class cvxpyWrapper(SolverWrapper):
     guarantee that the solution is not too large, in which case cvxpy
     can't handle very well.
 
+    `cvxpyWrapper` should not be used in production due to robustness
+    issue.
+
     Parameters
     ----------
     constraint_list: list of :class:`.Constraint`
@@ -116,7 +119,7 @@ class cvxpyWrapper(SolverWrapper):
         objective = cvxpy.Minimize(0.5 * cvxpy.quad_form(ux, H) + g * ux)
         problem = cvxpy.Problem(objective, constraints=cvxpy_constraints)
         try:
-            problem.solve(verbose=False, solver='ECOS')
+            problem.solve(verbose=False)
         except cvxpy.SolverError:
             # solve fail
             pass

@@ -1,52 +1,61 @@
-from .canonical_linear import CanonicalLinearConstraint, canlinear_colloc_to_interpolate
+from .linear_constraint import LinearConstraint, canlinear_colloc_to_interpolate
 from .constraint import DiscretizationType
 import numpy as np
 
 
-class CanonicalLinearSecondOrderConstraint(CanonicalLinearConstraint):
+class SecondOrderConstraint(LinearConstraint):
     """A class to represent Canonical Linear Generalized Second-order constraints.
-
-    Parameters
-    ----------
-    inv_dyn: (array, array, array) -> array
-        The "inverse dynamics" function that receives joint position, velocity and
-        acceleration as inputs and ouputs the "joint torque". See notes for more
-        details.
-    cnst_F: array -> array
-        Coefficient function. See notes for more details.
-    cnst_g: array -> array
-        Coefficient function. See notes for more details.
-    dof: int, optional
-        Dimension of joint position vectors. Required.
 
     Notes
     -----
     A Second Order Constraint can be given by the following formula:
 
     .. math::
-        A(q) \ddot q + \dot q^\\top B(q) \dot q + C(q) = w,
+        A(q) \ddot q + \dot q^\\top B(q) \dot q + C(q) + sign(qdot) * D(q) = w,
 
     where w is a vector that satisfies the polyhedral constraint:
 
     .. math::
         F(q) w \\leq g(q).
 
-    Notice that `inv_dyn(q, qd, qdd) = w` and that `cnsf_coeffs(q) =
-    F(q), g(q)`.
+    The functions `A, B, C, D` can represent respectively the
+    inertial, Corriolis, gravitational and dry friction term for robot
+    torque bound constraint.
 
     To evaluate the constraint on a geometric path `p(s)`, multiple
-    calls to `inv_dyn` and `const_coeff` are made. Specifically one
-    can derive the second-order equation as follows
+    calls to `inv_dyn` and `const_coeff` are made as follows:
 
     .. math::
-        A(q) p'(s) \ddot s + [A(q) p''(s) + p'(s)^\\top B(q) p'(s)] \dot s^2 + C(q) = w,
-        a(s) \ddot s + b(s) \dot s ^2 + c(s) = w
+        A(q) p'(s) \ddot s + [A(q) p''(s) + p'(s)^\\top B(q) p'(s)] \dot s^2 + C(q) + sign(p'(s)) * D(p(s)) = w,
+        a(s) \ddot s + b(s) \dot s ^2 + c(s) = w.
 
     To evaluate the coefficients a(s), b(s), c(s), inv_dyn is called
     repeatedly with appropriate arguments.
+
     """
+
     def __init__(self, inv_dyn, cnst_F, cnst_g, dof, discretization_scheme=DiscretizationType.Interpolation):
-        super(CanonicalLinearSecondOrderConstraint, self).__init__()
+        # type: ((np.array, np.array, np.array) -> np.ndarray) -> None
+        """Initialize the constraint.
+
+        Parameters
+        ----------
+        inv_dyn: (array, array, array) -> array
+            The "inverse dynamics" function that receives joint
+            position, velocity and acceleration as inputs and ouputs
+            the "joint torque". It is not necessary to supply each
+            individual component functions such as gravitational,
+            Coriolis, etc.
+
+        cnst_F: array -> array
+            Coefficient function. See notes for more details.
+        cnst_g: array -> array
+            Coefficient function. See notes for more details.
+        dof: int, optional
+            Dimension of joint position vectors. Required.
+
+        """
+        super(SecondOrderConstraint, self).__init__()
         self.set_discretization_type(discretization_scheme)
         self.inv_dyn = inv_dyn
         self.cnst_F = cnst_F

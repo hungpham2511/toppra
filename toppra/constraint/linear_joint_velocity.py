@@ -1,10 +1,10 @@
-from .canonical_linear import CanonicalLinearConstraint
+from .linear_constraint import LinearConstraint
 from toppra._CythonUtils import (_create_velocity_constraint,
                                  _create_velocity_constraint_varying)
 import numpy as np
 
 
-class JointVelocityConstraint(CanonicalLinearConstraint):
+class JointVelocityConstraint(LinearConstraint):
     """ A Joint Velocity Constraint class.
 
     Parameters
@@ -39,7 +39,7 @@ class JointVelocityConstraint(CanonicalLinearConstraint):
         return None, None, None, None, None, None, xbound
 
 
-class JointVelocityConstraintVarying(CanonicalLinearConstraint):
+class JointVelocityConstraintVarying(LinearConstraint):
     """A Joint Velocity Constraint class.
 
     This class handle velocity constraints that vary along the path.

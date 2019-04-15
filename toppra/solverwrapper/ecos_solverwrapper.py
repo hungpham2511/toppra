@@ -173,7 +173,7 @@ class ecosWrapper(SolverWrapper):
             success = True
         else:
             success = False
-            logger.warn("Optimization fails. Result dictionary: \n {:}".format(result))
+            logger.warning("Optimization fails. Result dictionary: \n {:}".format(result))
 
         ux_opt = np.zeros(2)
         if success:

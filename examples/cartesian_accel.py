@@ -64,7 +64,7 @@ def main():
         return F_q
     def g(q):
         return g_q
-    pc_cart_acc = constraint.CanonicalLinearSecondOrderConstraint(
+    pc_cart_acc = constraint.SecondOrderConstraint(
         inverse_dynamics, F, g, dof=7)
     # cartesin accel finishes
 
