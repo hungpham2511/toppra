@@ -4,27 +4,37 @@ import numpy as np
 
 
 class JointAccelerationConstraint(CanonicalLinearConstraint):
-    """ A Joint Acceleration Constraint class.
+    """Joint Acceleration Constraint.
 
-    Joint acceleration constraint is given by
+    A joint acceleration constraint is given by
 
     .. math ::
-                qdd_{min} \leq q'(s[i]) u[i] + q''(s[i]) x[i] \leq qdd_{max}
+
+                \ddot{\mathbf{q}}_{min} & \leq \ddot{\mathbf q}                             &\leq \ddot{\mathbf{q}}_{max} \\\\
+                \ddot{\mathbf{q}}_{min} & \leq \mathbf{q}'(s_i) u_i + \mathbf{q}''(s_i) x_i &\leq \ddot{\mathbf{q}}_{max}
+
+    where :math:`u_i, x_i` are respectively the path acceleration and
+    path velocity square at :math:`s_i`. For more detail see :ref:`derivationKinematics`.
+
+    Rearranging the above pair of vector inequalities into the form
+    required by :class:`CanonicalLinearConstraint`, we have:
+
+    - :code:`a[i]` := :math:`\mathbf q'(s_i)`
+    - :code:`b[i]` := :math:`\mathbf q''(s_i)`
+    - :code:`F` := :math:`[\mathbf{I}, -\mathbf I]^T`
+    - :code:`h` := :math:`[\ddot{\mathbf{q}}_{max}^T, -\ddot{\mathbf{q}}_{min}^T]^T`
 
     Parameters
     ----------
     alim: array
-        Shape (dof, 2). The lower and upper acceleration bounds of the j-th joint
-        are given by alim[j, 0] and alim[j, 1] respectively.
+        Shape (dof, 2). The lower and upper acceleration bounds of the
+        j-th joint are alim[j, 0] and alim[j, 1] respectively.
 
-    Notes
-    -----
-    The non-None constraint parameters output by this class are
+    discretization_scheme: :class:`.DiscretizationType`
+        Can be either Collocation (0) or Interpolation
+        (1). Interpolation gives more accurate results with slightly
+        higher computational cost.
 
-    - `a` := q'(s)
-    - `b` := q''(s)
-    - `F` := [I, -I]^T
-    - `b` := [qdd_max, -qdd_min]
     """
     def __init__(self, alim, discretization_scheme=DiscretizationType.Collocation):
         super(JointAccelerationConstraint, self).__init__()

@@ -9,7 +9,7 @@ except ImportError:
     OPENRAVEPY_AVAILABLE = False
 
 from ..constants import TINY
-from ..interpolator import SplineInterpolator
+from ..interpolator import SplineInterpolator, Interpolator
 
 import logging
 logger = logging.getLogger(__name__)
@@ -65,7 +65,7 @@ class ParameterizationAlgorithm(object):
         """
         raise NotImplementedError
 
-    def compute_trajectory(self, sd_start=0, sd_end=0, return_profile=False, bc_type='not-a-knot', return_data=False):
+    def compute_trajectory(self, sd_start=0, sd_end=0, return_profile=False, bc_type=None, return_data=False):
         """Compute the resulting joint trajectory and auxilliary trajectory.
 
         If parameterization fails, return a tuple of None(s).
@@ -88,10 +88,10 @@ class ParameterizationAlgorithm(object):
 
         Returns
         -------
-        :class:`Interpolator`
+        :class:`.Interpolator`
             Time-parameterized joint position trajectory. If unable to
             parameterize, return None.
-        :class:`Interpolator`
+        :class:`.Interpolator`
             Time-parameterized auxiliary variable trajectory. If
             unable to parameterize or if there is no auxiliary
             variable, return None.
@@ -102,15 +102,20 @@ class ParameterizationAlgorithm(object):
             Return if return_data is True.
 
         """
-        sdd_grid, sd_grid, v_grid, K = self.compute_parameterization(
-            sd_start, sd_end, return_data=True)
+        sdd_grid, sd_grid, v_grid, K = self.compute_parameterization(sd_start, sd_end, return_data=True)
 
         # fail condition: sd_grid is None, or there is nan in sd_grid
         if sd_grid is None or np.isnan(sd_grid).any():
-            if return_profile:
+            if return_profile or return_data:
                 return None, None, (sdd_grid, sd_grid, v_grid, K)
             else:
                 return None, None
+
+        if bc_type is None:
+            if sd_start == 0 and sd_end == 0:
+                bc_type = "clamped"
+            else:
+                bc_type = "not-a-knot"
 
         # Gridpoint time instances
         t_grid = np.zeros(self._N + 1)
@@ -126,7 +131,8 @@ class ParameterizationAlgorithm(object):
             if delta_t < TINY:  # if a time increment is too small, skip.
                 skip_ent.append(i)
         t_grid = np.delete(t_grid, skip_ent)
-        gridpoints = np.delete(self.gridpoints, skip_ent)
+        scaling = self.gridpoints[-1] / self.path.duration
+        gridpoints = np.delete(self.gridpoints, skip_ent) / scaling
         q_grid = self.path.eval(gridpoints)
 
         traj_spline = SplineInterpolator(t_grid, q_grid, bc_type)

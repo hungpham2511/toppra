@@ -11,18 +11,6 @@ import toppra.constraint as constraint
 
 toppra.setup_logging(level="INFO")
 
-try:
-    import mosek
-    FOUND_MOSEK = True
-except ImportError:
-    FOUND_MOSEK = False
-
-try:
-    import cvxpy
-    FOUND_CXPY = True
-except ImportError:
-    FOUND_CXPY = False
-
 
 @pytest.mark.parametrize("solver_wrapper", ["cvxpy", "qpoases", "hotqpoases", "seidel"])
 def test_toppra_linear(basic_constraints, basic_path, solver_wrapper):

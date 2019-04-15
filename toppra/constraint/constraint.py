@@ -77,5 +77,5 @@ class Constraint(object):
         else:
             raise "Discretization type: {:} not implemented!".format(t)
 
-    def compute_constraint_params(self, path, gridpoints):
+    def compute_constraint_params(self, path, gridpoints, scaling):
         raise NotImplementedError

@@ -4,32 +4,32 @@ from ...constraint import ConstraintType
 
 import numpy as np
 import logging
-from copy import deepcopy
 logger = logging.getLogger(__name__)
 
 
 class ReachabilityAlgorithm(ParameterizationAlgorithm):
-    """Base class for all Reachability Analysis-based parameterization algorithms.
-
+    """Base class for Reachability Analysis-based path parameterization algorithms.
 
     Parameters
     ----------
-    constraint_list: list of Constraint
+    constraint_list: List[:class:`~toppra.constraint.Constraint`]
+        List of constraints on the robot dynamics.
     path: Interpolator
-    gridpoints: (N+1,)array, optional
+        
+    gridpoints: np.ndarray, optional
+        Shape (N+1,). Gridpoints for discretization of the path position.
     solver_wrapper: str, optional
-        Name of solver to use. If leave to be None, will select the
-        most suitable solver wrapper.
+        Name of solver to use. If is None, select the most suitable wrapper.
     scaling: float, optional
-        Scale the problem instance as if the path's duration from [0,
-        s_end] to [0, s_end * scaling]. Note that the path is actually
-        kept unchanged; only the coefficients as evaluated is
-        modified. This is to make it easier on the user who wish to
+        Scale input path such that its position changes from [0, s_end] to [0, s_end * scaling].
+
+        Note that the path is unchanged; only the numerical coefficients evaluated.
+        This is to make it easier on the user who wish to
         implement an Interpolator class by herself (which she should
         do).
 
         The default value is 1.0, which means no scaling. Any positive
-        float is perfectly valid. However, one should attempt to
+        float is valid. However, one should attempt to
         choose a scaling factor that leads to unit velocity
         approximately. Choose -1 for automatic scaling.
 
@@ -51,44 +51,50 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
     - compute_controllable_sets
     - compute_reachable_sets
     - compute_feasible_sets
-
     """
     def __init__(self, constraint_list, path, gridpoints=None, solver_wrapper=None, scaling=1):
         super(ReachabilityAlgorithm, self).__init__(constraint_list, path, gridpoints=gridpoints)
-        # gridpoint check
+
+        # Handle gridpoints
         if gridpoints is None:
             gridpoints = np.linspace(0, path.get_duration(), 100)
+            logger.info("Automatically choose a gridpoint with 100 segments/stages, spaning the input path domain uniformly.")
         if path.get_path_interval()[0] != gridpoints[0]:
             logger.fatal("Manually supplied gridpoints does not start from 0.")
-            raise ValueError("Bad manually supplied gridpoints.")
+            raise ValueError("Bad input gridpoints.")
         if path.get_path_interval()[1] != gridpoints[-1]:
             logger.fatal("Manually supplied gridpoints have endpoint "
                          "different from input path duration.")
-            raise ValueError("Bad manually supplied gridpoints.")
-        self.gridpoints = np.array(gridpoints)  # Attr
+            raise ValueError("Bad input gridpoints.")
+        self.gridpoints = np.array(gridpoints)
         self._N = len(gridpoints) - 1  # Number of stages. Number of point is _N + 1
         for i in range(self._N):
-            assert gridpoints[i + 1] > gridpoints[i]
+            if gridpoints[i + 1] <= gridpoints[i]:
+                logger.fatal("Input gridpoints are not monotonically increasing.")
+                raise ValueError("Bad input gridpoints.")
+
+        # path scaling (for numerical stability)
+        if scaling < 0:  # automatic scaling factor selection
+            # sample a few gradient and compute the average derivatives
+            qs_sam = path.evald(np.linspace(0, 1, 5) * path.get_duration())
+            qs_average = np.sum(np.abs(qs_sam)) / path.get_dof() / 5
+            scaling = np.sqrt(qs_average)
+            logger.info("[auto-scaling] Average path derivative: {:}".format(qs_average))
+            logger.info("[auto-scaling] Selected scaling factor: {:}".format(scaling))
+        else:
+            logger.info("Scaling factor: {:f}".format(scaling))
+
+        # NOTE: Scaling `gridpoints` making the two endpoints different from the domain of the given path
+        # signal to the lower level solver wrapper that it has to scale the problem. The solver
+        # wrapper will simply use
+        # scaling = self.gridpoints[-1] / path.duration
+        self.gridpoints = self.gridpoints * scaling
 
         # Check for conic constraints
         has_conic = False
         for c in constraint_list:
             if c.get_constraint_type() == ConstraintType.CanonicalConic:
                 has_conic = True
-
-        # path scaling for numerical stability
-        if scaling < 0:  # automatic scaling factor selection
-            # sample a few gradient and compute the average derivatives
-            qs_sam = path.evald(np.linspace(0, 1, 5) * path.get_duration())
-            qs_average = np.sum(np.abs(qs_sam)) / path.get_dof() / 5
-            scaling = np.sqrt(qs_average)
-            logger.debug("[auto-scaling] Average path derivative: {:}".format(qs_average))
-            logger.debug("[auto-scaling] Selected Scaling factor: {:}".format(scaling))
-        # NOTE: by scaling the gridpoints, we indicate to the lower
-        # level solver wrapper that scaling is to be done. The solver
-        # wrapper will simply use
-        # scaling = self.gridpoints[-1] / path.duration
-        self.gridpoints = self.gridpoints * scaling
 
         # Select solver wrapper automatically
         if solver_wrapper is None:
@@ -98,11 +104,12 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
             else:
                 solver_wrapper = "qpOASES"
             logger.debug("Select solver {:}".format(solver_wrapper))
+
+        # Check solver-wrapper suitability
+        if has_conic:
+            assert solver_wrapper.lower() in ['cvxpy', 'ecos'], "Problem has conic constraints, solver {:} is not suitable".format(solver_wrapper)
         else:
-            if has_conic:
-                assert solver_wrapper.lower() in ['cvxpy', 'ecos'], "Problem has conic constraints, solver {:} is not suitable".format(solver_wrapper)
-            else:
-                assert solver_wrapper.lower() in ['cvxpy', 'qpoases', 'ecos', 'hotqpoases', 'seidel'], "Solver {:} not found".format(solver_wrapper)
+            assert solver_wrapper.lower() in ['cvxpy', 'qpoases', 'ecos', 'hotqpoases', 'seidel'], "Solver {:} not found".format(solver_wrapper)
 
         if solver_wrapper.lower() == "cvxpy":
             from toppra.solverwrapper.cvxpy_solverwrapper import cvxpyWrapper
@@ -127,10 +134,10 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
 
         Returns
         -------
-        X: (N+1,2)array,
-            X[i] contains the lower and upper bound of the feasible
-            squared path velocity at s[i].  If there is no feasible
-            state, X[i] equals (np.nan, np.nan).
+        X: array
+            Shape (N+1,2). X[i] contains the lower and upper bound of
+            the feasible squared path velocity at s[i].  If there is
+            no feasible state, X[i] equals (np.nan, np.nan).
 
         """
         logger.debug("Start computing the feasible sets")
@@ -166,9 +173,10 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
 
         Returns
         -------
-        K: (N+1,2)array
-            K[i] contains the upper and lower bounds of the set of
-            controllable squared velocities at position s[i].
+        K : array
+            Shape (N+1, 2). Element K[i] contains the squared upper
+            and lower controllable velocities at position s[i].
+
         """
         assert sdmin <= sdmax and 0 <= sdmin
         K = np.zeros((self._N + 1, 2))
@@ -179,22 +187,9 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
             K[i] = self._one_step(i, K[i + 1])
             if K[i, 0] < 0:
                 K[i, 0] = 0
-            # check for potential numerical stability issues
-            if K[i, 1] < 1e-4:
-                logger.warn("Badly conditioned problem. Controllable sets are too small "
-                            "K[{:d}] = {:}. ".format(i, K[i]))
-                logger.warn("Consider set `scaling` to -1 when initiating TOPPRA for automatic"
-                            " problem scaling.")
-            elif K[i, 1] > 1e4:
-                logger.warn("Badly conditioned problem. Controllable sets are too large "
-                            "K[{:d}] = {:}".format(i, K[i]))
-                logger.warn("Consider set `scaling` to -1 when initiating TOPPRA for automatic"
-                            " problem scaling.")
             if np.isnan(K[i]).any():
-                logger.warn("An numerical error occur. The controllable set at step "
-                            "[{:d}] can't be computed. Consider using solver wrapper "
-                            "[hotqpoases] or scaling the problem for better numerical "
-                            "stability.".format(i))
+                logger.warn("A numerical error occurs: The controllable set at step "
+                            "[{:d} / {:d}] can't be computed.".format(i, self._N + 1))
                 return K
             if logger.isEnabledFor(logging.DEBUG):
                 logger.debug("[Compute controllable sets] K_{:d}={:}".format(i, K[i]))
@@ -203,19 +198,22 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         return K
 
     def _one_step(self, i, K_next):
-        """ Perform the one-step operation.
+        """Perform the one-step operation.
 
         Parameters
         ----------
         i: int
             Stage index.
-        K_next: (2,)array
-            Two ends of the set of controllable path velocities at stage (i+1).
+        K_next: array
+            Shape(2,).Two ends of the set of controllable path
+            velocities at stage (i+1).
 
         Returns
         -------
-        res: (2,)array
-            Set of controllable squared path velocities K[i].
+        res: array
+            Shape (2,). Set of controllable squared path velocities
+            K[i].
+
         """
         res = np.zeros(2)
         if np.isnan(K_next).any() or i < 0 or i > self._N:
@@ -252,20 +250,25 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
 
         Returns
         -------
-        sdd_vec: (N,) array
-            Path accelerations. Double array. Will contain nan(s) if failed.
-        sd_vec: (N+1,) array
-            Path velocities. Double array. Will contain nan(s) if failed.
-        v_vec: (N,) array or None
-            Auxiliary variables.
-        K: (N+1, 2) array
-            Return the controllable set if `return_data` is True.
+        sdd_vec: array
+            Shape (N,). Path accelerations. Double array. Will contain
+            nan(s) if failed.
 
+        sd_vec: array
+            Shape (N+1,). Path velocities. Double array. Will contain nan(s) if failed.
+
+        v_vec: array or None
+            Shape (N,). Auxiliary variables.
+
+        K: array
+            Shape (N+1, 2). Return the controllable set if
+            `return_data` is True.
         """
         assert sd_end >= 0 and sd_start >= 0, "Path velocities must be positive"
         K = self.compute_controllable_sets(sd_end, sd_end)
         if np.isnan(K).any():
-            logger.warn("The set of controllable velocities at the beginning is empty!")
+            logger.warn("An error occurred when computing controllable velocities. "
+                        "The path is not controllable, or is badly conditioned.")
             if return_data:
                 return None, None, None, K
             else:
@@ -338,3 +341,51 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
             return sdd_vec, sd_vec, v_vec, K
         else:
             return sdd_vec, sd_vec, v_vec
+
+
+    def _one_step_forward(self, i, L_current, feasible_set_next):
+        res = np.zeros(2)
+        if np.isnan(L_current).any() or i < 0 or i > self._N:
+            res[:] = np.nan
+            return res
+        nV = self.solver_wrapper.get_no_vars()
+        g_upper = np.zeros(nV)
+        deltas = self.solver_wrapper.get_deltas()[i-1]
+        g_upper[0] = - 2 * deltas
+        g_upper[1] = - 1
+
+        x_next_min = feasible_set_next[0]
+        x_next_max = feasible_set_next[1]
+
+        opt_1 = self.solver_wrapper.solve_stagewise_optim(i, None, g_upper, L_current[0], L_current[1], x_next_min, x_next_max)
+        x_opt_1 = opt_1[1]
+        u_opt_1 = opt_1[0]
+        x_upper = x_opt_1 + 2 * deltas * u_opt_1
+
+        opt_0 = self.solver_wrapper.solve_stagewise_optim(i, None, - g_upper, L_current[0], L_current[1], x_next_min, x_next_max)
+        x_opt_0 = opt_0[1]
+        u_opt_0 = opt_0[0]
+        x_lower = x_opt_0 + 2 * deltas * u_opt_0
+
+        res[:] = [x_lower, x_upper]
+        return res
+
+    def compute_reachable_sets(self, sdmin, sdmax):
+        assert sdmin <= sdmax and 0 <= sdmin
+        feasible_sets = self.compute_feasible_sets()
+        L = np.zeros((self._N + 1, 2))
+        L[0] = [sdmin ** 2, sdmax ** 2]
+        logger.debug("Start computing the reachable sets")
+        self.solver_wrapper.setup_solver()
+        for i in range(0, self._N):
+            L[i + 1] = self._one_step_forward(i, L[i], feasible_sets[i+1])
+            if L[i + 1, 0] < 0:
+                L[i + 1, 0] = 0
+            if np.isnan(L[i + 1]).any():
+                logger.warn("L[{:d}]={:}. Path not parametrizable.".format(i+1, L[i+1]))
+                return L
+            if logger.isEnabledFor(logging.DEBUG):
+                logger.debug("[Compute reachable sets] L_{:d}={:}".format(i+1, L[i+1]))
+        
+        self.solver_wrapper.close_solver()
+        return L

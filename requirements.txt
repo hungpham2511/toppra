@@ -1,9 +1,7 @@
-numpy
 cython>=0.22.0
+PyYAML
+numpy
 scipy>0.18
 coloredlogs
 enum34
-cvxpy>=0.4.11, <1.0.0
-pytest
-pytest-cov
 matplotlib<3.0.0

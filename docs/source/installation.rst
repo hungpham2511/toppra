@@ -1,10 +1,12 @@
-Installation
-=================
+.. _installation:
 
-Core functionalities
+Installation instructions
+==========================
+
+Basic functionality
 --------------------------
 
-To install the core functionalities of TOPP-RA, simply do:
+To install the core functionality of TOPP-RA, simply do:
 
 .. code-block:: shell
 
@@ -13,7 +15,7 @@ To install the core functionalities of TOPP-RA, simply do:
    python setup.py install --user
 
 You can now use TOPP-RA to parametrize trajectories/paths subject to
-the robot kinematic limits as well as tool tip Catesian limits. Try a
+the robot kinematic limits as well as tool tip Cartesian limits. Try a
 basic example here: :doc:`tutorials`.
 
 .. note:: Generally, Python packages should be installed in a `virtual
@@ -41,15 +43,15 @@ a terminal:
    pip install cython
    python setup.py install --user
    
-Advanced functionalities
+Advanced functionality
 --------------------------------------
 
-In order to run some of the examples, it is necesssary to install
+In order to run some of the examples, it is necessary to install
 `openRAVE <https://github.com/rdiankov/openrave>`_. A good instruction
 for installing this library on Ubuntu 16.04 can be found `here
 <https://scaron.info/teaching/installing-openrave-on-ubuntu-16.04.html>`_.
 
-.. note:: The humanoid and redudantly-actuated torque examples are not
+.. note:: The humanoid and redundantly-actuated torque examples are not
           yet included in the current library. See tag ``v0.1`` if you
           want to run these examples.
 
@@ -76,7 +78,7 @@ for installing this library on Ubuntu 16.04 can be found `here
 Building docs
 ------------------------------
 
-The lastest documentation is available at
+The latest documentation is available at
 `<https://hungpham2511.github.io/toppra/>`_.
 
 To build and view the documentation, install `sphinx
@@ -92,12 +94,13 @@ following commands in the terminal
 Testing
 -------------------------------
 
-TOPP-RA makes use of :code:`pytest` and ``cvxpy`` for testing. Both
-can be installed from :code:`pip`.  To run all the tests, do:
+TOPP-RA test suites use :code:`pytest` for running unittests and
+:code:`cvxpy` to verify computational results. Both libraries can be
+installed from :code:`pip`.  To run all the tests, do:
 
 .. code-block:: sh
 
-   cd <toppra-dir>/tests/
+   cd <toppra-dir>/
    pytest -v
 
 

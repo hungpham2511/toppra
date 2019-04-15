@@ -35,13 +35,15 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.mathjax',
               'sphinx.ext.napoleon',
               'sphinx.ext.viewcode',
-              'sphinx.ext.intersphinx'
+              'sphinx.ext.intersphinx',
+              'nbsphinx'
 ]
  # Add mappings
 intersphinx_mapping = {
     'urllib3': ('http://urllib3.readthedocs.org/en/latest', None),
     'python': ('http://docs.python.org/3', None),
-    "scipy": ('http://docs.scipy.org/doc/scipy/reference', None)
+    "scipy": ('http://docs.scipy.org/doc/scipy/reference', None),
+    'numpy': ('http://docs.scipy.org/doc/numpy/', None)
 }
 
 napoleon_google_docstring = False
@@ -84,7 +86,8 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = []
+exclude_patterns = ['_build', '**.ipynb_checkpoints']
+
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
@@ -100,6 +103,7 @@ todo_include_todos = True
 # a list of builtin themes.
 #
 html_theme = 'alabaster'
+# html_theme = "sphinx_rtd_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -112,7 +116,11 @@ html_theme_options = {
     'github_type': 'star',
     'github_banner': True,
     'travis_button': True,
-    'description': 'A robotic motion planning library for path-parametrization'
+    'description': 'A robotic motion planning library for path-parametrization',
+    'fixed_sidebar': True,
+    "sidebar_width": "270px",
+    "page_width": "1240px",
+    "show_related": True
     }
 
 # Add any paths that contain custom static files (such as style sheets) here,

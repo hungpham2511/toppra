@@ -4,13 +4,13 @@ import numpy as np
 class SolverWrapper(object):
     """The base class for all solver wrappers.
 
-    Solver wrappers implement a core method needed by all
-    Reachability-based algorithms: The method
+    All SolverWrapper have to implement a core method needed by all
+    Reachability Analysis-based algorithms:
     `solve_stagewise_optim`. This methods solves a Linear/Quadratic
-    Program subject to linear constraints at a given stage, and
+    Program subject to linear constraints at the given stage, and
     possibly with additional auxiliary constraints.
 
-    Note that some solver wrappers only handle Linear Program while
+    Note that some SolverWrappers only handle Linear Program while
     some handle both.
 
     Certain solver wrappers need to be setup and close down before and
@@ -23,10 +23,10 @@ class SolverWrapper(object):
     Each solver wrapper should provide solver-specific constraint,
     such as ultimate bound the variable u, x. For some solvers such as
     ECOS, this is very important.
-    
+
     Attributes
     ----------
-    constraints : list of `Constraint`
+    constraints : :class:`toppra.Constraint` []
         Constraints on the robot system.
     path : Interpolator
         The geometric path to be time-parametrized.
@@ -89,11 +89,11 @@ class SolverWrapper(object):
         ----------
         i: int
             The stage index.
-        H: (d,d)array or None
-            The coefficient of the quadratic objective function. If is
-            None, neglect the quadratic term.
-        g: (d,)array
-            The linear term.
+        H: :class:`~numpy:numpy.ndarray` or None
+            Shape (d, d). The coefficient of the quadratic objective
+            function. If is None, set the quadratic term to zero.
+        g: :class:`~numpy:numpy.ndarray`
+            Shape (d,). The linear term.
         x_min: float
             If not specified, set to NaN.
         x_max: float
@@ -105,10 +105,10 @@ class SolverWrapper(object):
 
         Returns
         -------
-        double array, or list
-             If successes, return an array containing the optimal
-             variable.  Since NaN is also a valid double, this list
-             contains NaN if the optimization problem is infeasible.
+        double :class:`~numpy:numpy.ndarray`
+             If successes, return a double array containing the optimal
+             variable.  Otherwise return a array that contains `numpy.nan`.
+
         """
         raise NotImplementedError
 

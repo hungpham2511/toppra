@@ -11,7 +11,6 @@ cdef inline np.float64_t float64_min(
 cdef inline np.float64_t float64_abs(
     FLOAT_t a): return a if a > 0 else - a
 
-cdef float INFTY = 1e8
 cdef float MAXSD = JVEL_MAXSD  # Maximum allowable path velocity for velocity constraint
 
 cpdef _create_velocity_constraint(np.ndarray[double, ndim=2] qs,
