@@ -79,7 +79,6 @@ class JointTorqueConstraint(CanonicalLinearConstraint):
         I_dof = np.eye(dof)
         F = np.zeros((dof * 2, dof))
         g = np.zeros(dof * 2)
-        ubound = np.zeros((N + 1, 2))
         g[0:dof] = self.tau_lim[:, 1]
         g[dof:] = - self.tau_lim[:, 0]
         F[0:dof, :] = I_dof
