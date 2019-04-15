@@ -7,5 +7,3 @@ from .can_linear_second_order import CanonicalLinearSecondOrderConstraint, canli
 from .canonical_conic import RobustCanonicalLinearConstraint
 from .canonical_linear import CanonicalLinearConstraint
 from .joint_torque import JointTorqueConstraint
-
-
