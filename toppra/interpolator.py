@@ -2,7 +2,7 @@
 
 """
 import logging
-
+import warnings
 import numpy as np
 from scipy.interpolate import UnivariateSpline, CubicSpline, PPoly
 
@@ -57,10 +57,7 @@ def _find_left_index(gridpoints, s):
 class Interpolator(object):
     """Abstract class for interpolators."""
     def __init__(self):
-        self.dof = None
-        # Note: do not use this attribute directly, use get_duration
-        # method instead.
-        self.duration = None
+        pass
 
     def get_dof(self):
         # type: () -> int
@@ -71,17 +68,16 @@ class Interpolator(object):
         out:
             Degree-of-freedom of the path.
         """
-        return self.dof
+        raise NotImplementedError
 
-    def get_duration(self):
-        """Return the duration of the path.
+    @property
+    def duration(self):
+        """Return the duration of the path."""
+        raise NotImplementedError
 
-        Returns
-        -------
-        out: float
-            Path duration.
-
-        """
+    @property
+    def dof(self):
+        """Return the degrees-of-freedom of the path."""
         raise NotImplementedError
 
     def get_path_interval(self):
@@ -179,7 +175,7 @@ class RaveTrajectoryWrapper(Interpolator):
         super(RaveTrajectoryWrapper, self).__init__()
         self.traj = traj  #: init
         self.spec = traj.GetConfigurationSpecification()
-        self.dof = robot.GetActiveDOF()
+        self._dof = robot.GetActiveDOF()
 
         self._interpolation = self.spec.GetGroupFromName('joint').interpolation
         if self._interpolation not in ['quadratic', 'cubic']:
@@ -256,7 +252,20 @@ class RaveTrajectoryWrapper(Interpolator):
         self.ppoly_dd = self.ppoly.derivative(2)
 
     def get_duration(self):
+        warnings.warn("`get_duration` method is deprecated, use `duration` property instead", PendingDeprecationWarning)
+        return self.duration
+
+    def get_dof(self):  # type: () -> int
+        warnings.warn("This method is deprecated, use the property instead", PendingDeprecationWarning)
+        return self.dof
+
+    @property
+    def duration(self):
         return self._duration
+
+    @property
+    def dof(self):
+        return self._dof
 
     def eval(self, ss_sam):
         return self.ppoly(ss_sam)
@@ -302,11 +311,7 @@ class SplineInterpolator(Interpolator):
         self.ss_waypoints = np.array(ss_waypoints)
         self.waypoints = np.array(waypoints)
         self.bc_type = bc_type
-        if np.isscalar(waypoints[0]):
-            self.dof = 1
-        else:
-            self.dof = self.waypoints[0].shape[0]
-        self.duration = ss_waypoints[-1]
+
         assert self.ss_waypoints.shape[0] == self.waypoints.shape[0]
         self.s_start = self.ss_waypoints[0]
         self.s_end = self.ss_waypoints[-1]
@@ -340,7 +345,22 @@ class SplineInterpolator(Interpolator):
         return self.ss_waypoints, self.waypoints
 
     def get_duration(self):
+        warnings.warn("use duration property instead", PendingDeprecationWarning)
         return self.duration
+
+    @property
+    def duration(self):
+        return self.ss_waypoints[-1] - self.ss_waypoints[0]
+
+    @property
+    def dof(self):
+        if np.isscalar(self.waypoints[0]):
+            return 1
+        return self.waypoints[0].shape[0]
+
+    def get_dof(self):  # type: () -> int
+        warnings.warn("This method is deprecated, use the property instead", PendingDeprecationWarning)
+        return self.dof
 
     def eval(self, ss_sam):
         return self.cspl(ss_sam)
@@ -477,11 +497,9 @@ class PolynomialPath(Interpolator):
         self.s_end = s_end
         self.s_start = s_start
         if np.isscalar(self.coeff[0]):
-            self.dof = 1
             self.poly = [np.polynomial.Polynomial(self.coeff)]
             self.coeff = self.coeff.reshape(1, -1)
         else:
-            self.dof = self.coeff.shape[0]
             self.poly = [
                 np.polynomial.Polynomial(self.coeff[i])
                 for i in range(self.dof)]
@@ -489,8 +507,21 @@ class PolynomialPath(Interpolator):
         self.polyd = [poly.deriv() for poly in self.poly]
         self.polydd = [poly.deriv() for poly in self.polyd]
 
-    def get_duration(self):
+    @property
+    def dof(self):
+        return self.coeff.shape[0]
+
+    @property
+    def duration(self):
         return self.s_end - self.s_start
+
+    def get_duration(self):
+        warnings.warn("", PendingDeprecationWarning)
+        return self.duration
+
+    def get_dof(self):
+        warnings.warn("", PendingDeprecationWarning)
+        return self.dof
 
     def eval(self, ss_sam):
         res = [poly(np.array(ss_sam)) for poly in self.poly]
