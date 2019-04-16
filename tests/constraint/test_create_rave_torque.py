@@ -1,6 +1,7 @@
 import pytest
 import toppra
 import numpy as np
+from ..testing_utils import IMPORT_OPENRAVEPY, IMPORT_OPENRAVEPY_MSG
 
 
 @pytest.fixture(scope="module")
@@ -11,8 +12,10 @@ def barret_robot(rave_env):
     yield robot
 
 
+@pytest.mark.skipif(not IMPORT_OPENRAVEPY, reason=IMPORT_OPENRAVEPY_MSG)
 @pytest.mark.parametrize("dof", [3, 5, 7])
-def test_torque_bound_barret(barret_robot, dof):
+def test_shape(barret_robot, dof):
+    """Check basic information."""
     barret_robot.SetActiveDOFs(range(dof))
     constraint = toppra.create_rave_torque_path_constraint(barret_robot)
     np.random.seed(0)
@@ -25,6 +28,3 @@ def test_torque_bound_barret(barret_robot, dof):
     assert c.shape[1] == dof
     assert F.shape[1:] == (2 * dof, dof)
     assert g.shape[1] == 2 * dof
-
-
-    

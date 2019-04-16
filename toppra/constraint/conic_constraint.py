@@ -3,7 +3,7 @@ from .constraint import ConstraintType, DiscretizationType
 import numpy as np
 
 
-class CanonicalConicConstraint(Constraint):
+class ConicConstraint(Constraint):
     """Base class for all canonical conic constraints.
 
     A canonical conic constraint is one with the following form
@@ -43,7 +43,7 @@ class CanonicalConicConstraint(Constraint):
         raise NotImplementedError
 
 
-class RobustCanonicalLinearConstraint(CanonicalConicConstraint):
+class RobustLinearConstraint(ConicConstraint):
     """The simple canonical conic constraint.
 
     This constraint can be seen as a robustified version of a
@@ -59,7 +59,7 @@ class RobustCanonicalLinearConstraint(CanonicalConicConstraint):
 
     Parameters
     ----------
-    cnst: :class:`~toppra.constraint.CanonicalLinearConstraint`
+    cnst: :class:`~toppra.constraint.LinearConstraint`
         The base constraint to robustify.
     ellipsoid_axes_lengths: (3,)array
         Lengths of the axes of the perturbation ellipsoid. Must all be
@@ -69,7 +69,7 @@ class RobustCanonicalLinearConstraint(CanonicalConicConstraint):
 
     """
     def __init__(self, cnst, ellipsoid_axes_lengths, discretization_scheme=DiscretizationType.Collocation):
-        super(RobustCanonicalLinearConstraint, self).__init__()
+        super(RobustLinearConstraint, self).__init__()
         self.dof = cnst.get_dof()
         assert cnst.get_constraint_type() == ConstraintType.CanonicalLinear
         self.set_discretization_type(discretization_scheme)

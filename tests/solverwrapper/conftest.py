@@ -4,6 +4,7 @@ import numpy as np
 import toppra
 import toppra.constraint as constraint
 
+
 @pytest.fixture(params=[(0, 0)])
 def vel_accel_robustaccel(request):
     "Velocity + Acceleration + Robust Acceleration constraint"
@@ -12,7 +13,7 @@ def vel_accel_robustaccel(request):
     alims = np.array([[-1, 1], [-1, 2], [-1, 4]], dtype=float)
     vel_cnst = constraint.JointVelocityConstraint(vlims)
     accl_cnst = constraint.JointAccelerationConstraint(alims, dtype_a)
-    robust_accl_cnst = constraint.RobustCanonicalLinearConstraint(
+    robust_accl_cnst = constraint.RobustLinearConstraint(
         accl_cnst, [0.5, 0.1, 2.0], dtype_ra)
     yield vel_cnst, accl_cnst, robust_accl_cnst
 

@@ -5,6 +5,10 @@ import re
 import pandas
 import tabulate
 import time
+try:
+    import pathlib
+except ImportError:
+    import pathlib2 as pathlib
 
 import toppra
 import toppra.constraint as constraint
@@ -21,8 +25,9 @@ def test_robustness_main(request):
     visualize = request.config.getoption("--visualize")
     # parse problems from a configuration file
     parsed_problems = []
-    with open("tests/retime_robustness/problem_suite_1.yaml", "r") as f:
-        problem_dict = yaml.load(f.read())
+    path = pathlib.Path(__file__)
+    path = path / '../problem_suite_1.yaml'
+    problem_dict = yaml.load(path.resolve().read_text())
     for key in problem_dict:
         if len(problem_dict[key]['ss_waypoints']) == 2:
             ss_waypoints = np.linspace(problem_dict[key]['ss_waypoints'][0],
@@ -98,14 +103,15 @@ def test_robustness_main(request):
             parsed_problems_df.loc[row_index, "status"] = "SUCCESS"
             parsed_problems_df.loc[row_index,
                                    "duration"] = jnt_traj.get_duration()
-        parsed_problems_df.loc[row_index, "t_init"] = (t1 - t0) * 1e3
-        parsed_problems_df.loc[row_index, "t_setup"] = (t2 - t1) * 1e3
-        parsed_problems_df.loc[row_index, "t_solve"] = (t3 - t2) * 1e3
+        parsed_problems_df.loc[row_index, "t_init(ms)"] = (t1 - t0) * 1e3
+        parsed_problems_df.loc[row_index, "t_setup(ms)"] = (t2 - t1) * 1e3
+        parsed_problems_df.loc[row_index, "t_solve(ms)"] = (t3 - t2) * 1e3
     # get all rows with status different from NaN, then reports other columns.
     result_df = parsed_problems_df[parsed_problems_df["status"].notna()][
         ["status", "duration", "desired_duration", "name", "solver_wrapper",
-         "nb_gridpoints", "problem_id", "t_init", "t_setup", "t_solve"]]
-
+         "nb_gridpoints", "problem_id", "t_init(ms)", "t_setup(ms)", "t_solve(ms)"]]
+    result_df.to_csv('%s.result' % __file__)
+    
     print("Test summary\n")
     print(tabulate.tabulate(result_df, result_df.columns))
     assert all_success, "Unable to solve some problems in the test suite"

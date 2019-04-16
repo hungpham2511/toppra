@@ -4,7 +4,7 @@ from .constraint import ConstraintType, DiscretizationType
 import numpy as np
 
 
-class CanonicalLinearConstraint(Constraint):
+class LinearConstraint(Constraint):
     """A core type of constraints.
 
     Also known as Second-order Constraint.
