@@ -4,9 +4,15 @@ from ..constants import INFTY, ECOS_MAXX, ECOS_INFTY
 import logging
 import numpy as np
 import scipy.sparse
-import ecos
 
 logger = logging.getLogger(__name__)
+
+try:
+    import ecos
+    IMPORT_ECOS = True
+except ImportError as err:
+    logger.warn("Unable to import ecos")
+    IMPORT_ECOS = False
 
 
 class ecosWrapper(SolverWrapper):
@@ -38,8 +44,9 @@ class ecosWrapper(SolverWrapper):
 
     """
     def __init__(self, constraint_list, path, path_discretization):
-        logger.debug("Initialize a ECOS SolverWrapper.")
         super(ecosWrapper, self).__init__(constraint_list, path, path_discretization)
+        if not IMPORT_ECOS:
+            raise RuntimeError("Unable to start ecos wrapper because ECOS solver is not installed.")
         # NOTE: Currently receive params in dense form.
         self._linear_idx = []
         self._conic_idx = []
