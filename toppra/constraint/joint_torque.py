@@ -1,9 +1,9 @@
-from .canonical_linear import CanonicalLinearConstraint, canlinear_colloc_to_interpolate
+from .linear_constraint import LinearConstraint, canlinear_colloc_to_interpolate
 from ..constraint import DiscretizationType
 import numpy as np
 
 
-class JointTorqueConstraint(CanonicalLinearConstraint):
+class JointTorqueConstraint(LinearConstraint):
     """Joint Torque Constraint.
 
     A joint torque constraint is given by

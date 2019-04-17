@@ -18,7 +18,8 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../toppra/'))
+import toppra
+# sys.path.insert(0, os.path.abspath('../../toppra/'))
 
 
 # -- General configuration ------------------------------------------------
