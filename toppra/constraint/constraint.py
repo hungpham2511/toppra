@@ -25,22 +25,7 @@ class DiscretizationType(Enum):
 
 
 class Constraint(object):
-    """Base class for all parameterization constraints.
-
-    This class has two main functions: first, to tell its type and second, to produce
-    the parameters given the geometric path and the gridpoints.
-
-    A derived class should implement the following method
-    - compute_constraint_params(): tuple
-
-    Attributes
-    ----------
-    constraint_type: ConstraintType
-    discretization_type: DiscretizationType
-    n_extra_vars: int
-    dof: int
-        Degree-of-freedom of the input path.
-    """
+    """The base constraint class."""
     def __repr__(self):
         string = self.__class__.__name__ + '(\n'
         string += '    Type: {:}'.format(self.constraint_type) + '\n'
@@ -62,7 +47,7 @@ class Constraint(object):
         return self.discretization_type
 
     def set_discretization_type(self, t):
-        """ Discretization type: Collocation or Interpolation.
+        """Discretization type: Collocation or Interpolation.
 
         Parameters
         ----------

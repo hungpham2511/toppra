@@ -23,20 +23,22 @@ class JointAccelerationConstraint(LinearConstraint):
     - :code:`b[i]` := :math:`\mathbf q''(s_i)`
     - :code:`F` := :math:`[\mathbf{I}, -\mathbf I]^T`
     - :code:`h` := :math:`[\ddot{\mathbf{q}}_{max}^T, -\ddot{\mathbf{q}}_{min}^T]^T`
-
-    Parameters
-    ----------
-    alim: array
-        Shape (dof, 2). The lower and upper acceleration bounds of the
-        j-th joint are alim[j, 0] and alim[j, 1] respectively.
-
-    discretization_scheme: :class:`.DiscretizationType`
-        Can be either Collocation (0) or Interpolation
-        (1). Interpolation gives more accurate results with slightly
-        higher computational cost.
-
     """
+
     def __init__(self, alim, discretization_scheme=DiscretizationType.Collocation):
+        """Initialize the joint acceleration class.
+
+        Parameters
+        ----------
+        alim: array
+            Shape (dof, 2). The lower and upper acceleration bounds of the
+            j-th joint are alim[j, 0] and alim[j, 1] respectively.
+
+        discretization_scheme: :class:`.DiscretizationType`
+            Can be either Collocation (0) or Interpolation
+            (1). Interpolation gives more accurate results with slightly
+            higher computational cost.
+        """
         super(JointAccelerationConstraint, self).__init__()
         self.alim = np.array(alim, dtype=float)
         self.dof = self.alim.shape[0]
@@ -48,14 +50,14 @@ class JointAccelerationConstraint(LinearConstraint):
         self.identical = True
 
     def compute_constraint_params(self, path, gridpoints, scaling):
-        if path.get_dof() != self.get_dof():
+        if path.dof != self.dof:
             raise ValueError("Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
-                self.get_dof(), path.get_dof()
+                self.dof, path.dof
             ))
         ps = path.evald(gridpoints / scaling) / scaling
         pss = path.evaldd(gridpoints / scaling) / scaling ** 2
         N = gridpoints.shape[0] - 1
-        dof = path.get_dof()
+        dof = path.dof
         I_dof = np.eye(dof)
         F = np.zeros((dof * 2, dof))
         g = np.zeros(dof * 2)

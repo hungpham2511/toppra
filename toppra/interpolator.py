@@ -345,7 +345,7 @@ class SplineInterpolator(Interpolator):
         return self.ss_waypoints, self.waypoints
 
     def get_duration(self):
-        warnings.warn("use duration property instead", PendingDeprecationWarning)
+        warnings.warn("get_duration is deprecated, use duration (property) instead", PendingDeprecationWarning)
         return self.duration
 
     @property
@@ -359,7 +359,7 @@ class SplineInterpolator(Interpolator):
         return self.waypoints[0].shape[0]
 
     def get_dof(self):  # type: () -> int
-        warnings.warn("This method is deprecated, use the property instead", PendingDeprecationWarning)
+        warnings.warn("get_dof is deprecated, use dof (property) instead", PendingDeprecationWarning)
         return self.dof
 
     def eval(self, ss_sam):
@@ -516,11 +516,11 @@ class PolynomialPath(Interpolator):
         return self.s_end - self.s_start
 
     def get_duration(self):
-        warnings.warn("", PendingDeprecationWarning)
+        warnings.warn("get_duration is deprecated, use duration", PendingDeprecationWarning)
         return self.duration
 
     def get_dof(self):
-        warnings.warn("", PendingDeprecationWarning)
+        warnings.warn("get_dof is deprecated, use dof", PendingDeprecationWarning)
         return self.dof
 
     def eval(self, ss_sam):

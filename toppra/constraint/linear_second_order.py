@@ -67,10 +67,10 @@ class SecondOrderConstraint(LinearConstraint):
         self._format_string += "        F in R^({:d}, {:d})\n".format(*F_.shape)
 
     def compute_constraint_params(self, path, gridpoints, scaling):
-        assert path.get_dof() == self.get_dof(), ("Wrong dimension: constraint dof ({:d}) "
-                                                  "not equal to path dof ({:d})".format(
-                                                      self.get_dof(), path.get_dof()))
-        v_zero = np.zeros(path.get_dof())
+        assert path.dof == self.dof, ("Wrong dimension: constraint dof ({:d}) "
+                                      "not equal to path dof ({:d})".format(
+            self.dof, path.dof))
+        v_zero = np.zeros(path.dof)
         p = path.eval(gridpoints / scaling)
         ps = path.evald(gridpoints / scaling) / scaling
         pss = path.evaldd(gridpoints / scaling) / scaling ** 2
