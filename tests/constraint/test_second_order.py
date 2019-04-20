@@ -107,3 +107,42 @@ def test_correctness_friction(coefficients_functions):
         np.testing.assert_allclose(bi_, b[i])
         np.testing.assert_allclose(ci_, c[i])
         np.testing.assert_allclose(cnst_F(p_vec[i]), F[i])
+
+
+def test_joint_force(coefficients_functions):
+    """ Same as the above test, but has frictional effect.
+    """
+    # setup
+    A, B, C, cnst_F, cnst_g, path = coefficients_functions
+    def inv_dyn(q, qd, qdd):
+        return A(q).dot(qdd) + np.dot(qd.T, np.dot(B(q), qd)) + C(q)
+    def friction(q):
+        """Randomize with fixed input/output."""
+        np.random.seed(int(np.sum(q) * 1000))
+        return 2 + np.sin(q) + np.random.rand(len(q))
+    taulim = np.random.randn(2, 2)
+
+    constraint = toppra.constraint.SecondOrderConstraint.joint_torque_constraint(
+        inv_dyn, taulim, friction=friction)
+    constraint.set_discretization_type(0)
+    a, b, c, F, g, _, _ = constraint.compute_constraint_params(
+        path, np.linspace(0, path.duration, 10), 1.0)
+
+    # Correct params
+    p_vec = path.eval(np.linspace(0, path.duration, 10))
+    ps_vec = path.evald(np.linspace(0, path.duration, 10))
+    pss_vec = path.evaldd(np.linspace(0, path.duration, 10))
+
+    dof = 2
+    F_actual = np.vstack((np.eye(dof), - np.eye(dof)))
+    g_actual = np.hstack((taulim[:, 1], - taulim[:, 0]))
+
+    for i in range(10):
+        ai_ = A(p_vec[i]).dot(ps_vec[i])
+        bi_ = A(p_vec[i]).dot(pss_vec[i]) + np.dot(ps_vec[i].T, B(p_vec[i]).dot(ps_vec[i]))
+        ci_ = C(p_vec[i]) + np.sign(ps_vec[i]) * friction(p_vec[i])
+        np.testing.assert_allclose(ai_, a[i])
+        np.testing.assert_allclose(bi_, b[i])
+        np.testing.assert_allclose(ci_, c[i])
+        np.testing.assert_allclose(F_actual, F[i])
+        np.testing.assert_allclose(g_actual, g[i])

@@ -72,6 +72,28 @@ class SecondOrderConstraint(LinearConstraint):
         F_ = cnst_F(np.zeros(dof))
         self._format_string += "        F in R^({:d}, {:d})\n".format(*F_.shape)
 
+    @staticmethod
+    def joint_torque_constraint(inv_dyn, taulim, **kwargs):
+        """Initialize a Joint Torque constraint.
+
+        Parameters
+        ----------
+        inv_dyn: [np.ndarray, np.ndarray, np.ndarray] -> np.ndarray
+            Inverse dynamic function of the robot.
+        taulim: np.ndarray
+            Shape (N, 2). The i-th element contains the minimum and maximum joint torque limits
+            respectively.
+
+        """
+        dof = np.shape(taulim)[0]
+        F_aug = np.vstack((np.eye(dof), - np.eye(dof)))
+        g_aug = np.zeros(2 * dof)
+        g_aug[:dof] = taulim[:, 1]
+        g_aug[dof:] = - taulim[:, 0]
+        cnst_F = lambda _: F_aug
+        cnst_g = lambda _: g_aug
+        return SecondOrderConstraint(inv_dyn, cnst_F, cnst_g, dof, **kwargs)
+
     def compute_constraint_params(self, path, gridpoints, scaling):
         if path.dof != self.dof:
             raise ValueError("Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(

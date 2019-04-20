@@ -14,7 +14,7 @@ class LinearConstraint(Constraint):
     .. math::
 
         \mathbf a_i u + \mathbf b_i x + \mathbf c_i &= v, \\\\
-        \mathbf F_i v &\\leq \mathbf h_i, \\\\
+        \mathbf F_i v &\\leq \mathbf g_i, \\\\
         x^{bound}_{i, 0} \\leq x &\\leq x^{bound}_{i, 1}, \\\\
         u^{bound}_{i, 0} \\leq u &\\leq u^{bound}_{i, 1}.
 
@@ -22,16 +22,16 @@ class LinearConstraint(Constraint):
     of :math:`i`, then we can consider the simpler constraint:
 
     .. math::
-        \mathbf F v &\\leq \mathbf h, \\\\
+        \mathbf F v &\\leq \mathbf w, \\\\
 
     In this case, the returned value of :math:`F` by
     `compute_constraint_params` has shape (k, m) instead of (N, k, m),
-    :math:`h` shape (k) instead of (N, k) and the class attribute
+    :math:`w` shape (k) instead of (N, k) and the class attribute
     `identical` will be True.
 
     .. note::
 
-        Derived classes of :class:`CanonicalLinearConstraint` should at
+        Derived classes of :class:`LinearConstraint` should at
         least implement the method :func:`compute_constraint_params`.
 
 

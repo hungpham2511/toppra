@@ -17,7 +17,7 @@ class JointAccelerationConstraint(LinearConstraint):
     path velocity square at :math:`s_i`. For more detail see :ref:`derivationKinematics`.
 
     Rearranging the above pair of vector inequalities into the form
-    required by :class:`CanonicalLinearConstraint`, we have:
+    required by :class:`LinearConstraint`, we have:
 
     - :code:`a[i]` := :math:`\mathbf q'(s_i)`
     - :code:`b[i]` := :math:`\mathbf q''(s_i)`
