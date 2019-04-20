@@ -11,7 +11,7 @@ class SecondOrderConstraint(LinearConstraint):
     A Second Order Constraint can be given by the following formula:
 
     .. math::
-        A(q) \ddot q + \dot q^\\top B(q) \dot q + C(q) + sign(qdot) * D(q) = w,
+        A(q) \ddot q + \dot q^\\top B(q) \dot q + C(q) + sign(\dot q) * D(q) = w,
 
     where w is a vector that satisfies the polyhedral constraint:
 
@@ -26,7 +26,8 @@ class SecondOrderConstraint(LinearConstraint):
     calls to `inv_dyn` and `const_coeff` are made as follows:
 
     .. math::
-        A(q) p'(s) \ddot s + [A(q) p''(s) + p'(s)^\\top B(q) p'(s)] \dot s^2 + C(q) + sign(p'(s)) * D(p(s)) = w,
+
+        A(q) p'(s) \ddot s + [A(q) p''(s) + p'(s)^\\top B(q) p'(s)] \dot s^2 + C(q) + sign(p'(s)) * D(p(s)) = w, \\\\
         a(s) \ddot s + b(s) \dot s ^2 + c(s) = w.
 
     To evaluate the coefficients a(s), b(s), c(s), inv_dyn is called
@@ -34,26 +35,27 @@ class SecondOrderConstraint(LinearConstraint):
 
     """
 
-    def __init__(self, inv_dyn, cnst_F, cnst_g, dof, discretization_scheme=DiscretizationType.Interpolation):
-        # type: ((np.array, np.array, np.array) -> np.ndarray) -> None
+    def __init__(self, inv_dyn, cnst_F, cnst_g, dof, discretization_scheme=1, friction=None):
         """Initialize the constraint.
 
         Parameters
         ----------
-        inv_dyn: (array, array, array) -> array
+        inv_dyn: [np.ndarray, np.ndarray, np.ndarray] -> np.ndarray
             The "inverse dynamics" function that receives joint
             position, velocity and acceleration as inputs and ouputs
             the "joint torque". It is not necessary to supply each
             individual component functions such as gravitational,
             Coriolis, etc.
-
-        cnst_F: array -> array
+        cnst_F: [np.ndarray] -> np.ndarray
             Coefficient function. See notes for more details.
-        cnst_g: array -> array
+        cnst_g: [np.ndarray] -> np.ndarray
             Coefficient function. See notes for more details.
-        dof: int, optional
-            Dimension of joint position vectors. Required.
-
+        dof: int
+            The dimension of the joint position.
+        discretization_scheme: DiscretizationType
+            Type of discretization.
+        friction: [np.ndarray] -> np.ndarray
+            Dry friction function.
         """
         super(SecondOrderConstraint, self).__init__()
         self.set_discretization_type(discretization_scheme)
@@ -61,31 +63,32 @@ class SecondOrderConstraint(LinearConstraint):
         self.cnst_F = cnst_F
         self.cnst_g = cnst_g
         self.dof = dof
+        if friction is None:
+            self.friction = lambda s: np.zeros(self.dof)
+        else:
+            self.friction = friction
         self._format_string = "    Kind: Generalized Second-order constraint\n"
         self._format_string = "    Dimension:\n"
         F_ = cnst_F(np.zeros(dof))
         self._format_string += "        F in R^({:d}, {:d})\n".format(*F_.shape)
 
     def compute_constraint_params(self, path, gridpoints, scaling):
-        assert path.dof == self.dof, ("Wrong dimension: constraint dof ({:d}) "
-                                      "not equal to path dof ({:d})".format(
-            self.dof, path.dof))
+        if path.dof != self.dof:
+            raise ValueError("Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
+                self.dof, path.dof))
         v_zero = np.zeros(path.dof)
-        p = path.eval(gridpoints / scaling)
-        ps = path.evald(gridpoints / scaling) / scaling
-        pss = path.evaldd(gridpoints / scaling) / scaling ** 2
+        p_vec = path.eval(gridpoints / scaling)
+        ps_vec = path.evald(gridpoints / scaling) / scaling
+        pss_vec = path.evaldd(gridpoints / scaling) / scaling ** 2
 
-        F = np.array(list(map(self.cnst_F, p)))
-        g = np.array(list(map(self.cnst_g, p)))
-        c = np.array(
-            [self.inv_dyn(p_, v_zero, v_zero) for p_ in p]
-        )
-        a = np.array(
-            [self.inv_dyn(p_, v_zero, ps_) for p_, ps_ in zip(p, ps)]
-        ) - c
-        b = np.array(
-            [self.inv_dyn(p_, ps_, pss_) for p_, ps_, pss_ in zip(p, ps, pss)]
-        ) - c
+        F = np.array(list(map(self.cnst_F, p_vec)))
+        g = np.array(list(map(self.cnst_g, p_vec)))
+        c = np.array([self.inv_dyn(p_, v_zero, v_zero) for p_ in p_vec])
+        a = np.array([self.inv_dyn(p_, v_zero, ps_) for p_, ps_ in zip(p_vec, ps_vec)]) - c
+        b = np.array([self.inv_dyn(p_, ps_, pss_) for p_, ps_, pss_ in zip(p_vec, ps_vec, pss_vec)]) - c
+
+        for i, (p_, ps_) in enumerate(zip(p_vec, ps_vec)):
+            c[i] = c[i] + np.sign(ps_) * self.friction(p_)
 
         if self.discretization_type == DiscretizationType.Collocation:
             return a, b, c, F, g, None, None
