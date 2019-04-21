@@ -49,7 +49,7 @@ def _find_left_index(gridpoints, s):
 
     """
     for i in range(1, len(gridpoints)):
-        if gridpoints[i - 1] <= s and s < gridpoints[i]:
+        if gridpoints[i - 1] <= s < gridpoints[i]:
             return i - 1
     return len(gridpoints) - 2
 

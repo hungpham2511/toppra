@@ -138,7 +138,7 @@ disable=print-statement,
 	superfluous-parens,
 	no-member,
 	too-few-public-methods,
-	fixme
+	fixme,anomalous-backslash-in-string
 	
 
 # Enable the message, report, category or checker with the given id(s). You can
@@ -342,7 +342,8 @@ good-names=i,
            _,
 	   logger,
 	   dx, dy, dz, dq, q,
-	   x, y, z, s, dt
+	   x, y, z, s, dt, F, g, a, b, c
+
 
 # Include a hint for the correct naming format with invalid-name
 include-naming-hint=no

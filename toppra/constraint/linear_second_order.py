@@ -1,41 +1,48 @@
+"""This module implements the general Second-Order constraints."""
+import numpy as np
 from .linear_constraint import LinearConstraint, canlinear_colloc_to_interpolate
 from .constraint import DiscretizationType
-import numpy as np
 
 
 class SecondOrderConstraint(LinearConstraint):
-    """A class to represent Canonical Linear Generalized Second-order constraints.
+    """This class represents the linear generalized Second-order constraints.
 
-    Notes
-    -----
-    A Second Order Constraint can be given by the following formula:
+    A `SecondOrderConstraint` is given by the following formula:
 
     .. math::
-        A(q) \ddot q + \dot q^\\top B(q) \dot q + C(q) + sign(\dot q) * D(q) = w,
+        A(\mathbf{q}) \ddot {\mathbf{q}} + \dot
+        {\mathbf{q}}^\\top B(\mathbf{q}) \dot {\mathbf{q}} +
+        C(\mathbf{q}) + sign(\dot {\mathbf{q}}) * D(\mathbf{q}) = w,
 
     where w is a vector that satisfies the polyhedral constraint:
 
     .. math::
-        F(q) w \\leq g(q).
+        F(\mathbf{q}) w \\leq g(\mathbf{q}).
 
-    The functions `A, B, C, D` can represent respectively the
-    inertial, Corriolis, gravitational and dry friction term for robot
-    torque bound constraint.
+    The functions :math:`A, B, C, D` represent respectively the inertial,
+    Corriolis, gravitational and dry friction terms in a robot torque
+    bound constraint.
 
-    To evaluate the constraint on a geometric path `p(s)`, multiple
-    calls to `inv_dyn` and `const_coeff` are made as follows:
+    To evaluate the constraint on a geometric path :math:`\mathbf{p}(s)`:
 
     .. math::
 
-        A(q) p'(s) \ddot s + [A(q) p''(s) + p'(s)^\\top B(q) p'(s)] \dot s^2 + C(q) + sign(p'(s)) * D(p(s)) = w, \\\\
+        A(\mathbf{q}) \mathbf{p}'(s) \ddot s + [A(\mathbf{q}) \mathbf{p}''(s) + \mathbf{p}'(s)^\\top B(\mathbf{q})
+        \mathbf{p}'(s)] \dot s^2 + C(\mathbf{q}) + sign(\mathbf{p}'(s)) * D(\mathbf{p}(s)) = w, \\\\
         a(s) \ddot s + b(s) \dot s ^2 + c(s) = w.
 
-    To evaluate the coefficients a(s), b(s), c(s), inv_dyn is called
-    repeatedly with appropriate arguments.
+    where :math:`\mathbf{p}', \mathbf{p}''` denote respectively the
+    first and second derivatives of the path.
+
+
+    It is important to note that to evaluate the coefficients
+    :math:`a(s), b(s), c(s)`, it is not necessary to have the
+    functions :math:`A, B, C`. Rather, only the sum of the these 3
+    functions--the inverse dynamic function--is necessary.
 
     """
 
-    def __init__(self, inv_dyn, cnst_F, cnst_g, dof, discretization_scheme=1, friction=None):
+    def __init__(self, inv_dyn, cnst_F, cnst_g, dof, friction=None, discretization_scheme=1):
         """Initialize the constraint.
 
         Parameters
@@ -69,8 +76,7 @@ class SecondOrderConstraint(LinearConstraint):
             self.friction = friction
         self._format_string = "    Kind: Generalized Second-order constraint\n"
         self._format_string = "    Dimension:\n"
-        F_ = cnst_F(np.zeros(dof))
-        self._format_string += "        F in R^({:d}, {:d})\n".format(*F_.shape)
+        self._format_string += "        F in R^({:d}, {:d})\n".format(*cnst_F(np.zeros(dof)).shape)
 
     @staticmethod
     def joint_torque_constraint(inv_dyn, taulim, **kwargs):
@@ -103,18 +109,18 @@ class SecondOrderConstraint(LinearConstraint):
         ps_vec = path.evald(gridpoints / scaling) / scaling
         pss_vec = path.evaldd(gridpoints / scaling) / scaling ** 2
 
-        F = np.array(list(map(self.cnst_F, p_vec)))
-        g = np.array(list(map(self.cnst_g, p_vec)))
-        c = np.array([self.inv_dyn(p_, v_zero, v_zero) for p_ in p_vec])
-        a = np.array([self.inv_dyn(p_, v_zero, ps_) for p_, ps_ in zip(p_vec, ps_vec)]) - c
-        b = np.array([self.inv_dyn(p_, ps_, pss_) for p_, ps_, pss_ in zip(p_vec, ps_vec, pss_vec)]) - c
+        F_vec = np.array(list(map(self.cnst_F, p_vec)))
+        g_vec = np.array(list(map(self.cnst_g, p_vec)))
+        c_vec = np.array([self.inv_dyn(_p, v_zero, v_zero) for _p in p_vec])
+        a_vec = np.array([self.inv_dyn(_p, v_zero, _ps) for _p, _ps in zip(p_vec, ps_vec)]) - c_vec
+        b_vec = np.array([self.inv_dyn(_p, _ps, pss_) for _p, _ps, pss_ in zip(p_vec, ps_vec, pss_vec)]) - c_vec
 
-        for i, (p_, ps_) in enumerate(zip(p_vec, ps_vec)):
-            c[i] = c[i] + np.sign(ps_) * self.friction(p_)
+        for i, (_p, _ps) in enumerate(zip(p_vec, ps_vec)):
+            c_vec[i] = c_vec[i] + np.sign(_ps) * self.friction(_p)
 
         if self.discretization_type == DiscretizationType.Collocation:
-            return a, b, c, F, g, None, None
+            return a_vec, b_vec, c_vec, F_vec, g_vec, None, None
         elif self.discretization_type == DiscretizationType.Interpolation:
-            return canlinear_colloc_to_interpolate(a, b, c, F, g, None, None, gridpoints)
+            return canlinear_colloc_to_interpolate(a_vec, b_vec, c_vec, F_vec, g_vec, None, None, gridpoints)
         else:
             raise NotImplementedError("Other form of discretization not supported!")

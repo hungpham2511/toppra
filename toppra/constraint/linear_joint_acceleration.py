@@ -1,17 +1,20 @@
+"""Joint acceleration constraint."""
+import numpy as np
 from .linear_constraint import LinearConstraint, canlinear_colloc_to_interpolate
 from ..constraint import DiscretizationType
-import numpy as np
 
 
 class JointAccelerationConstraint(LinearConstraint):
-    """Joint Acceleration Constraint.
+    """The Joint Acceleration Constraint class.
 
     A joint acceleration constraint is given by
 
     .. math ::
 
-                \ddot{\mathbf{q}}_{min} & \leq \ddot{\mathbf q}                             &\leq \ddot{\mathbf{q}}_{max} \\\\
-                \ddot{\mathbf{q}}_{min} & \leq \mathbf{q}'(s_i) u_i + \mathbf{q}''(s_i) x_i &\leq \ddot{\mathbf{q}}_{max}
+                \ddot{\mathbf{q}}_{min} & \leq \ddot{\mathbf q}
+                                                    &\leq \ddot{\mathbf{q}}_{max} \\\\
+                \ddot{\mathbf{q}}_{min} & \leq \mathbf{q}'(s_i) u_i + \mathbf{q}''(s_i) x_i
+                                                    &\leq \ddot{\mathbf{q}}_{max}
 
     where :math:`u_i, x_i` are respectively the path acceleration and
     path velocity square at :math:`s_i`. For more detail see :ref:`derivationKinematics`.
@@ -54,23 +57,19 @@ class JointAccelerationConstraint(LinearConstraint):
             raise ValueError("Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
                 self.dof, path.dof
             ))
-        ps = path.evald(gridpoints / scaling) / scaling
-        pss = path.evaldd(gridpoints / scaling) / scaling ** 2
-        N = gridpoints.shape[0] - 1
+        ps_vec = path.evald(gridpoints / scaling) / scaling
+        pss_vec = path.evaldd(gridpoints / scaling) / scaling ** 2
         dof = path.dof
-        I_dof = np.eye(dof)
-        F = np.zeros((dof * 2, dof))
-        g = np.zeros(dof * 2)
-        ubound = np.zeros((N + 1, 2))
-        g[0:dof] = self.alim[:, 1]
-        g[dof:] = - self.alim[:, 0]
-        F[0:dof, :] = I_dof
-        F[dof:, :] = -I_dof
+        F_single = np.zeros((dof * 2, dof))
+        g_single = np.zeros(dof * 2)
+        g_single[0:dof] = self.alim[:, 1]
+        g_single[dof:] = - self.alim[:, 0]
+        F_single[0:dof, :] = np.eye(dof)
+        F_single[dof:, :] = -np.eye(dof)
         if self.discretization_type == DiscretizationType.Collocation:
-            return ps, pss, np.zeros_like(ps), F, g, None, None
+            return ps_vec, pss_vec, np.zeros_like(ps_vec), F_single, g_single, None, None
         elif self.discretization_type == DiscretizationType.Interpolation:
-            return canlinear_colloc_to_interpolate(ps, pss, np.zeros_like(ps), F, g, None, None,
+            return canlinear_colloc_to_interpolate(ps_vec, pss_vec, np.zeros_like(ps_vec), F_single, g_single, None, None,
                                                    gridpoints, identical=True)
         else:
             raise NotImplementedError("Other form of discretization not supported!")
-
