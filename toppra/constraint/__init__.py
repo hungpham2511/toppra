@@ -1,4 +1,4 @@
-"""toppra modules."""
+"""This module defines different dynamic constraints."""
 from .constraint import ConstraintType, DiscretizationType, Constraint
 from .joint_torque import JointTorqueConstraint
 from .linear_joint_acceleration import JointAccelerationConstraint
