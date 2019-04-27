@@ -35,34 +35,52 @@ class Constraint(object):
         return string
 
     def get_dof(self):
+        """Return the degree of freedom of the constraint.
+
+        TODO: It is unclear what is a dof of a constraint. Perharps remove this.
+        """
         return self.dof
 
     def get_no_extra_vars(self):
+        """Return the number of extra variable required.
+
+        TODO: This is not a property of a constraint. Rather it is specific to kinds of constraints. To be removed.
+        """
         return self.n_extra_vars
 
     def get_constraint_type(self):
+        """Return the constraint type.
+
+        TODO: Use property instead.
+
+        """
         return self.constraint_type
 
     def get_discretization_type(self):
+        """Return the discretization type.
+
+        TODO: Use property instead.
+
+        """
         return self.discretization_type
 
-    def set_discretization_type(self, t):
+    def set_discretization_type(self, discretization_type):
         """Discretization type: Collocation or Interpolation.
 
         Parameters
         ----------
-        t: int, or DiscretizationType
-            If is 1, set to Interpolation.
-            If is 0, set to Collocation.
+        discretization_type: int or :class:`DiscretizationType`
+            Method to discretize this constraint.
         """
-        if t == 0:
+        if discretization_type == 0:
             self.discretization_type = DiscretizationType.Collocation
-        elif t == 1:
+        elif discretization_type == 1:
             self.discretization_type = DiscretizationType.Interpolation
-        elif t == DiscretizationType.Collocation or t == DiscretizationType.Interpolation:
-            self.discretization_type = t
+        elif discretization_type == DiscretizationType.Collocation or discretization_type == DiscretizationType.Interpolation:
+            self.discretization_type = discretization_type
         else:
-            raise "Discretization type: {:} not implemented!".format(t)
+            raise "Discretization type: {:} not implemented!".format(discretization_type)
 
     def compute_constraint_params(self, path, gridpoints, scaling=1):
+        """Evaluate parameters of the constraint."""
         raise NotImplementedError
