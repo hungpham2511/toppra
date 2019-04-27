@@ -14,7 +14,6 @@ def rave_env():
     env = orpy.Environment()
     yield env
     env.Destroy()
-    orpy.RaveDestroy()
 
 
 def pytest_addoption(parser):
