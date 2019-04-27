@@ -5,26 +5,6 @@ from toppra import SplineInterpolator
 from ..testing_utils import IMPORT_OPENRAVEPY, IMPORT_OPENRAVEPY_MSG
 
 
-@pytest.fixture(scope='module')
-def robot_fixture(rave_env):
-    import openravepy as orpy
-    rave_env.Reset()
-    rave_env.Load("data/lab1.env.xml")
-    robot = rave_env.GetRobots()[0]
-    manipulator = robot.GetManipulators()[0]
-    robot.SetActiveDOFs(manipulator.GetArmIndices())
-    # Generate IKFast if needed
-    iktype = orpy.IkParameterization.Type.Transform6D
-    ikmodel = orpy.databases.inversekinematics.InverseKinematicsModel(
-        robot, iktype=iktype)
-    if not ikmodel.load():
-        print('Generating IKFast {0}. It will take few minutes...'.format(
-            iktype.name))
-        ikmodel.autogenerate()
-        print('IKFast {0} has been successfully generated'.format(iktype.name))
-    yield robot
-    rave_env.Destroy()
-
 
 @pytest.mark.parametrize("sswp, wp, ss, path_interval", [
     [[0, 0.3, 0.5], [1, 2, 3], [0., 0.1, 0.2, 0.3, 0.5], [0, 0.5]],
@@ -78,6 +58,26 @@ def test_2waypoints(xs, ys, yd):
     npt.assert_allclose(pi.evald((xs[0] + xs[1]) / 2), yd)
     npt.assert_allclose(pi.evaldd(0), np.zeros_like(ys[0]))
 
+
+@pytest.fixture(scope='module')
+def robot_fixture(rave_env):
+    import openravepy as orpy
+    rave_env.Reset()
+    rave_env.Load("data/lab1.env.xml")
+    robot = rave_env.GetRobots()[0]
+    manipulator = robot.GetManipulators()[0]
+    robot.SetActiveDOFs(manipulator.GetArmIndices())
+    # Generate IKFast if needed
+    iktype = orpy.IkParameterization.Type.Transform6D
+    ikmodel = orpy.databases.inversekinematics.InverseKinematicsModel(
+        robot, iktype=iktype)
+    if not ikmodel.load():
+        print('Generating IKFast {0}. It will take few minutes...'.format(
+            iktype.name))
+        ikmodel.autogenerate()
+        print('IKFast {0} has been successfully generated'.format(iktype.name))
+    yield robot
+    rave_env.Destroy()
 
 @pytest.mark.skipif(not IMPORT_OPENRAVEPY, reason=IMPORT_OPENRAVEPY_MSG)
 @pytest.mark.parametrize("ss_waypoints, waypoints", [

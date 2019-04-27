@@ -309,7 +309,14 @@ class SplineInterpolator(Interpolator):
     waypoints: array
         Shaped (N+1, dof). Waypoints.
     bc_type: str, optional
-        Boundary condition. Can be 'not-a-knot', 'clamped', 'natural' or 'periodic'.
+        Boundary conditions of the spline. Can be 'not-a-knot',
+        'clamped', 'natural' or 'periodic'.
+
+        - 'not-a-knot': The most default option, return to natural
+          looking spline.
+        - 'clamped': First-order derivatives of the spline at the two
+          end are zeroed.
+
         See scipy.CubicSpline documentation for more details.
 
     Attributes
@@ -317,15 +324,10 @@ class SplineInterpolator(Interpolator):
     dof : int
         Output dimension of the function
     cspl : :class:`scipy.interpolate.CubicSpline`
-        The path.
-    cspld : :class:`scipy.interpolate.CubicSpline`
-        The path 1st derivative.
-    cspldd : :class:`scipy.interpolate.CubicSpline`
-        The path 2nd derivative.
-
+        The underlying cubic spline.
     """
 
-    def __init__(self, ss_waypoints, waypoints, bc_type='clamped'):
+    def __init__(self, ss_waypoints, waypoints, bc_type='not-a-knot'):
         super(SplineInterpolator, self).__init__()
         assert ss_waypoints[0] == 0, "First index must equals zero."
         self.ss_waypoints = np.array(ss_waypoints)
