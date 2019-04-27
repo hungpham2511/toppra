@@ -55,19 +55,34 @@ def _find_left_index(gridpoints, s):
 
 
 class Interpolator(object):
-    """Abstract class for interpolators."""
+    """Base class for Interpolators.
+
+    Derive Interpolator should inherit this abstract class.
+
+    """
 
     def __init__(self):
         pass
 
-    def get_dof(self):
-        # type: () -> int
-        """Return the degree-of-freedom of the path.
+    def __call__(self, path_positions, order=0):
+        """Evaluate the path at given positions.
+
+        Parameters
+        ----------
+            path_positions: float or np.ndarray
+                Path positions to evaluate the interpolator.
+            order: int
+                Order of the evaluation call.
+
+                - 0: position
+                - 1: first-order derivative
+                - 2: second-order derivative
 
         Returns
         -------
-        out:
-            Degree-of-freedom of the path.
+            np.ndarray
+                Evaluated values.
+
         """
         raise NotImplementedError
 
@@ -81,8 +96,8 @@ class Interpolator(object):
         """Return the degrees-of-freedom of the path."""
         raise NotImplementedError
 
-    def get_path_interval(self):
-        # type: () -> np.ndarray
+    @property
+    def path_interval(self):
         """Return the starting and ending path positions.
 
         Returns
@@ -91,64 +106,13 @@ class Interpolator(object):
             The starting and ending path positions.
 
         """
-        return np.array([self.s_start, self.s_end])
-
-    def eval(self, ss_sam):
-        # type: (any[np.ndarray, float]) -> np.ndarray
-        """Evaluate joint positions at specified path positions.
-
-        Parameters
-        ----------
-        ss_sam :
-            Shape (m,) or float. The path positions to sample at.
-
-        Returns
-        -------
-        out :
-            Shape (m, dof) if input is an array: evaluated values at positions.
-            Shape (dof,) if input is a float.
-        """
         raise NotImplementedError
 
-    def evald(self, ss_sam):
-        # type: (any[np.ndarray, float]) -> np.ndarray
-        """Evaluate first derivative at specified path positions.
-
-        Parameters
-        ----------
-        ss_sam :
-            Shape (m,) or float. The path positions to sample at.
-
-        Returns
-        -------
-        out :
-            Shape (m, dof) if input is an array: evaluated values at positions.
-            Shape (dof,) if input is a float.
-        """
-        raise NotImplementedError
-
-    def evaldd(self, ss_sam):
-        # type: (Union[np.ndarray, float]) -> np.ndarray
-        """Evaluate second derivative at specified path positions.
-
-        Parameters
-        ----------
-        ss_sam :
-            Shape (m,) or float. The path positions to sample at.
-
-        Returns
-        -------
-        out :
-            Shape (m, dof) if input is an array: evaluated values at positions.
-            Shape (dof,) if input is a float.
-        """
-        raise NotImplementedError
-
-    def compute_rave_trajectory(self, robot):
+    def to_rave_trajectory(self, robot):
         """Return the corresponding Openrave Trajectory."""
         raise NotImplementedError
 
-    def compute_ros_trajectory(self):
+    def to_ros_trajectory_msg(self):
         """Return the corresponding ROS trajectory."""
         raise NotImplementedError
 
