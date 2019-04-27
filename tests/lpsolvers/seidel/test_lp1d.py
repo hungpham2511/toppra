@@ -1,3 +1,4 @@
+"""This test suite tests the 1d seidel LP solver."""
 import toppra.solverwrapper.cy_seidel_solverwrapper as seidel
 import numpy as np
 import pytest
@@ -26,6 +27,7 @@ testids = [
                          testdata, ids=testids)
 def test_correct(v, a, b, low, high, res_expected, optval_expected, optvar_expected,
                  active_c_expected):
+    """Correct LP instances."""
     data = seidel.solve_lp1d(v, a, b, low, high)
     res, optval, optvar, active_c = data
 
@@ -35,7 +37,9 @@ def test_correct(v, a, b, low, high, res_expected, optval_expected, optvar_expec
     assert active_c == active_c_expected
 
 
+
 def test_infeasible():
+    """Correct output for infeasible instances."""
     a = np.array([-1.0, 1.0])
     b = np.array([0.0, 0.5])
     data = seidel.solve_lp1d(np.r_[1.0, 2], a, b, -1, 1.00)

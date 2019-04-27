@@ -1,9 +1,9 @@
 # TOPP-RA
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/e77c2abbdaa04578b115d2911a146fcb)](https://app.codacy.com/app/hungpham2511/toppra?utm_source=github.com&utm_medium=referral&utm_content=hungpham2511/toppra&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.org/hungpham2511/toppra.svg?branch=master)](https://travis-ci.org/hungpham2511/toppra) [![Coverage Status](https://coveralls.io/repos/github/hungpham2511/toppra/badge.svg?branch=master)](https://coveralls.io/github/hungpham2511/toppra?branch=master)
+[![Documentation Status](https://readthedocs.org/projects/toppra/badge/?version=latest)](https://toppra.readthedocs.io/en/latest/?badge=latest)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/e77c2abbdaa04578b115d2911a146fcb)](https://app.codacy.com/app/hungpham2511/toppra?utm_source=github.com&utm_medium=referral&utm_content=hungpham2511/toppra&utm_campaign=Badge_Grade_Dashboard)
 
-
-**Documentation and tutorials** are available at (https://hungpham2511.github.io/toppra/).
+**Documentation and tutorials** are available at (https://toppra.readthedocs.io/en/latest/index.html).
 
 TOPP-RA is a library for computing the time-optimal path parametrization for robots subject to kinematic and dynamic constraints. 
 In general, given the inputs:

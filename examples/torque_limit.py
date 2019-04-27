@@ -31,44 +31,44 @@ def main():
 
     # Create velocity bounds, then velocity constraint object
     vlim_ = robot.GetActiveDOFMaxVel()
+    vlim_[robot.GetActiveDOFIndices()] = [80., 80., 80., 80., 80., 80., 80.]
     vlim = np.vstack((-vlim_, vlim_)).T
     # Create acceleration bounds, then acceleration constraint object
     alim_ = robot.GetActiveDOFMaxAccel()
+    alim_[robot.GetActiveDOFIndices()] = [80., 80., 80., 80., 80., 80., 80.]
     alim = np.vstack((-alim_, alim_)).T
     pc_vel = constraint.JointVelocityConstraint(vlim)
     pc_acc = constraint.JointAccelerationConstraint(
         alim, discretization_scheme=constraint.DiscretizationType.Interpolation)
 
-    # setup cartesian acceleration constraint to limit link 7
-    # -0.5 <= a <= 0.5
-    # cartersian acceleration
-    def inverse_dynamics(q, qd, qdd):
+    # torque limit
+    def inv_dyn(q, qd, qdd):
+        qdd_full = np.zeros(robot.GetDOF())
+        active_dofs = robot.GetActiveDOFIndices()
         with robot:
-            vlim_ = robot.GetDOFVelocityLimits()
-            robot.SetDOFVelocityLimits(vlim_ * 1000)  # remove velocity limits to compute stuffs
+            # Temporary remove vel/acc constraints
+            vlim = robot.GetDOFVelocityLimits()
+            alim = robot.GetDOFAccelerationLimits()
+            robot.SetDOFVelocityLimits(100 * vlim)
+            robot.SetDOFAccelerationLimits(100 * alim)
+            # Inverse dynamics
+            qdd_full[active_dofs] = qdd
             robot.SetActiveDOFValues(q)
             robot.SetActiveDOFVelocities(qd)
+            res = robot.ComputeInverseDynamics(qdd_full)
+            # Restore vel/acc constraints
+            robot.SetDOFVelocityLimits(vlim)
+            robot.SetDOFAccelerationLimits(alim)
+        return res[active_dofs]
 
-            qdd_full = np.zeros(robot.GetDOF())
-            qdd_full[:qdd.shape[0]] = qdd
+    tau_max_ = robot.GetDOFTorqueLimits() * 4
 
-            accel_links = robot.GetLinkAccelerations(qdd_full)
-            robot.SetDOFVelocityLimits(vlim_)
-        return accel_links[6][:3]  # only return the translational components
-
-    F_q = np.zeros((6, 3))
-    F_q[:3, :3] = np.eye(3)
-    F_q[3:, :3] = -np.eye(3)
-    g_q = np.ones(6) * 0.5
-    def F(q):
-        return F_q
-    def g(q):
-        return g_q
-    pc_cart_acc = constraint.SecondOrderConstraint(
-        inverse_dynamics, F, g, dof=7)
-    # cartesin accel finishes
-
-    all_constraints = [pc_vel, pc_acc, pc_cart_acc]
+    tau_max = np.vstack((-tau_max_[robot.GetActiveDOFIndices()], tau_max_[robot.GetActiveDOFIndices()])).T
+    fs_coef = np.random.rand(dof) * 10
+    pc_tau = constraint.JointTorqueConstraint(
+        inv_dyn, tau_max, fs_coef, discretization_scheme=constraint.DiscretizationType.Interpolation)
+    all_constraints = [pc_vel, pc_acc, pc_tau]
+    # all_constraints = pc_vel
 
     instance = algo.TOPPRA(all_constraints, path, solver_wrapper='seidel')
 
@@ -81,18 +81,18 @@ def main():
     qds_sample = jnt_traj.evald(ts_sample)
     qdds_sample = jnt_traj.evaldd(ts_sample)
 
-    cart_accel = []
+    torque = []
     for q_, qd_, qdd_ in zip(qs_sample, qds_sample, qdds_sample):
-        cart_accel.append(inverse_dynamics(q_, qd_, qdd_))
-    cart_accel = np.array(cart_accel)
+        torque.append(inv_dyn(q_, qd_, qdd_) + fs_coef * np.sign(qd_))
+    torque = np.array(torque)
 
-    plt.plot(ts_sample, cart_accel[:, 0], label="$a_x$")
-    plt.plot(ts_sample, cart_accel[:, 1], label="$a_y$")
-    plt.plot(ts_sample, cart_accel[:, 2], label="$a_z$")
-    plt.plot([ts_sample[0], ts_sample[-1]], [0.5, 0.5], "--", c='black', label="Cart. Accel. Limits")
-    plt.plot([ts_sample[0], ts_sample[-1]], [-0.5, -0.5], "--", c='black')
+    fig, axs = plt.subplots(dof, 1)
+    for i in range(0, robot.GetActiveDOF()):
+        axs[i].plot(ts_sample, torque[:, i])
+        axs[i].plot([ts_sample[0], ts_sample[-1]], [tau_max[i], tau_max[i]], "--")
+        axs[i].plot([ts_sample[0], ts_sample[-1]], [-tau_max[i], -tau_max[i]], "--")
     plt.xlabel("Time (s)")
-    plt.ylabel("Cartesian acceleration of the origin of link 6 $(m/s^2)$")
+    plt.ylabel("Torque $(Nm)$")
     plt.legend(loc='upper right')
     plt.show()
 

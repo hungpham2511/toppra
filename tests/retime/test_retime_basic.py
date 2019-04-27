@@ -12,7 +12,7 @@ import toppra.constraint as constraint
 toppra.setup_logging(level="INFO")
 
 
-@pytest.mark.parametrize("solver_wrapper", ["cvxpy", "qpoases", "hotqpoases", "seidel"])
+@pytest.mark.parametrize("solver_wrapper", ["qpoases", "hotqpoases", "seidel"])
 def test_toppra_linear(basic_constraints, basic_path, solver_wrapper):
     """Solve some basic problem instances.
 
@@ -35,7 +35,6 @@ def test_toppra_linear(basic_constraints, basic_path, solver_wrapper):
 
 
 @pytest.mark.parametrize("solver_wrapper", [
-    "cvxpy,qpoases",
     "qpoases,hotqpoases",
     "qpoases,seidel",
     "hotqpoases,seidel"

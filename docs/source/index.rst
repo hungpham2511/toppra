@@ -50,6 +50,7 @@ You can find on this page :ref:`installation`, :ref:`tutorials`, some
    installation
    tutorials
    notes
+   FAQs
    modules
 
 Citing TOPP-RA!

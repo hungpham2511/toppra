@@ -6,51 +6,53 @@ Module references
 Interpolators
 -------------
 
+Interpolator base class
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: toppra.Interpolator
+   :members:
 
-SplineInterplator
+Spline Interplator
 ^^^^^^^^^^^^^^^^^^^
 .. autoclass:: toppra.SplineInterpolator
    :members:
 
-RaveTrajectoryWrapper
-^^^^^^^^^^^^^^^^^^^^^^
+Rave Trajectory Wrapper
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: toppra.RaveTrajectoryWrapper
-   :members:
-
-Interpolator (base class)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: toppra.Interpolator
    :members:
 
 Constraints
 ------------
 
-JointAccelerationConstraint
+Joint Acceleration Constraint
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: toppra.constraint.JointAccelerationConstraint
    :members:
+   :special-members:
 
-JointVelocityConstraint
+Joint Velocity Constraint
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: toppra.constraint.JointVelocityConstraint
    :members:
+   :special-members:
 
-SecondOrderConstraint
+Second Order Constraint
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: toppra.constraint.CanonicalLinearSecondOrderConstraint
+.. autoclass:: toppra.constraint.SecondOrderConstraint
    :members:
+   :special-members:
 
-CanonicalLinearConstraint (base class)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. autoclass:: toppra.constraint.CanonicalLinearConstraint
-   :members:
-
-RobustLinearConstraint
+Robust Linear Constraint
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. autoclass:: toppra.constraint.RobustCanonicalLinearConstraint
+.. autoclass:: toppra.constraint.RobustLinearConstraint
    :members:
+
+Canonical Linear Constraint (base class)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: toppra.constraint.LinearConstraint
+   :members:
+   :special-members:
+
 
 Constraints (base class)
 ^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -2,17 +2,18 @@
 """
 import numpy as np
 
-try:
-    import openravepy as orpy
-    OPENRAVEPY_AVAILABLE = True
-except ImportError:
-    OPENRAVEPY_AVAILABLE = False
-
 from ..constants import TINY
 from ..interpolator import SplineInterpolator, Interpolator
 
 import logging
 logger = logging.getLogger(__name__)
+
+try:
+    import openravepy as orpy
+except ImportError as err:
+    logger.warning("Unable to import openravepy. Exception: %s" % err.args[0])
+except SyntaxError as err:
+    logger.warning("Unable to import openravepy. Exception: %s" % err.args[0])
 
 
 class ParameterizationAlgorithm(object):

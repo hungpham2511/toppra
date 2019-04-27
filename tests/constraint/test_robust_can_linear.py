@@ -22,7 +22,7 @@ def test_basic(accel_constraint, dist_scheme):
     "Basic initialization."
     cnst, path = accel_constraint
 
-    ro_cnst = toppra.constraint.RobustCanonicalLinearConstraint(cnst, [0.1, 2, .3], dist_scheme)
+    ro_cnst = toppra.constraint.RobustLinearConstraint(cnst, [0.1, 2, .3], dist_scheme)
 
     assert ro_cnst.get_constraint_type() == toppra.constraint.ConstraintType.CanonicalConic
     assert ro_cnst.get_dof() == 5
@@ -53,7 +53,7 @@ def test_negative_perb(accel_constraint):
     "If negative pertubations are given, raise ValueError"
     cnst, path = accel_constraint
     with pytest.raises(ValueError) as e_info:
-        ro_cnst = toppra.constraint.RobustCanonicalLinearConstraint(cnst, [-0.1, 2, .3])
+        ro_cnst = toppra.constraint.RobustLinearConstraint(cnst, [-0.1, 2, .3])
     assert e_info.value.args[0] == "Perturbation must be non-negative. Input {:}".format([-0.1, 2, .3])
 
 

@@ -13,8 +13,6 @@ except:
     # Unable to find openrave
     FOUND_OPENRAVEPY = False
 
-FOUND_MOSEK = False
-
 # try:
 #     import mosek
 #     FOUND_MOSEK = True
