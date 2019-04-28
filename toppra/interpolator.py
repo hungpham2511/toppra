@@ -273,7 +273,7 @@ class SplineInterpolator(Interpolator):
         Shaped (N+1,). Path positions of the waypoints.
     waypoints: array
         Shaped (N+1, dof). Waypoints.
-    bc_type: str, optional
+    bc_type: optional
         Boundary conditions of the spline. Can be 'not-a-knot',
         'clamped', 'natural' or 'periodic'.
 
@@ -327,6 +327,16 @@ class SplineInterpolator(Interpolator):
             self.cspl = CubicSpline(ss_waypoints, waypoints, bc_type=bc_type)
             self.cspld = self.cspl.derivative()
             self.cspldd = self.cspld.derivative()
+
+    def __call__(self, path_positions, order=0):
+        if order == 0:
+            return self.eval(path_positions)
+        elif order == 1:
+            return self.evald(path_positions)
+        elif order == 2:
+            return self.evaldd(path_positions)
+        else:
+            raise ValueError("Invalid order %s" % order)
 
     def get_waypoints(self):
         """Return the appropriate scaled waypoints."""
@@ -512,6 +522,16 @@ class PolynomialPath(Interpolator):
 
         self.polyd = [poly.deriv() for poly in self.poly]
         self.polydd = [poly.deriv() for poly in self.polyd]
+
+    def __call__(self, path_positions, order=0):
+        if order == 0:
+            return self.eval(path_positions)
+        elif order == 1:
+            return self.evald(path_positions)
+        elif order == 2:
+            return self.evaldd(path_positions)
+        else:
+            raise ValueError("Invalid order %s" % order)
 
     @property
     def dof(self):
