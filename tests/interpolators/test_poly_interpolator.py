@@ -11,7 +11,7 @@ def test_scalar():
     npt.assert_allclose(pi.eval([0, 0.5, 1]), [1, 2.75, 6])
     npt.assert_allclose(pi.evald([0, 0.5, 1]), [2, 5, 8])
     npt.assert_allclose(pi.evaldd([0, 0.5, 1]), [6, 6, 6])
-    npt.assert_allclose(pi.get_path_interval(), np.r_[0, 2])
+    npt.assert_allclose(pi.path_interval, np.r_[0, 2])
 
 
 def test_2_dof():

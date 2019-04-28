@@ -5,6 +5,7 @@ import logging
 import warnings
 import numpy as np
 from scipy.interpolate import UnivariateSpline, CubicSpline, PPoly
+from .utils import deprecated
 
 logger = logging.getLogger(__name__)
 
@@ -331,10 +332,8 @@ class SplineInterpolator(Interpolator):
         """Return the appropriate scaled waypoints."""
         return self.ss_waypoints, self.waypoints
 
+    @deprecated
     def get_duration(self):
-        warnings.warn(
-            "get_duration is deprecated, use duration (property) instead",
-            PendingDeprecationWarning)
         return self.duration
 
     @property
@@ -342,14 +341,21 @@ class SplineInterpolator(Interpolator):
         return self.ss_waypoints[-1] - self.ss_waypoints[0]
 
     @property
+    def path_interval(self):
+        return np.array([self.ss_waypoints[0], self.ss_waypoints[-1]])
+
+    @deprecated
+    def get_path_interval(self):
+        return self.path_interval
+
+    @property
     def dof(self):
         if np.isscalar(self.waypoints[0]):
             return 1
         return self.waypoints[0].shape[0]
 
+    @deprecated
     def get_dof(self):  # type: () -> int
-        warnings.warn("get_dof is deprecated, use dof (property) instead",
-                      PendingDeprecationWarning)
         return self.dof
 
     def eval(self, ss_sam):
@@ -435,8 +441,13 @@ class UnivariateSplineInterpolator(Interpolator):
         self.uspld = [spl.derivative() for spl in self.uspl]
         self.uspldd = [spl.derivative() for spl in self.uspld]
 
+    @deprecated
     def get_duration(self):
         return self.duration
+
+    @deprecated
+    def get_path_interval(self):
+        return self.path_interval
 
     def eval(self, ss_sam):
         data = []
@@ -510,14 +521,20 @@ class PolynomialPath(Interpolator):
     def duration(self):
         return self.s_end - self.s_start
 
+    @property
+    def path_interval(self):
+        return np.array([self.s_start, self.s_end])
+
+    @deprecated
+    def get_path_interval(self):
+        return self.path_interval
+
+    @deprecated
     def get_duration(self):
-        warnings.warn("get_duration is deprecated, use duration",
-                      PendingDeprecationWarning)
         return self.duration
 
+    @deprecated
     def get_dof(self):
-        warnings.warn("get_dof is deprecated, use dof",
-                      PendingDeprecationWarning)
         return self.dof
 
     def eval(self, ss_sam):
