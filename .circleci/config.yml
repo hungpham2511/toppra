@@ -93,7 +93,7 @@ jobs:
           command: |
             . venv3/bin/activate
             export PYTHONPATH=$PYTHONPATH:`openrave-config --python-dir`
-            pytest tests -W ignore::PendingDeprecationWarning
+            pytest -q tests --durations=3
 
       - store_artifacts:
           path: test-reports
@@ -143,7 +143,7 @@ jobs:
           command: |
             . venv/bin/activate
             export PYTHONPATH=$PYTHONPATH:`openrave-config --python-dir`
-            pytest tests -W ignore::PendingDeprecationWarning
+            pytest -q tests --durations=3
 
       - store_artifacts:
           path: test-reports
