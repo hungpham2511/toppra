@@ -2,19 +2,23 @@
 Some utility functions need to generate PathConstraints. Most are
 specific to different scenarios.
 """
-import logging, coloredlogs
-import numpy as np
+import logging
 import functools
 import warnings
 
+import coloredlogs
+import numpy as np
 
-LOGGER = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)
 
 
 def deprecated(func):
     """This is a decorator which can be used to mark functions
     as deprecated. It will result in a warning being emitted
     when the function is used."""
+
+    # pylint: disable=C0111
     @functools.wraps(func)
     def new_func(*args, **kwargs):
         warnings.warn("Call to deprecated function {}.".format(func.__name__),
@@ -24,16 +28,17 @@ def deprecated(func):
 
 
 def setup_logging(level="WARN"):
-    """ Setup basic logging facility to console.
+    """Setup basic logging facility to console.
     """
-    coloredlogs.install(logger=logging.getLogger("toppra"), level=level,
-                        fmt="%(levelname)5s [%(filename)s : %(lineno)d] [%(funcName)s] %(message)s",
-                        datefmt="%H:%M:%S",
-                        milliseconds=True)
+    coloredlogs.install(
+        logger=logging.getLogger("toppra"), level=level,
+        fmt="%(levelname)5s [%(filename)s : %(lineno)d] [%(funcName)s] %(message)s",
+        datefmt="%H:%M:%S",
+        milliseconds=True)
 
 
 def compute_jacobian_wrench(robot, link, point):
-    """ Compute the wrench Jacobian for `link` at `point`.
+    """Compute the wrench Jacobian for `link` at `point`.
 
     We look for J_wrench such that
           J_wrench.T * wrench = J_trans.T * F + J_rot.T * tau
@@ -42,10 +47,10 @@ def compute_jacobian_wrench(robot, link, point):
     J_wrench is computed by stacking J_translation and J_rotation
 
     """
-    J_trans = robot.ComputeJacobianTranslation(link.GetIndex(), point)
-    J_rot = robot.ComputeJacobianAxisAngle(link.GetIndex())
-    J_wrench = np.vstack((J_trans, J_rot))
-    return J_wrench
+    jacobian_translation = robot.ComputeJacobianTranslation(link.GetIndex(), point)
+    jacobian_rotation = robot.ComputeJacobianAxisAngle(link.GetIndex())
+    jacobian_wrench = np.vstack((jacobian_translation, jacobian_rotation))
+    return jacobian_wrench
 
 
 def inv_dyn(rave_robot, q, qd, qdd, forceslist=None, returncomponents=True):
@@ -77,13 +82,13 @@ def inv_dyn(rave_robot, q, qd, qdd, forceslist=None, returncomponents=True):
         See returncomponents parameter.
     """
     if np.isscalar(q):  # Scalar case
-        q_ = [q]
-        qd_ = [qd]
-        qdd_ = [qdd]
+        _q = [q]
+        _qd = [qd]
+        _qdd = [qdd]
     else:
-        q_ = q
-        qd_ = qd
-        qdd_ = qdd
+        _q = q
+        _qd = qd
+        _qdd = qdd
 
     # Temporary remove kinematic Limits
     vlim = rave_robot.GetDOFVelocityLimits()
@@ -92,17 +97,17 @@ def inv_dyn(rave_robot, q, qd, qdd, forceslist=None, returncomponents=True):
     rave_robot.SetDOFAccelerationLimits(100 * alim)
     # Do computation
     with rave_robot:
-        rave_robot.SetDOFValues(q_)
-        rave_robot.SetDOFVelocities(qd_)
+        rave_robot.SetDOFValues(_q)
+        rave_robot.SetDOFVelocities(_qd)
         res = rave_robot.ComputeInverseDynamics(
-            qdd_, forceslist, returncomponents=returncomponents)
+            _qdd, forceslist, returncomponents=returncomponents)
     # Restore kinematic limits
     rave_robot.SetDOFVelocityLimits(vlim)
     rave_robot.SetDOFAccelerationLimits(alim)
     return res
 
 
-def smooth_singularities(pp, us, xs, vs=None):
+def smooth_singularities(parametrization_instance, us, xs, vs=None):
     """Smooth jitters due to singularities.
 
     Solving TOPP for discrete problem generated from collocation
@@ -119,7 +124,7 @@ def smooth_singularities(pp, us, xs, vs=None):
 
     Parameters
     ----------
-    pp: :class:`.qpOASESPPSolver`
+    parametrization_instance: :class:`.qpOASESPPSolver`
     us: array
         Shape (_N, ). Controls.
     xs: array
@@ -140,11 +145,11 @@ def smooth_singularities(pp, us, xs, vs=None):
     # Find the indices
     singular_indices = []
     uds = np.diff(us, n=1)
-    for i in range(pp.N - 3):
+    for i in range(parametrization_instance.N - 3):
         if uds[i] < 0 and uds[i + 1] > 0 and uds[i + 2] < 0:
-            LOGGER.debug("Found potential singularity at {:d}".format(i))
+            logger.debug("Found potential singularity at {:d}".format(i))
             singular_indices.append(i)
-    LOGGER.debug("Found singularities at %s", singular_indices)
+    logger.debug("Found singularities at %s", singular_indices)
 
     # Smooth the singularities
     xs_smth = np.copy(xs)
@@ -153,7 +158,7 @@ def smooth_singularities(pp, us, xs, vs=None):
         vs_smth = np.copy(vs)
     for index in singular_indices:
         idstart = max(0, index)
-        idend = min(pp.N, index + 4)
+        idend = min(parametrization_instance.N, index + 4)
         xs_smth[range(idstart, idend + 1)] = (
             xs_smth[idstart] + (xs_smth[idend] - xs_smth[idstart]) *
             np.linspace(0, 1, idend + 1 - idstart))
@@ -163,8 +168,9 @@ def smooth_singularities(pp, us, xs, vs=None):
                     for frac in np.linspace(0, 1, idend + 1 - idstart)]
             vs_smth[range(idstart, idend + 1)] = np.array(data)
 
-    for i in range(pp.N):
-        us_smth[i] = (xs_smth[i + 1] - xs_smth[i]) / 2 / (pp.ss[i + 1] - pp.ss[i])
+    for i in range(parametrization_instance.N):
+        us_smth[i] = ((xs_smth[i + 1] - xs_smth[i]) / 2
+                      / (parametrization_instance.ss[i + 1] - parametrization_instance.ss[i]))
 
     if vs is not None:
         return us_smth, xs_smth, vs_smth
