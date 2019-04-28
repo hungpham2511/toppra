@@ -76,18 +76,22 @@ def test_correctness(coefficients_functions):
         np.testing.assert_allclose(cnst_F(q_vec[i]), F[i])
         np.testing.assert_allclose(cnst_g(q_vec[i]), g[i])
 
+@pytest.fixture
+def friction():
+    def randomized_friction(q):
+        """Randomize with fixed input/output."""
+        np.random.seed(int(abs(np.sum(q)) * 1000))
+        return 2 + np.sin(q) + np.random.rand(len(q))
+    yield randomized_friction
 
-def test_correctness_friction(coefficients_functions):
+
+def test_correctness_friction(coefficients_functions, friction):
     """ Same as the above test, but has frictional effect.
     """
     # setup
     A, B, C, cnst_F, cnst_g, path = coefficients_functions
     def inv_dyn(q, qd, qdd):
         return A(q).dot(qdd) + np.dot(qd.T, np.dot(B(q), qd)) + C(q)
-    def friction(q):
-        """Randomize with fixed input/output."""
-        np.random.seed(int(np.sum(q) * 1000))
-        return 2 + np.sin(q) + np.random.rand(len(q))
 
     constraint = toppra.constraint.SecondOrderConstraint(inv_dyn, cnst_F, cnst_g, 2, friction=friction)
     constraint.set_discretization_type(0)
@@ -109,17 +113,13 @@ def test_correctness_friction(coefficients_functions):
         np.testing.assert_allclose(cnst_F(p_vec[i]), F[i])
 
 
-def test_joint_force(coefficients_functions):
+def test_joint_force(coefficients_functions, friction):
     """ Same as the above test, but has frictional effect.
     """
     # setup
     A, B, C, cnst_F, cnst_g, path = coefficients_functions
     def inv_dyn(q, qd, qdd):
         return A(q).dot(qdd) + np.dot(qd.T, np.dot(B(q), qd)) + C(q)
-    def friction(q):
-        """Randomize with fixed input/output."""
-        np.random.seed(int(np.sum(q) * 1000))
-        return 2 + np.sin(q) + np.random.rand(len(q))
     taulim = np.random.randn(2, 2)
 
     constraint = toppra.constraint.SecondOrderConstraint.joint_torque_constraint(

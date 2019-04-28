@@ -5,6 +5,7 @@ import logging
 import warnings
 import numpy as np
 from scipy.interpolate import UnivariateSpline, CubicSpline, PPoly
+from .utils import deprecated
 
 logger = logging.getLogger(__name__)
 
@@ -231,15 +232,14 @@ class RaveTrajectoryWrapper(Interpolator):
         self.ppoly_d = self.ppoly.derivative()
         self.ppoly_dd = self.ppoly.derivative(2)
 
+    @deprecated
     def get_duration(self):
-        warnings.warn(
-            "`get_duration` method is deprecated, use `duration` property instead",
-            PendingDeprecationWarning)
+        """Return the path's duration."""
         return self.duration
 
+    @deprecated
     def get_dof(self):  # type: () -> int
-        warnings.warn("This method is deprecated, use the property instead",
-                      PendingDeprecationWarning)
+        """Return the path's dof."""
         return self.dof
 
     @property
@@ -251,12 +251,15 @@ class RaveTrajectoryWrapper(Interpolator):
         return self._dof
 
     def eval(self, ss_sam):
+        """Evalute path postition."""
         return self.ppoly(ss_sam)
 
     def evald(self, ss_sam):
+        """Evalute path velocity."""
         return self.ppoly_d(ss_sam)
 
     def evaldd(self, ss_sam):
+        """Evalute path acceleration."""
         return self.ppoly_dd(ss_sam)
 
 
@@ -272,7 +275,7 @@ class SplineInterpolator(Interpolator):
         Shaped (N+1,). Path positions of the waypoints.
     waypoints: array
         Shaped (N+1, dof). Waypoints.
-    bc_type: str, optional
+    bc_type: optional
         Boundary conditions of the spline. Can be 'not-a-knot',
         'clamped', 'natural' or 'periodic'.
 
@@ -327,14 +330,23 @@ class SplineInterpolator(Interpolator):
             self.cspld = self.cspl.derivative()
             self.cspldd = self.cspld.derivative()
 
+    def __call__(self, path_positions, order=0):
+        if order == 0:
+            return self.eval(path_positions)
+        elif order == 1:
+            return self.evald(path_positions)
+        elif order == 2:
+            return self.evaldd(path_positions)
+        else:
+            raise ValueError("Invalid order %s" % order)
+
     def get_waypoints(self):
         """Return the appropriate scaled waypoints."""
         return self.ss_waypoints, self.waypoints
 
+    @deprecated
     def get_duration(self):
-        warnings.warn(
-            "get_duration is deprecated, use duration (property) instead",
-            PendingDeprecationWarning)
+        """Return the path's duration."""
         return self.duration
 
     @property
@@ -342,23 +354,35 @@ class SplineInterpolator(Interpolator):
         return self.ss_waypoints[-1] - self.ss_waypoints[0]
 
     @property
+    def path_interval(self):
+        return np.array([self.ss_waypoints[0], self.ss_waypoints[-1]])
+
+    @deprecated
+    def get_path_interval(self):
+        """Return the path interval."""
+        return self.path_interval
+
+    @property
     def dof(self):
         if np.isscalar(self.waypoints[0]):
             return 1
         return self.waypoints[0].shape[0]
 
+    @deprecated
     def get_dof(self):  # type: () -> int
-        warnings.warn("get_dof is deprecated, use dof (property) instead",
-                      PendingDeprecationWarning)
+        """Return the path's dof."""
         return self.dof
 
     def eval(self, ss_sam):
+        """Return the path position."""
         return self.cspl(ss_sam)
 
     def evald(self, ss_sam):
+        """Return the path velocity."""
         return self.cspld(ss_sam)
 
     def evaldd(self, ss_sam):
+        """Return the path acceleration."""
         return self.cspldd(ss_sam)
 
     def compute_rave_trajectory(self, robot):
@@ -435,22 +459,32 @@ class UnivariateSplineInterpolator(Interpolator):
         self.uspld = [spl.derivative() for spl in self.uspl]
         self.uspldd = [spl.derivative() for spl in self.uspld]
 
+    @deprecated
     def get_duration(self):
+        """Return the path duration."""
         return self.duration
 
+    @deprecated
+    def get_path_interval(self):
+        """Return the path interval."""
+        return self.path_interval
+
     def eval(self, ss_sam):
+        """Return the path position."""
         data = []
         for spl in self.uspl:
             data.append(spl(ss_sam))
         return np.array(data).T
 
     def evald(self, ss_sam):
+        """Return the path velocity."""
         data = []
         for spl in self.uspld:
             data.append(spl(ss_sam))
         return np.array(data).T
 
     def evaldd(self, ss_sam):
+        """Return the path acceleration."""
         data = []
         for spl in self.uspldd:
             data.append(spl(ss_sam))
@@ -502,6 +536,16 @@ class PolynomialPath(Interpolator):
         self.polyd = [poly.deriv() for poly in self.poly]
         self.polydd = [poly.deriv() for poly in self.polyd]
 
+    def __call__(self, path_positions, order=0):
+        if order == 0:
+            return self.eval(path_positions)
+        elif order == 1:
+            return self.evald(path_positions)
+        elif order == 2:
+            return self.evaldd(path_positions)
+        else:
+            raise ValueError("Invalid order %s" % order)
+
     @property
     def dof(self):
         return self.coeff.shape[0]
@@ -510,29 +554,41 @@ class PolynomialPath(Interpolator):
     def duration(self):
         return self.s_end - self.s_start
 
+    @property
+    def path_interval(self):
+        return np.array([self.s_start, self.s_end])
+
+    @deprecated
+    def get_path_interval(self):
+        """Return the path interval."""
+        return self.path_interval
+
+    @deprecated
     def get_duration(self):
-        warnings.warn("get_duration is deprecated, use duration",
-                      PendingDeprecationWarning)
+        """Return the path duration."""
         return self.duration
 
+    @deprecated
     def get_dof(self):
-        warnings.warn("get_dof is deprecated, use dof",
-                      PendingDeprecationWarning)
+        """Return the path's dof."""
         return self.dof
 
     def eval(self, ss_sam):
+        """Return the path position."""
         res = [poly(np.array(ss_sam)) for poly in self.poly]
         if self.dof == 1:
             return np.array(res).flatten()
         return np.array(res).T
 
     def evald(self, ss_sam):
+        """Return the path velocity."""
         res = [poly(np.array(ss_sam)) for poly in self.polyd]
         if self.dof == 1:
             return np.array(res).flatten()
         return np.array(res).T
 
     def evaldd(self, ss_sam):
+        """Return the path acceleration."""
         res = [poly(np.array(ss_sam)) for poly in self.polydd]
         if self.dof == 1:
             return np.array(res).flatten()

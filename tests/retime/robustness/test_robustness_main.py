@@ -59,7 +59,7 @@ def test_robustness_main(request):
         t0 = time.time()
         path = toppra.SplineInterpolator(
             problem_data['ss_waypoints'],
-            problem_data['waypoints'])
+            problem_data['waypoints'], bc_type='clamped')
         vlim = np.vstack((- problem_data['vlim'], problem_data['vlim'])).T
         alim = np.vstack((- problem_data['alim'], problem_data['alim'])).T
         pc_vel = constraint.JointVelocityConstraint(vlim)

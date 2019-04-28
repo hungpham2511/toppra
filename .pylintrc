@@ -343,7 +343,8 @@ good-names=i,
 	   logger,
 	   dx, dy, dz, dq, q,
 	   x, y, z, s, dt, F, g, a, b, c,
-	   N, ds
+	   N, ds, q, qd, qdd, qddd,
+	   us, xs, vs,  # special toppra-specific variables
 
 
 # Include a hint for the correct naming format with invalid-name
