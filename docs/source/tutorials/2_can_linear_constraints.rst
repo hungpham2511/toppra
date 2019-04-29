@@ -86,7 +86,7 @@ object, readied to be used with TOPP-RA. See below for code example:
    way_pts = np.random.randn(N_samples, dof)
    path = ta.SplineInterpolator(np.linspace(0, 1, 5), way_pts)
 
-   c = toppra.constraint.CanonicalLinearSecondOrderConstraint(inverse_dynamic, F, g)
+   c = toppra.constraint.SecondOrderConstraint(inverse_dynamic, F, g)
    instance = algo.TOPPRA([c], path)
    
    traj = instance.compute_trajectory()
@@ -173,7 +173,7 @@ the final constraint object is :code:`pc_cart_acc`.
     def g(q):
         return g_q
 
-    pc_cart_acc = constraint.CanonicalLinearSecondOrderConstraint(
+    pc_cart_acc = constraint.SecondOrderConstraint(
         inverse_dynamics, F, g, dof=7)
 
 

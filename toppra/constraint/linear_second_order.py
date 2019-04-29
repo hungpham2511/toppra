@@ -1,7 +1,11 @@
 """This module implements the general Second-Order constraints."""
+import logging
 import numpy as np
+
 from .linear_constraint import LinearConstraint, canlinear_colloc_to_interpolate
 from .constraint import DiscretizationType
+
+logger = logging.getLogger(__name__)
 
 
 class SecondOrderConstraint(LinearConstraint):
@@ -73,6 +77,7 @@ class SecondOrderConstraint(LinearConstraint):
         if friction is None:
             self.friction = lambda s: np.zeros(self.dof)
         else:
+            logger.warn("Friction is not handled due to a bug.")
             self.friction = friction
         self._format_string = "    Kind: Generalized Second-order constraint\n"
         self._format_string = "    Dimension:\n"
@@ -115,8 +120,8 @@ class SecondOrderConstraint(LinearConstraint):
         a_vec = np.array([self.inv_dyn(_p, v_zero, _ps) for _p, _ps in zip(p_vec, ps_vec)]) - c_vec
         b_vec = np.array([self.inv_dyn(_p, _ps, pss_) for _p, _ps, pss_ in zip(p_vec, ps_vec, pss_vec)]) - c_vec
 
-        for i, (_p, _ps) in enumerate(zip(p_vec, ps_vec)):
-            c_vec[i] = c_vec[i] + np.sign(_ps) * self.friction(_p)
+        # for i, (_p, _ps) in enumerate(zip(p_vec, ps_vec)):
+        #     c_vec[i] = c_vec[i] + np.sign(_ps) * self.friction(_p)
 
         if self.discretization_type == DiscretizationType.Collocation:
             return a_vec, b_vec, c_vec, F_vec, g_vec, None, None
