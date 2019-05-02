@@ -9,40 +9,57 @@ logger = logging.getLogger(__name__)
 
 
 class SecondOrderConstraint(LinearConstraint):
-    """This class represents the linear generalized Second-order constraints.
+    """This class implements the linear Second-Order constraint.
 
-    A `SecondOrderConstraint` is given by the following formula:
+    Conventionally, a :class:`SecondOrderConstraint` is given by the
+    following formula:
 
     .. math::
         A(\mathbf{q}) \ddot {\mathbf{q}} + \dot
-        {\mathbf{q}}^\\top B(\mathbf{q}) \dot {\mathbf{q}} +
-        C(\mathbf{q}) + sign(\dot {\mathbf{q}}) * D(\mathbf{q}) = w,
+        {\mathbf{q}}^\\top B(\mathbf{q}) \dot {\mathbf{q}} + C(\mathbf{q}) = w,
 
     where w is a vector that satisfies the polyhedral constraint:
 
     .. math::
         F(\mathbf{q}) w \\leq g(\mathbf{q}).
 
-    The functions :math:`A, B, C, D` represent respectively the inertial,
-    Corriolis, gravitational and dry friction terms in a robot torque
-    bound constraint.
+    In the common example of robot torque bound, the functions
+    :math:`A, B, C` represent respectively the inertial, Corriolis and
+    gravitational terms.
 
-    To evaluate the constraint on a geometric path :math:`\mathbf{p}(s)`:
+    We evaluate a constraint on a geometric path :math:`\mathbf{p}(s)`
+    with the following equations, which are obtained by simple
+    substitution:
 
     .. math::
 
         A(\mathbf{q}) \mathbf{p}'(s) \ddot s + [A(\mathbf{q}) \mathbf{p}''(s) + \mathbf{p}'(s)^\\top B(\mathbf{q})
-        \mathbf{p}'(s)] \dot s^2 + C(\mathbf{q}) + sign(\mathbf{p}'(s)) * D(\mathbf{p}(s)) = w, \\\\
-        a(s) \ddot s + b(s) \dot s ^2 + c(s) = w.
+        \mathbf{p}'(s)] \dot s^2 + C(\mathbf{q}) = w, \\\\
+        \mathbf{a}(s) \ddot s + \mathbf{b}(s) \dot s ^2 + \mathbf{c}(s) = w.
 
     where :math:`\mathbf{p}', \mathbf{p}''` denote respectively the
-    first and second derivatives of the path.
+    first and second derivatives of the path. The vector functions
+    :math:`\mathbf a, \mathbf b, \mathbf c` are what `toppra` needs to
+    solve for path parametrizations.
 
-
-    It is important to note that to evaluate the coefficients
+    It is important to note that to evaluate these coefficients
     :math:`a(s), b(s), c(s)`, it is not necessary to have the
-    functions :math:`A, B, C`. Rather, only the sum of the these 3
-    functions--the inverse dynamic function--is necessary.
+    functions :math:`A, B, C` explicitly. Rather, it is only required
+    to have the sum of the these 3 functions--the inverse dynamic
+    function:
+
+    .. math::
+        \mathrm{inverse\_dyn}(\mathbf q, \dot{\mathbf q}, \ddot{\mathbf q}) := 
+        A(\mathbf{q}) \ddot {\mathbf{q}} + \dot {\mathbf{q}}^\\top B(\mathbf{q}) \dot {\mathbf{q}} + C(\mathbf{q})
+
+
+    It is interesting to note that we can actually use a more general
+    form of the above equations, covering a wider class of
+    constraints. In particular, one can replace :math:`A(\mathbf{q}),
+    B(\mathbf{q}), C(\mathbf{q}), F(\mathbf{q}), g(\mathbf{q})` with
+    :math:`A(\mathbf{q}, s), B(\mathbf{q}, s), C(\mathbf{q}, s),
+    F(\mathbf{q}, s), g(\mathbf{q}, s)`. This is the form that is
+    implemented in this class.
 
     """
 

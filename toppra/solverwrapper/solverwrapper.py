@@ -42,7 +42,7 @@ class SolverWrapper(object):
         self.path_discretization = np.array(path_discretization)
         # path scaling: intuitively, if this value is not 1, the TOPP
         # problem will be solved as if the input path is scaled linearly.
-        self.scaling = self.path_discretization[-1] / self.path.get_duration()
+        self.scaling = self.path_discretization[-1] / self.path.duration
         # End main attributes
         self.N = len(path_discretization) - 1  # Number of stages. Number of point is _N + 1
         self.deltas = self.path_discretization[1:] - self.path_discretization[:-1]

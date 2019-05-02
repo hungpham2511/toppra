@@ -66,16 +66,16 @@ class JointTorqueConstraint(LinearConstraint):
         self.identical = True
 
     def compute_constraint_params(self, path, gridpoints, scaling):
-        if path.get_dof() != self.get_dof():
+        if path.dof != self.get_dof():
             raise ValueError("Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
-                self.get_dof(), path.get_dof()
+                self.get_dof(), path.dof
             ))
-        v_zero = np.zeros(path.get_dof())
+        v_zero = np.zeros(path.dof)
         p = path.eval(gridpoints / scaling)
         ps = path.evald(gridpoints / scaling) / scaling
         pss = path.evaldd(gridpoints / scaling) / scaling ** 2
         N = gridpoints.shape[0] - 1
-        dof = path.get_dof()
+        dof = path.dof
         I_dof = np.eye(dof)
         F = np.zeros((dof * 2, dof))
         g = np.zeros(dof * 2)
