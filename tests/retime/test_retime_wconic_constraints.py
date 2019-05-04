@@ -45,4 +45,4 @@ def test_toppra_conic(vel_accel_robustaccel, path, solver_wrapper):
 
     traj, _ = ro_instance.compute_trajectory(0, 0)
     assert traj is not None
-    assert traj.get_duration() < 20 and traj.get_duration() > 0
+    assert traj.duration < 20 and traj.duration > 0

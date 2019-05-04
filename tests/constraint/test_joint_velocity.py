@@ -89,7 +89,7 @@ class TestClass_JointVelocityConstraint(object):
         with pytest.raises(ValueError) as e_info:
             pc.compute_constraint_params(path_wrongdim, [0, 0.5, 1], 1.0)
         assert e_info.value.args[0] == "Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
-            pc.get_dof(), 10
+            pc.dof, 10
         )
 
 

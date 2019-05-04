@@ -26,6 +26,7 @@ class DiscretizationType(Enum):
 
 class Constraint(object):
     """The base constraint class."""
+
     def __repr__(self):
         string = self.__class__.__name__ + '(\n'
         string += '    Type: {:}'.format(self.constraint_type) + '\n'
@@ -81,6 +82,6 @@ class Constraint(object):
         else:
             raise "Discretization type: {:} not implemented!".format(discretization_type)
 
-    def compute_constraint_params(self, path, gridpoints, scaling=1):
+    def compute_constraint_params(self, *args, **kwargs):
         """Evaluate parameters of the constraint."""
         raise NotImplementedError

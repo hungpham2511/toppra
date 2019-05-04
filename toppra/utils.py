@@ -21,8 +21,8 @@ def deprecated(func):
     # pylint: disable=C0111
     @functools.wraps(func)
     def new_func(*args, **kwargs):
-        warnings.warn("Call to deprecated function {}.".format(func.__name__),
-                      category=DeprecationWarning)
+        warnings.warn("Call to deprecated function {} in module {}.".format(
+            func.__name__, func.__module__), category=DeprecationWarning)
         return func(*args, **kwargs)
     return new_func
 

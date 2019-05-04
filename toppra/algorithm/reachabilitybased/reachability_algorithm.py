@@ -57,12 +57,12 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
 
         # Handle gridpoints
         if gridpoints is None:
-            gridpoints = np.linspace(0, path.get_duration(), 100)
+            gridpoints = np.linspace(0, path.duration, 100)
             logger.info("Automatically choose a gridpoint with 100 segments/stages, spaning the input path domain uniformly.")
-        if path.get_path_interval()[0] != gridpoints[0]:
+        if path.path_interval[0] != gridpoints[0]:
             logger.fatal("Manually supplied gridpoints does not start from 0.")
             raise ValueError("Bad input gridpoints.")
-        if path.get_path_interval()[1] != gridpoints[-1]:
+        if path.path_interval[1] != gridpoints[-1]:
             logger.fatal("Manually supplied gridpoints have endpoint "
                          "different from input path duration.")
             raise ValueError("Bad input gridpoints.")
@@ -76,8 +76,8 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         # path scaling (for numerical stability)
         if scaling < 0:  # automatic scaling factor selection
             # sample a few gradient and compute the average derivatives
-            qs_sam = path.evald(np.linspace(0, 1, 5) * path.get_duration())
-            qs_average = np.sum(np.abs(qs_sam)) / path.get_dof() / 5
+            qs_sam = path(np.linspace(0, 1, 5) * path.duration, 1)
+            qs_average = np.sum(np.abs(qs_sam)) / path.dof / 5
             scaling = np.sqrt(qs_average)
             logger.info("[auto-scaling] Average path derivative: {:}".format(qs_average))
             logger.info("[auto-scaling] Selected scaling factor: {:}".format(scaling))

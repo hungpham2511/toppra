@@ -28,7 +28,7 @@ def test_basic(accel_constraint, dist_scheme):
     assert ro_cnst.get_dof() == 5
 
     a, b, c, P, _, _ = ro_cnst.compute_constraint_params(
-        path, np.linspace(0, path.get_duration(), 10), 1.0)
+        path, np.linspace(0, path.duration, 10), 1.0)
 
     # assert a.shape == (10, 2 * path.get_dof())
     # assert b.shape == (10, 2 * path.get_dof())
@@ -38,7 +38,7 @@ def test_basic(accel_constraint, dist_scheme):
     # Linear params
     cnst.set_discretization_type(dist_scheme)
     a0, b0, c0, F0, g0, _, _ = cnst.compute_constraint_params(
-        path, np.linspace(0, path.get_duration(), 10), 1.0)
+        path, np.linspace(0, path.duration, 10), 1.0)
 
     # Assert values
     for i in range(10):

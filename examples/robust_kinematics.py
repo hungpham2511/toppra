@@ -66,7 +66,7 @@ def main():
     plt.show()
 
     jnt_traj, aux_traj = instance.compute_trajectory(0, 0)
-    ts_sample = np.linspace(0, jnt_traj.get_duration(), 100)
+    ts_sample = np.linspace(0, jnt_traj.duration, 100)
     qs_sample = jnt_traj.evaldd(ts_sample)
 
     plt.plot(ts_sample, qs_sample)
