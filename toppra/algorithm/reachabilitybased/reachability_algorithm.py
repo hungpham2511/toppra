@@ -59,10 +59,10 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         if gridpoints is None:
             gridpoints = np.linspace(0, path.duration, 100)
             logger.info("Automatically choose a gridpoint with 100 segments/stages, spaning the input path domain uniformly.")
-        if path.get_path_interval()[0] != gridpoints[0]:
+        if path.path_interval[0] != gridpoints[0]:
             logger.fatal("Manually supplied gridpoints does not start from 0.")
             raise ValueError("Bad input gridpoints.")
-        if path.get_path_interval()[1] != gridpoints[-1]:
+        if path.path_interval[1] != gridpoints[-1]:
             logger.fatal("Manually supplied gridpoints have endpoint "
                          "different from input path duration.")
             raise ValueError("Bad input gridpoints.")

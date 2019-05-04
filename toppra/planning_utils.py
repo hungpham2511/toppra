@@ -147,7 +147,7 @@ def create_rave_torque_path_constraint(
     qdd_full = np.zeros(robot.GetDOF())
     active_dofs = robot.GetActiveDOFIndices()
 
-    def inv_dyn(q, qd, qdd):
+    def inv_dyn(q, qd, qdd, s=0):
         with robot:
             # Temporary remove vel/acc constraints
             vlim = robot.GetDOFVelocityLimits()

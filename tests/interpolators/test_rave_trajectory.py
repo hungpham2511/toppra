@@ -48,7 +48,7 @@ def test_consistency(request, env, traj_string):
     spec = traj.GetConfigurationSpecification()
 
     N = 100
-    ss = np.linspace(0, path.get_duration(), N)
+    ss = np.linspace(0, path.duration, N)
 
     # Openrave samples
     qs_rave = []
