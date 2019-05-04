@@ -5,7 +5,7 @@ import numpy as np
 import sys
 
 NAME = "toppra"
-VERSION = "0.2.2"
+VERSION = "0.2.2a"
 DESCR = "An implementation of TOPP-RA (TOPP via Reachability Analysis) for time-parametrizing" \
         "trajectories for robots subject to kinematic (velocity and acceleration) and dynamic" \
         "(torque) constraints. Some other kinds of constraints are also supported."
