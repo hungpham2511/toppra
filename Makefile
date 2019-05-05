@@ -10,6 +10,12 @@ doc:
 coverage: 
 	python -m pytest -q --cov-report term --cov-report xml --cov=toppra tests
 
+
+# todos before publishing:
+# - increment version in setup.py
+# - increment version in doc
+# - create a new release to master
+# - run publish on master
 publish:
 	pip install 'twine>=1.5.0'
 	python setup.py sdist
