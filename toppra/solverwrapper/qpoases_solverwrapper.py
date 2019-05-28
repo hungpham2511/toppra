@@ -1,8 +1,15 @@
 from .solverwrapper import SolverWrapper
 import numpy as np
 from ..constraint import ConstraintType
-from qpoases import (PyOptions as Options, PyPrintLevel as PrintLevel,
-                     PyReturnValue as ReturnValue, PySQProblem as SQProblem)
+from ..constants import INFTY
+try:
+    from qpoases import (PyOptions as Options, PyPrintLevel as PrintLevel,
+                         PyReturnValue as ReturnValue, PySQProblem as SQProblem)
+    qpoases_FOUND = True
+except ImportError:
+    qpoases_FOUND = False
+
+INF = INFTY
 
 
 class qpOASESSolverWrapper(SolverWrapper):
@@ -19,6 +26,7 @@ class qpOASESSolverWrapper(SolverWrapper):
     """
 
     def __init__(self, constraint_list, path, path_discretization):
+        assert qpoases_FOUND, "toppra is unable to find any installation of qpoases!"
         super(qpOASESSolverWrapper, self).__init__(constraint_list, path, path_discretization)
 
         # Currently only support Canonical Linear Constraint
@@ -48,7 +56,6 @@ class qpOASESSolverWrapper(SolverWrapper):
         #  s.t    lA <= Ay <= hA
         #         l  <=  y <= h
         assert i <= self.N and 0 <= i
-        INF = 10000
 
         l = - np.ones(2) * INF
         h = np.ones(2) * INF

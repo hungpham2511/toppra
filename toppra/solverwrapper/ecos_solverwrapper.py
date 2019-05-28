@@ -1,23 +1,52 @@
 from .solverwrapper import SolverWrapper
 from ..constraint import ConstraintType
+from ..constants import INFTY, ECOS_MAXX, ECOS_INFTY
 import logging
 import numpy as np
 import scipy.sparse
-import ecos
 
 logger = logging.getLogger(__name__)
 
-INF = 1e2
+try:
+    import ecos
+    IMPORT_ECOS = True
+except ImportError as err:
+    logger.warn("Unable to import ecos")
+    IMPORT_ECOS = False
 
 
 class ecosWrapper(SolverWrapper):
-    """ A wrapper that handles linear and conic-quadratic constraints using ECOS.
+    """A solver wrapper that handles linear and conic-quadratic constraints using ECOS.
 
+    :class:`ecosWrapper` and :class:`cvxpyWrapper` are the only
+    wrappers that can handle conic-quadratic constraints, which are
+    necessary to compute robust path parameterization.
+
+    Notes
+    -----
+    To reduce numerical-related issues, ECOS_MAXX is used to regulate
+    the magnitude of the solution.
+
+    ECOS is not very well implemented. There are many cases in which
+    the solver fails simply because there is a very large bound
+    (>1e6). Because of this, the test suites included in toppra do not
+    include many tests for ecos.
+
+
+    Attributes
+    ----------
+    constraints : list of `Constraint`
+        Constraints on the robot system.
+    path : Interpolator
+        The geometric path to be time-parametrized.
+    path_discretization: array
+        The discretization grid use to discretize the geometric path.
 
     """
     def __init__(self, constraint_list, path, path_discretization):
-        logger.debug("Initialize a ECOS SolverWrapper.")
         super(ecosWrapper, self).__init__(constraint_list, path, path_discretization)
+        if not IMPORT_ECOS:
+            raise RuntimeError("Unable to start ecos wrapper because ECOS solver is not installed.")
         # NOTE: Currently receive params in dense form.
         self._linear_idx = []
         self._conic_idx = []
@@ -62,10 +91,10 @@ class ecosWrapper(SolverWrapper):
         # 4) conic constraints
         if i < self.N:
             nrow = 2 + 2 + self._linear_dim + self._conic_dim
-            dims = {"l": 2 + 2 + self._linear_dim, "q": [4] * (self._conic_dim / 4)}
+            dims = {"l": 2 + 2 + self._linear_dim, "q": [4] * (self._conic_dim // 4)}
         else:
             nrow = 2 + self._linear_dim + self._conic_dim
-            dims = {"l": 2 + self._linear_dim, "q": [4] * (self._conic_dim / 4)}
+            dims = {"l": 2 + self._linear_dim, "q": [4] * (self._conic_dim // 4)}
 
         G_lil = scipy.sparse.lil_matrix((nrow, 2))
         h = np.zeros(nrow)
@@ -76,12 +105,12 @@ class ecosWrapper(SolverWrapper):
         if not np.isnan(x_min):
             h[currow] = - x_min
         else:
-            h[currow] = INF
+            h[currow] = ECOS_INFTY
         currow += 1
         if not np.isnan(x_max):
             h[currow] = x_max
         else:
-            h[currow] = INF
+            h[currow] = ECOS_INFTY
         currow += 1
         ## Fill 2)
         if i < self.N:
@@ -90,13 +119,13 @@ class ecosWrapper(SolverWrapper):
             if not np.isnan(x_next_min):
                 h[currow] = - x_next_min
             else:
-                h[currow] = INF
+                h[currow] = ECOS_INFTY
             currow += 1
             G_lil[currow, :] = [[2 * delta, 1]]
             if not np.isnan(x_next_max):
                 h[currow] = x_next_max
             else:
-                h[currow] = INF
+                h[currow] = ECOS_INFTY
             currow += 1
         ## Fill 3)
         for k in self._linear_idx:
@@ -125,11 +154,11 @@ class ecosWrapper(SolverWrapper):
             if _xbound is not None:
                 G_lil[currow, 1] = 1
                 G_lil[currow + 1, 1] = -1
-                h[currow: currow + 2] = [_xbound[i, 1], -_xbound[i, 0]]
+                h[currow: currow + 2] = [min(ECOS_MAXX, _xbound[i, 1]), -_xbound[i, 0]]
                 currow += 2
         ## Fill 4)
         for k in self._conic_idx:
-            _a, _b, _c, _P = self.params[k]
+            _a, _b, _c, _P, _, _ = self.params[k]
 
             # NOTE: Here the following arrangement is used.
             # G_i = [  a_ij        b_ij  ]
@@ -151,7 +180,7 @@ class ecosWrapper(SolverWrapper):
             success = True
         else:
             success = False
-            logger.warn("Optimization fails. Result dictionary: \n {:}".format(result))
+            logger.warning("Optimization fails. Result dictionary: \n {:}".format(result))
 
         ux_opt = np.zeros(2)
         if success:

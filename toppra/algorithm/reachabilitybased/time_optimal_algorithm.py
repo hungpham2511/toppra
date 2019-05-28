@@ -6,16 +6,31 @@ logger = logging.getLogger(__name__)
 
 
 class TOPPRA(ReachabilityAlgorithm):
-    """ The Time-Optimal Path Parameterization based on Reachability Analysis algorithm.
+    """Time-Optimal Path Parameterization based on Reachability
+    Analysis (TOPPRA).
+
 
     Parameters
     ----------
-    constraint_list: list of Constraint
-    path: Interpolator
+    constraint_list: :class:`~toppra.constraint.Constraint` []
+        List of constraints to which the robotic system is subjected to.
+    path: :class:`~toppra.Interpolator`
+        Input geometric path.
     gridpoints: array, optional
+        Gridpoints for discretization of the geometric path. The start
+        and end points must agree with the geometric path's domain.
     solver_wrapper: str, optional
-        Name of the solver to use.
+        Name of the solver wrapper to use.
+        See :class:`toppra.solverwrapper.hotqpOASESSolverWrapper`,
+        :class:`toppra.solverwrapper.seidelWrapper`
 
+    Notes
+    -----
+    In addition to the given constraints, there are additional
+    constraints on the solutions enforced by the solver-warpper.
+    Therefore, different parametrizations are returned for different solver
+    wrappers. However, the different should be very small, especially
+    for well-conditioned problems.
     """
 
     def _forward_step(self, i, x, K_next):

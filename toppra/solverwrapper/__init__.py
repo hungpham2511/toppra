@@ -1,5 +1,3 @@
-from .cvxpy_solverwrapper import cvxpyWrapper
-from .qpoases_solverwrapper import qpOASESSolverWrapper
 from .hot_qpoases_solverwrapper import hotqpOASESSolverWrapper
+from .cy_seidel_solverwrapper import seidelWrapper
 from .ecos_solverwrapper import ecosWrapper
-from toppra.solverwrapper.cy_seidel_solverwrapper import seidelWrapper

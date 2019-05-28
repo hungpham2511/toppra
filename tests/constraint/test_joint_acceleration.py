@@ -3,10 +3,10 @@ import numpy as np
 import numpy.testing as npt
 import toppra as ta
 import toppra.constraint as constraint
-from toppra.constants import MAXU
+from toppra.constants import JACC_MAXU
 
 
-@pytest.fixture(scope="class", params=[1, 2, 6], name='acceleration_pc_data')
+@pytest.fixture(params=[1, 2, 6], name='acceleration_pc_data')
 def create_acceleration_pc_fixtures(request):
     """ Parameterized Acceleration path constraint.
 
@@ -45,58 +45,49 @@ def create_acceleration_pc_fixtures(request):
         return data, pc_vel
 
 
-class TestClass_JointAccelerationConstraint(object):
+def test_constraint_type(acceleration_pc_data):
+    """ Syntactic correct.
     """
+    data, pc = acceleration_pc_data
+    assert pc.get_constraint_type() == constraint.ConstraintType.CanonicalLinear
 
-    Tests:
-    ------
 
-    1. syntactic: the object return should have correct dimension.
-
-    2. constraint satisfaction: the `PathConstraint` returned should
-    be consistent with the data.
-
+def test_constraint_params(acceleration_pc_data):
+    """ Test constraint satisfaction with cvxpy.
     """
-    def test_constraint_type(self, acceleration_pc_data):
-        """ Syntactic correct.
-        """
-        data, pc = acceleration_pc_data
-        assert pc.get_constraint_type() == constraint.ConstraintType.CanonicalLinear
+    data, constraint = acceleration_pc_data
+    path, ss, alim = data
 
-    def test_constraint_params(self, acceleration_pc_data):
-        """ Test constraint satisfaction with cvxpy.
-        """
-        data, constraint = acceleration_pc_data
-        path, ss, alim = data
+    # An user of the class
+    a, b, c, F, g, ubound, xbound = constraint.compute_constraint_params(path, ss, 1.0)
+    assert xbound is None
 
-        # An user of the class
-        a, b, c, F, g, ubound, xbound = constraint.compute_constraint_params(path, ss)
+    N = ss.shape[0] - 1
+    dof = path.dof
+
+    ps = path.evald(ss)
+    pss = path.evaldd(ss)
+
+    F_actual = np.vstack((np.eye(dof), - np.eye(dof)))
+    g_actual = np.hstack((alim[:, 1], - alim[:, 0]))
+
+    npt.assert_allclose(F, F_actual)
+    npt.assert_allclose(g, g_actual)
+    for i in range(0, N + 1):
+        npt.assert_allclose(a[i], ps[i])
+        npt.assert_allclose(b[i], pss[i])
+        npt.assert_allclose(c[i], np.zeros_like(ps[i]))
+        assert ubound is None
         assert xbound is None
 
-        N = ss.shape[0] - 1
-        dof = path.get_dof()
 
-        ps = path.evald(ss)
-        pss = path.evaldd(ss)
-
-        F_actual = np.vstack((np.eye(dof), - np.eye(dof)))
-        g_actual = np.hstack((alim[:, 1], - alim[:, 0]))
-
-        npt.assert_allclose(F, F_actual)
-        npt.assert_allclose(g, g_actual)
-        for i in range(0, N + 1):
-            npt.assert_allclose(a[i], ps[i])
-            npt.assert_allclose(b[i], pss[i])
-            npt.assert_allclose(c[i], np.zeros_like(ps[i]))
-            npt.assert_allclose(ubound[i], [-MAXU, MAXU])
-
-    def test_wrong_dimension(self, acceleration_pc_data):
-        data, pc = acceleration_pc_data
-        path_wrongdim = ta.SplineInterpolator(np.linspace(0, 1, 5), np.random.randn(5, 10))
-        with pytest.raises(ValueError) as e_info:
-            pc.compute_constraint_params(path_wrongdim, np.r_[0, 0.5, 1])
-        assert e_info.value.args[0] == "Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
-            pc.get_dof(), 10
-        )
+def test_wrong_dimension(acceleration_pc_data):
+    data, pc = acceleration_pc_data
+    path_wrongdim = ta.SplineInterpolator(np.linspace(0, 1, 5), np.random.randn(5, 10))
+    with pytest.raises(ValueError) as e_info:
+        pc.compute_constraint_params(path_wrongdim, np.r_[0, 0.5, 1], 1.0)
+    assert e_info.value.args[0] == "Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
+        pc.get_dof(), 10
+    )
 
 

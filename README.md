@@ -1,19 +1,20 @@
 # TOPP-RA
 [![Build Status](https://travis-ci.org/hungpham2511/toppra.svg?branch=master)](https://travis-ci.org/hungpham2511/toppra) [![Coverage Status](https://coveralls.io/repos/github/hungpham2511/toppra/badge.svg?branch=master)](https://coveralls.io/github/hungpham2511/toppra?branch=master)
+[![Documentation Status](https://readthedocs.org/projects/toppra/badge/?version=latest)](https://toppra.readthedocs.io/en/latest/?badge=latest)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/e77c2abbdaa04578b115d2911a146fcb)](https://app.codacy.com/app/hungpham2511/toppra?utm_source=github.com&utm_medium=referral&utm_content=hungpham2511/toppra&utm_campaign=Badge_Grade_Dashboard)
 
-TOPP-RA is a library for time-parameterizing robot trajectories subject to kinematic and dynamic constraints. The current implementation supports the following constraints:
+**Documentation and tutorials** are available at (https://toppra.readthedocs.io/en/latest/index.html).
 
-1. joint velocity and acceleration bounds;
-2. torque bounds (including redundantly-actuated manipulators);
-3. contact stability for legged robots.
+TOPP-RA is a library for computing the time-optimal path parametrization for robots subject to kinematic and dynamic constraints. 
+In general, given the inputs:
 
-If you use this library for your research, please reference the accompanying paper [«A new approach to Time-Optimal Path Parameterization based on Reachability Analysis»](https://arxiv.org/abs/1707.07239), *IEEE Transactions on Robotics*, vol. 34(3), pp. 645–659, 2018.
+1. a geometric path `p(s)`, `s` in `[0, s_end]` ;
+2. a list of constraints on joint velocity, joint accelerations, tool Cartesian velocity, et cetera.
 
-# Installation
-## Basic functionality (robotic manipulators)
+TOPP-RA returns the time-optimal path parameterization: `s_dot (s)`, from which the fastest trajectory `q(t)` that satisfies the given
+constraints can be found.
 
-
-Install
+## Install
 [qpOASES](https://projects.coin-or.org/qpOASES/wiki/QpoasesInstallation) by
 following the steps below:
 ``` shell
@@ -45,45 +46,21 @@ python setup.py install --user
 And you are good to go. If you have `openrave` installed on your computer, you can
 run the below example to see `toppra` in action.
 
-``` shell
-python examples/retime_rave_trajectory.py
-```
+## Citing TOPP-RA
+If you use this library for your research, we encourage you to 
 
-## Advanced (and unstable) functionality 
+1. reference the accompanying paper [«A new approach to Time-Optimal Path Parameterization based on Reachability Analysis»](https://www.researchgate.net/publication/318671280_A_New_Approach_to_Time-Optimal_Path_Parameterization_Based_on_Reachability_Analysis), *IEEE Transactions on Robotics*, vol. 34(3), pp. 645–659, 2018.
+2. put a star on this repository.
 
-Multi-contact and torque bounds.  To use these functionality, the
-following libraries are needed:
 
-1. [openRAVE](https://github.com/rdiankov/openrave)
-2. [pymanoid](https://github.com/stephane-caron/pymanoid)
+## Bug reports and supports
+Please report any issues, questions via [Github issues tracker](https://github.com/hungpham2511/toppra/issues).
 
-`openRAVE` can be tricky to install, a good instruction for installing
-`openRAVE` on Ubuntu 16.04 can be
-found
-[here](https://scaron.info/teaching/installing-openrave-on-ubuntu-16.04.html).
+It will be very helpful if you can provide more details on the
+errors/bugs that you encounter. In fact, the best way is to provide a
+Minimal Working Example that produces the reported bug and attach it
+with the issue report.
 
-To install `pymanoid` locally, do the following
-``` sh
-mkdir git && cd git
-git clone <pymanoid-git-url>
-git checkout 54299cf
-export PYTHONPATH=$PYTHONPATH:$HOME/git/pymanoid
-```
+## Contributions
 
-## Building docs
-To build and view the documentation, install
-[sphinx](http://www.sphinx-doc.org/en/stable/index.html) then do
-``` shell
-pip install sphinx_rtd_theme
-cd <toppra-dir>/docs/
-make clean && make html
-<google-chrome> build/index.html
-```
-
-## Test
-`toppra` uses `pytest` for testing. To run all the tests, do:
-``` sh
-cd <toppra-dir>/tests/
-pytest -v
-```
-if `pytest` is not installed, grab it from `pip`.
+Pull Requests are welcomed! Go ahead and create a Pull Request and we will review your proposal! For new features, or bug fixes, preferably the request should contain unit tests. Note that `toppra` uses [pytest](https://docs.pytest.org/en/latest/contents.html) for all tests. Check out the test folder for more details.

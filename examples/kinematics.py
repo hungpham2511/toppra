@@ -3,8 +3,7 @@ import toppra.constraint as constraint
 import toppra.algorithm as algo
 import numpy as np
 import matplotlib.pyplot as plt
-import argparse
-
+import time
 
 ta.setup_logging("INFO")
 
@@ -31,16 +30,38 @@ def main():
     pc_acc = constraint.JointAccelerationConstraint(
         alim, discretization_scheme=constraint.DiscretizationType.Interpolation)
 
-    # Setup a parametrization instance with hot-qpOASES
-    instance = algo.TOPPRA([pc_vel, pc_acc], path, gridpoints=np.linspace(0, 1, 1001),
-                           solver_wrapper='hotqpoases')
+    # Setup a parametrization instance. The keyword arguments are
+    # optional.
+    instance = algo.TOPPRA([pc_vel, pc_acc], path)
+
+    # Retime the trajectory, only this step is necessary.
+    t0 = time.time()
+    jnt_traj, aux_traj, data = instance.compute_trajectory(0, 0, return_data=True)
+    # return_data flag outputs internal data obtained while computing
+    # the paramterization. This include the time stamps corresponding
+    # to the original waypoints. See below (line 53) to see how to
+    # extract the time stamps.
+    print("Parameterization time: {:} secs".format(time.time() - t0))
+
+    ts_sample = np.linspace(0, jnt_traj.get_duration(), 100)
+    qs_sample = jnt_traj.eval(ts_sample)  # sampled joint positions
+    qds_sample = jnt_traj.evald(ts_sample)  # sampled joint velocities
+    qdds_sample = jnt_traj.evaldd(ts_sample)  # sampled joint accelerations
+
+    for i in range(dof):
+        # plot the i-th joint trajectory
+        plt.plot(ts_sample, qs_sample[:, i], c="C{:d}".format(i))
+        # plot the i-th joint waypoints
+        plt.plot(data['t_waypts'], way_pts[:, i], 'x', c="C{:d}".format(i))
+    plt.xlabel("Time (s)")
+    plt.ylabel("Joint position (rad/s^2)")
+    plt.show()
 
     # Compute the feasible sets and the controllable sets for viewing.
     # Note that these steps are not necessary.
+    _, sd_vec, _ = instance.compute_parameterization(0, 0)
     X = instance.compute_feasible_sets()
     K = instance.compute_controllable_sets(0, 0)
-
-    _, sd_vec, _ = instance.compute_parameterization(0, 0)
 
     X = np.sqrt(X)
     K = np.sqrt(K)
@@ -56,17 +77,6 @@ def main():
     plt.legend()
     plt.tight_layout()
     plt.show()
-
-    # Retime the trajectory, only this step is necessary.
-    jnt_traj, aux_traj = instance.compute_trajectory(0, 0)
-    ts_sample = np.linspace(0, jnt_traj.get_duration(), 100)
-    qs_sample = jnt_traj.evaldd(ts_sample)
-
-    plt.plot(ts_sample, qs_sample)
-    plt.xlabel("Time (s)")
-    plt.ylabel("Joint acceleration (rad/s^2)")
-    plt.show()
-
 
 if __name__ == '__main__':
     main()
