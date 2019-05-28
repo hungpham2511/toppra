@@ -1,3 +1,4 @@
+# cython: embedsignature=True
 import numpy as np
 cimport numpy as np
 from libc.math cimport abs, pow, isnan
@@ -9,12 +10,22 @@ ctypedef np.float_t FLOAT_t
 
 from ..constraint import ConstraintType
 
-cdef double TINY = 1e-20
-cdef double SMALL = 1e-8
-cdef double VAR_MIN = -100000000
-cdef double VAR_MAX =  100000000
 cdef inline double dbl_max(double a, double b): return a if a > b else b
 cdef inline double dbl_min(double a, double b): return a if a < b else b
+
+# constants
+cdef double TINY = 1e-10
+cdef double SMALL = 1e-8
+
+# bounds on variable used in seidel solver wrapper. u and x at every
+# stage is constrained to stay within this range.
+cdef double VAR_MIN = -100000000  
+cdef double VAR_MAX =  100000000
+
+# absolute largest value that a variable can have. This bound should
+# be never be reached, however, in order for the code to work properly.
+cdef double INF = 10000000000  
+
 cdef double NAN = float("NaN")
 
 
@@ -60,7 +71,7 @@ def solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, double[:] low
         INT_t [:] idx_map
         double[:] a_1d
         double[:] b_1d
-    if len(a) != 0 and a is not None:
+    if a is not None and len(a) != 0:
         nrows = a.shape[0]
         idx_map = np.zeros_like(a, dtype=int)
         a_1d = np.zeros(nrows + 4)
@@ -79,11 +90,11 @@ def solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, double[:] low
 # @cython.profile(True)
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef LpSol cy_solve_lp1d(double[:] v, int nrows, double[:] a, double[:] b, double low, double high):
+cdef LpSol cy_solve_lp1d(double[:] v, int nrows, double[:] a, double[:] b, double low, double high) except *:
     """ Solve the following program
     
             dbl_max   v[0] x + v[1]
-            s.t.  a x <= b
+            s.t.  a x + b <= 0
                   low <= x <= high
 
     """
@@ -135,13 +146,16 @@ cdef LpSol cy_solve_lp1d(double[:] v, int nrows, double[:] a, double[:] b, doubl
 # @cython.profile(True)
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, double[:] low, double[:] high, INT_t[:] active_c, bint use_cache, INT_t [:] index_map, double[:] a_1d, double[:] b_1d):
+cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c,
+                         double[:] low, double[:] high,
+                         INT_t[:] active_c, bint use_cache,
+                         INT_t [:] index_map, double[:] a_1d, double[:] b_1d) except *:
     """ Solve a LP with two variables.
 
     The LP is specified as follow:
-        dbl_max    v^T [x 1]
-        s.t.   a x[0] + b x[1] + c <= 0
-               low <= x <= high
+         dbl_max    v^T [x 1]
+            s.t.    a x[0] + b x[1] + c <= 0
+                    low <= x <= high
 
     NOTE: A possible optimization for this function is pruning linear
     constraints that are clearly infeasible. This is not implemented
@@ -180,18 +194,28 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
 
     """
     cdef:
-        unsigned int nrows = a.shape[0], nrows_1d, n_wsr = 0  # number of working set recomputation
+        # number of working set recomputation
+        unsigned int nrows = a.shape[0], nrows_1d, n_wsr = 0  
         unsigned int i, k, j
         double[2] cur_optvar, zero_prj
         double[2] d_tan  # vector parallel to the line
         double[2] v_1d_  # optimizing direction
         double [:] v_1d = v_1d_
         double aj, bj, cj  # temporary symbols
-        double low_1d = VAR_MIN
-        double high_1d = VAR_MAX
 
+        # absolute bounds used in solving the 1 dimensional
+        # optimization sub-problems. These bounds needs to be very
+        # large, so that they are never active at the optimization
+        # solution of these 1D subproblem..
+        double low_1d = - INF  
+        double high_1d = INF
         LpSol sol, sol_1d
+
     v_1d_[:] = [0, 0]
+    # print all input to the algorithm
+    # print "v={:}\n a={:}\n b={:}\n c={:}\n low={:}\n high={:}\n active_c {:}".format(
+    #     *map(repr, map(np.asarray,
+    #                    [v, a, b, c, low, high, active_c])))
 
     if not use_cache:
         index_map = np.arange(nrows)
@@ -205,7 +229,6 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
     # adhered to: fixed bounds are assigned the numbers: -1, -2, -3,
     # -4 according to the following order: low[0], high[0], low[1],
     # high[1].
-
     for i in range(2):
         if low[i] > high[i]:
             sol.result = 0
@@ -222,6 +245,8 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
                 sol.active_c[0] = -1
             else:
                 sol.active_c[1] = -3
+    # print("v: {:}".format(repr(np.array(v))))
+    # print("opt_var: {:}".format(repr(np.array(cur_optvar))))
 
     # If active_c contains valid entries, swap the first two indices
     # in index_map to these values.
@@ -240,6 +265,7 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
 
     # pre-process the inequalities, remove those that are redundant
     cdef cloned_index_map 
+    # print(np.array(index_map))
 
     # handle other constraints in a, b, c
     for k in range(nrows):
@@ -247,6 +273,8 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
         # if current optimal variable satisfies the i-th constraint, continue
         if a[i] * cur_optvar[0] + b[i] * cur_optvar[1] + c[i] < TINY:
             continue
+        # print("a[i] * cur_optvar[0] + b[i] * cur_optvar[1] + c[i] = {:f}".format(
+        #     a[i] * cur_optvar[0] + b[i] * cur_optvar[1] + c[i]))
         # print k
         # otherwise, project all constraints on the line defined by (a[i], b[i], c[i])
         n_wsr += 1
@@ -316,7 +344,7 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
                     return sol
                 # feasible constraints, specify 0 <= 1
                 a_1d[j] = 0
-                b_1d[j] = 1.0
+                b_1d[j] = - 1.0
 
         # solve the projected, 1 dimensional LP
         sol_1d = cy_solve_lp1d(v_1d, nrows_1d, a_1d, b_1d, low_1d, high_1d)
@@ -327,9 +355,13 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
             return sol
         # feasible, wrapping up
         else:
+            # print "v={:}\n a={:}\n b={:}\n low={:}\n high={:}\n nrows={:}".format(
+            #     *map(repr, map(np.asarray,
+            #                    [v_1d, a_1d, b_1d, low_1d, high_1d, nrows_1d])))
             # compute the current optimal solution
             cur_optvar[0] = zero_prj[0] + sol_1d.optvar[0] * d_tan[0]
             cur_optvar[1] = zero_prj[1] + sol_1d.optvar[0] * d_tan[1]
+            # print("opt_var: {:}".format(repr(np.array(cur_optvar))))
             # record the active constraint's index
             if sol_1d.active_c[0] < k:
                 sol.active_c[1] = index_map[sol_1d.active_c[0]]
@@ -342,7 +374,13 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
             elif sol_1d.active_c[0] == k + 3:
                 sol.active_c[1] = -4
             else:
-                assert False
+                # the algorithm should not reach this point. If it
+                # does, this means the active constraint at the
+                # optimal solution is the fixed bound used in the 1
+                # dimensional subproblem. This should not happen
+                # though.
+                sol.result = 0
+                return sol
 
     # Fill the solution struct
     sol.result = 1
@@ -352,6 +390,20 @@ cdef LpSol cy_solve_lp2d(double[:] v, double[:] a, double[:] b, double[:] c, dou
     return sol
 
 cdef class seidelWrapper:
+    """ A solver wrapper that implements Seidel's LP algorithm.
+
+    This wrapper can only be used if there is only Canonical Linear
+    Constraints.
+
+    Parameters
+    ----------
+    constraint_list: list of :class:`.Constraint`
+        The constraints the robot is subjected to.
+    path: :class:`.Interpolator`
+        The geometric path.
+    path_discretization: array
+        The discretized path positions.
+    """
     cdef:
         list constraints, _params
         unsigned int N, nV, nC, nCons
@@ -363,22 +415,32 @@ cdef class seidelWrapper:
         INT_t [:] index_map
         double [:, ::1] a_arr, b_arr, c_arr  # mmviews of coefficients of the 2D Lp
         double [:, :] low_arr, high_arr    # mmviews of coefficients of the 2D Lp
-
+        double scaling # path scaling
         
     # @cython.profile(True)
     def __init__(self, list constraint_list, path, path_discretization):
+        """ A solver wrapper that implements Seidel's LP algorithm.
+
+        This wrapper can only be used if there is only Canonical Linear
+        Constraints.
+
+        Parameters
+        ----------
+        constraint_list: list of :class:`.Constraint`
+            The constraints the robot is subjected to.
+        path: :class:`.Interpolator`
+            The geometric path.
+        path_discretization: array
+            The discretized path positions.
+        """
         self.constraints = constraint_list
         self.path = path
         path_discretization = np.array(path_discretization)
         self.path_discretization = path_discretization
+        self.scaling = path_discretization[-1] / path.get_duration()
         self.N = len(path_discretization) - 1  # Number of stages. Number of point is _N + 1
         self.deltas = path_discretization[1:] - path_discretization[:-1]
         cdef unsigned int cur_index, j, i, k
-        # safety checks
-        assert path.get_path_interval()[0] == path_discretization[0]
-        assert path.get_path_interval()[1] == path_discretization[-1]
-        for i in range(self.N):
-            assert path_discretization[i + 1] > path_discretization[i]
 
         # handle constraint parameters
         nCons = len(constraint_list)
@@ -390,7 +452,7 @@ cdef class seidelWrapper:
             if self.constraints[i].get_constraint_type() != ConstraintType.CanonicalLinear:
                 raise NotImplementedError
             a, b, c, F, v, ubnd, xbnd = self.constraints[i].compute_constraint_params(
-            self.path, self.path_discretization)
+                self.path, path_discretization, self.scaling)
             if a is not None:
                 if self.constraints[i].identical:
                     self.nC += F.shape[0]
@@ -412,21 +474,32 @@ cdef class seidelWrapper:
         cdef double [:, :] ta, tb, tc
         cdef unsigned int nC_
         for j in range(nCons):
-            a_j, b_j, c_j, F_j, v_j, ubound_j, xbound_j = self._params[j]
+            a_j, b_j, c_j, F_j, h_j, ubound_j, xbound_j = self._params[j]
 
             if a_j is not None:
-                nC_ = F_j.shape[0]
-                # <- Most time consuming code, but this computation seems unavoidable
-                ta = a_j.dot(F_j.T)
-                tb = b_j.dot(F_j.T)
-                tc = c_j.dot(F_j.T) - v_j
-                # <-- End
+                if self.constraints[j].identical:
+                    nC_ = F_j.shape[0]
+                    # <- Most time consuming code, but this computation seems unavoidable
+                    ta = a_j.dot(F_j.T)
+                    tb = b_j.dot(F_j.T)
+                    tc = c_j.dot(F_j.T) - h_j
+                    # <-- End
 
-                for i in range(self.N + 1):
-                    for k in range(nC_):
-                        self.a_arr[i, cur_index + k] = ta[i, k]
-                        self.b_arr[i, cur_index + k] = tb[i, k]
-                        self.c_arr[i, cur_index + k] = tc[i, k]
+                    for i in range(self.N + 1):
+                        for k in range(nC_):
+                            self.a_arr[i, cur_index + k] = ta[i, k]
+                            self.b_arr[i, cur_index + k] = tb[i, k]
+                            self.c_arr[i, cur_index + k] = tc[i, k]
+                else:
+                    nC_ = F_j.shape[1]
+                    for i in range(self.N + 1):
+                        tai = np.dot(F_j[i], a_j[i])
+                        tbi = np.dot(F_j[i], b_j[i])
+                        tci = np.dot(F_j[i], c_j[i]) - h_j[i]
+                        for k in range(nC_):
+                            self.a_arr[i, cur_index + k] = tai[k]
+                            self.b_arr[i, cur_index + k] = tbi[k]
+                            self.c_arr[i, cur_index + k] = tci[k]
                 cur_index += nC_
 
             if ubound_j is not None:
@@ -474,7 +547,7 @@ cdef class seidelWrapper:
                            & x_{min} \leq x \leq x_{max}             \\\\
                            & x_{next, min} \leq x + 2 \Delta_i u \leq x_{next, max},
 
-        NOTE: if x_min == x_max, one can solve an LP instead of a 2D
+        TODO if x_min == x_max, one can solve an LP instead of a 2D
         LP. This optimization is currently not implemented.
 
         Parameters
@@ -508,12 +581,17 @@ cdef class seidelWrapper:
             unsigned int k, cur_index = 0, j, nC  # indices
             double [2] var  # Result
             LpSol  # Solution struct to hold the 2D or 1D LP result
+            double low_arr[2], high_arr[2]
+        low_arr[0] = self.low_arr[i, 0]
+        low_arr[1] = self.low_arr[i, 1]
+        high_arr[0] = self.high_arr[i, 0]
+        high_arr[1] = self.high_arr[i, 1]
 
         # handle x_min <= x_i <= x_max
         if not isnan(x_min):
-            self.low_arr[i, 1] = dbl_max(self.low_arr[i, 1], x_min)
+            low_arr[1] = dbl_max(low_arr[1], x_min)
         if not isnan(x_max):
-            self.high_arr[i, 1] = dbl_min(self.high_arr[i, 1], x_max)
+            high_arr[1] = dbl_min(high_arr[1], x_max)
 
         # handle x_next_min <= 2 delta u + x_i <= x_next_max
         if i < self.N:
@@ -534,37 +612,49 @@ cdef class seidelWrapper:
                 self.b_arr[i, 1] = 1.0
                 self.c_arr[i, 1] = - x_next_max
         else:
-            # at last stage, do not consider this constraint
+            # at the last stage, neglect this constraint
             self.a_arr[i, 0:2] = 0
             self.b_arr[i, 0:2] = 0
             self.c_arr[i, 0:2] = -1
 
-        # handle the objective function
+        # objective function
         self.v[0] = - g[0]
         self.v[1] = - g[1]
 
-        # warmstarting: two solvers can be selected, upper or lower,
-        # depending on the sign of g[1]
-           
-        if g[1] > 0:  # choose upper solver
+        # warmstarting feature: one in two solvers, upper and lower,
+        # is be selected depending on the sign of g[1]
+
+        # solver selected: upper solver. This is selected when
+        # computing the lower bound of the controllable set.
+        if g[1] > 0:  
+            # print "v={:}\n a={:}\n b={:}\n c={:}\n low={:}\n high={:}\n active_c_up={:}".format(
+            #     *map(repr, map(np.asarray,
+            #                    [self.v, self.a_arr[i], self.b_arr[i], self.c_arr[i],
+            #                     low_arr, high_arr, self.active_c_up])))
             solution = cy_solve_lp2d(self.v, self.a_arr[i], self.b_arr[i], self.c_arr[i],
-                                     self.low_arr[i], self.high_arr[i], self.active_c_up,
+                                     low_arr, high_arr, self.active_c_up,
                                      True, self.index_map, self.a_1d, self.b_1d)
             if solution.result == 0:
+                # print("upper solver fails")
                 var[0] = NAN
                 var[1] = NAN
             else:
                 var[:] = solution.optvar
                 self.active_c_up[0] = solution.active_c[0]
                 self.active_c_up[1] = solution.active_c[1]
-        else:  # chose lower solver
+
+        # solver selected: lower solver. This is when computing the
+        # lower bound of the controllable set, or computing the
+        # parametrization in the forward pass
+        else:
             solution = cy_solve_lp2d(self.v, self.a_arr[i], self.b_arr[i], self.c_arr[i],
-                                     self.low_arr[i], self.high_arr[i], self.active_c_down,
+                                     low_arr, high_arr, self.active_c_down,
                                      True, self.index_map, self.a_1d, self.b_1d)
             if solution.result == 0:
+                # print("lower solver fails")
                 # print "v={:}\n a={:}\n b={:}\n c={:}\n low={:}\n high={:}".format(
-                #     *map(repr, map(np.asarray,
-                #                   [self.v, self.a_arr[i], self.b_arr[i], self.c_arr[i], self.low_arr[i], self.high_arr[i]])))
+                    # *map(repr, map(np.asarray,
+                                  # [self.v, self.a_arr[i], self.b_arr[i], self.c_arr[i], self.low_arr[i], self.high_arr[i]])))
                 var[0] = NAN
                 var[1] = NAN
             else:

@@ -4,25 +4,43 @@ from .constraint import ConstraintType, DiscretizationType
 import numpy as np
 
 
-class CanonicalLinearConstraint(Constraint):
-    """Base class for all canonical linear constraints.
+class LinearConstraint(Constraint):
+    """A core type of constraints.
 
-    A canonical linear constraint has following form
+    Also known as Second-order Constraint.
+
+    A Canonical Linear Constraint has the following form:
 
     .. math::
 
-        a[i] u + b[i] x + c[i] &= v, \\\\
-        F[i] v &\\leq h[i], \\\\
-        xbound[i, 0] \\leq x \\leq xbound[i, 1], \\\\
-        ubound[i, 0] \\leq u \\leq ubound[i, 1].
+        \mathbf a_i u + \mathbf b_i x + \mathbf c_i &= v, \\\\
+        \mathbf F_i v &\\leq \mathbf g_i, \\\\
+        x^{bound}_{i, 0} \\leq x &\\leq x^{bound}_{i, 1}, \\\\
+        u^{bound}_{i, 0} \\leq u &\\leq u^{bound}_{i, 1}.
 
-    Derived classes implement the method `compute_constraint_params`.
+    Alternatively, if :math:`\mathbf F_i` is constant for all values
+    of :math:`i`, then we can consider the simpler constraint:
 
-    Remark that if F[i], h[i] are identical for any value of index i,
-    then parameter F that is returned by `compute_constraint_params`
-    might has shape (k, m) instead of (N, k, m) and parameter g might
-    has shape (k) instead of (N, k). In this case, the flag identical
-    will be set to True.
+    .. math::
+        \mathbf F v &\\leq \mathbf w, \\\\
+
+    In this case, the returned value of :math:`F` by
+    `compute_constraint_params` has shape (k, m) instead of (N, k, m),
+    :math:`w` shape (k) instead of (N, k) and the class attribute
+    `identical` will be True.
+
+    .. note::
+
+        Derived classes of :class:`LinearConstraint` should at
+        least implement the method :func:`compute_constraint_params`.
+
+
+    .. seealso::
+
+        :class:`JointAccelerationConstraint`
+        :class:`JointVelocityConstraint`
+        :class:`CanonicalLinearSecondOrderConstraint`
+
     """
     def __init__(self):
         self.constraint_type = ConstraintType.CanonicalLinear
@@ -30,33 +48,38 @@ class CanonicalLinearConstraint(Constraint):
         self.n_extra_vars = 0
         self.identical = False
 
-    def compute_constraint_params(self, path, gridpoints):
-        """ Return constraint parameters.
-
-        If a set of parameters are not available, None is returned.
+    def compute_constraint_params(self, path, gridpoints, scaling=1):
+        """Compute numerical coefficients of the given constraint.
 
         Parameters
         ----------
-        path: `Interpolator`
+        path: :class:`Interpolator`
             The geometric path.
-        gridpoints: array
-            (N+1,) array. The path discretization.
+        gridpoints: np.ndarray
+            Shape (N+1,). Gridpoint use for discretizing path.
+        scaling: float
+            Numerical scaling. If is 1, no scaling is performed.
+            NOTE: This parameter is deprecated. For numerical
+            stability it is better to scale at the solver level, as
+            then one can perform solver-specific optimization, as well
+            as strictly more general scaling strategy. Another
+            advantage of scaling at the solver level is a cleaner API.
 
         Returns
         -------
-        a: array, or None
+        a: np.ndarray or None
             Shape (N + 1, m). See notes.
-        b: array, or None
+        b: np.ndarray, or None
             Shape (N + 1, m). See notes.
-        c: array, or None
+        c: np.ndarray or None
             Shape (N + 1, m). See notes.
-        F: array, or None
+        F: np.ndarray or None
             Shape (N + 1, k, m). See notes.
-        g: array, or None
+        g: np.ndarray or None
             Shape (N + 1, k,). See notes
-        ubound: array, or None
+        ubound: np.ndarray, or None
             Shape (N + 1, 2). See notes.
-        xbound: array, or None
+        xbound: np.ndarray or None
             Shape (N + 1, 2). See notes.
 
         """
@@ -70,38 +93,40 @@ def canlinear_colloc_to_interpolate(a, b, c, F, g, xbound, ubound, gridpoints, i
 
     Parameters
     ----------
-    a: array, or None
+    a: np.ndarray or None
         Shape (N + 1, m). See notes.
-    b: array, or None
+    b: np.ndarray or None
         Shape (N + 1, m). See notes.
-    c: array, or None
+    c: np.ndarray or None
         Shape (N + 1, m). See notes.
-    F: array, or None
+    F: np.ndarray or None
         Shape (N + 1, k, m). See notes.
-    g: array, or None
+    g: np.ndarray or None
         Shape (N + 1, k,). See notes
-    ubound: array, or None
+    ubound: np.ndarray, or None
         Shape (N + 1, 2). See notes.
-    xbound: array, or None
+    xbound: np.ndarray or None
         Shape (N + 1, 2). See notes.
-    gridpoints: array
-        (N+1,) array. The path discretization.
+    gridpoints: np.ndarray
+        Shape (N+1,). The path discretization.
+    identical: bool, optional
+        If True, matrices F and g are identical at all gridpoint.
 
     Returns
     -------
-    a_intp: array, or None
+    a_intp: np.ndarray, or None
         Shape (N + 1, m). See notes.
-    b_intp: array, or None
+    b_intp: np.ndarray, or None
         Shape (N + 1, m). See notes.
-    c_intp: array, or None
+    c_intp: np.ndarray, or None
         Shape (N + 1, m). See notes.
-    F_intp: array, or None
+    F_intp: np.ndarray, or None
         Shape (N + 1, k, m). See notes.
-    g_intp: array, or None
+    g_intp: np.ndarray, or None
         Shape (N + 1, k,). See notes
-    ubound: array, or None
+    ubound: np.ndarray, or None
         Shape (N + 1, 2). See notes.
-    xbound: array, or None
+    xbound: np.ndarray, or None
         Shape (N + 1, 2). See notes.
 
     """

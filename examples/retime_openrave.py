@@ -84,7 +84,7 @@ def main(env=None, test=False):
             continue
         traj_retimed, trajra = toppra.retime_active_joints_kinematics(
             traj_original, robot, output_interpolator=True, N=args['Ngrid'],
-            additional_constraints=[pc_torque])
+            additional_constraints=[pc_torque], solver_wrapper='seidel')
 
         print("Original duration: {:.3f}. Retimed duration: {:3f}.".format(
             traj_original.GetDuration(), traj_retimed.GetDuration()))

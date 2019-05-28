@@ -21,7 +21,7 @@ def RunTopp(knots_ext, vlim, alim,robot_command_rate, return_spline_parameters =
     #robot_command_rate is not used if return_spline_parameters==True
     if not return_spline_parameters:
         assert(robot_command_rate)
-    print("To Pythonland!")
+    # print("To Pythonland!")
     knots = copy.deepcopy(knots_ext)
     # print("Knots size: ", knots.shape)
     ta.setup_logging("INFO")  #causing issues?
@@ -68,7 +68,7 @@ def RunTopp(knots_ext, vlim, alim,robot_command_rate, return_spline_parameters =
     # print("knots +/-...")
 
     path = ta.SplineInterpolator(s_vector, knots)
-    print("yay, we made a path")
+    # print("yay, we made a path")
     # Create velocity bounds, then velocity constraint object
     # vlim_ = np.ones(dof) * 6.0 #np.random.rand(dof) * 20
     # vlim = np.vstack((-vlim_, vlim_)).T
@@ -84,7 +84,7 @@ def RunTopp(knots_ext, vlim, alim,robot_command_rate, return_spline_parameters =
     # Setup a parametrization instance with hot-qpOASES
     instance = algo.TOPPRA([pc_vel, pc_acc], path, gridpoints=np.linspace(0, 1, int(topp_breaks_count)),
                            solver_wrapper='hotqpoases')
-    print("yay we made an instance")
+    # print("yay we made an instance")
     X = instance.compute_feasible_sets()
     K = instance.compute_controllable_sets(0, 0)
 
@@ -105,7 +105,7 @@ def RunTopp(knots_ext, vlim, alim,robot_command_rate, return_spline_parameters =
     # plt.tight_layout()
     # plt.show()
 
-    print("yay we are ready to compute the traj")
+    # print("yay we are ready to compute the traj")
 
     jnt_traj, aux_traj = instance.compute_trajectory(0, 0, False, 'not-a-knot')
     # print(jnt_traj.cspl)

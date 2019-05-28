@@ -1,0 +1,100 @@
+small_joint_1:
+  waypoints:
+    - [-0.00038593, -0.00038593, -0.00038593]
+    - [ 0.00013093, 0.00013093, 0.00013093]
+    - [ 0.00064752, 0.00064752, 0.00064752]
+    - [ 0.00116383, 0.00116383, 0.00116383]
+    - [ 0.00167987, 0.00167987, 0.00167987]
+    - [ 0.00219563, 0.00219563, 0.00219563]
+    - [ 0.00271112, 0.00271112, 0.00271112]
+    - [ 0.00322633, 0.00322633, 0.00322633]
+    - [ 0.00374127, 0.00374127, 0.00374127]
+    - [ 0.00425594, 0.00425594, 0.00425594]
+
+  ss_waypoints: [0, 1]
+  nb_gridpoints: [51, 101]
+  vlim: [100, 100, 100]
+  alim: [100, 100, 100]
+
+  desired_duration: [0, 1.0]
+  solver_wrapper: ['hotqpoases', 'seidel']
+
+small_joint_2:
+  waypoints:
+    - [0, 0, 0]
+    - [0, 1e-5, 0]
+    - [0, 0, 0]
+
+  ss_waypoints: [0, 1]
+  nb_gridpoints: [51, 101]
+  vlim: [100, 10000, 100]
+  alim: [100, 10000, 100]
+
+  desired_duration: [0]
+  solver_wrapper: ['hotqpoases', 'seidel']
+
+small_joint_3:
+  waypoints:
+    - [0, 0, 0]
+    - [0, 1e-7, 0]
+    - [0, 0, 0]
+
+  ss_waypoints: [0, 1]
+  nb_gridpoints: [51, 101]
+  vlim: [100, 1000, 100]
+  alim: [100, 1000, 100]
+
+  desired_duration: [0]
+  solver_wrapper: ['hotqpoases', 'seidel']
+
+
+issue26:
+  remark: "From JadBadMobile. https://github.com/hungpham2511/toppra/issues/26"
+  waypoints:
+    - [-3.85929168e-04, -3.85929168e-04, -3.85929168e-04]
+    - [-2.13610365e-04, -2.13610365e-04, -2.13610365e-04]
+    - [-4.13223272e-05, -4.13223272e-05, -4.13223272e-05]
+    - [ 1.30934967e-04, 1.30934967e-04, 1.30934967e-04]
+    - [ 3.03161539e-04, 3.03161539e-04, 3.03161539e-04]
+    - [ 4.75357412e-04, 4.75357412e-04, 4.75357412e-04]
+    - [ 6.47522605e-04, 6.47522605e-04, 6.47522605e-04]
+    - [ 8.19657141e-04, 8.19657141e-04, 8.19657141e-04]
+    - [ 9.91761041e-04, 9.91761041e-04, 9.91761041e-04]
+    - [ 1.16383433e-03, 1.16383433e-03, 1.16383433e-03]
+
+  ss_waypoints: [0, 1]
+  nb_gridpoints: [51, 101]
+  vlim: [1000, 1000, 1000]
+  alim: [1000, 2000, 10000]
+
+  desired_duration: [0, 1.0]
+  solver_wrapper: ['hotqpoases', 'seidel']
+
+two_points_1:
+  waypoints:
+    - [0, 0, 0]
+    - [0, 1, 0]
+
+  ss_waypoints: [0, 1]
+  nb_gridpoints: [51, 101, 501]
+  vlim: [100, 100, 100]
+  alim: [100, 100, 100]
+
+  desired_duration: [0, 1.0]
+  optimal_duration: 0.2
+  solver_wrapper: ['hotqpoases', 'seidel']
+
+two_points_2:
+  waypoints:
+    - [0, 0, 0]
+    - [0, 1e-4, 0]
+
+  ss_waypoints: [0, 1]
+  nb_gridpoints: [51, 101, 1001]
+  vlim: [100, 100, 100]
+  alim: [100, 100, 100]
+
+  desired_duration: [0]
+  optimal_duration: 0.002
+  solver_wrapper: ['hotqpoases', 'seidel']
+

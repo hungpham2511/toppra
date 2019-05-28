@@ -3,7 +3,7 @@ import toppra.constraint as constraint
 import toppra.algorithm as algo
 import numpy as np
 import matplotlib.pyplot as plt
-import argparse
+import time
 
 
 ta.setup_logging("INFO")
@@ -31,10 +31,21 @@ def main():
     pc_acc = constraint.JointAccelerationConstraint(
         alim, discretization_scheme=constraint.DiscretizationType.Interpolation)
 
-    # Setup a parametrization instance with hot-qpOASES
-    instance = algo.TOPPRAsd([pc_vel, pc_acc], path, gridpoints=np.linspace(0, 1, 1001),
-                             solver_wrapper='hotqpoases')
+    # Setup a parametrization instance
+    instance = algo.TOPPRAsd([pc_vel, pc_acc], path, gridpoints=np.linspace(0, 1, 101),
+                             solver_wrapper='seidel')
     instance.set_desired_duration(60)
+    t0 = time.time()
+    # Retime the trajectory, only this step is necessary.
+    jnt_traj, aux_traj = instance.compute_trajectory(0, 0)
+    print("Parameterization took {:} secs".format(time.time() - t0))
+    ts_sample = np.linspace(0, jnt_traj.get_duration(), 100)
+    qs_sample = jnt_traj.evaldd(ts_sample)
+
+    plt.plot(ts_sample, qs_sample)
+    plt.xlabel("Time (s)")
+    plt.ylabel("Joint acceleration (rad/s^2)")
+    plt.show()
 
     # Compute the feasible sets and the controllable sets for viewing.
     # Note that these steps are not necessary.
@@ -56,16 +67,6 @@ def main():
     plt.ylabel("Path velocity square")
     plt.legend()
     plt.tight_layout()
-    plt.show()
-
-    # Retime the trajectory, only this step is necessary.
-    jnt_traj, aux_traj = instance.compute_trajectory(0, 0)
-    ts_sample = np.linspace(0, jnt_traj.get_duration(), 100)
-    qs_sample = jnt_traj.evaldd(ts_sample)
-
-    plt.plot(ts_sample, qs_sample)
-    plt.xlabel("Time (s)")
-    plt.ylabel("Joint acceleration (rad/s^2)")
     plt.show()
 
 

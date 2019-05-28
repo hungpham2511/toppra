@@ -7,39 +7,11 @@ import pytest
 import numpy as np
 import toppra
 import toppra.constraint as constraint
-
-toppra.setup_logging(level="DEBUG")
-
-try:
-    import mosek
-    FOUND_MOSEK = True
-except ImportError:
-    FOUND_MOSEK = False
-
-try:
-    import cvxpy
-    FOUND_CXPY = True
-except ImportError:
-    FOUND_CXPY = False
-
-@pytest.fixture(params=[(0, 0)])
-def vel_accel_robustaccel(request):
-    "Velocity + Acceleration + Robust Acceleration constraint"
-    dtype_a, dtype_ra = request.param
-    vlims = np.array([[-1, 1], [-1, 2], [-1, 4]], dtype=float)
-    alims = np.array([[-1, 1], [-1, 2], [-1, 4]], dtype=float)
-    vel_cnst = constraint.JointVelocityConstraint(vlims)
-    accl_cnst = constraint.JointAccelerationConstraint(alims, dtype_a)
-    robust_accl_cnst = constraint.RobustCanonicalLinearConstraint(accl_cnst, [0.5, 0.1, 2.0], dtype_ra)
-    yield vel_cnst, accl_cnst, robust_accl_cnst
+import cvxpy
+from ..testing_flags import FOUND_MOSEK
 
 
-@pytest.fixture
-def path():
-    np.random.seed(1)
-    path = toppra.SplineInterpolator(np.linspace(0, 1, 5), np.random.randn(5, 3))
-    yield path
-
+@pytest.mark.skip(reason="Skip because it is hard to solve conic problems reliably.")
 @pytest.mark.parametrize("i", [0, 5, 9])
 @pytest.mark.parametrize("H", [None])
 @pytest.mark.parametrize("g", [np.array([0.2, -1]), np.array([0.5, 1]), np.array([2.0, 1])])
@@ -50,9 +22,11 @@ def test_vel_robust_accel(vel_accel_robustaccel, path, solver_name, i, H, g, x_i
     vel_c, _, robust_acc_c = vel_accel_robustaccel
     path_dist = np.linspace(0, path.get_duration(), 10 + 1)
     if solver_name == "cvxpy":
-        solver = toppra.solverwrapper.cvxpyWrapper([vel_c, robust_acc_c], path, path_dist)
+        from toppra.solverwrapper.cvxpy_solverwrapper import cvxpyWrapper
+        solver = cvxpyWrapper([vel_c, robust_acc_c], path, path_dist)
     elif solver_name == "ECOS":
-        solver = toppra.solverwrapper.ecosWrapper([vel_c, robust_acc_c], path, path_dist)
+        from toppra.solverwrapper.ecos_solverwrapper import ecosWrapper
+        solver = ecosWrapper([vel_c, robust_acc_c], path, path_dist)
     else:
         assert False
 
@@ -68,8 +42,8 @@ def test_vel_robust_accel(vel_accel_robustaccel, path, solver_name, i, H, g, x_i
     u = ux[0]
     x = ux[1]
 
-    _, _, _, _, _, _, xbound = vel_c.compute_constraint_params(path, path_dist)
-    a, b, c, P = robust_acc_c.compute_constraint_params(path, path_dist)
+    _, _, _, _, _, _, xbound = vel_c.compute_constraint_params(path, path_dist, 1.0)
+    a, b, c, P, _, _ = robust_acc_c.compute_constraint_params(path, path_dist, 1.0)
     Di = path_dist[i + 1] - path_dist[i]
     cvx_constraints = [
         xbound[i, 0] <= x, x <= xbound[i, 1],
@@ -102,25 +76,32 @@ def test_vel_robust_accel(vel_accel_robustaccel, path, solver_name, i, H, g, x_i
     else:
         assert np.all(np.isnan(result))
 
+
+@pytest.mark.skip(reason="Skip because it is hard to solve conic problems reliably.")
 @pytest.mark.parametrize("i", [0, 5, 9])
 @pytest.mark.parametrize("H", [np.array([[1.5, 0], [0, 1.0]]), None])
 @pytest.mark.parametrize("g", [np.array([0.2, -1])])
 @pytest.mark.parametrize("x_ineq", [(-1, 1), (0.2, 0.2), (np.nan, np.nan)])
 @pytest.mark.parametrize("solver_name", ['cvxpy'])
 def test_compare_accel_robust_accel(vel_accel_robustaccel, path, solver_name, i, H, g, x_ineq):
-    "Case 4: If robust accel has very small perturbation ellipsoid, it should be equivalent to acceleration constraint."
+    """Case 4: If robust accel has very small perturbation ellipsoid, it
+    should be equivalent to acceleration constraint.
+    """
     vel_c, acc_c, _ = vel_accel_robustaccel
 
-    robust_acc_c = toppra.constraint.RobustCanonicalLinearConstraint(
+    robust_acc_c = toppra.constraint.RobustLinearConstraint(
         acc_c, [0, 0, 0], discretization_scheme=acc_c.get_discretization_type())
     path_dist = np.linspace(0, path.get_duration(), 10)
 
     if solver_name == "cvxpy":
-        solver = toppra.solverwrapper.cvxpyWrapper([vel_c, acc_c], path, path_dist)
-        ro_solver = toppra.solverwrapper.cvxpyWrapper([vel_c, robust_acc_c], path, path_dist)
+        from toppra.solverwrapper.cvxpy_solverwrapper import cvxpyWrapper
+        solver = cvxpyWrapper([vel_c, acc_c], path, path_dist)
+        ro_solver = cvxpyWrapper([vel_c, robust_acc_c], path, path_dist)
     elif solver_name == "ECOS":
-        solver = toppra.solverwrapper.cvxpyWrapper([vel_c, acc_c], path, path_dist)
-        ro_solver = toppra.solverwrapper.ecosWrapper([vel_c, robust_acc_c], path, path_dist)
+        from toppra.solverwrapper.cvxpy_solverwrapper import cvxpyWrapper
+        from toppra.solverwrapper.ecos_solverwrapper import ecosWrapper
+        solver = cvxpyWrapper([vel_c, acc_c], path, path_dist)
+        ro_solver = ecosWrapper([vel_c, robust_acc_c], path, path_dist)
     else:
         assert False
 

@@ -1,11 +1,10 @@
 import pytest
 import toppra
 import numpy as np
-try:
+
+from ..testing_utils import IMPORT_OPENRAVEPY, IMPORT_OPENRAVEPY_MSG
+if IMPORT_OPENRAVEPY:
     import openravepy as orpy
-    FOUND_OPENRAVE = True
-except ImportError:
-    FOUND_OPENRAVE = False
 
 
 @pytest.fixture(scope='module')
@@ -19,18 +18,18 @@ def robot_fixture():
     iktype = orpy.IkParameterization.Type.Transform6D
     ikmodel = orpy.databases.inversekinematics.InverseKinematicsModel(robot, iktype=iktype)
     if not ikmodel.load():
-        print 'Generating IKFast {0}. It will take few minutes...'.format(iktype.name)
+        print('Generating IKFast {0}. It will take few minutes...'.format(iktype.name))
         ikmodel.autogenerate()
-        print 'IKFast {0} has been successfully generated'.format(iktype.name)
+        print('IKFast {0} has been successfully generated'.format(iktype.name))
     # env.SetViewer('qtosg')
     toppra.setup_logging("INFO")
     yield robot
     env.Destroy()
 
 
-@pytest.mark.skipif(not FOUND_OPENRAVE, reason="Not found openrave installation")
+@pytest.mark.skipif(not IMPORT_OPENRAVEPY, reason="Not found openrave installation")
 @pytest.mark.parametrize("seed", range(90, 100), ids=["Seed=" + str(i) for i in range(90, 100)])
-@pytest.mark.parametrize("solver_wrapper", ["hotqpoases", "seidel", "ecos"])
+@pytest.mark.parametrize("solver_wrapper", ["hotqpoases", "seidel"])
 def test_retime_kinematics_ravetraj(robot_fixture, seed, solver_wrapper):
     env = robot_fixture.GetEnv()
     basemanip = orpy.interfaces.BaseManipulation(robot_fixture)
@@ -39,10 +38,8 @@ def test_retime_kinematics_ravetraj(robot_fixture, seed, solver_wrapper):
     arm_indices = robot_fixture.GetActiveDOFIndices()
     qlim_lower, qlim_upper = robot_fixture.GetActiveDOFLimits()
     np.random.seed(seed)
-    qseed = np.random.randint(1000000, size=(1000,))  # Try 1000 times
     qsel = []
-    for seed in qseed:
-        np.random.seed(seed)
+    for _ in range(1000):
         qrand = qlim_lower + (qlim_upper - qlim_lower) * np.random.rand(len(arm_indices))
         with robot_fixture:
             robot_fixture.SetActiveDOFValues(qrand)
@@ -65,7 +62,7 @@ def test_retime_kinematics_ravetraj(robot_fixture, seed, solver_wrapper):
     assert traj_new.GetDuration() < traj.GetDuration() + 1  # Should not be too far from the optimal value
 
 
-@pytest.mark.skipif(not FOUND_OPENRAVE, reason="Not found openrave installation")
+@pytest.mark.skipif(not IMPORT_OPENRAVEPY, reason="Not found openrave installation")
 @pytest.mark.parametrize("seed", range(100, 110), ids=["Seed="+str(i) for i in range(100, 110)])
 @pytest.mark.parametrize("solver_wrapper", ["hotqpoases", "seidel", "ecos"])
 def test_retime_kinematics_waypoints(robot_fixture, seed, solver_wrapper):

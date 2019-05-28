@@ -42,7 +42,7 @@ def main():
     pc_vel = constraint.JointVelocityConstraint(vlim)
     pc_acc = constraint.JointAccelerationConstraint(
         alim, discretization_scheme=constraint.DiscretizationType.Interpolation)
-    robust_pc_acc = constraint.RobustCanonicalLinearConstraint(
+    robust_pc_acc = constraint.RobustLinearConstraint(
         pc_acc, [args.du, args.dx, args.dc], args.interpolation_scheme)
     instance = algo.TOPPRA([pc_vel, robust_pc_acc], path,
                            gridpoints=np.linspace(0, 1, args.N + 1),
