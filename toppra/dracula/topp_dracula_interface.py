@@ -1,7 +1,9 @@
 from __future__ import print_function
 
 import copy
+import inspect
 import math
+import os
 
 import toppra as ta
 import toppra.constraint as constraint
@@ -10,18 +12,30 @@ import numpy as np
 import matplotlib.pyplot as plt
 import argparse
 import logging
+logging.basicConfig()
 
 # import torch
 # from torch.utils import data
 
 # from dataloader import ScoopDataset
 
+_CALLS_TO_RUN_TOPP = 0
 
 def RunTopp(knots_ext, vlim, alim,robot_command_rate, return_spline_parameters = False, topp_breaks_count = 1001):
     #robot_command_rate is not used if return_spline_parameters==True
     if not return_spline_parameters:
         assert(robot_command_rate)
+
     # print("To Pythonland!")
+    _CALLS_TO_RUN_TOPP += 1 
+    if _CALLS_TO_RUN_TOPP == 1: 
+        # script_dirname = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) # script directory
+        script_getfile = inspect.getfile(inspect.currentframe()) # script filename (usually with path)
+        # print("In TOPPRA Python:  dir(%s)  script(%s)" % (script_dirname, script_getfile))
+        print("In TOPPRA Python call 1: script(%s)" % script_getfile)
+    else:
+        print("In TOPPRA Python call %d" % _CALLS_TO_RUN_TOPP)
+
     knots = copy.deepcopy(knots_ext)
     # print("Knots size: ", knots.shape)
     ta.setup_logging("INFO")  #causing issues?
