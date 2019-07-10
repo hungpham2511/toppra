@@ -23,6 +23,7 @@ _CALLS_TO_RUN_TOPP = 0
 
 def RunTopp(knots_ext, vlim, alim,robot_command_rate, return_spline_parameters = False, topp_breaks_count = 1001):
     #robot_command_rate is not used if return_spline_parameters==True
+    global _CALLS_TO_RUN_TOPP 
     if not return_spline_parameters:
         assert(robot_command_rate)
 
