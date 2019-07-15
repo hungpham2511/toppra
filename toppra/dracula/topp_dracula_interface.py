@@ -122,7 +122,9 @@ def RunTopp(knots_ext, vlim, alim,robot_command_rate, return_spline_parameters =
 
     # print("yay we are ready to compute the traj")
 
-    jnt_traj, aux_traj = instance.compute_trajectory(0, 0, False, 'not-a-knot')
+    #jnt_traj, aux_traj = instance.compute_trajectory(0, 0, False, 'not-a-knot')
+    jnt_traj, aux_traj = instance.compute_trajectory(0, 0, False)
+
     # print(jnt_traj.cspl)
     '''
     compute_trajectory(self, sd_start, sd_end, return_profile=False, bc_type='not-a-knot')
