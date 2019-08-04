@@ -1,5 +1,4 @@
-"""Implementations of interpolators, which representgeometric paths.
-
+"""This module implements interpolators for representing geometric paths and trajectories.
 """
 import logging
 import warnings
@@ -21,13 +20,11 @@ def normalize(gridpoints):
     # type: (np.ndarray) -> np.ndarray
     """Normalize the path discretization.
 
-    Parameters
-    ----------
-    gridpoints: Path position array.
+    Args:
+        gridpoints: Path position array.
 
-    Returns
-    -------
-    out: Normalized path position array.
+    Returns:
+        out: Normalized path position array.
     """
     return np.array(gridpoints) / gridpoints[-1]
 
@@ -36,17 +33,12 @@ def _find_left_index(gridpoints, s):
     # type: (np.ndarray, float) -> int
     """Find the least lowest entry that is larger or equal.
 
-    Parameters
-    ----------
-    gridpoints:
-        Array of path positions.
-    s:
-        A path position.
+    Args:
+        gridpoints: Array of path positions.
+        s: A path position.
 
-    Returns
-    -------
-    out:
-        The desired index.
+    Returns:
+        out: The desired index.
 
     """
     for i in range(1, len(gridpoints)):

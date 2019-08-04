@@ -47,6 +47,15 @@ EXTENSIONS = [ext_1, ext_2]
 if __name__ == "__main__":
     setup(install_requires=REQUIRES,
           setup_requires=["numpy", "cython"],
+          extras_require={
+              'dev': [
+                  'pytest',
+                  'pytest-pep8',
+                  'pytest-cov',
+                  'tabulate',
+                  'cvxpy'
+              ]
+          },
           packages=PACKAGES,
           zip_safe=False,
           name=NAME,

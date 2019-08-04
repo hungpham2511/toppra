@@ -14,6 +14,20 @@ In general, given the inputs:
 TOPP-RA returns the time-optimal path parameterization: `s_dot (s)`, from which the fastest trajectory `q(t)` that satisfies the given
 constraints can be found.
 
+## Quick-start
+
+To install toppra, simple clone the repo and install with pip
+
+``` shell
+git clone https://github.com/hungpham2511/toppra
+cd toppra && pip install .
+```
+
+To install depencidencies for development, replace the second command with:
+``` shell
+cd toppra && pip install -e .[dev]
+```
+
 ## Citing TOPP-RA
 If you use this library for your research, we encourage you to 
 
