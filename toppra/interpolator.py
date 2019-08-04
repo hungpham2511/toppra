@@ -12,6 +12,20 @@ if FOUND_OPENRAVE:
     import openravepy as orpy
 
 
+def propose_gridpoints(path, delta=1e-4, max_iteration=10):
+    """"""
+    gridpoints_ept =  [0, path.duration]
+    for it in range(max_iteration):
+        for idx in range(len(gridpoints_ept) - 1):
+            gp_mid = 0.5 * (gridpoints_ept[idx] + gridpoints_ept[idx + 1])
+            dist = gridpoints_ept[idx + 1] - gridpoints_ept[idx]
+            max_err = np.max(np.abs(0.5 * path.evaldd(gp_mid) * dist ** 2))
+            if max_err > delta:
+                gridpoints_ept.append(gp_mid)
+        gridpoints_ept = sorted(gridpoints_ept)
+    return gridpoints_ept
+
+
 class AbstractGeometricPath(object):
     """Base geometric path.
 
