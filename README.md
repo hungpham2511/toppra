@@ -16,7 +16,7 @@ constraints can be found.
 
 ## Quick-start
 
-To install toppra, simple clone the repo and install with pip
+To install toppra, simply clone the repo and install with pip
 
 ``` shell
 git clone https://github.com/hungpham2511/toppra
