@@ -11,9 +11,11 @@ except SyntaxError as err:
 
 @pytest.fixture(scope="session")
 def rave_env():
+    orpy.RaveInitialize(load_all_plugins=True)
     env = orpy.Environment()
     yield env
     env.Destroy()
+    orpy.RaveDestroy()
 
 
 def pytest_addoption(parser):
