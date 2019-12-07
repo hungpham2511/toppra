@@ -47,7 +47,7 @@ def _find_left_index(gridpoints, s):
     return len(gridpoints) - 2
 
 
-class Interpolator(object):
+class AbstractGeometricPath(object):
     """Base class for Interpolators.
 
     Derive Interpolator should inherit this abstract class.
@@ -110,7 +110,7 @@ class Interpolator(object):
         raise NotImplementedError
 
 
-class RaveTrajectoryWrapper(Interpolator):
+class RaveTrajectoryWrapper(AbstractGeometricPath):
     """An interpolator that wraps OpenRAVE's :class:`GenericTrajectory`.
 
     Only trajectories using quadratic interpolation or cubic
@@ -255,7 +255,7 @@ class RaveTrajectoryWrapper(Interpolator):
         return self.ppoly_dd(ss_sam)
 
 
-class SplineInterpolator(Interpolator):
+class SplineInterpolator(AbstractGeometricPath):
     """Interpolate the given waypoints by cubic spline.
 
     This interpolator is implemented as a simple wrapper over scipy's
@@ -416,7 +416,7 @@ class SplineInterpolator(Interpolator):
         return traj
 
 
-class UnivariateSplineInterpolator(Interpolator):
+class UnivariateSplineInterpolator(AbstractGeometricPath):
     """ Smooth given wayspoints by a cubic spline.
 
     This is a simple wrapper over `scipy.UnivariateSplineInterpolator`
@@ -483,7 +483,7 @@ class UnivariateSplineInterpolator(Interpolator):
         return np.array(data).T
 
 
-class PolynomialPath(Interpolator):
+class PolynomialPath(AbstractGeometricPath):
     """ A class representing polynominal paths.
 
     If coeff is a 1d array, the polynomial's equation is given by

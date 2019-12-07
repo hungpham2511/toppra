@@ -7,18 +7,22 @@ import sys
 NAME = "toppra"
 with open("VERSION", "r") as file_:
     VERSION = file_.read()
-DESCR = "An implementation of TOPP-RA (TOPP via Reachability Analysis) for time-parametrizing" \
-        "trajectories for robots subject to kinematic (velocity and acceleration) and dynamic" \
-        "(torque) constraints. Some other kinds of constraints are also supported."
+DESCR = "toppra: time-optimal parametrization of trajectories for robots subject to constraints."
+LONG_DESCRIPTION = "An implementation of TOPP-RA (TOPP via Reachability Analysis) for time-parametrizing" \
+    "trajectories for robots subject to kinematic (velocity and acceleration) and dynamic" \
+    "(torque) constraints. Some other kinds of constraints are also supported."
+
 URL = "https://github.com/hungpham2511/toppra"
 
 # requirements
 if sys.version[0] == '2':
     with open("requirements.txt", "r") as f:
-        REQUIRES = [line.strip() for line in f if line.strip()]
+        REQUIRES = ["scipy==0.18.0", "numpy", "enum34", "coloredlogs"]
+        DEV_REQUIRES = [line.strip() for line in f if line.strip()]
 else:
     with open("requirements3.txt", "r") as f:
-        REQUIRES = [line.strip() for line in f if line.strip()]
+        REQUIRES = ["scipy>0.18", "numpy", "enum34", "coloredlogs"]
+        DEV_REQUIRES = [line.strip() for line in f if line.strip()]
 
 AUTHOR = "Hung Pham"
 EMAIL = "hungpham2511@gmail.com"
@@ -48,19 +52,14 @@ if __name__ == "__main__":
     setup(install_requires=REQUIRES,
           setup_requires=["numpy", "cython"],
           extras_require={
-              'dev': [
-                  'pytest',
-                  'pytest-pep8',
-                  'pytest-cov',
-                  'tabulate',
-                  'cvxpy'
-              ]
+              'dev': DEV_REQUIRES
           },
           packages=PACKAGES,
           zip_safe=False,
           name=NAME,
           version=VERSION,
           description=DESCR,
+          long_description=LONG_DESCRIPTION,
           author=AUTHOR,
           author_email=EMAIL,
           url=URL,

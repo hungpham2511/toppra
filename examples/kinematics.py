@@ -32,7 +32,7 @@ def main():
 
     # Setup a parametrization instance. The keyword arguments are
     # optional.
-    instance = algo.TOPPRA([pc_vel, pc_acc], path)
+    instance = algo.TOPPRA([pc_vel, pc_acc], path, solver_wrapper='seidel')
 
     # Retime the trajectory, only this step is necessary.
     t0 = time.time()

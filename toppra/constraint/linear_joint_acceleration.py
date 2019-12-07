@@ -52,11 +52,14 @@ class JointAccelerationConstraint(LinearConstraint):
             self._format_string += "      J{:d}: {:}".format(i + 1, self.alim[i]) + "\n"
         self.identical = True
 
-    def compute_constraint_params(self, path, gridpoints, scaling):
+    def compute_constraint_params(self, path, gridpoints, scaling=None):
+        # type: (Path, np.ndarray, Optional[float]) -> Any
         if path.dof != self.dof:
             raise ValueError("Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
                 self.dof, path.dof
             ))
+        if scaling is None:
+            scaling = 1
         ps_vec = path.evald(gridpoints / scaling) / scaling
         pss_vec = path.evaldd(gridpoints / scaling) / scaling ** 2
         dof = path.dof

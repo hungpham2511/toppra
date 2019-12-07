@@ -3,7 +3,7 @@
 import numpy as np
 
 from ..constants import TINY
-from ..interpolator import SplineInterpolator, Interpolator
+from toppra.interpolator import SplineInterpolator, AbstractGeometricPath
 
 import logging
 logger = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ class ParameterizationAlgorithm(object):
     Parameters
     ----------
     constraint_list: list of `Constraint`
-    path: `Interpolator`
+    path: `AbstractGeometricPath`
         The geometric path, or the trajectory to parameterize.
     gridpoints: array, optional
         If not given, automatically generate a grid with 100 steps.
@@ -89,10 +89,10 @@ class ParameterizationAlgorithm(object):
 
         Returns
         -------
-        :class:`.Interpolator`
+        :class:`.AbstractGeometricPath`
             Time-parameterized joint position trajectory. If unable to
             parameterize, return None.
-        :class:`.Interpolator`
+        :class:`.AbstractGeometricPath`
             Time-parameterized auxiliary variable trajectory. If
             unable to parameterize or if there is no auxiliary
             variable, return None.
