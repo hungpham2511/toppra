@@ -15,7 +15,8 @@ def create_acceleration_pc_fixtures(request):
       data: A tuple. Contains path, ss, alim.
       pc: A `PathConstraint`.
     """
-    if request.param == 1:  # Scalar
+    dof = request.param
+    if dof == 1:  # Scalar
         pi = ta.PolynomialPath([1, 2, 3])  # 1 + 2s + 3s^2
         ss = np.linspace(0, 1, 3)
         alim = (np.r_[-1., 1]).reshape(1, 2)  # Scalar case
@@ -23,7 +24,7 @@ def create_acceleration_pc_fixtures(request):
         data = (pi, ss, alim)
         return data, pc_vel
 
-    if request.param == 2:
+    if dof == 2:
         coeff = [[1., 2, 3], [-2., -3., 4., 5.]]
         pi = ta.PolynomialPath(coeff)
         ss = np.linspace(0, 0.75, 4)
@@ -32,7 +33,7 @@ def create_acceleration_pc_fixtures(request):
         data = (pi, ss, alim)
         return data, pc_vel
 
-    if request.param == 6:
+    if dof == 6:
         np.random.seed(10)
         N = 20
         way_pts = np.random.randn(10, 6)
@@ -55,11 +56,10 @@ def test_constraint_type(acceleration_pc_data):
 def test_constraint_params(acceleration_pc_data):
     """ Test constraint satisfaction with cvxpy.
     """
-    data, constraint = acceleration_pc_data
-    path, ss, alim = data
+    (path, ss, alim), accel_const = acceleration_pc_data
 
     # An user of the class
-    a, b, c, F, g, ubound, xbound = constraint.compute_constraint_params(path, ss, 1.0)
+    a, b, c, F, g, ubound, xbound = accel_const.compute_constraint_params(path, ss)
     assert xbound is None
 
     N = ss.shape[0] - 1
@@ -82,12 +82,12 @@ def test_constraint_params(acceleration_pc_data):
 
 
 def test_wrong_dimension(acceleration_pc_data):
-    data, pc = acceleration_pc_data
+    _, path_constraint = acceleration_pc_data
     path_wrongdim = ta.SplineInterpolator(np.linspace(0, 1, 5), np.random.randn(5, 10))
     with pytest.raises(ValueError) as e_info:
-        pc.compute_constraint_params(path_wrongdim, np.r_[0, 0.5, 1], 1.0)
+        path_constraint.compute_constraint_params(path_wrongdim, np.r_[0, 0.5, 1], 1.0)
     assert e_info.value.args[0] == "Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
-        pc.get_dof(), 10
+        path_constraint.get_dof(), 10
     )
 
 

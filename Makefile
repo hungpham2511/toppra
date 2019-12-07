@@ -11,9 +11,8 @@ coverage:
 	python -m pytest -q --cov-report term --cov-report xml --cov=toppra tests
 
 solvers:
-	git clone https://github.com/hungpham2511/qpOASES tmp-qpoases
-	cd tmp-qpoases/ && mkdir bin && make && cd interfaces/python/ && python setup.py install
-	rm -rf tmp-qpOASES
+	git clone https://github.com/hungpham2511/qpOASES /tmp/tmp-qpoases
+	cd /tmp/tmp-qpoases/ && mkdir bin && make && cd interfaces/python/ && python setup.py install
 
 
 
