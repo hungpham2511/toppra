@@ -1,7 +1,7 @@
+"""This module defines the abstract linear constraint class."""
+import numpy as np
 from .constraint import Constraint
 from .constraint import ConstraintType, DiscretizationType
-
-import numpy as np
 
 
 class LinearConstraint(Constraint):

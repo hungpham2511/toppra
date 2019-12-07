@@ -21,7 +21,7 @@ def test_shape(barret_robot, dof):
     np.random.seed(0)
     path = toppra.SplineInterpolator(np.linspace(0, 1, 5), np.random.rand(5, dof))
     a, b, c, F, g, _, _ = constraint.compute_constraint_params(
-        path, np.linspace(0, path.get_duration(), 5), 1.0)
+        path, np.linspace(0, path.duration, 5), 1.0)
 
     assert a.shape[1] == dof
     assert b.shape[1] == dof

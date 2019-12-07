@@ -14,7 +14,7 @@ from toppra.solverwrapper.qpoases_solverwrapper import qpOASESSolverWrapper
 def test_linear_constraints_only(vel_accel_robustaccel, path, i, g, x_ineq):
     "Only canonical linear constraints."
     vel_c, acc_c, robust_acc_c = vel_accel_robustaccel
-    path_dist = np.linspace(0, path.get_duration(), 10 + 1)
+    path_dist = np.linspace(0, path.duration, 10 + 1)
     solver = ecosWrapper([vel_c, acc_c], path, path_dist)
     target_solver = qpOASESSolverWrapper([vel_c, acc_c], path, path_dist)
 

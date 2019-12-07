@@ -5,6 +5,60 @@ from toppra import SplineInterpolator
 from ..testing_utils import IMPORT_OPENRAVEPY, IMPORT_OPENRAVEPY_MSG
 
 
+
+@pytest.mark.parametrize("sswp, wp, ss, path_interval", [
+    [[0, 0.3, 0.5], [1, 2, 3], [0., 0.1, 0.2, 0.3, 0.5], [0, 0.5]],
+    [np.r_[0, 0.3, 0.5], [1, 2, 3], [0.], [0, 0.5]]
+])
+def test_scalar(sswp, wp, ss, path_interval):
+    "A scalar (dof=1) trajectory."
+    pi = SplineInterpolator(sswp, wp)  # 1 + 2s + 3s^2
+    assert pi.dof == 1
+
+    assert pi.eval(ss).shape == (len(ss), )
+    assert pi.evald(ss).shape == (len(ss), )
+    assert pi.evaldd(ss).shape == (len(ss), )
+    assert pi.eval(0).shape == ()
+    npt.assert_allclose(pi.path_interval, path_interval)
+
+
+def test_5_dof():
+    pi = SplineInterpolator([0, 1], np.random.rand(2, 5))
+    # [1 + 2s + 3s^2]
+    # [-2 + 3s + 4s^2 + 5s^3]
+
+    ss = np.linspace(0, 1, 10)
+    assert pi.dof == 5
+    assert pi.eval(ss).shape == (10, 5)
+    assert pi.evald(ss).shape == (10, 5)
+    assert pi.evaldd(ss).shape == (10, 5)
+    npt.assert_allclose(pi.path_interval, np.r_[0, 1])
+
+
+def test_1waypoints():
+    "The case where there is only one waypoint."
+    pi = SplineInterpolator([0], [[1, 2, 3]])
+    assert pi.dof == 3
+    npt.assert_allclose(pi.path_interval, np.r_[0, 0])
+    npt.assert_allclose(pi.eval(0), np.r_[1, 2, 3])
+    npt.assert_allclose(pi.evald(0), np.r_[0, 0, 0])
+
+    npt.assert_allclose(pi.eval([0, 0]), [[1, 2, 3], [1, 2, 3]])
+    npt.assert_allclose(pi.evald([0, 0]), [[0, 0, 0], [0, 0, 0]])
+
+
+@pytest.mark.parametrize("xs,ys, yd", [
+    ([0, 1], [[0, 1], [2, 3]], [2, 2]),
+    ([0, 2], [[0, 1], [0, 3]], [0, 1]),
+])
+def test_2waypoints(xs, ys, yd):
+    "There is only two waypoints. Linear interpolation is done between them."
+    pi = SplineInterpolator(xs, ys, bc_type='natural')
+    npt.assert_allclose(pi.path_interval, xs)
+    npt.assert_allclose(pi.evald((xs[0] + xs[1]) / 2), yd)
+    npt.assert_allclose(pi.evaldd(0), np.zeros_like(ys[0]))
+
+
 @pytest.fixture(scope='module')
 def robot_fixture(rave_env):
     import openravepy as orpy
@@ -25,60 +79,6 @@ def robot_fixture(rave_env):
     yield robot
     rave_env.Destroy()
 
-
-@pytest.mark.parametrize("sswp, wp, ss, path_interval", [
-    [[0, 0.3, 0.5], [1, 2, 3], [0., 0.1, 0.2, 0.3, 0.5], [0, 0.5]],
-    [np.r_[0, 0.3, 0.5], [1, 2, 3], [0.], [0, 0.5]]
-])
-def test_scalar(sswp, wp, ss, path_interval):
-    "A scalar (dof=1) trajectory."
-    pi = SplineInterpolator(sswp, wp)  # 1 + 2s + 3s^2
-    assert pi.dof == 1
-
-    assert pi.eval(ss).shape == (len(ss), )
-    assert pi.evald(ss).shape == (len(ss), )
-    assert pi.evaldd(ss).shape == (len(ss), )
-    assert pi.eval(0).shape == ()
-    npt.assert_allclose(pi.get_path_interval(), path_interval)
-
-
-def test_5_dof():
-    pi = SplineInterpolator([0, 1], np.random.rand(2, 5))
-    # [1 + 2s + 3s^2]
-    # [-2 + 3s + 4s^2 + 5s^3]
-
-    ss = np.linspace(0, 1, 10)
-    assert pi.dof == 5
-    assert pi.eval(ss).shape == (10, 5)
-    assert pi.evald(ss).shape == (10, 5)
-    assert pi.evaldd(ss).shape == (10, 5)
-    npt.assert_allclose(pi.get_path_interval(), np.r_[0, 1])
-
-
-def test_1waypoints():
-    "The case where there is only one waypoint."
-    pi = SplineInterpolator([0], [[1, 2, 3]])
-    assert pi.dof == 3
-    npt.assert_allclose(pi.get_path_interval(), np.r_[0, 0])
-    npt.assert_allclose(pi.eval(0), np.r_[1, 2, 3])
-    npt.assert_allclose(pi.evald(0), np.r_[0, 0, 0])
-
-    npt.assert_allclose(pi.eval([0, 0]), [[1, 2, 3], [1, 2, 3]])
-    npt.assert_allclose(pi.evald([0, 0]), [[0, 0, 0], [0, 0, 0]])
-
-
-@pytest.mark.parametrize("xs,ys, yd", [
-    ([0, 1], [[0, 1], [2, 3]], [2, 2]),
-    ([0, 2], [[0, 1], [0, 3]], [0, 1]),
-])
-def test_2waypoints(xs, ys, yd):
-    "There is only two waypoints. Linear interpolation is done between them."
-    pi = SplineInterpolator(xs, ys, bc_type='natural')
-    npt.assert_allclose(pi.get_path_interval(), xs)
-    npt.assert_allclose(pi.evald((xs[0] + xs[1]) / 2), yd)
-    npt.assert_allclose(pi.evaldd(0), np.zeros_like(ys[0]))
-
-
 @pytest.mark.skipif(not IMPORT_OPENRAVEPY, reason=IMPORT_OPENRAVEPY_MSG)
 @pytest.mark.parametrize("ss_waypoints, waypoints", [
     [[0, 0.2, 0.5, 0.9],  [[0.377, -0.369,  1.042, -0.265, -0.35, -0.105, -0.74],
@@ -96,7 +96,7 @@ def test_compute_rave_trajectory(robot_fixture, ss_waypoints, waypoints):
     traj = path.compute_rave_trajectory(robot_fixture)
     spec = traj.GetConfigurationSpecification()
 
-    xs = np.linspace(0, path.get_duration(), 10)
+    xs = np.linspace(0, path.duration, 10)
 
     # Interpolate with spline
     qs_spline = path.eval(xs)

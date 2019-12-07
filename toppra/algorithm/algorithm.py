@@ -112,12 +112,6 @@ class ParameterizationAlgorithm(object):
             else:
                 return None, None
 
-        if bc_type is None:
-            if sd_start == 0 and sd_end == 0:
-                bc_type = "clamped"
-            else:
-                bc_type = "not-a-knot"
-
         # Gridpoint time instances
         t_grid = np.zeros(self._N + 1)
         skip_ent = []
@@ -136,7 +130,8 @@ class ParameterizationAlgorithm(object):
         gridpoints = np.delete(self.gridpoints, skip_ent) / scaling
         q_grid = self.path.eval(gridpoints)
 
-        traj_spline = SplineInterpolator(t_grid, q_grid, bc_type)
+        traj_spline = SplineInterpolator(t_grid, q_grid, (
+            (1, self.path(0, 1) * sd_start), (1, self.path(self.path.duration, 1) * sd_end)))
 
         if v_grid.shape[1] == 0:
             v_spline = None

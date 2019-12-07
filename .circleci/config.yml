@@ -92,12 +92,11 @@ jobs:
           name: test
           command: |
             . venv3/bin/activate
-            export PYTHONPATH=$PYTHONPATH:`openrave-config --python-dir`
-            pytest tests -W ignore::PendingDeprecationWarning
+            mkdir test-reports
+            pytest -q tests --durations=3 --junitxml=test-reports/junit.xml
 
-      - store_artifacts:
+      - store_test_results:
           path: test-reports
-          destination: test-reports
 
   test-python-2:
     docker:
@@ -143,16 +142,15 @@ jobs:
           command: |
             . venv/bin/activate
             export PYTHONPATH=$PYTHONPATH:`openrave-config --python-dir`
-            pytest tests -W ignore::PendingDeprecationWarning
+            mkdir test-reports
+            pytest -q tests --durations=3 --junitxml=test-reports/junit.xml
 
-      - store_artifacts:
+      - store_test_results:
           path: test-reports
-          destination: test-reports
-
 
 workflows:
   version: 2
-  test:
+  test-and-lint:
     jobs:
       - test-python-2
       - test-python-3

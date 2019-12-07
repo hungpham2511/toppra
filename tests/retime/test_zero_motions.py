@@ -9,6 +9,7 @@ import toppra
 toppra.setup_logging(level="INFO")
 
 
+@pytest.mark.skip(reason="scaling is deprecated")
 @pytest.mark.parametrize("scaling", [1e-3, 1e-4])
 @pytest.mark.parametrize("Ngrid", [101, 501, 1001])
 def test_scalar_zero_motion(scaling, Ngrid):
@@ -40,9 +41,10 @@ def test_scalar_zero_motion(scaling, Ngrid):
     jnt_traj, aux_traj, data = instance.compute_trajectory(0, 0, return_data=True)
     # Simply assert success
     assert jnt_traj is not None
-    assert jnt_traj.get_duration() < 9e-4  # less than 1ms
+    assert jnt_traj.duration < 9e-4  # less than 1ms
 
 
+@pytest.mark.skip(reason="scaling is deprecated")
 @pytest.mark.parametrize("Ngrid", [101, 501, 1001])
 def test_scalar_auto_scaling(Ngrid):
     """Automatic scaling should lead to better results at slower
@@ -68,5 +70,5 @@ def test_scalar_auto_scaling(Ngrid):
 
     # Simply assert success
     assert jnt_traj is not None
-    assert jnt_traj.get_duration() < 9e-4  # less than 1 ms
+    assert jnt_traj.duration < 9e-4  # less than 1 ms
 

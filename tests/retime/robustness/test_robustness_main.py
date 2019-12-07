@@ -59,7 +59,7 @@ def test_robustness_main(request):
         t0 = time.time()
         path = toppra.SplineInterpolator(
             problem_data['ss_waypoints'],
-            problem_data['waypoints'])
+            problem_data['waypoints'], bc_type='clamped')
         vlim = np.vstack((- problem_data['vlim'], problem_data['vlim'])).T
         alim = np.vstack((- problem_data['alim'], problem_data['alim'])).T
         pc_vel = constraint.JointVelocityConstraint(vlim)
@@ -80,7 +80,7 @@ def test_robustness_main(request):
         t3 = time.time()
         
         if visualize:
-            _t = np.linspace(0, jnt_traj.get_duration(), 100)
+            _t = np.linspace(0, jnt_traj.duration, 100)
             fig, axs = plt.subplots(2, 2)
             axs[0, 0].plot(data["K"][:, 0], c="C0")
             axs[0, 0].plot(data["K"][:, 1], c="C0")
@@ -101,8 +101,7 @@ def test_robustness_main(request):
             parsed_problems_df.loc[row_index, "duration"] = None
         else:
             parsed_problems_df.loc[row_index, "status"] = "SUCCESS"
-            parsed_problems_df.loc[row_index,
-                                   "duration"] = jnt_traj.get_duration()
+            parsed_problems_df.loc[row_index, "duration"] = jnt_traj.duration
         parsed_problems_df.loc[row_index, "t_init(ms)"] = (t1 - t0) * 1e3
         parsed_problems_df.loc[row_index, "t_setup(ms)"] = (t2 - t1) * 1e3
         parsed_problems_df.loc[row_index, "t_solve(ms)"] = (t3 - t2) * 1e3

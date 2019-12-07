@@ -20,7 +20,7 @@ from ..testing_flags import FOUND_MOSEK
 def test_vel_robust_accel(vel_accel_robustaccel, path, solver_name, i, H, g, x_ineq):
     "Case 1: only velocity and robust acceleration constraints. Only linear objective."
     vel_c, _, robust_acc_c = vel_accel_robustaccel
-    path_dist = np.linspace(0, path.get_duration(), 10 + 1)
+    path_dist = np.linspace(0, path.duration, 10 + 1)
     if solver_name == "cvxpy":
         from toppra.solverwrapper.cvxpy_solverwrapper import cvxpyWrapper
         solver = cvxpyWrapper([vel_c, robust_acc_c], path, path_dist)
@@ -91,7 +91,7 @@ def test_compare_accel_robust_accel(vel_accel_robustaccel, path, solver_name, i,
 
     robust_acc_c = toppra.constraint.RobustLinearConstraint(
         acc_c, [0, 0, 0], discretization_scheme=acc_c.get_discretization_type())
-    path_dist = np.linspace(0, path.get_duration(), 10)
+    path_dist = np.linspace(0, path.duration, 10)
 
     if solver_name == "cvxpy":
         from toppra.solverwrapper.cvxpy_solverwrapper import cvxpyWrapper

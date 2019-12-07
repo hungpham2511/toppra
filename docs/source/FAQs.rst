@@ -29,4 +29,17 @@ As a general rule of thumb, the number of gridpoints should be at
 least twice the number of waypoints in the given path.
 
 
+2. Minimum requirement on path smoothness
+-------------------------------------------------
+
+TOPPRA requires the input path to be sufficiently smooth to work
+properly. An example of a noisy path that will be very difficult to
+work with can be seen below:
+
+.. image:: medias/faq_figure.png
+
+All toppra interpolators try to match all given waypoints, and hence
+it can lead to large fluctuation if the waypoints change rapidly. In
+this case, it is recommended to smooth the waypoints prior to using
+toppra using for example `scipy.interpolation`.
 

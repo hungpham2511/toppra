@@ -5,7 +5,8 @@ import numpy as np
 import sys
 
 NAME = "toppra"
-VERSION = "0.2.2"
+with open("VERSION", "r") as file_:
+    VERSION = file_.read()
 DESCR = "An implementation of TOPP-RA (TOPP via Reachability Analysis) for time-parametrizing" \
         "trajectories for robots subject to kinematic (velocity and acceleration) and dynamic" \
         "(torque) constraints. Some other kinds of constraints are also supported."
@@ -45,6 +46,16 @@ EXTENSIONS = [ext_1, ext_2]
 
 if __name__ == "__main__":
     setup(install_requires=REQUIRES,
+          setup_requires=["numpy", "cython"],
+          extras_require={
+              'dev': [
+                  'pytest',
+                  'pytest-pep8',
+                  'pytest-cov',
+                  'tabulate',
+                  'cvxpy'
+              ]
+          },
           packages=PACKAGES,
           zip_safe=False,
           name=NAME,

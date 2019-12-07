@@ -15,7 +15,7 @@ from ..testing_flags import FOUND_CXPY, FOUND_MOSEK, FOUND_OPENRAVEPY
 toppra.setup_logging(level="INFO")
 
 
-class RandomSecondOrderLinearConstraint(constraint.LinearConstraint):
+class RandomSecondOrderLinearConstraint(constraint.linear_constraint.LinearConstraint):
     """A random Second-Order non-identical constraint.
 
     This contraint is defined solely for testing purposes. It accepts
@@ -84,21 +84,15 @@ def basic_init_fixture(request):
 @pytest.mark.parametrize("i", [3, 10, 30])
 @pytest.mark.parametrize("H", [np.array([[1.5, 0], [0, 1.0]]), np.zeros((2, 2)), None])
 @pytest.mark.parametrize("g", [np.array([0.2, -1]), np.array([0.5, 1]), np.array([2.0, 1])])
-@pytest.mark.parametrize("x_ineq", [(-1, 1), (0.2, 0.2), (0.4, 0.3), (np.nan, np.nan)])
+@pytest.mark.parametrize("x_ineq", [(0.1, 1), (0.2, 0.2), (0.4, 0.3), (np.nan, np.nan)])
 @pytest.mark.skipif(not FOUND_CXPY, reason="This test requires cvxpy to validate results.")
 def test_basic_correctness(basic_init_fixture, solver_name, i, H, g, x_ineq):
     """Basic test case for solver wrappers.
 
-    The input fixture `basic_init_fixture` is known to have two
-    constraints, one velocity and one acceleration. Hence, in this
-    test, I directly formulate an optimization with cvxpy and compare
-    the result with the result obtained from the solver wrapper.
-
-    Parameters
-    ----------
-    basic_init_fixture: a fixture with only two constraints, one velocity and
-        one acceleration constraint.
-
+    The input fixture `basic_init_fixture` has two constraints, one
+    velocity and one acceleration. Hence, in this test, I directly
+    formulate an optimization with cvxpy and compare the result with
+    the result obtained from the solver wrapper.
     """
     constraints, path, path_discretization, vlim, alim = basic_init_fixture
     if solver_name == "cvxpy":
