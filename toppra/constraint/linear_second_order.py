@@ -105,11 +105,7 @@ class SecondOrderConstraint(LinearConstraint):
         self.constraint_F = constraint_F
         self.constraint_g = constraint_g
         self.dof = dof
-        if friction is None:
-            self.friction = lambda s: np.zeros(self.dof)
-        else:
-            logger.warn("Friction is not handled due to a bug.")
-            self.friction = friction
+        self.custom_term = custom_term
         self._format_string = "    Kind: Generalized Second-order constraint\n"
         self._format_string = "    Dimension:\n"
         self._format_string += "        F in R^({:d}, {:d})\n".format(
@@ -164,6 +160,9 @@ class SecondOrderConstraint(LinearConstraint):
             self.inv_dyn(_p, _ps, pss_)
             for _p, _ps, pss_ in zip(p_vec, ps_vec, pss_vec)
         ]) - c_vec
+        if self.custom_term is not None:
+            for i, _ in enumerate(gridpoints):
+                c_vec[i] = c_vec[i] + self.custom_term(path, gridpoints[i] / scaling)
 
         if self.discretization_type == DiscretizationType.Collocation:
             return a_vec, b_vec, c_vec, F_vec, g_vec, None, None
