@@ -7,8 +7,9 @@ enum34
 matplotlib
 
 # dev
-pylint
-pycodestyle
-pydocstyle
-invoke
 cvxopt
+cvxpy
+pandas
+tabulate
+cvxopt
+

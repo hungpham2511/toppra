@@ -5,3 +5,8 @@ scipy==0.18.0
 coloredlogs
 enum34
 matplotlib<3.0.0
+
+cvxpy==0.4.11
+pandas
+tabulate
+cvxopt
