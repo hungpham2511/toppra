@@ -7,7 +7,7 @@ except ImportError:
 
 
 @task
-def install_solvers(c):
+def install_solvers(c, user=False):
     install_dir = '/tmp/tox-qpoases'
     path = pathlib.Path(install_dir)
     if path.exists():
@@ -15,7 +15,33 @@ def install_solvers(c):
     else:
         c.run("git clone https://github.com/hungpham2511/qpOASES {}".format(install_dir))
         c.run("cd /tmp/tox-qpoases/ && mkdir bin && make")
-    c.run("cd /tmp/tox-qpoases/interfaces/python/ && python setup.py install")
+    if user:
+        flag = "--user"
+    else:
+        flag = ""
+    c.run("cd /tmp/tox-qpoases/interfaces/python/ && python setup.py install {}".format(flag))
+
+
+@task
+def test(c, python3=False):
+    """Convenient command to create different environments for testing."""
+    if not python3:
+        venv_path = "/tmp/venv"
+        flag = ""
+        test_flag = "export PYTHONPATH=$PYTHONPATH:`openrave-config --python-dir` &&"
+    else:
+        venv_path = "/tmp/venv3"
+        flag = "--python python3"
+        test_flag = ""
+
+    c.run("python -m virtualenv {flag} {venv_path} && \
+             {venv_path}/bin/pip install invoke pathlib numpy cython pytest".format(
+                 venv_path=venv_path, flag=flag
+             ))
+    c.run(". {venv_path}/bin/activate && \
+             invoke install-solvers && \
+             pip install -e .[dev]".format(venv_path=venv_path))
+    c.run("{test_flag} {venv_path}/bin/pytest -x".format(test_flag=test_flag, venv_path=venv_path))
 
 
 @task

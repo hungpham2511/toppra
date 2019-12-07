@@ -118,24 +118,15 @@ jobs:
           name: install dependencies
           command: |
             pip install virtualenv
-            python -m virtualenv venv
-            . venv/bin/activate
-            # main deps
-            pip install -r requirements.txt 
-            git clone https://github.com/hungpham2511/qpOASES && cd qpOASES/ && mkdir bin && make && cd interfaces/python/ && python setup.py install
-            # test deps
-            pip install cvxpy==0.4.11 cvxopt pytest pytest-cov pandas tabulate pylint pydocstyle pycodestyle pathlib2
+            python -m virtualenv venv && . venv/bin/activate
+            python -m pip install invoke pathlib2 numpy cython
+            python -m invoke install-solvers
+            pip install -e .[dev]
 
       - save_cache:
           paths:
             - ./venv
           key: v1-dependencies2-{{ checksum "requirements.txt" }}
-
-      - run:
-          name: build and install
-          command: |
-            . venv/bin/activate
-            python setup.py develop
 
       - run:
           name: test
