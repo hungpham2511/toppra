@@ -15,7 +15,6 @@ logger = logging.getLogger('toppra.bug')
 def rave_env():
     if IMPORT_OPENRAVE:
         logger.warn("Starting openrave")
-        orpy.RaveInitialize(load_all_plugins=False)
         orpy.RaveInitialize(load_all_plugins=True)
         logger.warn("Starting a new environment")
         env = orpy.Environment()

@@ -100,7 +100,7 @@ jobs:
 
   test-python-2:
     docker:
-      - image: hungpham2511/toppra-dep:0.0.2
+      - image: hungpham2511/toppra-dep:0.0.3
 
     working_directory: ~/repo
 
@@ -138,7 +138,7 @@ jobs:
 
       - run:
           command: |
-            cp /tmp/toppra.log test-reports
+            cp /tmp/toppra.log ~/repo/test-reports/
 
       - store_test_results:
           path: test-reports

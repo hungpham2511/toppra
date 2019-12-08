@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:xenial-20191108 
 MAINTAINER Hung Pham <hungpham2511@gmail.com>
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -43,7 +43,9 @@ RUN cd /usr/src \
     && rm -rf /usr/src/openrave-${RAVE_COMMIT}/build
 
 # Other deps
-RUN sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends python-dev python3-dev python3-venv python-tk
+RUN apt-get install -y --no-install-recommends python-dev python3-dev python3-venv python-tk && \
+	pip install virtualenv invoke
+
 # RUN sudo apt-get install -y --no-install-recommends python-dev python3-dev python3-venv
 
 # User
