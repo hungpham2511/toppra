@@ -114,18 +114,18 @@ jobs:
           path: test-reports
           destination: test-reports
 
-  release:
+  pre-release:
     docker:
       - image: buildpack-deps:trusty
     working_directory: ~/repo
     steps:
       - checkout
       - run:
-          name: Create tag
+          name: Pull all known tags and check that the tag in VERSION has not already exist.
           command: |
-            git tag tag-abc
-            git push origin tag-abc
-    
+            VERSION=`cat VERSION`
+            git fetch --tags
+            git tag $VERSION
 
 workflows:
   version: 2
@@ -136,7 +136,7 @@ workflows:
       - check-codestyle
   release:
     jobs:
-      - release:
+      - pre-release:
           filters:
             branches:
               only:
