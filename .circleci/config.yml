@@ -2,42 +2,27 @@ version: 2
 jobs:
   check-codestyle:
     docker:
-      - image: hungpham2511/toppra-dep:0.0.2
+      - image: hungpham2511/toppra-dep:0.0.3
 
     working_directory: ~/repo
 
     steps:
       - checkout
-
-      # Download and cache dependencies
       - restore_cache:
           keys:
             - v1-dependencies3-{{ checksum "requirements3.txt" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies3-
-
       - run:
           name: install dependencies
           command: |
-            python3 -m venv venv3
-            . venv3/bin/activate
-             # main deps
-            pip install -r requirements3.txt
-            git clone https://github.com/hungpham2511/qpOASES && cd qpOASES/ && mkdir bin && make && cd interfaces/python/ && python setup.py install
-            # test deps
-            pip install cvxpy cvxopt pytest pytest-cov pandas tabulate pylint pydocstyle pycodestyle
+            python3 -m virtualenv --python python3 venv3 && . venv3/bin/activate
+            pip install invoke pathlib2 numpy cython
+            invoke install-solvers
+            pip install -e .[dev]
 
       - save_cache:
           paths:
             - ./venv3
           key: v1-dependencies3-{{ checksum "requirements3.txt" }}
-
-      # build install
-      - run:
-          name: build and install
-          command: |
-            . venv3/bin/activate
-            python setup.py develop
 
       - run:
           name: check codestyle
@@ -51,7 +36,7 @@ jobs:
 
   test-python-3:
     docker:
-      - image: hungpham2511/toppra-dep:0.0.2
+      - image: hungpham2511/toppra-dep:0.0.3
 
     working_directory: ~/repo
 
@@ -62,31 +47,19 @@ jobs:
       - restore_cache:
           keys:
             - v1-dependencies3-{{ checksum "requirements3.txt" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies3-
 
       - run:
           name: install dependencies
           command: |
-            python3 -m venv venv3
-            . venv3/bin/activate
-             # main deps
-            pip install -r requirements3.txt
-            git clone https://github.com/hungpham2511/qpOASES && cd qpOASES/ && mkdir bin && make && cd interfaces/python/ && python setup.py install
-            # test deps
-            pip install cvxpy cvxopt pytest pytest-cov pandas tabulate pylint pydocstyle pycodestyle
+            python3 -m virtualenv --python python3 venv3 && . venv3/bin/activate
+            pip install invoke pathlib2 numpy cython
+            invoke install-solvers
+            pip install -e .[dev]
 
       - save_cache:
           paths:
             - ./venv3
           key: v1-dependencies3-{{ checksum "requirements3.txt" }}
-
-      # build install
-      - run:
-          name: build and install
-          command: |
-            . venv3/bin/activate
-            python setup.py develop
 
       - run:
           name: test
@@ -100,24 +73,20 @@ jobs:
 
   test-python-2:
     docker:
-      - image: hungpham2511/toppra-dep:0.0.2
+      - image: hungpham2511/toppra-dep:0.0.3
 
     working_directory: ~/repo
 
     steps:
       - checkout
-
-      # Download and cache dependencies
       - restore_cache:
           keys:
             - v1-dependencies2-{{ checksum "requirements.txt" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies2-
 
       - run:
           name: install dependencies
           command: |
-            pip install virtualenv
+            python -m pip install virtualenv --user
             python -m virtualenv venv && . venv/bin/activate
             python -m pip install invoke pathlib2 numpy cython
             python -m invoke install-solvers
@@ -134,10 +103,16 @@ jobs:
             . venv/bin/activate
             export PYTHONPATH=$PYTHONPATH:`openrave-config --python-dir`
             mkdir test-reports
-            pytest -q tests --durations=3 --junitxml=test-reports/junit.xml
+            pytest --durations=3 --junitxml=test-reports/junit.xml
+
+      - run:
+          name: Collect log data
+          command: |
+            cp /tmp/toppra.log ~/repo/test-reports/
 
       - store_test_results:
           path: test-reports
+          destination: test-reports
 
 workflows:
   version: 2

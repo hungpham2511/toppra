@@ -8,13 +8,12 @@ if IMPORT_OPENRAVEPY:
 
 
 @pytest.fixture(scope='module')
-def env():
+def env(rave_env):
     """Simple openrave environment."""
-    rave_env = orpy.Environment()
+    rave_env.Reset()
     rave_env.Load('data/lab1.env.xml')
     rave_env.GetRobots()[0].SetActiveDOFs(range(7))
     yield rave_env
-    rave_env.Destroy()
 
 
 # data for testing
@@ -36,7 +35,7 @@ string_quad_dup = '\n<trajectory>\n<configuration>\n<group name="deltatime" offs
     pytest.param(string_quad_2wp, id="quadratic 2wp"),
     pytest.param(string_quad_4wp, id="quadratic 4wp"),
     pytest.param(string_quad_24wp, id="quadratic 24wp"),
-    pytest.param(string_quad_dup, id="quadratic duplicate", marks=[pytest.mark.dup]),
+    pytest.param(string_quad_dup, id="quadratic duplicate", marks=[]),
 ])
 def test_consistency(request, env, traj_string):
     "Check the consistency between the OpenRAVE trajectory and the interpolator."
