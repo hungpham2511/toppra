@@ -123,9 +123,9 @@ jobs:
       - run:
           name: Create tag
           command: |
-            git tag tag-abc
-            git push origin tag-abc
-    
+            VERSION=`cat VERSION`
+            git tag $VERSION
+            git push origin $VERSION
 
 workflows:
   version: 2
