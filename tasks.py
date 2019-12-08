@@ -55,7 +55,7 @@ def docker_start(c):
                   -v /home/hung/git/toppra:$HOME/toppra \
                   -e DISPLAY=unix$DISPLAY \
                   --net=host \
-                  hungpham2511/toppra-dep:0.0.2 sleep infinity")
+                  hungpham2511/toppra-dep:0.0.3 sleep infinity")
 
 
 @task

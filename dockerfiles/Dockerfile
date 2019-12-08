@@ -42,9 +42,16 @@ RUN cd /usr/src \
     && make -j `nproc` && make install  \
     && rm -rf /usr/src/openrave-${RAVE_COMMIT}/build
 
+RUN apt-get install -y curl && curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py" \
+	&& python get-pip.py && python3 get-pip.py
+
 # Other deps
-RUN apt-get install -y --no-install-recommends python-dev python3-dev python3-venv python-tk && \
-	pip install virtualenv invoke
+
+RUN apt-get install -y software-properties-common && add-apt-repository -y ppa:deadsnakes/ppa && \
+	apt-get update && \
+	apt-get install -y --no-install-recommends python-dev python3-dev python3-venv python-tk \
+	python3.6 python3.6-dev python3.7 python3.7-dev && \
+	python3 -m pip install virtualenv invoke tox
 
 # RUN sudo apt-get install -y --no-install-recommends python-dev python3-dev python3-venv
 
