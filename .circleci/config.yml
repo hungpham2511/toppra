@@ -114,6 +114,37 @@ jobs:
           path: test-reports
           destination: test-reports
 
+  pre-release:
+    docker:
+      - image: buildpack-deps:trusty
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          name: Pull all known tags and check that the tag in VERSION has not already exist.
+          command: |
+            VERSION=`cat VERSION`
+            git fetch --tags
+            git tag $VERSION
+
+  release:
+    docker:
+      - image: buildpack-deps:trusty
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          name: Pull all known tags and check that the tag in VERSION has not already exist.
+          command: |
+            VERSION=`cat VERSION`
+            git fetch --tags
+            git tag $VERSION
+            git push origin $VERSION
+      - run:
+          name: Publish to PyPI
+          command: |
+            echo "TODO"
+
 workflows:
   version: 2
   test-and-lint:
@@ -121,3 +152,19 @@ workflows:
       - test-python-2
       - test-python-3
       - check-codestyle
+  release:
+    jobs:
+      - pre-release:
+          filters:
+            branches:
+              only:
+              - fix-ci
+              - release-*
+      - release:
+          filters:
+            branches:
+              only:
+              - master
+
+
+
