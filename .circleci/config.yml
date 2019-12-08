@@ -114,6 +114,19 @@ jobs:
           path: test-reports
           destination: test-reports
 
+  release:
+    docker:
+      - image: buildpack-deps:trusty
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          name: Create tag
+          command: |
+            git tag tag-abc
+            git push origin tag-abc
+    
+
 workflows:
   version: 2
   test-and-lint:
@@ -121,3 +134,12 @@ workflows:
       - test-python-2
       - test-python-3
       - check-codestyle
+  release:
+    jobs:
+      - release:
+          filters:
+            branches:
+              only:
+              - fix-ci
+
+
