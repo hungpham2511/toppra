@@ -21,9 +21,8 @@ def install_solvers(c, user=False):
         flag = ""
     c.run("cd /tmp/tox-qpoases/interfaces/python/ && python setup.py install {}".format(flag))
 
-
 @task
-def test(c, python3=False):
+def make_venvs(c, python3=False, run_tests=False):
     """Convenient command to create different environments for testing."""
     if not python3:
         venv_path = "/tmp/venv"
@@ -41,7 +40,8 @@ def test(c, python3=False):
     c.run(". {venv_path}/bin/activate && \
              invoke install-solvers && \
              pip install -e .[dev]".format(venv_path=venv_path))
-    c.run("{test_flag} {venv_path}/bin/pytest -x".format(test_flag=test_flag, venv_path=venv_path))
+    if run_tests:
+        c.run("{test_flag} {venv_path}/bin/pytest -x".format(test_flag=test_flag, venv_path=venv_path))
 
 
 @task
@@ -52,8 +52,10 @@ def docker_build(c):
 @task
 def docker_start(c):
     c.run("docker run --rm --name toppra-dep -d \
-    -v /home/hung/git/toppra:$HOME/toppra \
-    hungpham2511/toppra-dep:0.0.2 sleep infinity")
+                  -v /home/hung/git/toppra:$HOME/toppra \
+                  -e DISPLAY=unix$DISPLAY \
+                  --net=host \
+                  hungpham2511/toppra-dep:0.0.2 sleep infinity")
 
 
 @task

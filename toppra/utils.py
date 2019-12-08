@@ -35,6 +35,7 @@ def setup_logging(level="WARN"):
         fmt="%(levelname)5s [%(filename)s : %(lineno)d] [%(funcName)s] %(message)s",
         datefmt="%H:%M:%S",
         milliseconds=True)
+    logging.basicConfig(filename='/tmp/toppra.log', level=level, filemode='a')
 
 
 def compute_jacobian_wrench(robot, link, point):

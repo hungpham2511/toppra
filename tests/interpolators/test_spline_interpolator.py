@@ -77,7 +77,7 @@ def robot_fixture(rave_env):
         ikmodel.autogenerate()
         print('IKFast {0} has been successfully generated'.format(iktype.name))
     yield robot
-    rave_env.Destroy()
+
 
 @pytest.mark.skipif(not IMPORT_OPENRAVEPY, reason=IMPORT_OPENRAVEPY_MSG)
 @pytest.mark.parametrize("ss_waypoints, waypoints", [
