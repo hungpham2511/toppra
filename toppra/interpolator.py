@@ -1,63 +1,25 @@
 """This module implements interpolators for representing geometric paths and trajectories.
 """
 import logging
-import warnings
 import numpy as np
 from scipy.interpolate import UnivariateSpline, CubicSpline, PPoly
-from .utils import deprecated
+from toppra.utils import deprecated
+from toppra.constants import FOUND_OPENRAVE
 
 logger = logging.getLogger(__name__)
 
-try:
+if FOUND_OPENRAVE:
     import openravepy as orpy
-except ImportError as err:
-    logger.warning("Unable to import openravepy. Exception: %s", err.args[0])
-except SyntaxError as err:
-    logger.warning("Unable to import openravepy. Exception: %s", err.args[0])
-
-
-def normalize(gridpoints):
-    # type: (np.ndarray) -> np.ndarray
-    """Normalize the path discretization.
-
-    Args:
-        gridpoints: Path position array.
-
-    Returns:
-        out: Normalized path position array.
-    """
-    return np.array(gridpoints) / gridpoints[-1]
-
-
-def _find_left_index(gridpoints, s):
-    # type: (np.ndarray, float) -> int
-    """Find the least lowest entry that is larger or equal.
-
-    Args:
-        gridpoints: Array of path positions.
-        s: A path position.
-
-    Returns:
-        out: The desired index.
-
-    """
-    for i in range(1, len(gridpoints)):
-        if gridpoints[i - 1] <= s < gridpoints[i]:
-            return i - 1
-    return len(gridpoints) - 2
 
 
 class AbstractGeometricPath(object):
-    """Base class for Interpolators.
+    """Base geometric path.
 
-    Derive Interpolator should inherit this abstract class.
-
+    Derive geometric paths classes should derive the below abstract methods.
     """
 
-    def __init__(self):
-        pass
-
     def __call__(self, path_positions, order=0):
+        # type: (np.ndarray, int) -> np.ndarray
         """Evaluate the path at given positions.
 
         Parameters
@@ -80,11 +42,6 @@ class AbstractGeometricPath(object):
         raise NotImplementedError
 
     @property
-    def duration(self):
-        """Return the duration of the path."""
-        raise NotImplementedError
-
-    @property
     def dof(self):
         """Return the degrees-of-freedom of the path."""
         raise NotImplementedError
@@ -99,14 +56,6 @@ class AbstractGeometricPath(object):
             The starting and ending path positions.
 
         """
-        raise NotImplementedError
-
-    def to_rave_trajectory(self, robot):
-        """Return the corresponding Openrave Trajectory."""
-        raise NotImplementedError
-
-    def to_ros_trajectory_msg(self):
-        """Return the corresponding ROS trajectory."""
         raise NotImplementedError
 
 
@@ -137,11 +86,15 @@ class RaveTrajectoryWrapper(AbstractGeometricPath):
         self.spec = traj.GetConfigurationSpecification()
         self._dof = robot.GetActiveDOF()
 
-        self._interpolation = self.spec.GetGroupFromName('joint').interpolation
-        if self._interpolation not in ['quadratic', 'cubic']:
-            raise ValueError(
-                "This class only handles trajectories with quadratic or cubic interpolation"
-            )
+        def _extract_interpolation_method():
+            _interpolation = self.spec.GetGroupFromName('joint').interpolation
+            if _interpolation not in ['quadratic', 'cubic']:
+                raise ValueError(
+                    "This class only handles trajectories with quadratic or cubic interpolation"
+                )
+            return _interpolation
+        self._interpolation = _extract_interpolation_method()
+
         self._duration = traj.GetDuration()
         all_waypoints = traj.GetWaypoints(0, traj.GetNumWaypoints()).reshape(
             traj.GetNumWaypoints(), -1)
@@ -242,6 +195,16 @@ class RaveTrajectoryWrapper(AbstractGeometricPath):
     def dof(self):
         return self._dof
 
+    def __call__(self, ss_sam, order=0):
+        if order == 0:
+            return self.eval(ss_sam)
+        elif order == 1:
+            return self.evald(ss_sam)
+        elif order == 2:
+            return self.evaldd(ss_sam)
+        else:
+            raise ValueError("Order must be 0, 1 or 2.")
+
     def eval(self, ss_sam):
         """Evalute path postition."""
         return self.ppoly(ss_sam)
@@ -324,11 +287,11 @@ class SplineInterpolator(AbstractGeometricPath):
 
     def __call__(self, path_positions, order=0):
         if order == 0:
-            return self.eval(path_positions)
+            return self.cspl(path_positions)
         elif order == 1:
-            return self.evald(path_positions)
+            return self.cspld(path_positions)
         elif order == 2:
-            return self.evaldd(path_positions)
+            return self.cspldd(path_positions)
         else:
             raise ValueError("Invalid order %s" % order)
 
@@ -365,14 +328,17 @@ class SplineInterpolator(AbstractGeometricPath):
         """Return the path's dof."""
         return self.dof
 
+    @deprecated
     def eval(self, ss_sam):
         """Return the path position."""
         return self.cspl(ss_sam)
 
+    @deprecated
     def evald(self, ss_sam):
         """Return the path velocity."""
         return self.cspld(ss_sam)
 
+    @deprecated
     def evaldd(self, ss_sam):
         """Return the path acceleration."""
         return self.cspldd(ss_sam)
@@ -401,15 +367,15 @@ class SplineInterpolator(AbstractGeometricPath):
         for i in range(len(self.ss_waypoints) - 1):
             deltas.append(self.ss_waypoints[i + 1] - self.ss_waypoints[i])
         if len(self.ss_waypoints) == 1:
-            q = self.eval(0)
-            qd = self.evald(0)
-            qdd = self.evaldd(0)
+            q = self(0)
+            qd = self(0, 1)
+            qdd = self(0, 2)
             traj.Insert(traj.GetNumWaypoints(),
                         list(q) + list(qd) + list(qdd) + [0])
         else:
-            qs = self.eval(self.ss_waypoints)
-            qds = self.evald(self.ss_waypoints)
-            qdds = self.evaldd(self.ss_waypoints)
+            qs = self(self.ss_waypoints)
+            qds = self(self.ss_waypoints, 1)
+            qdds = self(self.ss_waypoints, 2)
             for (q, qd, qdd, dt) in zip(qs, qds, qdds, deltas):
                 traj.Insert(traj.GetNumWaypoints(),
                             q.tolist() + qd.tolist() + qdd.tolist() + [dt])

@@ -1,5 +1,5 @@
+"""Collection of different operational tasts."""
 from invoke import task
-import os
 try:
     import pathlib2 as pathlib
 except ImportError:
@@ -8,6 +8,7 @@ except ImportError:
 
 @task
 def install_solvers(c, user=False):
+    """Install backend solvers, e.g, qpoases."""
     install_dir = '/tmp/tox-qpoases'
     path = pathlib.Path(install_dir)
     if path.exists():
@@ -20,6 +21,7 @@ def install_solvers(c, user=False):
     else:
         flag = ""
     c.run("cd /tmp/tox-qpoases/interfaces/python/ && python setup.py install {}".format(flag))
+
 
 @task
 def make_venvs(c, python3=False, run_tests=False):
@@ -45,12 +47,25 @@ def make_venvs(c, python3=False, run_tests=False):
 
 
 @task
+def lint(c):
+    """Run linting on selected source files."""
+    c.run("python -m pylint --rcfile=.pylintrc \
+                tasks.py \
+                toppra/__init__.py \
+                toppra/utils.py \
+                toppra/interpolator.py \
+           ")
+
+
+@task
 def docker_build(c):
+    """Build docker image to run toppra development."""
     c.run("docker build -f dockerfiles/Dockerfile . -t toppra-dev")
 
 
 @task
 def docker_start(c):
+    """Start the development docker container."""
     c.run("docker run --rm --name toppra-dep -d \
                   -v /home/hung/git/toppra:$HOME/toppra \
                   -e DISPLAY=unix$DISPLAY \
@@ -60,8 +75,11 @@ def docker_start(c):
 
 @task
 def docker_exec(c):
+    """Execute and link to a bash shell inside the stared docker container."""
     c.run("docker exec -it toppra-dep bash", pty=True)
+
 
 @task
 def docker_stop(c):
+    """Start the development docker container."""
     c.run("docker stop toppra-dep")

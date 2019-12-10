@@ -6,7 +6,7 @@ Reachability-Analysis-based Time-Optimal Path Parametrization.
 This package produces routines for creation and handling path constraints
 using the algorithm `TOPP-RA`.
 """
-
+import logging
 from .interpolator import RaveTrajectoryWrapper, SplineInterpolator,\
     UnivariateSplineInterpolator, PolynomialPath
 from .utils import smooth_singularities, setup_logging
@@ -18,5 +18,4 @@ from . import algorithm
 from . import solverwrapper
 
 # set nullhandler by default
-import logging
 logging.getLogger('toppra').addHandler(logging.NullHandler())
