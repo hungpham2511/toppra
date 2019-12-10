@@ -1,5 +1,5 @@
 # TOPP-RA
-[![CircleCI](https://circleci.com/gh/hungpham2511/toppra.svg?style=svg)](https://circleci.com/gh/hungpham2511/toppra)
+[![CircleCI](https://circleci.com/gh/hungpham2511/toppra/tree/develop.svg?style=svg)](https://circleci.com/gh/hungpham2511/toppra/tree/develop)
 [![Coverage Status](https://coveralls.io/repos/github/hungpham2511/toppra/badge.svg?branch=master)](https://coveralls.io/github/hungpham2511/toppra?branch=master)
 [![Documentation Status](https://readthedocs.org/projects/toppra/badge/?version=latest)](https://toppra.readthedocs.io/en/latest/?badge=latest)
 

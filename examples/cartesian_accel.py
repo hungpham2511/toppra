@@ -8,7 +8,6 @@ import openravepy as orpy
 
 ta.setup_logging("INFO")
 
-
 def main():
     # openrave setup
     env = orpy.Environment()
