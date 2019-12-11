@@ -10,3 +10,4 @@ cvxpy==0.4.11
 pandas
 tabulate
 cvxopt
+pytest
