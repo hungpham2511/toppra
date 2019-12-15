@@ -14,7 +14,7 @@ if FOUND_OPENRAVE:
 
 def propose_gridpoints(path, delta=1e-4, max_iteration=10):
     """"""
-    gridpoints_ept =  [0, path.duration]
+    gridpoints_ept = [0, path.duration]
     for it in range(max_iteration):
         for idx in range(len(gridpoints_ept) - 1):
             gp_mid = 0.5 * (gridpoints_ept[idx] + gridpoints_ept[idx + 1])

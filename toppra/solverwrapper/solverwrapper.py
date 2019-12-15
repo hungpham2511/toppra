@@ -1,4 +1,37 @@
+import logging
 import numpy as np
+
+logger = logging.getLogger(__name__)
+
+
+def available_solvers(output_msg=True):
+    """Check for available solvers."""
+    try:
+        import ecos
+        IMPORT_ECOS = True
+    except ImportError as err:
+        IMPORT_ECOS = False
+    try:
+        import qpoases
+        IMPORT_QPOASES = True
+    except ImportError as err:
+        IMPORT_QPOASES = False
+    try:
+        import cvxpy
+        IMPORT_CVXPY = True
+    except ImportError as err:
+        IMPORT_CVXPY = False
+    solver_availability = (
+        ('seidel',True),
+        ('hotqpoases',IMPORT_QPOASES),
+        ('qpoases',IMPORT_QPOASES),
+        ('ecos',IMPORT_ECOS),
+        ('cvxpy',IMPORT_CVXPY)
+    )
+
+    if output_msg:
+        print(solver_availability)
+    return solver_availability
 
 
 class SolverWrapper(object):

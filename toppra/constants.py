@@ -5,7 +5,7 @@ try:
     FOUND_OPENRAVE = True
 except (ImportError, SyntaxError) as err:
     FOUND_OPENRAVE = False
-    logging.getLogger('toppra').warn("Unable to import openrave.")
+    logging.getLogger('toppra').debug("Unable to import openrave.")
 
 
 # Constants

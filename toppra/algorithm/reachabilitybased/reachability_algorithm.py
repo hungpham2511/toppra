@@ -1,6 +1,8 @@
 from ..algorithm import ParameterizationAlgorithm
 from ...constants import LARGE, SMALL, TINY, INFTY, CVXPY_MAXX, MAX_TRIES
 from ...constraint import ConstraintType
+import toppra.solverwrapper
+import toppra.exceptions as exceptions
 
 import numpy as np
 import logging
@@ -57,15 +59,11 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
 
         # Handle gridpoints
         if gridpoints is None:
-            gridpoints = np.linspace(0, path.duration, 100)
-            logger.info("Automatically choose a gridpoint with 100 segments/stages, spaning the input path domain uniformly.")
-        if path.path_interval[0] != gridpoints[0]:
-            logger.fatal("Manually supplied gridpoints does not start from 0.")
-            raise ValueError("Bad input gridpoints.")
-        if path.path_interval[1] != gridpoints[-1]:
-            logger.fatal("Manually supplied gridpoints have endpoint "
-                         "different from input path duration.")
-            raise ValueError("Bad input gridpoints.")
+            gridpoints = np.linspace(path.path_interval[0], path.path_interval[1], 100)
+            logger.info("No gridpoint specified. Automatically choose a gridpoint with 100 "
+                        "segments/stages, spaning the input path domain uniformly.")
+        if path.path_interval[0] != gridpoints[0] or path.path_interval[1] != gridpoints[-1]:
+            raise ValueError("Invalid manually supplied gridpoints.")
         self.gridpoints = np.array(gridpoints)
         self._N = len(gridpoints) - 1  # Number of stages. Number of point is _N + 1
         for i in range(self._N):
@@ -97,13 +95,17 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
                 has_conic = True
 
         # Select solver wrapper automatically
+        available_solvers = toppra.solverwrapper.available_solvers()
         if solver_wrapper is None:
-            logger.debug("Solver wrapper not supplied. Choose solver wrapper automatically!")
+            logger.info("Solver wrapper not supplied. Choose solver wrapper automatically!")
             if has_conic:
+                if not available_solvers['ecos']:
+                    raise exceptions.ToppraError("Solverwrapper not available.")
                 solver_wrapper = "ecos"
             else:
-                solver_wrapper = "qpOASES"
-            logger.debug("Select solver {:}".format(solver_wrapper))
+                valid_solver = [solver for solver, avail in available_solvers if avail]
+                solver_wrapper = valid_solver[0]
+            logger.info("Select solver {:}".format(solver_wrapper))
 
         # Check solver-wrapper suitability
         if has_conic:
