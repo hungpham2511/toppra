@@ -3,6 +3,7 @@ from ...constants import LARGE, SMALL, TINY, INFTY, CVXPY_MAXX, MAX_TRIES
 from ...constraint import ConstraintType
 import toppra.solverwrapper
 import toppra.exceptions as exceptions
+import toppra.interpolator as interpolator
 
 import numpy as np
 import logging
@@ -59,9 +60,9 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
 
         # Handle gridpoints
         if gridpoints is None:
-            gridpoints = np.linspace(path.path_interval[0], path.path_interval[1], 100)
-            logger.info("No gridpoint specified. Automatically choose a gridpoint with 100 "
-                        "segments/stages, spaning the input path domain uniformly.")
+            gridpoints = interpolator.propose_gridpoints(path, max_err_threshold=1e-3)
+            logger.info("No gridpoint specified. Automatically choose a gridpoint. See `propose_gridpoints`.")
+
         if path.path_interval[0] != gridpoints[0] or path.path_interval[1] != gridpoints[-1]:
             raise ValueError("Invalid manually supplied gridpoints.")
         self.gridpoints = np.array(gridpoints)
