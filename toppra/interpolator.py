@@ -12,17 +12,49 @@ if FOUND_OPENRAVE:
     import openravepy as orpy
 
 
-def propose_gridpoints(path, delta=1e-4, max_iteration=10):
-    """"""
-    gridpoints_ept = [0, path.duration]
+def propose_gridpoints(path, max_err_threshold=1e-4, max_iteration=100, max_seg_length=0.05):
+    """Generate a set of grid pooint for the given path.
+
+    This function operates in multiple passes through the geometric
+    path from the start to the end point. In each pass, for each
+    segment, the maximum interpolation error is estimated using the
+    following equation:
+
+        0.5 * max(abs(p'' * d_segment ^ 2))
+
+    Here p'' is the second derivative of the path and d_segment is the
+    length of the segment. Intuitively, at positions with higher
+    curvature, there must be more points in order to improve
+    approximation quality.
+
+    Arguments
+    ---------
+    path: Input geometric path.
+    max_err_threshold: Maximum worstcase error thrshold allowable.
+    max_iteration: Maximum number of iterations.
+    max_seg_length: All segments length should be smaller than this value.
+
+    """
+    gridpoints_ept = [path.path_interval[0], path.path_interval[1]]
     for it in range(max_iteration):
+        add_new_points = False
         for idx in range(len(gridpoints_ept) - 1):
             gp_mid = 0.5 * (gridpoints_ept[idx] + gridpoints_ept[idx + 1])
+            if (gridpoints_ept[idx + 1] - gridpoints_ept[idx]) > max_seg_length:
+                gridpoints_ept.append(gp_mid)
+                add_new_points = True
+                continue
+
             dist = gridpoints_ept[idx + 1] - gridpoints_ept[idx]
-            max_err = np.max(np.abs(0.5 * path.evaldd(gp_mid) * dist ** 2))
-            if max_err > delta:
+            max_err = np.max(np.abs(0.5 * path(gp_mid, 2) * dist ** 2))
+            if max_err > max_err_threshold:
+                add_new_points = True
                 gridpoints_ept.append(gp_mid)
         gridpoints_ept = sorted(gridpoints_ept)
+        if not add_new_points:
+            break
+    if it == max_iteration - 1:
+        raise ValueError("Unable to find a good gridpoint for this path.")
     return gridpoints_ept
 
 
@@ -264,7 +296,6 @@ class SplineInterpolator(AbstractGeometricPath):
 
     def __init__(self, ss_waypoints, waypoints, bc_type='not-a-knot'):
         super(SplineInterpolator, self).__init__()
-        assert ss_waypoints[0] == 0, "First index must equals zero."
         self.ss_waypoints = np.array(ss_waypoints)
         self.waypoints = np.array(waypoints)
         assert self.ss_waypoints.shape[0] == self.waypoints.shape[0]
