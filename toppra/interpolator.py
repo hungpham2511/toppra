@@ -9,7 +9,53 @@ from toppra.constants import FOUND_OPENRAVE
 logger = logging.getLogger(__name__)
 
 if FOUND_OPENRAVE:
-    import openravepy as orpy
+    import openravepy as orpy  # pylint: disable=import-error
+
+
+def propose_gridpoints(path, max_err_threshold=1e-4, max_iteration=100, max_seg_length=0.05):
+    """Generate a set of grid pooint for the given path.
+
+    This function operates in multiple passes through the geometric
+    path from the start to the end point. In each pass, for each
+    segment, the maximum interpolation error is estimated using the
+    following equation:
+
+        0.5 * max(abs(p'' * d_segment ^ 2))
+
+    Here p'' is the second derivative of the path and d_segment is the
+    length of the segment. Intuitively, at positions with higher
+    curvature, there must be more points in order to improve
+    approximation quality.
+
+    Arguments
+    ---------
+    path: Input geometric path.
+    max_err_threshold: Maximum worstcase error thrshold allowable.
+    max_iteration: Maximum number of iterations.
+    max_seg_length: All segments length should be smaller than this value.
+
+    """
+    gridpoints_ept = [path.path_interval[0], path.path_interval[1]]
+    for iteration in range(max_iteration):
+        add_new_points = False
+        for idx in range(len(gridpoints_ept) - 1):
+            gp_mid = 0.5 * (gridpoints_ept[idx] + gridpoints_ept[idx + 1])
+            if (gridpoints_ept[idx + 1] - gridpoints_ept[idx]) > max_seg_length:
+                gridpoints_ept.append(gp_mid)
+                add_new_points = True
+                continue
+
+            dist = gridpoints_ept[idx + 1] - gridpoints_ept[idx]
+            max_err = np.max(np.abs(0.5 * path(gp_mid, 2) * dist ** 2))
+            if max_err > max_err_threshold:
+                add_new_points = True
+                gridpoints_ept.append(gp_mid)
+        gridpoints_ept = sorted(gridpoints_ept)
+        if not add_new_points:
+            break
+    if iteration == max_iteration - 1:
+        raise ValueError("Unable to find a good gridpoint for this path.")
+    return gridpoints_ept
 
 
 class AbstractGeometricPath(object):
@@ -123,7 +169,7 @@ class RaveTrajectoryWrapper(AbstractGeometricPath):
                     pp_coeffs[0, 0, idof] = waypoints[0, idof]
                 return PPoly(pp_coeffs, [0, 1])
 
-            elif self._interpolation == "quadratic":
+            if self._interpolation == "quadratic":
                 waypoints = _extract_waypoints(0)
                 waypoints_d = _extract_waypoints(1)
                 waypoints_dd = []
@@ -144,7 +190,7 @@ class RaveTrajectoryWrapper(AbstractGeometricPath):
                         ]
                 return PPoly(pp_coeffs, self.ss_waypoints)
 
-            elif self._interpolation == "cubic":
+            if self._interpolation == "cubic":
                 waypoints = _extract_waypoints(0)
                 waypoints_d = _extract_waypoints(1)
                 waypoints_dd = _extract_waypoints(2)
@@ -197,12 +243,11 @@ class RaveTrajectoryWrapper(AbstractGeometricPath):
     def __call__(self, ss_sam, order=0):
         if order == 0:
             return self.eval(ss_sam)
-        elif order == 1:
+        if order == 1:
             return self.evald(ss_sam)
-        elif order == 2:
+        if order == 2:
             return self.evaldd(ss_sam)
-        else:
-            raise ValueError("Order must be 0, 1 or 2.")
+        raise ValueError("Order must be 0, 1 or 2.")
 
     def eval(self, ss_sam):
         """Evalute path postition."""
@@ -250,9 +295,8 @@ class SplineInterpolator(AbstractGeometricPath):
 
     def __init__(self, ss_waypoints, waypoints, bc_type='not-a-knot'):
         super(SplineInterpolator, self).__init__()
-        assert ss_waypoints[0] == 0, "First index must equals zero."
-        self.ss_waypoints = np.array(ss_waypoints)
-        self.waypoints = np.array(waypoints)
+        self.ss_waypoints = np.array(ss_waypoints)  # type: np.ndarray
+        self.waypoints = np.array(waypoints)  # type: np.ndarray
         assert self.ss_waypoints.shape[0] == self.waypoints.shape[0]
 
         if len(ss_waypoints) == 1:
@@ -283,12 +327,11 @@ class SplineInterpolator(AbstractGeometricPath):
     def __call__(self, path_positions, order=0):
         if order == 0:
             return self.cspl(path_positions)
-        elif order == 1:
+        if order == 1:
             return self.cspld(path_positions)
-        elif order == 2:
+        if order == 2:
             return self.cspldd(path_positions)
-        else:
-            raise ValueError("Invalid order %s" % order)
+        raise ValueError("Invalid order %s" % order)
 
     def get_waypoints(self):
         """Return the appropriate scaled waypoints."""
@@ -502,12 +545,11 @@ class PolynomialPath(AbstractGeometricPath):
     def __call__(self, path_positions, order=0):
         if order == 0:
             return self.eval(path_positions)
-        elif order == 1:
+        if order == 1:
             return self.evald(path_positions)
-        elif order == 2:
+        if order == 2:
             return self.evaldd(path_positions)
-        else:
-            raise ValueError("Invalid order %s" % order)
+        raise ValueError("Invalid order %s" % order)
 
     @property
     def dof(self):

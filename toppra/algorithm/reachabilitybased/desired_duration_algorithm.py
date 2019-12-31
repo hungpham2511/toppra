@@ -110,7 +110,7 @@ class TOPPRAsd(ReachabilityAlgorithm):
                 # numerical errors might violate this condition.
                 xs[i + 1] = min(K[i + 1, 1], max(K[i + 1, 0], xs[i] + 2 * deltas[i] * us[i] - SMALL))
                 v_vec[i] = optim_res[2:]
-            logger.debug("[Forward pass] u_{:d} = {:f}, x_{:d} = {:f}".format(i, us[i], i+1, xs[i+1]))
+            logger.debug("[Forward pass] u_{:d} = {:f}, x_{:d} = {:f}".format(i, us[i], i + 1, xs[i + 1]))
         self.solver_wrapper.close_solver()
         # compute the slowest parametrization
         xs_slow = np.zeros(N + 1)
@@ -134,7 +134,7 @@ class TOPPRAsd(ReachabilityAlgorithm):
                 # numerical errors might violate this condition.
                 xs_slow[i + 1] = min(K[i + 1, 1], max(K[i + 1, 0], xs_slow[i] + 2 * deltas[i] * us_slow[i] - SMALL))
                 v_vec_slow[i] = optim_res[2:]
-            logger.debug("[Forward pass] u_{:d} = {:f}, x_{:d} = {:f}".format(i, us_slow[i], i+1, xs_slow[i+1]))
+            logger.debug("[Forward pass] u_{:d} = {:f}, x_{:d} = {:f}".format(i, us_slow[i], i + 1, xs_slow[i + 1]))
         self.solver_wrapper.close_solver()
 
         # desired parametrization xs_desired = alpha * xs + (1 - alpha) / xs_slow
@@ -172,7 +172,7 @@ class TOPPRAsd(ReachabilityAlgorithm):
         xs_alpha = alpha * xs + (1 - alpha) * xs_slow
         us_alpha = alpha * us + (1 - alpha) * us_slow
         v_vec_alpha = alpha * v_vec + (1 - alpha) * v_vec_slow
-        
+
         sd_vec = np.sqrt(xs_alpha)
         sdd_vec = np.copy(us_alpha)
         if return_data:
@@ -222,4 +222,3 @@ class TOPPRAsd(ReachabilityAlgorithm):
         optim_var = self.solver_wrapper.solve_stagewise_optim(
             i, None, g_upper, x, x, K_next_min, K_next_max)
         return optim_var
-

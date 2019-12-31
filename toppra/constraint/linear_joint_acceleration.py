@@ -28,7 +28,7 @@ class JointAccelerationConstraint(LinearConstraint):
     - :code:`h` := :math:`[\ddot{\mathbf{q}}_{max}^T, -\ddot{\mathbf{q}}_{min}^T]^T`
     """
 
-    def __init__(self, alim, discretization_scheme=DiscretizationType.Collocation):
+    def __init__(self, alim, discretization_scheme=DiscretizationType.Interpolation):
         """Initialize the joint acceleration class.
 
         Parameters
@@ -43,9 +43,16 @@ class JointAccelerationConstraint(LinearConstraint):
             higher computational cost.
         """
         super(JointAccelerationConstraint, self).__init__()
-        self.alim = np.array(alim, dtype=float)
+        alim = np.array(alim, dtype=float)
+        if np.isnan(alim).any():
+            raise ValueError("Bad velocity given: %s" % alim)
+        if len(alim.shape) == 1:
+            self.alim = np.vstack((-np.array(alim), np.array(alim))).T
+        else:
+            self.alim = np.array(alim, dtype=float)
         self.dof = self.alim.shape[0]
         self.set_discretization_type(discretization_scheme)
+
         assert self.alim.shape[1] == 2, "Wrong input shape."
         self._format_string = "    Acceleration limit: \n"
         for i in range(self.alim.shape[0]):
@@ -60,8 +67,8 @@ class JointAccelerationConstraint(LinearConstraint):
             ))
         if scaling is None:
             scaling = 1
-        ps_vec = path.evald(gridpoints / scaling) / scaling
-        pss_vec = path.evaldd(gridpoints / scaling) / scaling ** 2
+        ps_vec = (path(gridpoints / scaling, order=1) / scaling).reshape((-1, path.dof))
+        pss_vec = (path(gridpoints / scaling, order=2) / scaling ** 2).reshape((-1, path.dof))
         dof = path.dof
         F_single = np.zeros((dof * 2, dof))
         g_single = np.zeros(dof * 2)

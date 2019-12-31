@@ -11,9 +11,9 @@ logger = logging.getLogger(__name__)
 try:
     import openravepy as orpy
 except ImportError as err:
-    logger.warning("Unable to import openravepy. Exception: %s" % err.args[0])
+    logger.debug("Unable to import openravepy. Exception: %s" % err.args[0])
 except SyntaxError as err:
-    logger.warning("Unable to import openravepy. Exception: %s" % err.args[0])
+    logger.debug("Unable to import openravepy. Exception: %s" % err.args[0])
 
 
 class ParameterizationAlgorithm(object):

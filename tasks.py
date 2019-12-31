@@ -47,14 +47,20 @@ def make_venvs(c, python3=False, run_tests=False):
 
 
 @task
-def lint(c):
+def lint(c, pycodestyle=False, pydocstyle=False):
     """Run linting on selected source files."""
     c.run("python -m pylint --rcfile=.pylintrc \
                 tasks.py \
                 toppra/__init__.py \
                 toppra/utils.py \
                 toppra/interpolator.py \
+                toppra/exceptions.py \
            ")
+    # toppra/solverwrapper/solverwrapper.py
+    if pycodestyle:
+        c.run("pycodestyle toppra --max-line-length=120 --ignore=E731,W503,W605")
+    if pydocstyle:
+        c.run("pydocstyle toppra")
 
 
 @task
