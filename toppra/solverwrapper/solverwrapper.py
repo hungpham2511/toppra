@@ -1,9 +1,11 @@
+"""This module provides different solverwrapper implementations."""
 import logging
 import numpy as np
 
 logger = logging.getLogger(__name__)
 
 
+# pylint: disable=unused-import
 def available_solvers(output_msg=True):
     """Check for available solvers."""
     try:
@@ -22,11 +24,11 @@ def available_solvers(output_msg=True):
     except ImportError as err:
         IMPORT_CVXPY = False
     solver_availability = (
-        ('seidel',True),
-        ('hotqpoases',IMPORT_QPOASES),
-        ('qpoases',IMPORT_QPOASES),
-        ('ecos',IMPORT_ECOS),
-        ('cvxpy',IMPORT_CVXPY)
+        ('seidel', True),
+        ('hotqpoases', IMPORT_QPOASES),
+        ('qpoases', IMPORT_QPOASES),
+        ('ecos', IMPORT_ECOS),
+        ('cvxpy', IMPORT_CVXPY)
     )
 
     if output_msg:

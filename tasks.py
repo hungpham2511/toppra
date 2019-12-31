@@ -56,6 +56,7 @@ def lint(c, pycodestyle=False, pydocstyle=False):
                 toppra/interpolator.py \
                 toppra/exceptions.py \
            ")
+    # toppra/solverwrapper/solverwrapper.py
     if pycodestyle:
         c.run("pycodestyle toppra --max-line-length=120 --ignore=E731,W503,W605")
     if pydocstyle:
