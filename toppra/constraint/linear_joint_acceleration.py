@@ -67,8 +67,8 @@ class JointAccelerationConstraint(LinearConstraint):
             ))
         if scaling is None:
             scaling = 1
-        ps_vec = path.evald(gridpoints / scaling) / scaling
-        pss_vec = path.evaldd(gridpoints / scaling) / scaling ** 2
+        ps_vec = (path(gridpoints / scaling, order=1) / scaling).reshape((-1, path.dof))
+        pss_vec = (path(gridpoints / scaling, order=2) / scaling ** 2).reshape((-1, path.dof))
         dof = path.dof
         F_single = np.zeros((dof * 2, dof))
         g_single = np.zeros(dof * 2)

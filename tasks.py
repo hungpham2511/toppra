@@ -54,6 +54,7 @@ def lint(c):
                 toppra/__init__.py \
                 toppra/utils.py \
                 toppra/interpolator.py \
+                toppra/exceptions.py \
            ")
 
 

@@ -1,0 +1,2 @@
+class ToppraError(Exception):
+    pass
