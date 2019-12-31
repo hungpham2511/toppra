@@ -25,11 +25,11 @@ def test_basic_usage(path):
     # ensure a reasonable response.
     assert np.max(np.diff(gridpoints_ept)) < 0.05
 
-    # visualize ###############################################################
-    ss_full = np.linspace(path.path_interval[0], path.path_interval[1], 100)
-    for i in range(len(waypoints[0])):
-        plt.plot(ss_full, path(ss_full)[:, i], '--', c='C%d' % i)
-        plt.plot(gridpoints_ept, path(gridpoints_ept)[:, i], '-o', c='C%d' % i)
+    # # visualize ###############################################################
+    # ss_full = np.linspace(path.path_interval[0], path.path_interval[1], 100)
+    # for i in range(len(waypoints[0])):
+    #     plt.plot(ss_full, path(ss_full)[:, i], '--', c='C%d' % i)
+    #     plt.plot(gridpoints_ept, path(gridpoints_ept)[:, i], '-o', c='C%d' % i)
     # plt.show()
 
 
