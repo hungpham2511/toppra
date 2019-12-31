@@ -1,2 +1,5 @@
+"""Exceptions used in the toppra library."""
+
+
 class ToppraError(Exception):
-    pass
+    """A generic error class used in the toppra library."""

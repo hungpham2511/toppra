@@ -18,7 +18,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
     constraint_list: List[:class:`~toppra.constraint.Constraint`]
         List of constraints on the robot dynamics.
     path: Interpolator
-        
+
     gridpoints: np.ndarray, optional
         Shape (N+1,). Gridpoints for discretization of the path position.
     solver_wrapper: str, optional
@@ -110,9 +110,11 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
 
         # Check solver-wrapper suitability
         if has_conic:
-            assert solver_wrapper.lower() in ['cvxpy', 'ecos'], "Problem has conic constraints, solver {:} is not suitable".format(solver_wrapper)
+            assert solver_wrapper.lower() in ['cvxpy', 'ecos'], \
+                "Problem has conic constraints, solver {:} is not suitable".format(solver_wrapper)
         else:
-            assert solver_wrapper.lower() in ['cvxpy', 'qpoases', 'ecos', 'hotqpoases', 'seidel'], "Solver {:} not found".format(solver_wrapper)
+            assert solver_wrapper.lower() in ['cvxpy', 'qpoases', 'ecos', 'hotqpoases', 'seidel'], \
+                "Solver {:} not found".format(solver_wrapper)
 
         if solver_wrapper.lower() == "cvxpy":
             from toppra.solverwrapper.cvxpy_solverwrapper import cvxpyWrapper
@@ -346,7 +348,6 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         else:
             return sdd_vec, sd_vec, v_vec
 
-
     def _one_step_forward(self, i, L_current, feasible_set_next):
         res = np.zeros(2)
         if np.isnan(L_current).any() or i < 0 or i > self._N:
@@ -382,14 +383,14 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         logger.debug("Start computing the reachable sets")
         self.solver_wrapper.setup_solver()
         for i in range(0, self._N):
-            L[i + 1] = self._one_step_forward(i, L[i], feasible_sets[i+1])
+            L[i + 1] = self._one_step_forward(i, L[i], feasible_sets[i + 1])
             if L[i + 1, 0] < 0:
                 L[i + 1, 0] = 0
             if np.isnan(L[i + 1]).any():
-                logger.warn("L[{:d}]={:}. Path not parametrizable.".format(i+1, L[i+1]))
+                logger.warn("L[{:d}]={:}. Path not parametrizable.".format(i + 1, L[i + 1]))
                 return L
             if logger.isEnabledFor(logging.DEBUG):
-                logger.debug("[Compute reachable sets] L_{:d}={:}".format(i+1, L[i+1]))
-        
+                logger.debug("[Compute reachable sets] L_{:d}={:}".format(i + 1, L[i + 1]))
+
         self.solver_wrapper.close_solver()
         return L
