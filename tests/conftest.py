@@ -1,3 +1,4 @@
+import logging
 import toppra
 import pytest
 try:
@@ -8,12 +9,22 @@ except ImportError as err:
 except SyntaxError as err:
     IMPORT_OPENRAVE = False
 
+logger = logging.getLogger('toppra.bug')
 
-@pytest.fixture(scope="session")
+@pytest.fixture(autouse=True, scope="session")
 def rave_env():
-    env = orpy.Environment()
-    yield env
-    env.Destroy()
+    if IMPORT_OPENRAVE:
+        logger.warn("Starting openrave")
+        orpy.RaveInitialize(load_all_plugins=True)
+        logger.warn("Starting a new environment")
+        env = orpy.Environment()
+        yield env
+        logger.warn("Destroying a new environment")
+        env.Destroy()
+        logger.warn("Destroying Rave runtime")
+        orpy.RaveDestroy()
+    else:
+        yield None
 
 
 def pytest_addoption(parser):

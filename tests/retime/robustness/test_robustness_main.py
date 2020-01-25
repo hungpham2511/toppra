@@ -85,9 +85,9 @@ def test_robustness_main(request):
             axs[0, 0].plot(data["K"][:, 0], c="C0")
             axs[0, 0].plot(data["K"][:, 1], c="C0")
             axs[0, 0].plot(data["sd"] ** 2, c="C1")
-            axs[0, 1].plot(_t, jnt_traj.eval(_t))
-            axs[1, 0].plot(_t, jnt_traj.evald(_t))
-            axs[1, 1].plot(_t, jnt_traj.evaldd(_t))
+            axs[0, 1].plot(_t, jnt_traj(_t))
+            axs[1, 0].plot(_t, jnt_traj(_t, 1))
+            axs[1, 1].plot(_t, jnt_traj(_t, 2))
 
             axs[0, 0].set_title("param")
             axs[0, 1].set_title("jnt. pos.")

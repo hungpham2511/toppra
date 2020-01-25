@@ -8,8 +8,9 @@ if IMPORT_OPENRAVEPY:
 
 
 @pytest.fixture(scope='module')
-def robot_fixture():
-    env = orpy.Environment()
+def robot_fixture(rave_env):
+    env = rave_env
+    env.Reset()
     env.Load("data/lab1.env.xml")
     robot = env.GetRobots()[0]
     manipulator = robot.GetManipulators()[0]
@@ -24,7 +25,6 @@ def robot_fixture():
     # env.SetViewer('qtosg')
     toppra.setup_logging("INFO")
     yield robot
-    env.Destroy()
 
 
 @pytest.mark.skipif(not IMPORT_OPENRAVEPY, reason="Not found openrave installation")

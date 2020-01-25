@@ -18,14 +18,23 @@ class JointVelocityConstraint(LinearConstraint):
 
     def __init__(self, vlim):
         super(JointVelocityConstraint, self).__init__()
-        self.vlim = np.array(vlim, dtype=float)
+        vlim = np.array(vlim, dtype=float)
+        if np.isnan(vlim).any():
+            raise ValueError("Bad velocity given: %s" % vlim)
+        if len(vlim.shape) == 1:
+            self.vlim = np.vstack((-np.array(vlim), np.array(vlim))).T
+        else:
+            self.vlim = np.array(vlim, dtype=float)
         self.dof = self.vlim.shape[0]
+        self._assert_valid_limits()
+
+    def _assert_valid_limits(self):
+        """Check that the velocity limits is valid."""
         assert self.vlim.shape[1] == 2, "Wrong input shape."
         for i in range(self.dof):
-            assert self.vlim[i, 0] < self.vlim[
-                i,
-                1], "Bad velocity limits: {:} (lower limit) > {:} (higher limit)".format(
-                    self.vlim[i, 0], self.vlim[i, 1])
+            if self.vlim[i, 0] >= self.vlim[i, 1]:
+                raise ValueError("Bad velocity limits: {:} (lower limit) > {:} (higher limit)".format(
+                    self.vlim[i, 0], self.vlim[i, 1]))
         self._format_string = "    Velocity limit: \n"
         for i in range(self.vlim.shape[0]):
             self._format_string += "      J{:d}: {:}".format(
@@ -36,7 +45,7 @@ class JointVelocityConstraint(LinearConstraint):
             raise ValueError(
                 "Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})"
                 .format(self.get_dof(), path.dof))
-        qs = path.evald(gridpoints / scaling) / scaling
+        qs = path(gridpoints / scaling, 1) / scaling
         _, _, xbound_ = _create_velocity_constraint(qs, self.vlim)
         xbound = np.array(xbound_)
         xbound[:, 0] = xbound_[:, 1]

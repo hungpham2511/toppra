@@ -35,6 +35,7 @@ def setup_logging(level="WARN"):
         fmt="%(levelname)5s [%(filename)s : %(lineno)d] [%(funcName)s] %(message)s",
         datefmt="%H:%M:%S",
         milliseconds=True)
+    logging.basicConfig(filename='/tmp/toppra.log', level=level, filemode='a')
 
 
 def compute_jacobian_wrench(robot, link, point):
@@ -117,8 +118,7 @@ def smooth_singularities(parametrization_instance, us, xs, vs=None):
     Notes
     -----
     (`us_smth`, `xs_smth`) is a *valid* path-parameterization. They
-    satisfy the linear continuity condition :math:`x_{i+1} = x_i + 2
-    \Delta_i u_i`.
+    satisfy the linear continuity condition :math:`x_{i+1} = x_i + 2 delta_i u_i`.
 
     This function is safe: it will always return a solution.
 
@@ -146,7 +146,7 @@ def smooth_singularities(parametrization_instance, us, xs, vs=None):
     singular_indices = []
     uds = np.diff(us, n=1)
     for i in range(parametrization_instance.N - 3):
-        if uds[i] < 0 and uds[i + 1] > 0 and uds[i + 2] < 0:
+        if uds[i] < 0 < uds[i + 1] and uds[i + 2] < 0:
             logger.debug("Found potential singularity at {:d}".format(i))
             singular_indices.append(i)
     logger.debug("Found singularities at %s", singular_indices)

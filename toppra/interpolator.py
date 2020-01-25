@@ -1,63 +1,71 @@
 """This module implements interpolators for representing geometric paths and trajectories.
 """
 import logging
-import warnings
 import numpy as np
 from scipy.interpolate import UnivariateSpline, CubicSpline, PPoly
-from .utils import deprecated
+from toppra.utils import deprecated
+from toppra.constants import FOUND_OPENRAVE
 
 logger = logging.getLogger(__name__)
 
-try:
-    import openravepy as orpy
-except ImportError as err:
-    logger.warning("Unable to import openravepy. Exception: %s", err.args[0])
-except SyntaxError as err:
-    logger.warning("Unable to import openravepy. Exception: %s", err.args[0])
+if FOUND_OPENRAVE:
+    import openravepy as orpy  # pylint: disable=import-error
 
 
-def normalize(gridpoints):
-    # type: (np.ndarray) -> np.ndarray
-    """Normalize the path discretization.
+def propose_gridpoints(path, max_err_threshold=1e-4, max_iteration=100, max_seg_length=0.05):
+    """Generate a set of grid pooint for the given path.
 
-    Args:
-        gridpoints: Path position array.
+    This function operates in multiple passes through the geometric
+    path from the start to the end point. In each pass, for each
+    segment, the maximum interpolation error is estimated using the
+    following equation:
 
-    Returns:
-        out: Normalized path position array.
-    """
-    return np.array(gridpoints) / gridpoints[-1]
+        0.5 * max(abs(p'' * d_segment ^ 2))
 
+    Here p'' is the second derivative of the path and d_segment is the
+    length of the segment. Intuitively, at positions with higher
+    curvature, there must be more points in order to improve
+    approximation quality.
 
-def _find_left_index(gridpoints, s):
-    # type: (np.ndarray, float) -> int
-    """Find the least lowest entry that is larger or equal.
-
-    Args:
-        gridpoints: Array of path positions.
-        s: A path position.
-
-    Returns:
-        out: The desired index.
+    Arguments
+    ---------
+    path: Input geometric path.
+    max_err_threshold: Maximum worstcase error thrshold allowable.
+    max_iteration: Maximum number of iterations.
+    max_seg_length: All segments length should be smaller than this value.
 
     """
-    for i in range(1, len(gridpoints)):
-        if gridpoints[i - 1] <= s < gridpoints[i]:
-            return i - 1
-    return len(gridpoints) - 2
+    gridpoints_ept = [path.path_interval[0], path.path_interval[1]]
+    for iteration in range(max_iteration):
+        add_new_points = False
+        for idx in range(len(gridpoints_ept) - 1):
+            gp_mid = 0.5 * (gridpoints_ept[idx] + gridpoints_ept[idx + 1])
+            if (gridpoints_ept[idx + 1] - gridpoints_ept[idx]) > max_seg_length:
+                gridpoints_ept.append(gp_mid)
+                add_new_points = True
+                continue
+
+            dist = gridpoints_ept[idx + 1] - gridpoints_ept[idx]
+            max_err = np.max(np.abs(0.5 * path(gp_mid, 2) * dist ** 2))
+            if max_err > max_err_threshold:
+                add_new_points = True
+                gridpoints_ept.append(gp_mid)
+        gridpoints_ept = sorted(gridpoints_ept)
+        if not add_new_points:
+            break
+    if iteration == max_iteration - 1:
+        raise ValueError("Unable to find a good gridpoint for this path.")
+    return gridpoints_ept
 
 
-class Interpolator(object):
-    """Base class for Interpolators.
+class AbstractGeometricPath(object):
+    """Base geometric path.
 
-    Derive Interpolator should inherit this abstract class.
-
+    Derive geometric paths classes should derive the below abstract methods.
     """
-
-    def __init__(self):
-        pass
 
     def __call__(self, path_positions, order=0):
+        # type: (np.ndarray, int) -> np.ndarray
         """Evaluate the path at given positions.
 
         Parameters
@@ -80,11 +88,6 @@ class Interpolator(object):
         raise NotImplementedError
 
     @property
-    def duration(self):
-        """Return the duration of the path."""
-        raise NotImplementedError
-
-    @property
     def dof(self):
         """Return the degrees-of-freedom of the path."""
         raise NotImplementedError
@@ -101,16 +104,8 @@ class Interpolator(object):
         """
         raise NotImplementedError
 
-    def to_rave_trajectory(self, robot):
-        """Return the corresponding Openrave Trajectory."""
-        raise NotImplementedError
 
-    def to_ros_trajectory_msg(self):
-        """Return the corresponding ROS trajectory."""
-        raise NotImplementedError
-
-
-class RaveTrajectoryWrapper(Interpolator):
+class RaveTrajectoryWrapper(AbstractGeometricPath):
     """An interpolator that wraps OpenRAVE's :class:`GenericTrajectory`.
 
     Only trajectories using quadratic interpolation or cubic
@@ -120,6 +115,14 @@ class RaveTrajectoryWrapper(Interpolator):
     object.
 
     """
+    @staticmethod
+    def _extract_interpolation_method(spec):
+        _interpolation = spec.GetGroupFromName('joint').interpolation
+        if _interpolation not in ['quadratic', 'cubic']:
+            raise ValueError(
+                "This class only handles trajectories with quadratic or cubic interpolation"
+            )
+        return _interpolation
 
     def __init__(self, traj, robot):
         # type: (orpy.RaveTrajectory, orpy.Robot) -> None
@@ -131,98 +134,87 @@ class RaveTrajectoryWrapper(Interpolator):
             An OpenRAVE joint trajectory.
         robot:
             An OpenRAVE robot.
+
         """
         super(RaveTrajectoryWrapper, self).__init__()
         self.traj = traj  #: init
-        self.spec = traj.GetConfigurationSpecification()
+        spec = traj.GetConfigurationSpecification()
         self._dof = robot.GetActiveDOF()
-
-        self._interpolation = self.spec.GetGroupFromName('joint').interpolation
-        if self._interpolation not in ['quadratic', 'cubic']:
-            raise ValueError(
-                "This class only handles trajectories with quadratic or cubic interpolation"
-            )
+        self._interpolation = self._extract_interpolation_method(spec)
         self._duration = traj.GetDuration()
+
         all_waypoints = traj.GetWaypoints(0, traj.GetNumWaypoints()).reshape(
             traj.GetNumWaypoints(), -1)
         valid_wp_indices = [0]
         self.ss_waypoints = [0.0]
         for i in range(1, traj.GetNumWaypoints()):
-            dt = self.spec.ExtractDeltaTime(all_waypoints[i])
+            dt = spec.ExtractDeltaTime(all_waypoints[i])
             if dt > 1e-5:  # If delta is too small, skip it.
                 valid_wp_indices.append(i)
                 self.ss_waypoints.append(self.ss_waypoints[-1] + dt)
-
-        self.n_waypoints = len(valid_wp_indices)
         self.ss_waypoints = np.array(self.ss_waypoints)
-        self.s_start = self.ss_waypoints[0]
-        self.s_end = self.ss_waypoints[-1]
+        n_waypoints = len(valid_wp_indices)
 
-        self.waypoints = np.array([
-            self.spec.ExtractJointValues(all_waypoints[i], robot,
-                                         robot.GetActiveDOFIndices())
-            for i in valid_wp_indices
-        ])
-        self.waypoints_d = np.array([
-            self.spec.ExtractJointValues(all_waypoints[i], robot,
-                                         robot.GetActiveDOFIndices(), 1)
-            for i in valid_wp_indices
-        ])
-
-        # Degenerate case: there is only one waypoint.
-        if self.n_waypoints == 1:
-            pp_coeffs = np.zeros((1, 1, self.dof))
-            for idof in range(self.dof):
-                pp_coeffs[0, 0, idof] = self.waypoints[0, idof]
-            # A constant function
-            self.ppoly = PPoly(pp_coeffs, [0, 1])
-
-        elif self._interpolation == "quadratic":
-            self.waypoints_dd = []
-            for i in range(self.n_waypoints - 1):
-                qdd = ((self.waypoints_d[i + 1] - self.waypoints_d[i]) /
-                       (self.ss_waypoints[i + 1] - self.ss_waypoints[i]))
-                self.waypoints_dd.append(qdd)
-            self.waypoints_dd = np.array(self.waypoints_dd)
-
-            # Fill the coefficient matrix for scipy.PPoly class
-            pp_coeffs = np.zeros((3, self.n_waypoints - 1, self.dof))
-            for idof in range(self.dof):
-                for iseg in range(self.n_waypoints - 1):
-                    pp_coeffs[:, iseg, idof] = [
-                        self.waypoints_dd[iseg, idof] / 2,
-                        self.waypoints_d[iseg, idof],
-                        self.waypoints[iseg, idof]
-                    ]
-            self.ppoly = PPoly(pp_coeffs, self.ss_waypoints)
-
-        elif self._interpolation == "cubic":
-            self.waypoints_dd = np.array([
-                self.spec.ExtractJointValues(all_waypoints[i], robot,
-                                             robot.GetActiveDOFIndices(), 2)
+        def _extract_waypoints(order):
+            return np.array([
+                spec.ExtractJointValues(all_waypoints[i], robot, robot.GetActiveDOFIndices(), order)
                 for i in valid_wp_indices
             ])
-            self.waypoints_ddd = []
-            for i in range(self.n_waypoints - 1):
-                qddd = ((self.waypoints_dd[i + 1] - self.waypoints_dd[i]) /
-                        (self.ss_waypoints[i + 1] - self.ss_waypoints[i]))
-                self.waypoints_ddd.append(qddd)
-            self.waypoints_ddd = np.array(self.waypoints_ddd)
 
-            # Fill the coefficient matrix for scipy.PPoly class
-            pp_coeffs = np.zeros((4, self.n_waypoints - 1, self.dof))
-            for idof in range(self.dof):
-                for iseg in range(self.n_waypoints - 1):
-                    pp_coeffs[:, iseg, idof] = [
-                        self.waypoints_ddd[iseg, idof] / 6,
-                        self.waypoints_dd[iseg, idof] / 2,
-                        self.waypoints_d[iseg, idof],
-                        self.waypoints[iseg, idof]
-                    ]
-            self.ppoly = PPoly(pp_coeffs, self.ss_waypoints)
+        def _make_ppoly():
+            if n_waypoints == 1:
+                waypoints = _extract_waypoints(0)
+                pp_coeffs = np.zeros((1, 1, self.dof))
+                for idof in range(self.dof):
+                    pp_coeffs[0, 0, idof] = waypoints[0, idof]
+                return PPoly(pp_coeffs, [0, 1])
 
-        self.ppoly_d = self.ppoly.derivative()
-        self.ppoly_dd = self.ppoly.derivative(2)
+            if self._interpolation == "quadratic":
+                waypoints = _extract_waypoints(0)
+                waypoints_d = _extract_waypoints(1)
+                waypoints_dd = []
+                for i in range(n_waypoints - 1):
+                    qdd = ((waypoints_d[i + 1] - waypoints_d[i]) /
+                           (self.ss_waypoints[i + 1] - self.ss_waypoints[i]))
+                    waypoints_dd.append(qdd)
+                waypoints_dd = np.array(waypoints_dd)
+
+                # Fill the coefficient matrix for scipy.PPoly class
+                pp_coeffs = np.zeros((3, n_waypoints - 1, self.dof))
+                for idof in range(self.dof):
+                    for iseg in range(n_waypoints - 1):
+                        pp_coeffs[:, iseg, idof] = [
+                            waypoints_dd[iseg, idof] / 2,
+                            waypoints_d[iseg, idof],
+                            waypoints[iseg, idof]
+                        ]
+                return PPoly(pp_coeffs, self.ss_waypoints)
+
+            if self._interpolation == "cubic":
+                waypoints = _extract_waypoints(0)
+                waypoints_d = _extract_waypoints(1)
+                waypoints_dd = _extract_waypoints(2)
+                waypoints_ddd = []
+                for i in range(n_waypoints - 1):
+                    qddd = ((waypoints_dd[i + 1] - waypoints_dd[i]) /
+                            (self.ss_waypoints[i + 1] - self.ss_waypoints[i]))
+                    waypoints_ddd.append(qddd)
+                waypoints_ddd = np.array(waypoints_ddd)
+
+                # Fill the coefficient matrix for scipy.PPoly class
+                pp_coeffs = np.zeros((4, n_waypoints - 1, self.dof))
+                for idof in range(self.dof):
+                    for iseg in range(n_waypoints - 1):
+                        pp_coeffs[:, iseg, idof] = [
+                            waypoints_ddd[iseg, idof] / 6,
+                            waypoints_dd[iseg, idof] / 2,
+                            waypoints_d[iseg, idof],
+                            waypoints[iseg, idof]
+                        ]
+                return PPoly(pp_coeffs, self.ss_waypoints)
+            raise ValueError("An error has occured. Unable to form PPoly.")
+
+        self.ppoly = _make_ppoly()
 
     @deprecated
     def get_duration(self):
@@ -236,11 +228,26 @@ class RaveTrajectoryWrapper(Interpolator):
 
     @property
     def duration(self):
+        """Return the duration of the path."""
         return self._duration
+
+    @property
+    def path_interval(self):
+        """Return the start and end points."""
+        return np.array([0, self._duration])
 
     @property
     def dof(self):
         return self._dof
+
+    def __call__(self, ss_sam, order=0):
+        if order == 0:
+            return self.eval(ss_sam)
+        if order == 1:
+            return self.evald(ss_sam)
+        if order == 2:
+            return self.evaldd(ss_sam)
+        raise ValueError("Order must be 0, 1 or 2.")
 
     def eval(self, ss_sam):
         """Evalute path postition."""
@@ -248,14 +255,14 @@ class RaveTrajectoryWrapper(Interpolator):
 
     def evald(self, ss_sam):
         """Evalute path velocity."""
-        return self.ppoly_d(ss_sam)
+        return self.ppoly.derivative()(ss_sam)
 
     def evaldd(self, ss_sam):
         """Evalute path acceleration."""
-        return self.ppoly_dd(ss_sam)
+        return self.ppoly.derivative(2)(ss_sam)
 
 
-class SplineInterpolator(Interpolator):
+class SplineInterpolator(AbstractGeometricPath):
     """Interpolate the given waypoints by cubic spline.
 
     This interpolator is implemented as a simple wrapper over scipy's
@@ -288,14 +295,9 @@ class SplineInterpolator(Interpolator):
 
     def __init__(self, ss_waypoints, waypoints, bc_type='not-a-knot'):
         super(SplineInterpolator, self).__init__()
-        assert ss_waypoints[0] == 0, "First index must equals zero."
-        self.ss_waypoints = np.array(ss_waypoints)
-        self.waypoints = np.array(waypoints)
-        self.bc_type = bc_type
-
+        self.ss_waypoints = np.array(ss_waypoints)  # type: np.ndarray
+        self.waypoints = np.array(waypoints)  # type: np.ndarray
         assert self.ss_waypoints.shape[0] == self.waypoints.shape[0]
-        self.s_start = self.ss_waypoints[0]
-        self.s_end = self.ss_waypoints[-1]
 
         if len(ss_waypoints) == 1:
 
@@ -324,13 +326,12 @@ class SplineInterpolator(Interpolator):
 
     def __call__(self, path_positions, order=0):
         if order == 0:
-            return self.eval(path_positions)
-        elif order == 1:
-            return self.evald(path_positions)
-        elif order == 2:
-            return self.evaldd(path_positions)
-        else:
-            raise ValueError("Invalid order %s" % order)
+            return self.cspl(path_positions)
+        if order == 1:
+            return self.cspld(path_positions)
+        if order == 2:
+            return self.cspldd(path_positions)
+        raise ValueError("Invalid order %s" % order)
 
     def get_waypoints(self):
         """Return the appropriate scaled waypoints."""
@@ -343,10 +344,12 @@ class SplineInterpolator(Interpolator):
 
     @property
     def duration(self):
+        """Return the duration of the path."""
         return self.ss_waypoints[-1] - self.ss_waypoints[0]
 
     @property
     def path_interval(self):
+        """Return the start and end points."""
         return np.array([self.ss_waypoints[0], self.ss_waypoints[-1]])
 
     @deprecated
@@ -365,14 +368,17 @@ class SplineInterpolator(Interpolator):
         """Return the path's dof."""
         return self.dof
 
+    @deprecated
     def eval(self, ss_sam):
         """Return the path position."""
         return self.cspl(ss_sam)
 
+    @deprecated
     def evald(self, ss_sam):
         """Return the path velocity."""
         return self.cspld(ss_sam)
 
+    @deprecated
     def evaldd(self, ss_sam):
         """Return the path acceleration."""
         return self.cspldd(ss_sam)
@@ -401,22 +407,22 @@ class SplineInterpolator(Interpolator):
         for i in range(len(self.ss_waypoints) - 1):
             deltas.append(self.ss_waypoints[i + 1] - self.ss_waypoints[i])
         if len(self.ss_waypoints) == 1:
-            q = self.eval(0)
-            qd = self.evald(0)
-            qdd = self.evaldd(0)
+            q = self(0)
+            qd = self(0, 1)
+            qdd = self(0, 2)
             traj.Insert(traj.GetNumWaypoints(),
                         list(q) + list(qd) + list(qdd) + [0])
         else:
-            qs = self.eval(self.ss_waypoints)
-            qds = self.evald(self.ss_waypoints)
-            qdds = self.evaldd(self.ss_waypoints)
+            qs = self(self.ss_waypoints)
+            qds = self(self.ss_waypoints, 1)
+            qdds = self(self.ss_waypoints, 2)
             for (q, qd, qdd, dt) in zip(qs, qds, qdds, deltas):
                 traj.Insert(traj.GetNumWaypoints(),
                             q.tolist() + qd.tolist() + qdd.tolist() + [dt])
         return traj
 
 
-class UnivariateSplineInterpolator(Interpolator):
+class UnivariateSplineInterpolator(AbstractGeometricPath):
     """ Smooth given wayspoints by a cubic spline.
 
     This is a simple wrapper over `scipy.UnivariateSplineInterpolator`
@@ -436,14 +442,10 @@ class UnivariateSplineInterpolator(Interpolator):
         self.ss_waypoints = np.array(ss_waypoints)
         self.waypoints = np.array(waypoints)
         if np.isscalar(waypoints[0]):
-            self.dof = 1
+            self._dof = 1
         else:
-            self.dof = waypoints[0].shape[0]
-        self.duration = ss_waypoints[-1]
+            self._dof = waypoints[0].shape[0]
         assert self.ss_waypoints.shape[0] == self.waypoints.shape[0]
-        self.s_start = self.ss_waypoints[0]
-        self.s_end = self.ss_waypoints[-1]
-
         self.uspl = []
         for i in range(self.dof):
             self.uspl.append(
@@ -451,15 +453,27 @@ class UnivariateSplineInterpolator(Interpolator):
         self.uspld = [spl.derivative() for spl in self.uspl]
         self.uspldd = [spl.derivative() for spl in self.uspld]
 
-    @deprecated
-    def get_duration(self):
-        """Return the path duration."""
-        return self.duration
+    @property
+    def dof(self):
+        return self._dof
 
-    @deprecated
-    def get_path_interval(self):
+    @property
+    def path_interval(self):
         """Return the path interval."""
-        return self.path_interval
+        return [self.ss_waypoints[0], self.ss_waypoints[-1]]
+
+    def __call__(self, ss_sam, order=0):
+        data = []
+        if order == 0:
+            for spl in self.uspl:
+                data.append(spl(ss_sam))
+        elif order == 1:
+            for spl in self.uspld:
+                data.append(spl(ss_sam))
+        elif order == 2:
+            for spl in self.uspldd:
+                data.append(spl(ss_sam))
+        return np.array(data).T
 
     def eval(self, ss_sam):
         """Return the path position."""
@@ -483,7 +497,7 @@ class UnivariateSplineInterpolator(Interpolator):
         return np.array(data).T
 
 
-class PolynomialPath(Interpolator):
+class PolynomialPath(AbstractGeometricPath):
     """ A class representing polynominal paths.
 
     If coeff is a 1d array, the polynomial's equation is given by
@@ -531,12 +545,11 @@ class PolynomialPath(Interpolator):
     def __call__(self, path_positions, order=0):
         if order == 0:
             return self.eval(path_positions)
-        elif order == 1:
+        if order == 1:
             return self.evald(path_positions)
-        elif order == 2:
+        if order == 2:
             return self.evaldd(path_positions)
-        else:
-            raise ValueError("Invalid order %s" % order)
+        raise ValueError("Invalid order %s" % order)
 
     @property
     def dof(self):
@@ -544,6 +557,7 @@ class PolynomialPath(Interpolator):
 
     @property
     def duration(self):
+        """Return the duration of the path."""
         return self.s_end - self.s_start
 
     @property

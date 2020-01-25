@@ -70,7 +70,7 @@ class TestClass_JointVelocityConstraint(object):
             try:
                 prob.solve(solver=cvx.ECOS, abstol=1e-9)
                 xmax = sd.value ** 2
-                
+
                 prob = cvx.Problem(cvx.Minimize(sd), constraints)
                 prob.solve(solver=cvx.ECOS, abstol=1e-9)
                 xmin = sd.value ** 2
@@ -91,15 +91,6 @@ class TestClass_JointVelocityConstraint(object):
         assert e_info.value.args[0] == "Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
             pc.dof, 10
         )
-
-
-def test_negative_velocity():
-    "illegal velocity limits input"
-    vlim = np.array([[-1., -2], [-2., 2]])
-    with pytest.raises(AssertionError) as e_info:
-        constraint = ta.constraint.JointVelocityConstraint(vlim)
-    print(e_info)
-    assert e_info.value.args[0][:19] == "Bad velocity limits"
 
 
 def test_jnt_vel_varying_basic():
@@ -131,7 +122,7 @@ def test_jnt_vel_varying_basic():
             prob = cvx.Problem(cvx.Maximize(sd), constraints)
             prob.solve(solver=cvx.ECOS, abstol=1e-9)
             xmax = sd.value ** 2
-            
+
             prob = cvx.Problem(cvx.Minimize(sd), constraints)
             prob.solve(solver=cvx.ECOS, abstol=1e-9)
             xmin = sd.value ** 2
@@ -144,3 +135,31 @@ def test_jnt_vel_varying_basic():
         # assert non-negativity
         assert xlimit[i, 0] >= 0
 
+
+def test_only_max_vel_given():
+    c = ta.constraint.JointVelocityConstraint([1, 1.2, 2])
+    np.testing.assert_allclose(c.vlim,
+                               [
+                                   [-1, 1],
+                                   [-1.2, 1.2],
+                                   [-2, 2],
+                               ])
+
+def test_negative_bound_given():
+    with pytest.raises(ValueError) as err:
+        c = ta.constraint.JointVelocityConstraint([1, -1.2, 2])
+        assert 'velocity' in err.value
+
+
+def test_negative_velocity():
+    "illegal velocity limits input"
+    vlim = np.array([[-1., -2], [-2., 2]])
+    with pytest.raises(ValueError) as e_info:
+        constraint = ta.constraint.JointVelocityConstraint(vlim)
+        assert e_info.value.args[0][:19] == "Bad velocity limits"
+
+
+@pytest.mark.parametrize('velocities', [[1.2, None], [0, 1.0]])
+def test_bad_velocity_given(velocities):
+    with pytest.raises(ValueError) as e_info:
+        constraint = ta.constraint.JointVelocityConstraint([1.2, None])

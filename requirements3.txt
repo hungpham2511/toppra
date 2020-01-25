@@ -3,5 +3,14 @@ cython>=0.22.0
 PyYAML
 scipy>0.18
 coloredlogs
-enum34
 matplotlib
+enum34
+
+# dev
+cvxopt
+cvxpy
+pandas
+tabulate
+cvxopt
+pytest
+
