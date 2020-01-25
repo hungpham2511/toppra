@@ -159,7 +159,7 @@ workflows:
             branches:
               only:
               - fix-ci
-              - release-*
+              - /release-.*/
       - release:
           filters:
             branches:
