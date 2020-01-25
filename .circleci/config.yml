@@ -134,7 +134,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Pull all known tags and check that the tag in VERSION has not already exist.
+          name: Tag code with the latest version in VERSION and push tag.
           command: |
             VERSION=`cat VERSION`
             git fetch --tags
