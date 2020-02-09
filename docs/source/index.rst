@@ -18,12 +18,12 @@
 parametrization for robots subject to kinematic and dynamic
 constraints. Simply speaking, given the inputs:
 
-1. a geometric path `p(s)`, `s` in `[0, s_end]` ;
+1. a geometric path :math:`p(s), s \in [0, s_{end}]` ;
 2. a list of constraints on joint velocity, joint accelerations, tool
    Cartesian velocity, et cetera.
 
 One can use **TOPP-RA** to compute the time-optimal path
-parameterization `s_dot (s)`, from which the fastest trajectory `q(t)`
+parameterization :math:`s_{dot} (s)`, from which the fastest trajectory `q(t)`
 that satisfies the given constraints can be found. All of this is done
 in a few milliseconds.  **TOPP-RA** can handle a good number of
 constraints and has some additional features that allows simpler
