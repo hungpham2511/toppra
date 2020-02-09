@@ -4,6 +4,7 @@ import numpy as np
 
 from ..constants import TINY
 from toppra.interpolator import SplineInterpolator, AbstractGeometricPath
+import toppra.interpolator as interpolator
 
 import logging
 logger = logging.getLogger(__name__)
@@ -34,6 +35,20 @@ class ParameterizationAlgorithm(object):
     def __init__(self, constraint_list, path, gridpoints=None):
         self.constraints = constraint_list  # Attr
         self.path = path  # Attr
+        # Handle gridpoints
+        if gridpoints is None:
+            gridpoints = interpolator.propose_gridpoints(path, max_err_threshold=1e-3)
+            logger.info("No gridpoint specified. Automatically choose a gridpoint. See `propose_gridpoints`.")
+
+        if path.path_interval[0] != gridpoints[0] or path.path_interval[1] != gridpoints[-1]:
+            raise ValueError("Invalid manually supplied gridpoints.")
+        self.gridpoints = np.array(gridpoints)
+        self._N = len(gridpoints) - 1  # Number of stages. Number of point is _N + 1
+        for i in range(self._N):
+            if gridpoints[i + 1] <= gridpoints[i]:
+                logger.fatal("Input gridpoints are not monotonically increasing.")
+                raise ValueError("Bad input gridpoints.")
+
 
     def compute_parameterization(self, sd_start, sd_end):
         """Compute a path parameterization.

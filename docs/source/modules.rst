@@ -3,23 +3,27 @@
 Module references
 =========================
 
-Interpolators
--------------
 
-Interpolator base class
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: toppra.Interpolator
-   :members:
+Geometric paths
+--------------------------------
+
+.. automodule:: toppra.interpolator
+
+.. autoclass:: toppra.interpolator.AbstractGeometricPath
+   :members: __call__, dof, path_interval
+
 
 Spline Interplator
 ^^^^^^^^^^^^^^^^^^^
 .. autoclass:: toppra.SplineInterpolator
-   :members:
+   :members: __call__, dof, path_interval
 
 Rave Trajectory Wrapper
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: toppra.RaveTrajectoryWrapper
-   :members:
+   :members: __call__, dof, path_interval
+
+.. autofunction:: toppra.interpolator.propose_gridpoints
 
 Constraints
 ------------

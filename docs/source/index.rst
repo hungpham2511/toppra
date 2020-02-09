@@ -16,27 +16,22 @@
 
 **TOPP-RA** is a library for computing the time-optimal path
 parametrization for robots subject to kinematic and dynamic
-constraints.  In general, given the inputs:
+constraints. Simply speaking, given the inputs:
 
 1. a geometric path `p(s)`, `s` in `[0, s_end]` ;
 2. a list of constraints on joint velocity, joint accelerations, tool
    Cartesian velocity, et cetera.
 
-**TOPP-RA** returns the time-optimal path parameterization: `s_dot
-(s)`, from which the fastest trajectory `q(t)` that satisfies the
-given constraints can be found. All of this is done in a few
-milliseconds.
-
-Features
----------
+One can use **TOPP-RA** to compute the time-optimal path
+parameterization `s_dot (s)`, from which the fastest trajectory `q(t)`
+that satisfies the given constraints can be found. All of this is done
+in a few milliseconds.  **TOPP-RA** can handle a good number of
+constraints and has some additional features that allows simpler
+operations. Below are some of the most useful features.
 
 1. Return the time-optimal parametrization or a parametrization with
    specified duration subject to constraints.
 2. Able to handle multiple constraint types:
-  1. joint torque, velocity and acceleration bounds;
-  2. *robust* joint torque, velocity and acceleration bounds;
-  3. Cartesian acceleration bounds;
-  4. contact stability for legged robots.
 3. Automatic grid-points selection.
 
 Applications
@@ -57,6 +52,7 @@ If you find this interesting, feel free to check out the paper:
 `«Critically fast pick-and-place with suction cups»
 <https://www.researchgate.net/publication/327570258_Critically_fast_pick-and-place_with_suction_cups>`_. This
 paper has been presented at ICRA 2019.
+
 
 User Guide
 ----------
