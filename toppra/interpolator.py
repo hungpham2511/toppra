@@ -128,6 +128,11 @@ class AbstractGeometricPath(object):
         """
         raise NotImplementedError
 
+    @property
+    def waypoints(self):
+        """Tuple[ndarray, ndarray] or None: The path's waypoints if applicable. None otherwise."""
+        return None
+
 
 class RaveTrajectoryWrapper(AbstractGeometricPath):
     """An interpolator that wraps OpenRAVE's :class:`GenericTrajectory`.
@@ -314,17 +319,17 @@ class SplineInterpolator(AbstractGeometricPath):
     def __init__(self, ss_waypoints, waypoints, bc_type='not-a-knot'):
         super(SplineInterpolator, self).__init__()
         self.ss_waypoints = np.array(ss_waypoints)  # type: np.ndarray
-        self.waypoints = np.array(waypoints)  # type: np.ndarray
-        assert self.ss_waypoints.shape[0] == self.waypoints.shape[0]
+        self._q_waypoints = np.array(waypoints)  # type: np.ndarray
+        assert self.ss_waypoints.shape[0] == self._q_waypoints.shape[0]
 
         if len(ss_waypoints) == 1:
 
             def _1dof_cspl(s):
                 try:
                     ret = np.zeros((len(s), self.dof))
-                    ret[:, :] = self.waypoints[0]
+                    ret[:, :] = self._q_waypoints[0]
                 except TypeError:
-                    ret = self.waypoints[0]
+                    ret = self._q_waypoints[0]
                 return ret
 
             def _1dof_cspld(s):
@@ -351,9 +356,15 @@ class SplineInterpolator(AbstractGeometricPath):
             return self.cspldd(path_positions)
         raise ValueError("Invalid order %s" % order)
 
-    def get_waypoints(self):
-        """Return the appropriate scaled waypoints."""
-        return self.ss_waypoints, self.waypoints
+    @property
+    def waypoints(self):
+        """Tuple[np.ndarray, np.ndarray]: Return the waypoints.
+
+        The first element is the positions, the second element is the
+        array of waypoints.
+
+        """
+        return self.ss_waypoints, self._q_waypoints
 
     @deprecated
     def get_duration(self):
@@ -377,9 +388,9 @@ class SplineInterpolator(AbstractGeometricPath):
 
     @property
     def dof(self):
-        if np.isscalar(self.waypoints[0]):
+        if np.isscalar(self._q_waypoints[0]):
             return 1
-        return self.waypoints[0].shape[0]
+        return self._q_waypoints[0].shape[0]
 
     @deprecated
     def get_dof(self):  # type: () -> int
@@ -458,16 +469,16 @@ class UnivariateSplineInterpolator(AbstractGeometricPath):
         super(UnivariateSplineInterpolator, self).__init__()
         assert ss_waypoints[0] == 0, "First index must equals zero."
         self.ss_waypoints = np.array(ss_waypoints)
-        self.waypoints = np.array(waypoints)
+        self._q_waypoints = np.array(waypoints)
         if np.isscalar(waypoints[0]):
             self._dof = 1
         else:
             self._dof = waypoints[0].shape[0]
-        assert self.ss_waypoints.shape[0] == self.waypoints.shape[0]
+        assert self.ss_waypoints.shape[0] == self._q_waypoints.shape[0]
         self.uspl = []
         for i in range(self.dof):
             self.uspl.append(
-                UnivariateSpline(self.ss_waypoints, self.waypoints[:, i]))
+                UnivariateSpline(self.ss_waypoints, self._q_waypoints[:, i]))
         self.uspld = [spl.derivative() for spl in self.uspl]
         self.uspldd = [spl.derivative() for spl in self.uspld]
 

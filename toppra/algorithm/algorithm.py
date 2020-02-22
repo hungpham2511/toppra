@@ -9,13 +9,6 @@ import toppra.interpolator as interpolator
 import logging
 logger = logging.getLogger(__name__)
 
-try:
-    import openravepy as orpy
-except ImportError as err:
-    logger.debug("Unable to import openravepy. Exception: %s" % err.args[0])
-except SyntaxError as err:
-    logger.debug("Unable to import openravepy. Exception: %s" % err.args[0])
-
 
 class ParameterizationAlgorithm(object):
     """Base class for all parameterization algorithms.
@@ -35,6 +28,7 @@ class ParameterizationAlgorithm(object):
     def __init__(self, constraint_list, path, gridpoints=None):
         self.constraints = constraint_list  # Attr
         self.path = path  # Attr
+        self._problem_data = None
         # Handle gridpoints
         if gridpoints is None:
             gridpoints = interpolator.propose_gridpoints(path, max_err_threshold=1e-3)
@@ -49,6 +43,10 @@ class ParameterizationAlgorithm(object):
                 logger.fatal("Input gridpoints are not monotonically increasing.")
                 raise ValueError("Bad input gridpoints.")
 
+    @property
+    def problem_data(self):
+        """Dict[str, Any]: Intermediate data obtained while solving the problem."""
+        return self._problem_data
 
     def compute_parameterization(self, sd_start, sd_end):
         """Compute a path parameterization.
@@ -81,7 +79,7 @@ class ParameterizationAlgorithm(object):
         """
         raise NotImplementedError
 
-    def compute_trajectory(self, sd_start=0, sd_end=0, return_profile=False, bc_type=None, return_data=False):
+    def compute_trajectory(self, sd_start=0, sd_end=0, return_data=False):
         """Compute the resulting joint trajectory and auxilliary trajectory.
 
         If parameterization fails, return a tuple of None(s).
@@ -92,15 +90,8 @@ class ParameterizationAlgorithm(object):
             Starting path velocity.
         sd_end: float
             Goal path velocity.
-        return_profile: bool, optional
-            If true, return a tuple containing data. NOTE: This
-            function is obsolete, use return_data instead.
         return_data: bool, optional
             If true, return a dict containing the internal data.
-        bc_type: str, optional
-            Boundary condition for the resulting trajectory. Can be
-            'not-a-knot', 'clamped', 'natural' or 'periodic'.  See
-            scipy.CubicSpline documentation for more details.
 
         Returns
         -------
@@ -111,21 +102,13 @@ class ParameterizationAlgorithm(object):
             Time-parameterized auxiliary variable trajectory. If
             unable to parameterize or if there is no auxiliary
             variable, return None.
-        profiles: tuple
-            Return if return_profile is True, results from
-            compute_parameterization.
-        data: dict
-            Return if return_data is True.
 
         """
         sdd_grid, sd_grid, v_grid, K = self.compute_parameterization(sd_start, sd_end, return_data=True)
 
         # fail condition: sd_grid is None, or there is nan in sd_grid
         if sd_grid is None or np.isnan(sd_grid).any():
-            if return_profile or return_data:
-                return None, None, (sdd_grid, sd_grid, v_grid, K)
-            else:
-                return None, None
+            return None, None
 
         # Gridpoint time instances
         t_grid = np.zeros(self._N + 1)
@@ -157,13 +140,8 @@ class ParameterizationAlgorithm(object):
             v_grid_ = np.delete(v_grid_, skip_ent, axis=0)
             v_spline = SplineInterpolator(t_grid, v_grid_)
 
-        if return_profile:
-            return traj_spline, v_spline, (sdd_grid, sd_grid, v_grid, K)
-        elif return_data:
-            # NOTE: the time stamps for each (original) waypoint are
-            #  evaluated by interpolating the grid points.
-            t_waypts = np.interp(self.path.get_waypoints()[0], gridpoints, t_grid)
-            return traj_spline, v_spline, {'sdd': sdd_grid, 'sd': sd_grid,
-                                           'v': v_grid, 'K': K, 't_waypts': t_waypts}
-        else:
-            return traj_spline, v_spline
+        self._problem_data = {'sdd': sdd_grid, 'sd': sd_grid, 'v': v_grid, 'K': K}
+        if self.path.waypoints is not None:
+            t_waypts = np.interp(self.path.waypoints[0], gridpoints, t_grid)
+            self._problem_data.update({'t_waypts': t_waypts})
+        return traj_spline, v_spline

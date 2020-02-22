@@ -26,24 +26,40 @@ Important expression relating kinematic quantities:
 
 .. _module_ref:
 
+Path-parametrization Algorithms
+--------------------------------
+
+.. automodule:: toppra.algorithm
+
+TOPPRA (time-optimal)
+^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: toppra.algorithm.TOPPRA
+   :members: problem_data, compute_parameterization, compute_trajectory, compute_feasible_sets, compute_controllable_sets
+
+TOPPRAsd (specific-duration)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: toppra.algorithm.TOPPRAsd
+   :members: problem_data, set_desired_duration, compute_parameterization, compute_trajectory, compute_feasible_sets, compute_controllable_sets
+
+
 Geometric paths
 --------------------------------
 
 .. automodule:: toppra.interpolator
 
 .. autoclass:: toppra.interpolator.AbstractGeometricPath
-   :members: __call__, dof, path_interval
+   :members: __call__, dof, path_interval, waypoints
 
 
 Spline Interplator
 ^^^^^^^^^^^^^^^^^^^
 .. autoclass:: toppra.SplineInterpolator
-   :members: __call__, dof, path_interval
+   :members: __call__, dof, path_interval, waypoints
 
 Rave Trajectory Wrapper
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: toppra.RaveTrajectoryWrapper
-   :members: __call__, dof, path_interval
+   :members: __call__, dof, path_interval, waypoints
 
 .. autofunction:: toppra.interpolator.propose_gridpoints
 
@@ -88,19 +104,6 @@ DiscretizationType (enum)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: toppra.constraint.DiscretizationType
    :members:
-
-Algorithms
-------------
-
-TOPPRA (time-optimal)
-^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: toppra.algorithm.TOPPRA
-   :members: compute_parameterization, compute_trajectory, compute_feasible_sets, compute_controllable_sets
-
-TOPPRAsd (specific-duration)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: toppra.algorithm.TOPPRAsd
-   :members: set_desired_duration, compute_parameterization, compute_trajectory, compute_feasible_sets, compute_controllable_sets
 
 Solver Wrapper
 ----------------
