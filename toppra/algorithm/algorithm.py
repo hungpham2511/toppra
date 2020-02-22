@@ -149,14 +149,6 @@ class ParameterizationAlgorithm(object):
 
         self._problem_data = {'sdd': sdd_grid, 'sd': sd_grid, 'v': v_grid, 'K': K}
         if self.path.waypoints is not None:
-            t_waypts = np.interp(self.path.get_waypoints()[0], gridpoints, t_grid)
+            t_waypts = np.interp(self.path.waypoints[0], gridpoints, t_grid)
             self._problem_data.update({'t_waypts': t_waypts})
-
-        if return_data:
-            # NOTE: the time stamps for each (original) waypoint are
-            #  evaluated by interpolating the grid points.
-            t_waypts = np.interp(self.path.get_waypoints()[0], gridpoints, t_grid)
-            return traj_spline, v_spline, {'sdd': sdd_grid, 'sd': sd_grid,
-                                           'v': v_grid, 'K': K, 't_waypts': t_waypts}
-        else:
-            return traj_spline, v_spline
+        return traj_spline, v_spline
