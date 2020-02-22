@@ -1,3 +1,4 @@
+
 Path and Trajectory representation
 =====================================================
 
