@@ -45,6 +45,7 @@ class ParameterizationAlgorithm(object):
 
     @property
     def problem_data(self):
+        """Dict[str, Any]: Intermediate data obtained while solving the problem."""
         return self._problem_data
 
     def compute_parameterization(self, sd_start, sd_end):
@@ -89,9 +90,6 @@ class ParameterizationAlgorithm(object):
             Starting path velocity.
         sd_end: float
             Goal path velocity.
-        return_profile: bool, optional
-            If true, return a tuple containing data. NOTE: This
-            function is obsolete, use return_data instead.
         return_data: bool, optional
             If true, return a dict containing the internal data.
 
@@ -104,11 +102,6 @@ class ParameterizationAlgorithm(object):
             Time-parameterized auxiliary variable trajectory. If
             unable to parameterize or if there is no auxiliary
             variable, return None.
-        profiles: tuple
-            Return if return_profile is True, results from
-            compute_parameterization.
-        data: dict
-            Return if return_data is True.
 
         """
         sdd_grid, sd_grid, v_grid, K = self.compute_parameterization(sd_start, sd_end, return_data=True)
