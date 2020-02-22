@@ -58,20 +58,6 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
     def __init__(self, constraint_list, path, gridpoints=None, solver_wrapper=None, scaling=1):
         super(ReachabilityAlgorithm, self).__init__(constraint_list, path, gridpoints=gridpoints)
 
-        # Handle gridpoints
-        if gridpoints is None:
-            gridpoints = interpolator.propose_gridpoints(path, max_err_threshold=1e-3)
-            logger.info("No gridpoint specified. Automatically choose a gridpoint. See `propose_gridpoints`.")
-
-        if path.path_interval[0] != gridpoints[0] or path.path_interval[1] != gridpoints[-1]:
-            raise ValueError("Invalid manually supplied gridpoints.")
-        self.gridpoints = np.array(gridpoints)
-        self._N = len(gridpoints) - 1  # Number of stages. Number of point is _N + 1
-        for i in range(self._N):
-            if gridpoints[i + 1] <= gridpoints[i]:
-                logger.fatal("Input gridpoints are not monotonically increasing.")
-                raise ValueError("Bad input gridpoints.")
-
         # path scaling (for numerical stability)
         if scaling < 0:  # automatic scaling factor selection
             # sample a few gradient and compute the average derivatives

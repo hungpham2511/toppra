@@ -77,15 +77,4 @@ def docker_start(c):
                   -e DISPLAY=unix$DISPLAY \
                   --net=host \
                   hungpham2511/toppra-dep:0.0.3 sleep infinity")
-
-
-@task
-def docker_exec(c):
-    """Execute and link to a bash shell inside the stared docker container."""
-    c.run("docker exec -it toppra-dep bash", pty=True)
-
-
-@task
-def docker_stop(c):
-    """Start the development docker container."""
-    c.run("docker stop toppra-dep")
+    print("Started new docker instance with name toppra-dep")

@@ -41,9 +41,8 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.napoleon',
               'sphinx.ext.viewcode',
               'sphinx.ext.intersphinx',
-              'nbsphinx'
-]
- # Add mappings
+              'nbsphinx']
+
 intersphinx_mapping = {
     'urllib3': ('http://urllib3.readthedocs.org/en/latest', None),
     'python': ('http://docs.python.org/3', None),
@@ -95,7 +94,6 @@ todo_include_todos = True
 
 # -- Options for HTML output ----------------------------------------------
 
-
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
@@ -116,13 +114,14 @@ html_theme_options = {
     'description': 'A robotic motion planning library for path-parametrization',
     'fixed_sidebar': True,
     "sidebar_width": "270px",
-    "page_width": "1240px",
+    "page_width": "1040px",
     "show_related": True}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -133,12 +132,12 @@ show_related = True
 html_sidebars = {
     '**': [
         'about.html',
-        'navigation.html',
+        'localtoc.html',
         'relations.html',  # needs 'show_related': True theme option to display
         'searchbox.html',
     ]
 }
-
+sidebar_collapse = True
 
 # -- Options for HTMLHelp output ------------------------------------------
 
@@ -190,6 +189,8 @@ man_pages = [
 # Grouping the document tree into Texinfo files. List of tuples
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
+
+
 texinfo_documents = [
     (master_doc, 'TOPP-RA', 'TOPP-RA Documentation',
      author, 'TOPP-RA', 'One line description of project.',
@@ -198,3 +199,5 @@ texinfo_documents = [
 
 
 
+html_theme = 'alabaster'
+html_static_path = ['_static']

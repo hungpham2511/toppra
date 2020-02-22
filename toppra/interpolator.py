@@ -1,4 +1,9 @@
-"""This module implements interpolators for representing geometric paths and trajectories.
+"""Algorithms implemented in :mod:`toppra` requires geometric paths
+that implements the abstract class
+:class:`toppra.interpolator.AbstractGeometricPath`. The interface is
+really simple, requiring only the evaluted values, as well as the
+first and second derivative.
+
 """
 import logging
 import numpy as np
@@ -13,26 +18,42 @@ if FOUND_OPENRAVE:
 
 
 def propose_gridpoints(path, max_err_threshold=1e-4, max_iteration=100, max_seg_length=0.05):
-    """Generate a set of grid pooint for the given path.
+    """Generate gridpoints that sufficiently cover the given path.
 
     This function operates in multiple passes through the geometric
     path from the start to the end point. In each pass, for each
     segment, the maximum interpolation error is estimated using the
     following equation:
 
-        0.5 * max(abs(p'' * d_segment ^ 2))
+    .. math::
 
-    Here p'' is the second derivative of the path and d_segment is the
-    length of the segment. Intuitively, at positions with higher
-    curvature, there must be more points in order to improve
-    approximation quality.
+        err_{est} = 0.5 * \mathrm{max}(\mathrm{abs}(p'' * d_{segment} ^ 2))
+
+    Here :math:`p''` is the second derivative of the path and
+    d_segment is the length of the segment. If the estimated error
+    :math:`err_{test}` is greater than the given threshold
+    `max_err_threshold` then the segment is divided in two half.
+
+    Intuitively, at positions with higher curvature, there must be
+    more points in order to improve approximation
+    quality. Theoretically toppra performs the best when the proposed
+    gridpoint is optimally distributed.
 
     Arguments
     ---------
-    path: Input geometric path.
-    max_err_threshold: Maximum worstcase error thrshold allowable.
-    max_iteration: Maximum number of iterations.
-    max_seg_length: All segments length should be smaller than this value.
+    path: :class:`AbstractGeometricPath`
+      Input geometric path.
+    max_err_threshold: float
+      Maximum worstcase error thrshold allowable.
+    max_iteration: int
+      Maximum number of iterations.
+    max_seg_length: float
+      All segments length should be smaller than this value.
+
+    Returns
+    ----------
+    gridpoints_ept: np.ndarray(N,)
+      The proposed gridpoints.
 
     """
     gridpoints_ept = [path.path_interval[0], path.path_interval[1]]
@@ -59,9 +80,9 @@ def propose_gridpoints(path, max_err_threshold=1e-4, max_iteration=100, max_seg_
 
 
 class AbstractGeometricPath(object):
-    """Base geometric path.
+    """The base class to represent geometric paths.
 
-    Derive geometric paths classes should derive the below abstract methods.
+    Derive geometric paths classes should implement the below abstract methods.
     """
 
     def __call__(self, path_positions, order=0):
@@ -81,14 +102,17 @@ class AbstractGeometricPath(object):
 
         Returns
         -------
-            np.ndarray
-                Evaluated values.
+            np.ndarray(N, dof)
+                The evaluated joint positions, velocity or
+                accelerations. The shape of the result depends on the
+                shape of the input.
 
         """
         raise NotImplementedError
 
     @property
     def dof(self):
+        # type: () -> int
         """Return the degrees-of-freedom of the path."""
         raise NotImplementedError
 
@@ -98,7 +122,7 @@ class AbstractGeometricPath(object):
 
         Returns
         -------
-        out:
+        np.ndarray(2,)
             The starting and ending path positions.
 
         """
@@ -270,27 +294,21 @@ class SplineInterpolator(AbstractGeometricPath):
 
     Parameters
     ----------
-    ss_waypoints: array
-        Shaped (N+1,). Path positions of the waypoints.
-    waypoints: array
-        Shaped (N+1, dof). Waypoints.
+    ss_waypoints: np.ndarray(m,)
+        Path positions of the waypoints.
+    waypoints: np.ndarray(m, d)
+        Waypoints.
     bc_type: optional
         Boundary conditions of the spline. Can be 'not-a-knot',
         'clamped', 'natural' or 'periodic'.
 
-        - 'not-a-knot': The most default option, return to natural
+        - 'not-a-knot': The most default option, return the most naturally
           looking spline.
         - 'clamped': First-order derivatives of the spline at the two
-          end are zeroed.
+          end are clamped at zero.
 
         See scipy.CubicSpline documentation for more details.
 
-    Attributes
-    ----------
-    dof : int
-        Output dimension of the function
-    cspl : :class:`scipy.interpolate.CubicSpline`
-        The underlying cubic spline.
     """
 
     def __init__(self, ss_waypoints, waypoints, bc_type='not-a-knot'):
