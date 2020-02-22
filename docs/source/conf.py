@@ -132,12 +132,12 @@ show_related = True
 html_sidebars = {
     '**': [
         'about.html',
-        'navigation.html',
+        'localtoc.html',
         'relations.html',  # needs 'show_related': True theme option to display
         'searchbox.html',
     ]
 }
-
+sidebar_collapse = True
 
 # -- Options for HTMLHelp output ------------------------------------------
 

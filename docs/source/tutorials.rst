@@ -1,9 +1,6 @@
 .. _tutorials:
 
-Tutorials and FAQs
-========================
-
-Tutorials
+Quickstart
 ~~~~~~~~~~~~~~~~~~
 Some tutorials to get you used to TOPP-RA
 
@@ -29,10 +26,10 @@ an instance with 1000 uniform gridpoints.
 
 
 .. code-block:: python
-   :linenos:
+  :linenos:
 
-   gridpoints = np.linspace(0, path.duration, 1000)  # 1000 points
-   instance = algo.TOPPRA([pc_vel, pc_acc], path, gridpoints=gridpoints)
+  gridpoints = np.linspace(0, path.duration, 1000)  # 1000 points
+  instance = algo.TOPPRA([pc_vel, pc_acc], path, gridpoints=gridpoints)
 
 
 Generally, more gridpoints give you better solution quality, but also

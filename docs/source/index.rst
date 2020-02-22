@@ -10,6 +10,8 @@
     :alt: Documentation Status
 
 
+Overview
+-----------
 
 
 TOPP-RA is a library for computing path parametrizations for geometric
@@ -37,15 +39,15 @@ easier to generate high-quality motions for robots:
    joint accelerations and velocities constraints computed using
    TOPP-RA. See :ref:`tutorials` for more examples.
   
-You can also find on this site:
+User guide
+--------------
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    installation
    tutorials
    notes
-   modules
 
 
 Citing TOPP-RA!
