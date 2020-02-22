@@ -29,7 +29,7 @@ def main():
 
     # Retime the trajectory, only this step is necessary.
     t0 = time.time()
-    jnt_traj, _, data = instance.compute_trajectory(0, 0, return_data=True)
+    jnt_traj, _ = instance.compute_trajectory(0, 0)
     # return_data flag outputs internal data obtained while computing
     # the paramterization. This include the time stamps corresponding
     # to the original waypoints. See below (line 53) to see how to
@@ -42,7 +42,7 @@ def main():
         # plot the i-th joint trajectory
         plt.plot(ts_sample, qs_sample[:, i], c="C{:d}".format(i))
         # plot the i-th joint waypoints
-        plt.plot(data['t_waypts'], way_pts[:, i], 'x', c="C{:d}".format(i))
+        plt.plot(instance.problem_data['t_waypts'], way_pts[:, i], 'x', c="C{:d}".format(i))
     plt.xlabel("Time (s)")
     plt.ylabel("Joint position (rad/s^2)")
     plt.show()
