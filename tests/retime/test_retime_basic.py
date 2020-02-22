@@ -13,7 +13,7 @@ toppra.setup_logging(level="INFO")
 
 
 @pytest.mark.parametrize("solver_wrapper", ["qpoases", "hotqpoases", "seidel"])
-def test_toppra_linear(basic_constraints, basic_path, solver_wrapper):
+def test_simple_set_operations(basic_constraints, basic_path, solver_wrapper):
     """Solve some basic problem instances.
 
     Passing this test guaranetees that the basic functionalities are
