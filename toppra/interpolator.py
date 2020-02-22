@@ -130,6 +130,7 @@ class AbstractGeometricPath(object):
 
     @property
     def waypoints(self):
+        """Tuple[ndarray, ndarray] or None: The path's waypoints if applicable. None otherwise."""
         return None
 
 
@@ -355,8 +356,14 @@ class SplineInterpolator(AbstractGeometricPath):
             return self.cspldd(path_positions)
         raise ValueError("Invalid order %s" % order)
 
-    def get_waypoints(self):
-        """Return the appropriate scaled waypoints."""
+    @property
+    def waypoints(self):
+        """Tuple[np.ndarray, np.ndarray]: Return the waypoints.
+
+        The first element is the positions, the second element is the
+        array of waypoints.
+
+        """
         return self.ss_waypoints, self._q_waypoints
 
     @deprecated

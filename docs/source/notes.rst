@@ -48,18 +48,18 @@ Geometric paths
 .. automodule:: toppra.interpolator
 
 .. autoclass:: toppra.interpolator.AbstractGeometricPath
-   :members: __call__, dof, path_interval
+   :members: __call__, dof, path_interval, waypoints
 
 
 Spline Interplator
 ^^^^^^^^^^^^^^^^^^^
 .. autoclass:: toppra.SplineInterpolator
-   :members: __call__, dof, path_interval
+   :members: __call__, dof, path_interval, waypoints
 
 Rave Trajectory Wrapper
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: toppra.RaveTrajectoryWrapper
-   :members: __call__, dof, path_interval
+   :members: __call__, dof, path_interval, waypoints
 
 .. autofunction:: toppra.interpolator.propose_gridpoints
 
