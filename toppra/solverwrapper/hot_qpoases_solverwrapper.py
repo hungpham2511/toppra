@@ -214,8 +214,8 @@ class hotqpOASESSolverWrapper(SolverWrapper):
         self._A = self._A.dot(variable_scales_mat)
         self._l = self._l / variable_scales
         self._h = self._h / variable_scales
-        g = g * variable_scales
-        H = variable_scales_mat.dot(H).dot(variable_scales_mat)
+        self._g = g * variable_scales
+        self._H = variable_scales_mat.dot(H).dot(variable_scales_mat)
 
         # rows scaling
         row_magnitude = np.sum(np.abs(self._A), axis=1)
@@ -224,71 +224,9 @@ class hotqpOASESSolverWrapper(SolverWrapper):
         self._lA = np.dot(row_scaling_mat, self._lA)
         self._hA = np.dot(row_scaling_mat, self._hA)
 
-        # Select what solver to use
-        if g[1] > 0:  # Choose solver_minimizing
-            if abs(self.solver_minimizing_recent_index - i) > 1:
-                if logger.isEnabledFor(logging.DEBUG):
-                    logger.debug("solver_minimizing [init]")
-                res = self.solver_minimizing.init(
-                    H,
-                    g,
-                    self._A,
-                    self._l,
-                    self._h,
-                    self._lA,
-                    self._hA,
-                    np.array([1000]),
-                )
-            else:
-                if logger.isEnabledFor(logging.DEBUG):
-                    logger.debug("solver_minimizing [hotstart]")
-                res = self.solver_minimizing.hotstart(
-                    H,
-                    g,
-                    self._A,
-                    self._l,
-                    self._h,
-                    self._lA,
-                    self._hA,
-                    np.array([1000]),
-                )
-            self.solver_minimizing_recent_index = i
-        else:  # Choose solver_maximizing
-            if abs(self.solver_maximizing_recent_index - i) > 1:
-                if logger.isEnabledFor(logging.DEBUG):
-                    logger.debug("solver_maximizing [init]")
-                res = self.solver_maximizing.init(
-                    H,
-                    g,
-                    self._A,
-                    self._l,
-                    self._h,
-                    self._lA,
-                    self._hA,
-                    np.array([1000]),
-                )
-            else:
-                if logger.isEnabledFor(logging.DEBUG):
-                    logger.debug("solver_maximizing [hotstart]")
-                res = self.solver_maximizing.hotstart(
-                    H,
-                    g,
-                    self._A,
-                    self._l,
-                    self._h,
-                    self._lA,
-                    self._hA,
-                    np.array([1000]),
-                )
-            self.solver_maximizing_recent_index = i
+        return_value, var = self._solve_optimization(i)
 
-        if res == ReturnValue.SUCCESSFUL_RETURN:
-            var = np.zeros(self.nV)
-            if g[1] > 0:
-                self.solver_minimizing.getPrimalSolution(var)
-            else:
-                self.solver_maximizing.getPrimalSolution(var)
-
+        if return_value == ReturnValue.SUCCESSFUL_RETURN:
             if logger.isEnabledFor(logging.DEBUG):
                 logger.debug("optimal value: {:}".format(var))
 
@@ -315,11 +253,7 @@ class hotqpOASESSolverWrapper(SolverWrapper):
             else:
                 return var * variable_scales
         else:
-            logger.debug(
-                "Optimization fails. qpOASES error code: {:d}. Checking constraint feasibility for (0, 0)!".format(
-                    res
-                )
-            )
+            logger.debug("Optimization fails. qpOASES error code: %d.", return_value)
 
             if (
                 np.all(0 <= self._hA)
@@ -328,16 +262,77 @@ class hotqpOASESSolverWrapper(SolverWrapper):
                 and np.all(0 >= self._l)
             ):
                 logger.fatal(
-                    "(0, 0) satisfies all constraints => error due to numerical errors."
+                    "(0, 0) satisfies all constraints => error due to numerical errors.",
+                    self._A,
+                    self._lA,
+                    self._hA,
+                    self._l,
+                    self._h,
                 )
-                print(self._A)
-                print(self._lA)
-                print(self._hA)
-                print(self._l)
-                print(self._h)
             else:
                 logger.debug("(0, 0) does not satisfy all constraints.")
 
-        res = np.empty(self.get_no_vars())
-        res[:] = np.nan
-        return res
+        return_value = np.empty(self.get_no_vars())
+        return_value[:] = np.nan
+        return return_value
+
+    def _solve_optimization(self, i):
+        var = np.zeros(self.nV)
+        if self._g[1] > 0:  # Choose solver_minimizing
+            if abs(self.solver_minimizing_recent_index - i) > 1:
+                logger.debug("solver_minimizing [init]")
+                return_value = self.solver_minimizing.init(
+                    self._H,
+                    self._g,
+                    self._A,
+                    self._l,
+                    self._h,
+                    self._lA,
+                    self._hA,
+                    np.array([1000]),
+                )
+            else:
+                if logger.isEnabledFor(logging.DEBUG):
+                    logger.debug("solver_minimizing [hotstart]")
+                return_value = self.solver_minimizing.hotstart(
+                    self._H,
+                    self._g,
+                    self._A,
+                    self._l,
+                    self._h,
+                    self._lA,
+                    self._hA,
+                    np.array([1000]),
+                )
+            self.solver_minimizing_recent_index = i
+            self.solver_minimizing.getPrimalSolution(var)
+        else:  # Choose solver_maximizing
+            if abs(self.solver_maximizing_recent_index - i) > 1:
+                if logger.isEnabledFor(logging.DEBUG):
+                    logger.debug("solver_maximizing [init]")
+                return_value = self.solver_maximizing.init(
+                    self._H,
+                    self._g,
+                    self._A,
+                    self._l,
+                    self._h,
+                    self._lA,
+                    self._hA,
+                    np.array([1000]),
+                )
+            else:
+                if logger.isEnabledFor(logging.DEBUG):
+                    logger.debug("solver_maximizing [hotstart]")
+                return_value = self.solver_maximizing.hotstart(
+                    self._H,
+                    self._g,
+                    self._A,
+                    self._l,
+                    self._h,
+                    self._lA,
+                    self._hA,
+                    np.array([1000]),
+                )
+            self.solver_maximizing_recent_index = i
+            self.solver_maximizing.getPrimalSolution(var)
+        return return_value, var
