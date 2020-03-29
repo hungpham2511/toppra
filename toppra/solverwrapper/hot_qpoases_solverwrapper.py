@@ -2,6 +2,8 @@ from .solverwrapper import SolverWrapper
 import numpy as np
 from ..constraint import ConstraintType
 from ..constants import QPOASES_INFTY, TINY, SMALL
+from ..exceptions import SolverNotFound
+
 
 try:
     from qpoases import (
@@ -58,9 +60,10 @@ class hotqpOASESSolverWrapper(SolverWrapper):
         path,
         path_discretization,
         disable_check=False,
-        scaling_solverwrapper=True,
+        # scaling_solverwrapper=True,
     ):
-        assert qpoases_FOUND, "toppra is unable to find any installation of qpoases!"
+        if not qpoases_FOUND:
+            SolverNotFound("toppra is unable to find any installation of qpoases!")
         super(hotqpOASESSolverWrapper, self).__init__(
             constraint_list, path, path_discretization
         )

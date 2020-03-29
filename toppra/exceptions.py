@@ -11,3 +11,6 @@ class BadInputVelocities(ToppraError):
     pass
 
 
+class SolverNotFound(ToppraError):
+    pass
+
