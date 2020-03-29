@@ -4,8 +4,13 @@ from ..constraint import ConstraintType
 from ..constants import QPOASES_INFTY, TINY, SMALL
 
 try:
-    from qpoases import (PyOptions as Options, PyPrintLevel as PrintLevel,
-                         PyReturnValue as ReturnValue, PySQProblem as SQProblem)
+    from qpoases import (
+        PyOptions as Options,
+        PyPrintLevel as PrintLevel,
+        PyReturnValue as ReturnValue,
+        PySQProblem as SQProblem,
+    )
+
     qpoases_FOUND = True
 except ImportError:
     qpoases_FOUND = False
@@ -46,9 +51,19 @@ class hotqpOASESSolverWrapper(SolverWrapper):
     scaling_solverwrapper: bool, optional
         If is True, try to scale the data of each optimization before running.
     """
-    def __init__(self, constraint_list, path, path_discretization, disable_check=False, scaling_solverwrapper=True):
+
+    def __init__(
+        self,
+        constraint_list,
+        path,
+        path_discretization,
+        disable_check=False,
+        scaling_solverwrapper=True,
+    ):
         assert qpoases_FOUND, "toppra is unable to find any installation of qpoases!"
-        super(hotqpOASESSolverWrapper, self).__init__(constraint_list, path, path_discretization)
+        super(hotqpOASESSolverWrapper, self).__init__(
+            constraint_list, path, path_discretization
+        )
         self._disable_check = disable_check
 
         # First constraint is x + 2 D u <= xnext_max, second is xnext_min <= x + 2D u
@@ -67,9 +82,9 @@ class hotqpOASESSolverWrapper(SolverWrapper):
         # l <= var <= h
         # lA <= A var <= hA
         self._A = np.zeros((self.nC, self.nV))
-        self._lA = - np.ones(self.nC) * QPOASES_INFTY
+        self._lA = -np.ones(self.nC) * QPOASES_INFTY
         self._hA = np.ones(self.nC) * QPOASES_INFTY
-        self._l = - np.ones(2) * QPOASES_INFTY
+        self._l = -np.ones(2) * QPOASES_INFTY
         self._h = np.ones(2) * QPOASES_INFTY
 
     def setup_solver(self):
@@ -101,7 +116,7 @@ class hotqpOASESSolverWrapper(SolverWrapper):
         #  s.t    lA <= A scale y <= hA
         #         l  <=  scale y <= h
 
-        self._l[:] = - QPOASES_INFTY
+        self._l[:] = -QPOASES_INFTY
         self._h[:] = QPOASES_INFTY
 
         if x_min is not None:
@@ -113,7 +128,7 @@ class hotqpOASESSolverWrapper(SolverWrapper):
             delta = self.get_deltas()[i]
             if x_next_min is not None:
                 self._A[0] = [-2 * delta, -1]
-                self._hA[0] = - x_next_min
+                self._hA[0] = -x_next_min
             else:
                 self._A[0] = [0, 0]
                 self._hA[0] = QPOASES_INFTY
@@ -132,16 +147,16 @@ class hotqpOASESSolverWrapper(SolverWrapper):
             if a is not None:
                 if self.constraints[j].identical:
                     nC_ = F.shape[0]
-                    self._A[cur_index: cur_index + nC_, 0] = F.dot(a[i])
-                    self._A[cur_index: cur_index + nC_, 1] = F.dot(b[i])
-                    self._hA[cur_index: cur_index + nC_] = v - F.dot(c[i])
-                    self._lA[cur_index: cur_index + nC_] = - QPOASES_INFTY
+                    self._A[cur_index : cur_index + nC_, 0] = F.dot(a[i])
+                    self._A[cur_index : cur_index + nC_, 1] = F.dot(b[i])
+                    self._hA[cur_index : cur_index + nC_] = v - F.dot(c[i])
+                    self._lA[cur_index : cur_index + nC_] = -QPOASES_INFTY
                 else:
                     nC_ = F[i].shape[0]
-                    self._A[cur_index: cur_index + nC_, 0] = F[i].dot(a[i])
-                    self._A[cur_index: cur_index + nC_, 1] = F[i].dot(b[i])
-                    self._hA[cur_index: cur_index + nC_] = v[i] - F[i].dot(c[i])
-                    self._lA[cur_index: cur_index + nC_] = - QPOASES_INFTY
+                    self._A[cur_index : cur_index + nC_, 0] = F[i].dot(a[i])
+                    self._A[cur_index : cur_index + nC_, 1] = F[i].dot(b[i])
+                    self._hA[cur_index : cur_index + nC_] = v[i] - F[i].dot(c[i])
+                    self._lA[cur_index : cur_index + nC_] = -QPOASES_INFTY
                 cur_index = cur_index + nC_
             if ubound is not None:
                 self._l[0] = max(self._l[0], ubound[i, 0])
@@ -154,16 +169,22 @@ class hotqpOASESSolverWrapper(SolverWrapper):
         # if x_min == x_max, do not solve the 2D linear program, instead, do a line search
         if abs(x_min - x_max) < TINY and H is None and self.get_no_vars() == 2:
             logger.debug("x_min ({:f}) equals x_max ({:f})".format(x_min, x_max))
-            u_min = - QPOASES_INFTY
+            u_min = -QPOASES_INFTY
             u_max = QPOASES_INFTY
             for i in range(self._A.shape[0]):
                 if self._A[i, 0] > 0:
-                    u_max = min(u_max, (self._hA[i] - self._A[i, 1] * x_min) / self._A[i, 0])
+                    u_max = min(
+                        u_max, (self._hA[i] - self._A[i, 1] * x_min) / self._A[i, 0]
+                    )
                 elif self._A[i, 0] < 0:
-                    u_min = max(u_min, (self._hA[i] - self._A[i, 1] * x_min) / self._A[i, 0])
+                    u_min = max(
+                        u_min, (self._hA[i] - self._A[i, 1] * x_min) / self._A[i, 0]
+                    )
             if (u_min - u_max) / abs(u_max) > SMALL:  # problem infeasible
-                logger.debug("u_min > u_max by {:f}. Might not be critical. "
-                             "Returning failure.".format(u_min - u_max))
+                logger.debug(
+                    "u_min > u_max by {:f}. Might not be critical. "
+                    "Returning failure.".format(u_min - u_max)
+                )
                 return np.array([np.nan, np.nan])
 
             if g[0] < 0:
@@ -172,16 +193,22 @@ class hotqpOASESSolverWrapper(SolverWrapper):
                 return np.array([u_min, x_min + 2 * u_min * delta])
 
         if H is None:
-            H = np.ones((self.get_no_vars(), self.get_no_vars())) * 1e-18  # regularization,  very important
+            H = (
+                np.ones((self.get_no_vars(), self.get_no_vars())) * 1e-18
+            )  # regularization,  very important
 
-        ratio_col1 = 1 / (np.sum(np.abs(self._A[2:, 0])) + 1e-5)  # the maximum possible value for both ratios is 100000
+        ratio_col1 = 1 / (
+            np.sum(np.abs(self._A[2:, 0])) + 1e-5
+        )  # the maximum possible value for both ratios is 100000
         ratio_col2 = 1 / (np.sum(np.abs(self._A[2:, 1])) + 1e-5)
         variable_scales = np.array([ratio_col1, ratio_col2])
         # variable_scales = np.array([5000.0, 2000.0])
         variable_scales_mat = np.diag(variable_scales)
 
         if logger.isEnabledFor(logging.DEBUG):
-            logger.debug("min ratio col 1 {:f}, col 2 {:f}".format(ratio_col1, ratio_col2))
+            logger.debug(
+                "min ratio col 1 {:f}, col 2 {:f}".format(ratio_col1, ratio_col2)
+            )
 
         # ratio scaling
         self._A = self._A.dot(variable_scales_mat)
@@ -202,21 +229,57 @@ class hotqpOASESSolverWrapper(SolverWrapper):
             if abs(self.solver_minimizing_recent_index - i) > 1:
                 if logger.isEnabledFor(logging.DEBUG):
                     logger.debug("solver_minimizing [init]")
-                res = self.solver_minimizing.init(H, g, self._A, self._l, self._h, self._lA, self._hA, np.array([1000]))
+                res = self.solver_minimizing.init(
+                    H,
+                    g,
+                    self._A,
+                    self._l,
+                    self._h,
+                    self._lA,
+                    self._hA,
+                    np.array([1000]),
+                )
             else:
                 if logger.isEnabledFor(logging.DEBUG):
                     logger.debug("solver_minimizing [hotstart]")
-                res = self.solver_minimizing.hotstart(H, g, self._A, self._l, self._h, self._lA, self._hA, np.array([1000]))
+                res = self.solver_minimizing.hotstart(
+                    H,
+                    g,
+                    self._A,
+                    self._l,
+                    self._h,
+                    self._lA,
+                    self._hA,
+                    np.array([1000]),
+                )
             self.solver_minimizing_recent_index = i
         else:  # Choose solver_maximizing
             if abs(self.solver_maximizing_recent_index - i) > 1:
                 if logger.isEnabledFor(logging.DEBUG):
                     logger.debug("solver_maximizing [init]")
-                res = self.solver_maximizing.init(H, g, self._A, self._l, self._h, self._lA, self._hA, np.array([1000]))
+                res = self.solver_maximizing.init(
+                    H,
+                    g,
+                    self._A,
+                    self._l,
+                    self._h,
+                    self._lA,
+                    self._hA,
+                    np.array([1000]),
+                )
             else:
                 if logger.isEnabledFor(logging.DEBUG):
                     logger.debug("solver_maximizing [hotstart]")
-                res = self.solver_maximizing.hotstart(H, g, self._A, self._l, self._h, self._lA, self._hA, np.array([1000]))
+                res = self.solver_maximizing.hotstart(
+                    H,
+                    g,
+                    self._A,
+                    self._l,
+                    self._h,
+                    self._lA,
+                    self._hA,
+                    np.array([1000]),
+                )
             self.solver_maximizing_recent_index = i
 
         if res == ReturnValue.SUCCESSFUL_RETURN:
@@ -233,22 +296,40 @@ class hotqpOASESSolverWrapper(SolverWrapper):
                 return var * variable_scales
 
             # Check for constraint feasibility
-            success = (np.all(self._l <= var + TINY) and np.all(var <= self._h + TINY)
-                       and np.all(np.dot(self._A, var) <= self._hA + TINY)
-                       and np.all(np.dot(self._A, var) >= self._lA - TINY))
+            success = (
+                np.all(self._l <= var + TINY)
+                and np.all(var <= self._h + TINY)
+                and np.all(np.dot(self._A, var) <= self._hA + TINY)
+                and np.all(np.dot(self._A, var) >= self._lA - TINY)
+            )
             if not success:
                 # import ipdb; ipdb.set_trace()
-                logger.fatal("Hotstart fails but qpOASES does not report correctly. \n "
-                             "var: {:}, lower_bound: {:}, higher_bound{:}".format(var, self._l, self._h))
+                logger.fatal(
+                    "Hotstart fails but qpOASES does not report correctly. \n "
+                    "var: {:}, lower_bound: {:}, higher_bound{:}".format(
+                        var, self._l, self._h
+                    )
+                )
                 # TODO: Investigate why this happen and fix the
                 # relevant code (in qpOASES wrapper)
             else:
                 return var * variable_scales
         else:
-            logger.debug("Optimization fails. qpOASES error code: {:d}. Checking constraint feasibility for (0, 0)!".format(res))
+            logger.debug(
+                "Optimization fails. qpOASES error code: {:d}. Checking constraint feasibility for (0, 0)!".format(
+                    res
+                )
+            )
 
-            if (np.all(0 <= self._hA) and np.all(0 >= self._lA) and np.all(0 <= self._h) and np.all(0 >= self._l)):
-                logger.fatal("(0, 0) satisfies all constraints => error due to numerical errors.")
+            if (
+                np.all(0 <= self._hA)
+                and np.all(0 >= self._lA)
+                and np.all(0 <= self._h)
+                and np.all(0 >= self._l)
+            ):
+                logger.fatal(
+                    "(0, 0) satisfies all constraints => error due to numerical errors."
+                )
                 print(self._A)
                 print(self._lA)
                 print(self._hA)
