@@ -21,9 +21,14 @@ def deprecated(func):
     # pylint: disable=C0111
     @functools.wraps(func)
     def new_func(*args, **kwargs):
-        warnings.warn("Call to deprecated function {} in module {}.".format(
-            func.__name__, func.__module__), category=DeprecationWarning)
+        warnings.warn(
+            "Call to deprecated function {} in module {}.".format(
+                func.__name__, func.__module__
+            ),
+            category=DeprecationWarning,
+        )
         return func(*args, **kwargs)
+
     return new_func
 
 
@@ -31,11 +36,13 @@ def setup_logging(level="WARN"):
     """Setup basic logging facility to console.
     """
     coloredlogs.install(
-        logger=logging.getLogger("toppra"), level=level,
+        logger=logging.getLogger("toppra"),
+        level=level,
         fmt="%(levelname)5s [%(filename)s : %(lineno)d] [%(funcName)s] %(message)s",
         datefmt="%H:%M:%S",
-        milliseconds=True)
-    logging.basicConfig(filename='/tmp/toppra.log', level=level, filemode='a')
+        milliseconds=True,
+    )
+    logging.basicConfig(filename="/tmp/toppra.log", level=level, filemode="a")
 
 
 def compute_jacobian_wrench(robot, link, point):
@@ -101,7 +108,8 @@ def inv_dyn(rave_robot, q, qd, qdd, forceslist=None, returncomponents=True):
         rave_robot.SetDOFValues(_q)
         rave_robot.SetDOFVelocities(_qd)
         res = rave_robot.ComputeInverseDynamics(
-            _qdd, forceslist, returncomponents=returncomponents)
+            _qdd, forceslist, returncomponents=returncomponents
+        )
     # Restore kinematic limits
     rave_robot.SetDOFVelocityLimits(vlim)
     rave_robot.SetDOFAccelerationLimits(alim)
@@ -159,18 +167,22 @@ def smooth_singularities(parametrization_instance, us, xs, vs=None):
     for index in singular_indices:
         idstart = max(0, index)
         idend = min(parametrization_instance.N, index + 4)
-        xs_smth[range(idstart, idend + 1)] = (
-            xs_smth[idstart] + (xs_smth[idend] - xs_smth[idstart]) *
-            np.linspace(0, 1, idend + 1 - idstart))
+        xs_smth[range(idstart, idend + 1)] = xs_smth[idstart] + (
+            xs_smth[idend] - xs_smth[idstart]
+        ) * np.linspace(0, 1, idend + 1 - idstart)
         if vs is not None:
-            data = [vs_smth[idstart] +
-                    (xs_smth[idend] - xs_smth[idstart]) * frac
-                    for frac in np.linspace(0, 1, idend + 1 - idstart)]
+            data = [
+                vs_smth[idstart] + (xs_smth[idend] - xs_smth[idstart]) * frac
+                for frac in np.linspace(0, 1, idend + 1 - idstart)
+            ]
             vs_smth[range(idstart, idend + 1)] = np.array(data)
 
     for i in range(parametrization_instance.N):
-        us_smth[i] = ((xs_smth[i + 1] - xs_smth[i]) / 2
-                      / (parametrization_instance.ss[i + 1] - parametrization_instance.ss[i]))
+        us_smth[i] = (
+            (xs_smth[i + 1] - xs_smth[i])
+            / 2
+            / (parametrization_instance.ss[i + 1] - parametrization_instance.ss[i])
+        )
 
     if vs is not None:
         return us_smth, xs_smth, vs_smth

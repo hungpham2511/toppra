@@ -17,7 +17,9 @@ if FOUND_OPENRAVE:
     import openravepy as orpy  # pylint: disable=import-error
 
 
-def propose_gridpoints(path, max_err_threshold=1e-4, max_iteration=100, max_seg_length=0.05):
+def propose_gridpoints(
+    path, max_err_threshold=1e-4, max_iteration=100, max_seg_length=0.05
+):
     """Generate gridpoints that sufficiently cover the given path.
 
     This function operates in multiple passes through the geometric
@@ -144,10 +146,11 @@ class RaveTrajectoryWrapper(AbstractGeometricPath):
     object.
 
     """
+
     @staticmethod
     def _extract_interpolation_method(spec):
-        _interpolation = spec.GetGroupFromName('joint').interpolation
-        if _interpolation not in ['quadratic', 'cubic']:
+        _interpolation = spec.GetGroupFromName("joint").interpolation
+        if _interpolation not in ["quadratic", "cubic"]:
             raise ValueError(
                 "This class only handles trajectories with quadratic or cubic interpolation"
             )
@@ -173,7 +176,8 @@ class RaveTrajectoryWrapper(AbstractGeometricPath):
         self._duration = traj.GetDuration()
 
         all_waypoints = traj.GetWaypoints(0, traj.GetNumWaypoints()).reshape(
-            traj.GetNumWaypoints(), -1)
+            traj.GetNumWaypoints(), -1
+        )
         valid_wp_indices = [0]
         self.ss_waypoints = [0.0]
         for i in range(1, traj.GetNumWaypoints()):
@@ -185,10 +189,14 @@ class RaveTrajectoryWrapper(AbstractGeometricPath):
         n_waypoints = len(valid_wp_indices)
 
         def _extract_waypoints(order):
-            return np.array([
-                spec.ExtractJointValues(all_waypoints[i], robot, robot.GetActiveDOFIndices(), order)
-                for i in valid_wp_indices
-            ])
+            return np.array(
+                [
+                    spec.ExtractJointValues(
+                        all_waypoints[i], robot, robot.GetActiveDOFIndices(), order
+                    )
+                    for i in valid_wp_indices
+                ]
+            )
 
         def _make_ppoly():
             if n_waypoints == 1:
@@ -203,8 +211,9 @@ class RaveTrajectoryWrapper(AbstractGeometricPath):
                 waypoints_d = _extract_waypoints(1)
                 waypoints_dd = []
                 for i in range(n_waypoints - 1):
-                    qdd = ((waypoints_d[i + 1] - waypoints_d[i]) /
-                           (self.ss_waypoints[i + 1] - self.ss_waypoints[i]))
+                    qdd = (waypoints_d[i + 1] - waypoints_d[i]) / (
+                        self.ss_waypoints[i + 1] - self.ss_waypoints[i]
+                    )
                     waypoints_dd.append(qdd)
                 waypoints_dd = np.array(waypoints_dd)
 
@@ -215,7 +224,7 @@ class RaveTrajectoryWrapper(AbstractGeometricPath):
                         pp_coeffs[:, iseg, idof] = [
                             waypoints_dd[iseg, idof] / 2,
                             waypoints_d[iseg, idof],
-                            waypoints[iseg, idof]
+                            waypoints[iseg, idof],
                         ]
                 return PPoly(pp_coeffs, self.ss_waypoints)
 
@@ -225,8 +234,9 @@ class RaveTrajectoryWrapper(AbstractGeometricPath):
                 waypoints_dd = _extract_waypoints(2)
                 waypoints_ddd = []
                 for i in range(n_waypoints - 1):
-                    qddd = ((waypoints_dd[i + 1] - waypoints_dd[i]) /
-                            (self.ss_waypoints[i + 1] - self.ss_waypoints[i]))
+                    qddd = (waypoints_dd[i + 1] - waypoints_dd[i]) / (
+                        self.ss_waypoints[i + 1] - self.ss_waypoints[i]
+                    )
                     waypoints_ddd.append(qddd)
                 waypoints_ddd = np.array(waypoints_ddd)
 
@@ -238,7 +248,7 @@ class RaveTrajectoryWrapper(AbstractGeometricPath):
                             waypoints_ddd[iseg, idof] / 6,
                             waypoints_dd[iseg, idof] / 2,
                             waypoints_d[iseg, idof],
-                            waypoints[iseg, idof]
+                            waypoints[iseg, idof],
                         ]
                 return PPoly(pp_coeffs, self.ss_waypoints)
             raise ValueError("An error has occured. Unable to form PPoly.")
@@ -316,7 +326,7 @@ class SplineInterpolator(AbstractGeometricPath):
 
     """
 
-    def __init__(self, ss_waypoints, waypoints, bc_type='not-a-knot'):
+    def __init__(self, ss_waypoints, waypoints, bc_type="not-a-knot"):
         super(SplineInterpolator, self).__init__()
         self.ss_waypoints = np.array(ss_waypoints)  # type: np.ndarray
         self._q_waypoints = np.array(waypoints)  # type: np.ndarray
@@ -427,7 +437,7 @@ class SplineInterpolator(AbstractGeometricPath):
         """
 
         traj = orpy.RaveCreateTrajectory(robot.GetEnv(), "")
-        spec = robot.GetActiveConfigurationSpecification('cubic')
+        spec = robot.GetActiveConfigurationSpecification("cubic")
         spec.AddDerivativeGroups(1, False)
         spec.AddDerivativeGroups(2, True)
 
@@ -439,15 +449,16 @@ class SplineInterpolator(AbstractGeometricPath):
             q = self(0)
             qd = self(0, 1)
             qdd = self(0, 2)
-            traj.Insert(traj.GetNumWaypoints(),
-                        list(q) + list(qd) + list(qdd) + [0])
+            traj.Insert(traj.GetNumWaypoints(), list(q) + list(qd) + list(qdd) + [0])
         else:
             qs = self(self.ss_waypoints)
             qds = self(self.ss_waypoints, 1)
             qdds = self(self.ss_waypoints, 2)
             for (q, qd, qdd, dt) in zip(qs, qds, qdds, deltas):
-                traj.Insert(traj.GetNumWaypoints(),
-                            q.tolist() + qd.tolist() + qdd.tolist() + [dt])
+                traj.Insert(
+                    traj.GetNumWaypoints(),
+                    q.tolist() + qd.tolist() + qdd.tolist() + [dt],
+                )
         return traj
 
 
@@ -478,7 +489,8 @@ class UnivariateSplineInterpolator(AbstractGeometricPath):
         self.uspl = []
         for i in range(self.dof):
             self.uspl.append(
-                UnivariateSpline(self.ss_waypoints, self._q_waypoints[:, i]))
+                UnivariateSpline(self.ss_waypoints, self._q_waypoints[:, i])
+            )
         self.uspld = [spl.derivative() for spl in self.uspl]
         self.uspldd = [spl.derivative() for spl in self.uspld]
 
@@ -564,8 +576,7 @@ class PolynomialPath(AbstractGeometricPath):
             self.coeff = self.coeff.reshape(1, -1)
         else:
             self.poly = [
-                np.polynomial.Polynomial(self.coeff[i])
-                for i in range(self.dof)
+                np.polynomial.Polynomial(self.coeff[i]) for i in range(self.dof)
             ]
 
         self.polyd = [poly.deriv() for poly in self.poly]
