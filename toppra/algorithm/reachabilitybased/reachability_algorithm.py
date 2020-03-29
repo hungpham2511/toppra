@@ -256,7 +256,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
             `return_data` is True.
         """
         if sd_end < 0 or sd_start < 0:
-            raise ValueError("Negative path velocities: path velocities must be positive: (%s, %s)" % (sd_start, sd_end))
+            raise exceptions.BadInputVelocities("Negative path velocities: path velocities must be positive: (%s, %s)" % (sd_start, sd_end))
         K = self.compute_controllable_sets(sd_end, sd_end)
         if np.isnan(K).any():
             logger.warning("An error occurred when computing controllable velocities. "
