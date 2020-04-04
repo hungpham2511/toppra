@@ -4,8 +4,7 @@
 [![Documentation Status](https://readthedocs.org/projects/toppra/badge/?version=latest)](https://toppra.readthedocs.io/en/latest/?badge=latest)
 
 
-- [`toppra`](#-toppra-)
-- [TOC](#toc)
+  * [Overview](#overview)
   * [Quick-start](#quick-start)
   * [Citing **TOPP-RA**](#citing---topp-ra--)
   * [Bug reports and supports](#bug-reports-and-supports)
