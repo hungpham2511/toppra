@@ -7,6 +7,7 @@ from toppra.interpolator import SplineInterpolator, AbstractGeometricPath
 import toppra.interpolator as interpolator
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -25,6 +26,7 @@ class ParameterizationAlgorithm(object):
     gridpoints: array, optional
         If not given, automatically generate a grid with 100 steps.
     """
+
     def __init__(self, constraint_list, path, gridpoints=None):
         self.constraints = constraint_list  # Attr
         self.path = path  # Attr
@@ -32,9 +34,14 @@ class ParameterizationAlgorithm(object):
         # Handle gridpoints
         if gridpoints is None:
             gridpoints = interpolator.propose_gridpoints(path, max_err_threshold=1e-3)
-            logger.info("No gridpoint specified. Automatically choose a gridpoint. See `propose_gridpoints`.")
+            logger.info(
+                "No gridpoint specified. Automatically choose a gridpoint. See `propose_gridpoints`."
+            )
 
-        if path.path_interval[0] != gridpoints[0] or path.path_interval[1] != gridpoints[-1]:
+        if (
+            path.path_interval[0] != gridpoints[0]
+            or path.path_interval[1] != gridpoints[-1]
+        ):
             raise ValueError("Invalid manually supplied gridpoints.")
         self.gridpoints = np.array(gridpoints)
         self._N = len(gridpoints) - 1  # Number of stages. Number of point is _N + 1
@@ -104,7 +111,9 @@ class ParameterizationAlgorithm(object):
             variable, return None.
 
         """
-        sdd_grid, sd_grid, v_grid, K = self.compute_parameterization(sd_start, sd_end, return_data=True)
+        sdd_grid, sd_grid, v_grid, K = self.compute_parameterization(
+            sd_start, sd_end, return_data=True
+        )
 
         # fail condition: sd_grid is None, or there is nan in sd_grid
         if sd_grid is None or np.isnan(sd_grid).any():
@@ -128,8 +137,14 @@ class ParameterizationAlgorithm(object):
         gridpoints = np.delete(self.gridpoints, skip_ent) / scaling
         q_grid = self.path.eval(gridpoints)
 
-        traj_spline = SplineInterpolator(t_grid, q_grid, (
-            (1, self.path(0, 1) * sd_start), (1, self.path(self.path.duration, 1) * sd_end)))
+        traj_spline = SplineInterpolator(
+            t_grid,
+            q_grid,
+            (
+                (1, self.path(0, 1) * sd_start),
+                (1, self.path(self.path.duration, 1) * sd_end),
+            ),
+        )
 
         if v_grid.shape[1] == 0:
             v_spline = None
@@ -140,8 +155,8 @@ class ParameterizationAlgorithm(object):
             v_grid_ = np.delete(v_grid_, skip_ent, axis=0)
             v_spline = SplineInterpolator(t_grid, v_grid_)
 
-        self._problem_data = {'sdd': sdd_grid, 'sd': sd_grid, 'v': v_grid, 'K': K}
+        self._problem_data = {"sdd": sdd_grid, "sd": sd_grid, "v": v_grid, "K": K}
         if self.path.waypoints is not None:
             t_waypts = np.interp(self.path.waypoints[0], gridpoints, t_grid)
-            self._problem_data.update({'t_waypts': t_waypts})
+            self._problem_data.update({"t_waypts": t_waypts})
         return traj_spline, v_spline

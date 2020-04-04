@@ -1,6 +1,10 @@
 from .interpolator import RaveTrajectoryWrapper, SplineInterpolator
-from .constraint import JointAccelerationConstraint, JointVelocityConstraint, \
-    DiscretizationType, SecondOrderConstraint
+from .constraint import (
+    JointAccelerationConstraint,
+    JointVelocityConstraint,
+    DiscretizationType,
+    SecondOrderConstraint,
+)
 from .algorithm import TOPPRA
 import numpy as np
 import logging
@@ -9,15 +13,17 @@ import time
 logger = logging.getLogger(__name__)
 
 
-def retime_active_joints_kinematics(traj,
-                                    robot,
-                                    output_interpolator=False,
-                                    vmult=1.0,
-                                    amult=1.0,
-                                    N=100,
-                                    use_ravewrapper=False,
-                                    additional_constraints=[],
-                                    solver_wrapper='hotqpoases'):
+def retime_active_joints_kinematics(
+    traj,
+    robot,
+    output_interpolator=False,
+    vmult=1.0,
+    amult=1.0,
+    N=100,
+    use_ravewrapper=False,
+    additional_constraints=[],
+    solver_wrapper="hotqpoases",
+):
     """ Retime a trajectory wrt velocity and acceleration constraints.
 
     Parameters
@@ -55,10 +61,9 @@ def retime_active_joints_kinematics(traj,
     if isinstance(traj, np.ndarray):
         logger.debug("Received a list of waypoints.")
         ss_waypoints = np.linspace(0, 1, len(traj))
-        path = SplineInterpolator(ss_waypoints, traj, bc_type='natural')
+        path = SplineInterpolator(ss_waypoints, traj, bc_type="natural")
     elif use_ravewrapper:
-        logger.warning(
-            "Use RaveTrajectoryWrapper. This might not work properly!")
+        logger.warning("Use RaveTrajectoryWrapper. This might not work properly!")
         path = RaveTrajectoryWrapper(traj, robot)
     elif isinstance(traj, SplineInterpolator):
         path = traj
@@ -77,8 +82,8 @@ def retime_active_joints_kinematics(traj,
                 else:
                     ss_waypoints.append(ss_waypoints[-1] + dt)
                 waypoints.append(
-                    spec.ExtractJointValues(data, robot,
-                                            robot.GetActiveDOFIndices()))
+                    spec.ExtractJointValues(data, robot, robot.GetActiveDOFIndices())
+                )
         path = SplineInterpolator(ss_waypoints, waypoints)
 
     vmax = robot.GetActiveDOFMaxVel() * vmult
@@ -88,9 +93,9 @@ def retime_active_joints_kinematics(traj,
 
     pc_vel = JointVelocityConstraint(vlim)
     pc_acc = JointAccelerationConstraint(
-        alim, discretization_scheme=DiscretizationType.Interpolation)
-    logger.debug(
-        "Number of constraints %d", 2 + len(additional_constraints))
+        alim, discretization_scheme=DiscretizationType.Interpolation
+    )
+    logger.debug("Number of constraints %d", 2 + len(additional_constraints))
     logger.debug(str(pc_vel))
     logger.debug(str(pc_acc))
     for _c in additional_constraints:
@@ -100,21 +105,27 @@ def retime_active_joints_kinematics(traj,
     ds = path.ss_waypoints[-1] / N
     gridpoints = [path.ss_waypoints[0]]
     for i in range(len(path.ss_waypoints) - 1):
-        Ni = int(
-            np.ceil((path.ss_waypoints[i + 1] - path.ss_waypoints[i]) / ds))
-        gridpoints.extend(path.ss_waypoints[i] +
-                          np.linspace(0, 1, Ni + 1)[1:] *
-                          (path.ss_waypoints[i + 1] - path.ss_waypoints[i]))
-    instance = TOPPRA([pc_vel, pc_acc] + additional_constraints,
-                      path,
-                      gridpoints=gridpoints,
-                      solver_wrapper=solver_wrapper)
+        Ni = int(np.ceil((path.ss_waypoints[i + 1] - path.ss_waypoints[i]) / ds))
+        gridpoints.extend(
+            path.ss_waypoints[i]
+            + np.linspace(0, 1, Ni + 1)[1:]
+            * (path.ss_waypoints[i + 1] - path.ss_waypoints[i])
+        )
+    instance = TOPPRA(
+        [pc_vel, pc_acc] + additional_constraints,
+        path,
+        gridpoints=gridpoints,
+        solver_wrapper=solver_wrapper,
+    )
     _t1 = time.time()
 
     traj_ra, aux_traj = instance.compute_trajectory(0, 0)
     _t2 = time.time()
-    logger.debug("t_setup={:.5f}ms, t_solve={:.5f}ms, t_total={:.5f}ms".format(
-        (_t1 - _t0) * 1e3, (_t2 - _t1) * 1e3, (_t2 - _t0) * 1e3))
+    logger.debug(
+        "t_setup={:.5f}ms, t_solve={:.5f}ms, t_total={:.5f}ms".format(
+            (_t1 - _t0) * 1e3, (_t2 - _t1) * 1e3, (_t2 - _t0) * 1e3
+        )
+    )
     if traj_ra is None:
         logger.warning("Retime fails.")
         traj_rave = None
@@ -129,7 +140,8 @@ def retime_active_joints_kinematics(traj,
 
 
 def create_rave_torque_path_constraint(
-        robot, discretization_scheme=DiscretizationType.Collocation):
+    robot, discretization_scheme=DiscretizationType.Collocation
+):
     """Create torque bound for the given robot.
 
     The torque bound constraint for a manipulator whose links are
@@ -165,8 +177,7 @@ def create_rave_torque_path_constraint(
         return res[active_dofs]
 
     tau_max = robot.GetDOFTorqueLimits()[robot.GetActiveDOFIndices()]
-    F = np.vstack(
-        (np.eye(robot.GetActiveDOF()), -np.eye(robot.GetActiveDOF())))
+    F = np.vstack((np.eye(robot.GetActiveDOF()), -np.eye(robot.GetActiveDOF())))
     g = np.hstack((tau_max, tau_max))
 
     def cnst_F(q):
@@ -175,9 +186,11 @@ def create_rave_torque_path_constraint(
     def cnst_g(q):
         return g
 
-    cnst = SecondOrderConstraint(inv_dyn,
-                                 cnst_F,
-                                 cnst_g,
-                                 dof=robot.GetActiveDOF(),
-                                 discretization_scheme=discretization_scheme)
+    cnst = SecondOrderConstraint(
+        inv_dyn,
+        cnst_F,
+        cnst_g,
+        dof=robot.GetActiveDOF(),
+        discretization_scheme=discretization_scheme,
+    )
     return cnst

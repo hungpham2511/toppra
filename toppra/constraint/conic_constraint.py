@@ -32,6 +32,7 @@ class ConicConstraint(Constraint):
         (Vol. 2). Siam.
 
     """
+
     def __init__(self):
         self.constraint_type = ConstraintType.CanonicalConic
         self.discretization_type = DiscretizationType.Collocation
@@ -68,21 +69,34 @@ class RobustLinearConstraint(ConicConstraint):
         Constraint discretization scheme to use.
 
     """
-    def __init__(self, cnst, ellipsoid_axes_lengths, discretization_scheme=DiscretizationType.Collocation):
+
+    def __init__(
+        self,
+        cnst,
+        ellipsoid_axes_lengths,
+        discretization_scheme=DiscretizationType.Collocation,
+    ):
         super(RobustLinearConstraint, self).__init__()
         self.dof = cnst.get_dof()
         assert cnst.get_constraint_type() == ConstraintType.CanonicalLinear
         self.set_discretization_type(discretization_scheme)
         if np.any(np.r_[ellipsoid_axes_lengths] < 0):
-            raise ValueError("Perturbation must be non-negative. Input {:}".format(ellipsoid_axes_lengths))
+            raise ValueError(
+                "Perturbation must be non-negative. Input {:}".format(
+                    ellipsoid_axes_lengths
+                )
+            )
         self.base_constraint = cnst
         self.ellipsoid_axes_lengths = ellipsoid_axes_lengths
-        self._format_string += "    Robust constraint generated from a canonical linear constraint\n"
+        self._format_string += (
+            "    Robust constraint generated from a canonical linear constraint\n"
+        )
 
     def compute_constraint_params(self, path, gridpoints, scaling):
         self.base_constraint.set_discretization_type(self.discretization_type)
         a_, b_, c_, F_, g_, u_, x_ = self.base_constraint.compute_constraint_params(
-            path, gridpoints, scaling)
+            path, gridpoints, scaling
+        )
         N = len(gridpoints) - 1
         if self.base_constraint.identical:
             d = F_.shape[0]  # number of rows

@@ -43,11 +43,12 @@ User guide
 --------------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    installation
    tutorials
    notes
+   history
 
 
 Citing TOPP-RA!
@@ -62,6 +63,7 @@ you to
 Bug reports and supports
 -------------------------
 Please report any issues, questions via `Github issues tracker <https://github.com/hungpham2511/toppra/issues>`_.
+
 
 Applications
 ------------
@@ -81,3 +83,5 @@ If you find this interesting, feel free to check out the paper:
 `«Critically fast pick-and-place with suction cups»
 <https://www.researchgate.net/publication/327570258_Critically_fast_pick-and-place_with_suction_cups>`_. This
 paper has been presented at ICRA 2019.
+
+

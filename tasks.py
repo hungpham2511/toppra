@@ -5,6 +5,16 @@ try:
 except ImportError:
     import pathlib
 
+TOCHECK = [
+    'toppra',
+]
+
+
+@task
+def type_check(c):
+    for path in TOCHECK:
+        if not c.run("mypy {path}".format(path=path)):
+            return 1
 
 @task
 def install_solvers(c, user=False):

@@ -5,11 +5,10 @@ import matplotlib.pyplot as plt
 import pytest
 
 
-
 @pytest.fixture(params=[[0, 1], [1.5, 2.7]])
 def path(request):
     start, end = request.param
-    waypoints = [[0, 0.3, 0.5], [1, 2, 3], [0., 0.1, 0.2], [0, 0.5, 0]]
+    waypoints = [[0, 0.3, 0.5], [1, 2, 3], [0.0, 0.1, 0.2], [0, 0.5, 0]]
     ss = np.linspace(start, end, len(waypoints))
     path = toppra.interpolator.SplineInterpolator(ss, waypoints)
     yield path, waypoints
