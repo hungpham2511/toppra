@@ -8,6 +8,7 @@
 - [Quick-start](#quick-start)
 - [Bug reports and supports](#bug-reports-and-supports)
 - [Contributions](#contributions)
+- [Roadmaps](#roadmaps)
 - [Citing **TOPP-RA**](#citing--toppra-)
 
 
@@ -61,14 +62,14 @@ Pull Requests are welcomed!
   tests. Check out the test folder for more details.
 
 
-## Features in development
+## Roadmaps
 
 The following is a non-exhautive list of features that we are
-developing for toppra.
+considering to include in the library.
 
 - Improve the trajectory / geoemtric path interface.
-- Create a C++ interface to toppra.
-- Create a C++ interface to motion planning library like openrave.
+- Implement a C++ interface.
+- Implement a C++ interface to popular motion planning libraries.
 - Improve the numerical stability of the solvers for degenerate cases.
 
 
