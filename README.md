@@ -3,6 +3,16 @@
 [![Coverage Status](https://coveralls.io/repos/github/hungpham2511/toppra/badge.svg?branch=master)](https://coveralls.io/github/hungpham2511/toppra?branch=master)
 [![Documentation Status](https://readthedocs.org/projects/toppra/badge/?version=latest)](https://toppra.readthedocs.io/en/latest/?badge=latest)
 
+
+- [`toppra`](#-toppra-)
+- [TOC](#toc)
+  * [Quick-start](#quick-start)
+  * [Citing **TOPP-RA**](#citing---topp-ra--)
+  * [Bug reports and supports](#bug-reports-and-supports)
+  * [Contributions](#contributions)
+
+## Overview
+
 **toppra** is a library for computing the time-optimal path
 parametrization for robots subject to kinematic and dynamic
 constraints.  In general, given the inputs:
