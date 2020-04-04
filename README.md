@@ -6,9 +6,9 @@
 
 - [Overview](#overview)
 - [Quick-start](#quick-start)
-- [Bug reports and supports](#bug-reports-and-supports)
-- [Contributions](#contributions)
 - [Roadmaps](#roadmaps)
+- [Contributions](#contributions)
+- [Bug reports and supports](#bug-reports-and-supports)
 - [Citing **TOPP-RA**](#citing--toppra-)
 
 
@@ -44,13 +44,16 @@ To install depencidencies for development, replace the second command with:
 cd toppra && pip install -e .[dev]
 ```
 
-## Bug reports and supports
-Please report any issues, questions via [Github issues tracker](https://github.com/hungpham2511/toppra/issues).
+## Roadmaps
 
-It will be very helpful if you can provide more details on the
-errors/bugs that you encounter. In fact, the best way is to provide a
-Minimal Working Example that produces the reported bug and attach it
-with the issue report.
+The following is a non-exhautive list of features that we are
+considering to include in the library.
+
+- Improve the trajectory / geometric path interface [#81](https://github.com/hungpham2511/toppra/issues/81)
+- Implement a C++ interface [#43](https://github.com/hungpham2511/toppra/issues/43)
+- Implement a C++ interface to popular motion planning libraries.
+- Improve the numerical stability of the solvers for degenerate cases.
+- Post-processing of output trajectories: [#56](https://github.com/hungpham2511/toppra/issues/56), [#80](https://github.com/hungpham2511/toppra/issues/80)
 
 ## Contributions
 
@@ -58,19 +61,16 @@ Pull Requests are welcomed!
 - Go ahead and create a Pull Request and we will review your proposal!
 - For new features, or bug fixes, preferably the request should
   contain unit tests. Note that **TOPP-RA** uses
-  [pytest](https://docs.pytest.org/en/latest/contents.html** for all
+  [pytest](https://docs.pytest.org/en/latest/contents.html) for all
   tests. Check out the test folder for more details.
 
+## Bug reports and supports
+Please report any issues, questions via [Github issues tracker](https://github.com/hungpham2511/toppra/issues).
 
-## Roadmaps
-
-The following is a non-exhautive list of features that we are
-considering to include in the library.
-
-- Improve the trajectory / geoemtric path interface.
-- Implement a C++ interface.
-- Implement a C++ interface to popular motion planning libraries.
-- Improve the numerical stability of the solvers for degenerate cases.
+It will be very helpful if you can provide more details on the
+errors/bugs that you encounter. In fact, the best way is to provide a
+Minimal Working Example that produces the reported bug and attach it
+with the issue report.
 
 
 ## Citing `toppra`
