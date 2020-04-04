@@ -61,7 +61,7 @@ Pull Requests are welcomed!
 - Go ahead and create a Pull Request and we will review your proposal!
 - For new features, or bug fixes, preferably the request should
   contain unit tests. Note that **TOPP-RA** uses
-  [pytest](https://docs.pytest.org/en/latest/contents.html** for all
+  [pytest](https://docs.pytest.org/en/latest/contents.html) for all
   tests. Check out the test folder for more details.
 
 ## Bug reports and supports
