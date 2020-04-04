@@ -67,11 +67,11 @@ Pull Requests are welcomed!
 The following is a non-exhautive list of features that we are
 considering to include in the library.
 
-- Improve the trajectory / geoemtric path interface.
-- Implement a C++ interface.
+- Improve the trajectory / geometric path interface [#81](https://github.com/hungpham2511/toppra/issues/81)
+- Implement a C++ interface [#43](https://github.com/hungpham2511/toppra/issues/43)
 - Implement a C++ interface to popular motion planning libraries.
 - Improve the numerical stability of the solvers for degenerate cases.
-- Post-processing of output trajectories: #56, [#80](#80), #76 GH-76
+- Post-processing of output trajectories: [#56](https://github.com/hungpham2511/toppra/issues/56), [#80](https://github.com/hungpham2511/toppra/issues/80)
 
 
 ## Citing `toppra`
