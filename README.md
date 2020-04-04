@@ -6,9 +6,9 @@
 
 - [Overview](#overview)
 - [Quick-start](#quick-start)
-- [Bug reports and supports](#bug-reports-and-supports)
-- [Contributions](#contributions)
 - [Roadmaps](#roadmaps)
+- [Contributions](#contributions)
+- [Bug reports and supports](#bug-reports-and-supports)
 - [Citing **TOPP-RA**](#citing--toppra-)
 
 
@@ -44,24 +44,6 @@ To install depencidencies for development, replace the second command with:
 cd toppra && pip install -e .[dev]
 ```
 
-## Bug reports and supports
-Please report any issues, questions via [Github issues tracker](https://github.com/hungpham2511/toppra/issues).
-
-It will be very helpful if you can provide more details on the
-errors/bugs that you encounter. In fact, the best way is to provide a
-Minimal Working Example that produces the reported bug and attach it
-with the issue report.
-
-## Contributions
-
-Pull Requests are welcomed!
-- Go ahead and create a Pull Request and we will review your proposal!
-- For new features, or bug fixes, preferably the request should
-  contain unit tests. Note that **TOPP-RA** uses
-  [pytest](https://docs.pytest.org/en/latest/contents.html** for all
-  tests. Check out the test folder for more details.
-
-
 ## Roadmaps
 
 The following is a non-exhautive list of features that we are
@@ -72,6 +54,23 @@ considering to include in the library.
 - Implement a C++ interface to popular motion planning libraries.
 - Improve the numerical stability of the solvers for degenerate cases.
 - Post-processing of output trajectories: [#56](https://github.com/hungpham2511/toppra/issues/56), [#80](https://github.com/hungpham2511/toppra/issues/80)
+
+## Contributions
+
+Pull Requests are welcomed!
+- Go ahead and create a Pull Request and we will review your proposal!
+- For new features, or bug fixes, preferably the request should
+  contain unit tests. Note that **TOPP-RA** uses
+  [pytest](https://docs.pytest.org/en/latest/contents.html** for all
+  tests. Check out the test folder for more details.
+
+## Bug reports and supports
+Please report any issues, questions via [Github issues tracker](https://github.com/hungpham2511/toppra/issues).
+
+It will be very helpful if you can provide more details on the
+errors/bugs that you encounter. In fact, the best way is to provide a
+Minimal Working Example that produces the reported bug and attach it
+with the issue report.
 
 
 ## Citing `toppra`
