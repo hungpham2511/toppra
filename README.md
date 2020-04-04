@@ -4,11 +4,12 @@
 [![Documentation Status](https://readthedocs.org/projects/toppra/badge/?version=latest)](https://toppra.readthedocs.io/en/latest/?badge=latest)
 
 
-  * [Overview](#overview)
-  * [Quick-start](#quick-start)
-  * [Citing **TOPP-RA**](#citing---topp-ra--)
-  * [Bug reports and supports](#bug-reports-and-supports)
-  * [Contributions](#contributions)
+- [Overview](#overview)
+- [Quick-start](#quick-start)
+- [Bug reports and supports](#bug-reports-and-supports)
+- [Contributions](#contributions)
+- [Citing **TOPP-RA**](#citing--toppra-)
+
 
 ## Overview
 
@@ -42,14 +43,6 @@ To install depencidencies for development, replace the second command with:
 cd toppra && pip install -e .[dev]
 ```
 
-## Citing **TOPP-RA**
-If you use this library for your research, we encourage you to 
-
-1. reference the accompanying paper [«A new approach to Time-Optimal Path Parameterization based on Reachability Analysis»](https://www.researchgate.net/publication/318671280_A_New_Approach_to_Time-Optimal_Path_Parameterization_Based_on_Reachability_Analysis),
-   *IEEE Transactions on Robotics*, vol. 34(3), pp. 645–659, 2018.
-2. put a star on this repository.
-
-
 ## Bug reports and supports
 Please report any issues, questions via [Github issues tracker](https://github.com/hungpham2511/toppra/issues**.
 
@@ -64,8 +57,25 @@ Pull Requests are welcomed!
 - Go ahead and create a Pull Request and we will review your proposal!
 - For new features, or bug fixes, preferably the request should
   contain unit tests. Note that **TOPP-RA** uses
-  [pytest](https://docs.pytest.org/en/latest/contents.html) for all
+  [pytest](https://docs.pytest.org/en/latest/contents.html** for all
   tests. Check out the test folder for more details.
 
-TODOs:
-- Improve 
+
+## Features in development
+
+The following is a non-exhautive list of features that we are
+developing for toppra.
+
+- Improve the trajectory / geoemtric path interface.
+- Create a C++ interface to toppra.
+- Create a C++ interface to motion planning library like openrave.
+- Improve the numerical stability of the solvers for degenerate cases.
+
+
+## Citing `toppra`
+If you use this library for your research, we encourage you to 
+
+1. reference the accompanying paper [«A new approach to Time-Optimal Path Parameterization based on Reachability Analysis»](https://www.researchgate.net/publication/318671280_A_New_Approach_to_Time-Optimal_Path_Parameterization_Based_on_Reachability_Analysis),
+   *IEEE Transactions on Robotics*, vol. 34(3), pp. 645–659, 2018.
+2. put a star on this repository.
+
