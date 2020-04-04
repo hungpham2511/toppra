@@ -71,7 +71,7 @@ considering to include in the library.
 - Implement a C++ interface.
 - Implement a C++ interface to popular motion planning libraries.
 - Improve the numerical stability of the solvers for degenerate cases.
-- Post-processing of output trajectories: #56, [#80](#80), [#76]
+- Post-processing of output trajectories: #56, [#80](#80), #76 GH-76
 
 
 ## Citing `toppra`
