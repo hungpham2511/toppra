@@ -5,8 +5,8 @@
 
 
 - [Overview](#overview)
-- [Roadmaps](#roadmaps)
-- [Bug reports and supports](#bug-reports-and-supports)
+- [Development roadmap](#development-roadmap)
+- [Supports](#supports)
 - [Citing `toppra`](#citing--toppra-)
 
 
@@ -42,7 +42,7 @@ To install depencidencies for development, replace the second command with:
 cd toppra && pip install -e .[dev]
 ```
 
-# Roadmaps
+# Development roadmap
 
 The following is a non-exhautive list of features that we are
 considering to include in the library.
@@ -62,13 +62,13 @@ Pull Requests are welcomed!
   [pytest](https://docs.pytest.org/en/latest/contents.html) for all
   tests. Check out the test folder for more details.
 
-# Bug reports and supports
-Please report any issues, questions via [Github issues tracker](https://github.com/hungpham2511/toppra/issues).
+# Supports
+Please report any issues, questions or feature request via 
+[Github issues tracker](https://github.com/hungpham2511/toppra/issues).
 
-It will be very helpful if you can provide more details on the
-errors/bugs that you encounter. In fact, the best way is to provide a
-Minimal Working Example that produces the reported bug and attach it
-with the issue report.
+Please provide more details on the errors/bugs that you encounter. The
+best way is to provide a Minimal Working Example that produces the
+reported bug and attach it with the issue report.
 
 
 # Citing `toppra`
