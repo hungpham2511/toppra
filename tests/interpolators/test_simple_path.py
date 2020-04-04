@@ -6,7 +6,7 @@ from numpy.testing import assert_allclose
 
 @pytest.fixture(name="f_scalar")
 def give_a_simple_scalar_function_without_derivatives():
-    f = toppra.SimplePath([0, 1, 2], [0, 1, 1])
+    f = toppra.SimplePath([0, 1, 2], np.array([0, 1, 1]))
     yield f
 
 
@@ -32,7 +32,7 @@ def test_first_derivative_zero_at_endpoints(f_scalar):
 
 @pytest.fixture(name="f_scalar_wd")
 def given_a_simple_scalar_function_with_first_derivatives():
-    f = toppra.SimplePath([0, 1, 2], [0, 1, 1], [0, 2, 0])
+    f = toppra.SimplePath([0, 1, 2], np.array([0, 1, 1]), np.array([0, 2, 0]))
     yield f
 
 
@@ -40,3 +40,9 @@ def test_correct_derivatives_as_specified(f_scalar_wd):
     assert_allclose(f_scalar_wd(1, 1), 2.0)
     assert_allclose(f_scalar_wd(0, 1), 0)
     assert_allclose(f_scalar_wd(2, 1), 0)
+
+
+@pytest.mark.skip
+def test_m():
+    f = toppra.SimplePath([0, 1, 2], np.array([[0, 0], [1, 2], [1, 2]]))
+    assert_allclose(f(0), [0, 0])
