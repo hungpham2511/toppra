@@ -5,14 +5,12 @@
 
 
 - [Overview](#overview)
-- [Quick-start](#quick-start)
 - [Roadmaps](#roadmaps)
-- [Contributions](#contributions)
 - [Bug reports and supports](#bug-reports-and-supports)
-- [Citing **TOPP-RA**](#citing--toppra-)
+- [Citing `toppra`](#citing--toppra-)
 
 
-## Overview
+# Overview
 
 **toppra** is a library for computing the time-optimal path
 parametrization for robots subject to kinematic and dynamic
@@ -44,7 +42,7 @@ To install depencidencies for development, replace the second command with:
 cd toppra && pip install -e .[dev]
 ```
 
-## Roadmaps
+# Roadmaps
 
 The following is a non-exhautive list of features that we are
 considering to include in the library.
@@ -60,11 +58,11 @@ considering to include in the library.
 Pull Requests are welcomed!
 - Go ahead and create a Pull Request and we will review your proposal!
 - For new features, or bug fixes, preferably the request should
-  contain unit tests. Note that **TOPP-RA** uses
+  contain unit tests. Note that `toppra` uses
   [pytest](https://docs.pytest.org/en/latest/contents.html) for all
   tests. Check out the test folder for more details.
 
-## Bug reports and supports
+# Bug reports and supports
 Please report any issues, questions via [Github issues tracker](https://github.com/hungpham2511/toppra/issues).
 
 It will be very helpful if you can provide more details on the
@@ -73,7 +71,7 @@ Minimal Working Example that produces the reported bug and attach it
 with the issue report.
 
 
-## Citing `toppra`
+# Citing `toppra`
 If you use this library for your research, we encourage you to 
 
 1. reference the accompanying paper [«A new approach to Time-Optimal Path Parameterization based on Reachability Analysis»](https://www.researchgate.net/publication/318671280_A_New_Approach_to_Time-Optimal_Path_Parameterization_Based_on_Reachability_Analysis),
