@@ -7,15 +7,23 @@ import argparse
 
 
 def main():
-    parser = argparse.ArgumentParser(description="An example showcasing the usage of robust constraints."
-                                                 "A velocity constraint and a robust acceleration constraint"
-                                                 "are considered in this script.")
-    parser.add_argument("-N", "--N", type=int, help="Number of segments in the discretization.", default=100)
+    parser = argparse.ArgumentParser(
+        description="An example showcasing the usage of robust constraints."
+        "A velocity constraint and a robust acceleration constraint"
+        "are considered in this script."
+    )
+    parser.add_argument(
+        "-N",
+        "--N",
+        type=int,
+        help="Number of segments in the discretization.",
+        default=100,
+    )
     parser.add_argument("-v", "--verbose", action="store_true", default=False)
     parser.add_argument("-du", "--du", default=1e-3, type=float)
     parser.add_argument("-dx", "--dx", default=5e-2, type=float)
     parser.add_argument("-dc", "--dc", default=9e-3, type=float)
-    parser.add_argument("-so", "--solver_wrapper", default='ecos')
+    parser.add_argument("-so", "--solver_wrapper", default="ecos")
     parser.add_argument("-i", "--interpolation_scheme", default=1, type=int)
     args = parser.parse_args()
     if args.verbose:
@@ -41,12 +49,17 @@ def main():
     path = ta.SplineInterpolator(np.linspace(0, 1, 5), way_pts)
     pc_vel = constraint.JointVelocityConstraint(vlim)
     pc_acc = constraint.JointAccelerationConstraint(
-        alim, discretization_scheme=constraint.DiscretizationType.Interpolation)
+        alim, discretization_scheme=constraint.DiscretizationType.Interpolation
+    )
     robust_pc_acc = constraint.RobustLinearConstraint(
-        pc_acc, [args.du, args.dx, args.dc], args.interpolation_scheme)
-    instance = algo.TOPPRA([pc_vel, robust_pc_acc], path,
-                           gridpoints=np.linspace(0, 1, args.N + 1),
-                           solver_wrapper=args.solver_wrapper)
+        pc_acc, [args.du, args.dx, args.dc], args.interpolation_scheme
+    )
+    instance = algo.TOPPRA(
+        [pc_vel, robust_pc_acc],
+        path,
+        gridpoints=np.linspace(0, 1, args.N + 1),
+        solver_wrapper=args.solver_wrapper,
+    )
 
     X = instance.compute_feasible_sets()
     K = instance.compute_controllable_sets(0, 0)
@@ -56,21 +69,22 @@ def main():
     X = np.sqrt(X)
     K = np.sqrt(K)
 
-    plt.plot(X[:, 0], c='green', label="Feasible sets")
-    plt.plot(X[:, 1], c='green')
-    plt.plot(K[:, 0], '--', c='red', label="Controllable sets")
-    plt.plot(K[:, 1], '--', c='red')
+    plt.plot(X[:, 0], c="green", label="Feasible sets")
+    plt.plot(X[:, 1], c="green")
+    plt.plot(K[:, 0], "--", c="red", label="Controllable sets")
+    plt.plot(K[:, 1], "--", c="red")
     plt.plot(sd_vec, label="Velocity profile")
     plt.legend()
     plt.title("Path-position path-velocity plot")
     plt.show()
 
-    jnt_traj, aux_traj = instance.compute_trajectory(0, 0)
+    jnt_traj = instance.compute_trajectory(0, 0)
     ts_sample = np.linspace(0, jnt_traj.duration, 100)
     qs_sample = jnt_traj.evaldd(ts_sample)
 
     plt.plot(ts_sample, qs_sample)
     plt.show()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

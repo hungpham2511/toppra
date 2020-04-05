@@ -74,7 +74,7 @@ def main():
 
     # Retime the trajectory, only this step is necessary.
     t0 = time.time()
-    jnt_traj, _ = instance.compute_trajectory(0, 0)
+    jnt_traj = instance.compute_trajectory(0, 0)
     print("Parameterization time: {:} secs".format(time.time() - t0))
     ts_sample = np.linspace(0, jnt_traj.get_duration(), 100)
     qs_sample = jnt_traj.eval(ts_sample)
