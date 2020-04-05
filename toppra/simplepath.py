@@ -1,9 +1,10 @@
 from typing import List, Union, Optional
 import numpy as np
 from scipy.interpolate import BPoly
+from .interpolator import AbstractGeometricPath
 
 
-class SimplePath:
+class SimplePath(AbstractGeometricPath):
     """A standard class for representing continuous multi-dimentional function.
 
     Args:
@@ -34,6 +35,18 @@ class SimplePath:
         """Evaluate the path at given position."""
         ret = [poly.derivative(order)(xi) for poly in self._polys]
         return np.array(ret)
+
+    @property
+    def dof(self):
+        return self._y.shape[1]
+
+    @property
+    def path_interval(self):
+        return np.array([self._x[0], self._x[-1]], dtype=float)
+
+    @property
+    def waypoints(self):
+        return self._y
 
     def _autofill_yd(self):
         if self._yd is None:

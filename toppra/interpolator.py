@@ -81,7 +81,7 @@ def propose_gridpoints(
     return gridpoints_ept
 
 
-class AbstractGeometricPath(object):
+class AbstractGeometricPath:
     """The base class to represent geometric paths.
 
     Derive geometric paths classes should implement the below abstract methods.

@@ -52,3 +52,11 @@ def test_path_interpolate_are_correct(fm):
     assert isinstance(fm(0.5)[0], float)
     assert_allclose(fm(0), [0, 0])
     assert_allclose(fm(1), [1, 2])
+
+
+def test_dof_is_correct(fm):
+    assert fm.dof == 2
+
+
+def test_path_interval_is_correct(fm):
+    assert_allclose(fm.path_interval, np.array([0.0, 2.0]))
