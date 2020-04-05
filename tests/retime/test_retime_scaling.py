@@ -23,7 +23,7 @@ def test_linear_case1(basic_constraints, basic_path, solver_wrapper):
         [vel_c, acc_c], basic_path, solver_wrapper=solver_wrapper, scaling=1.0)
     instance_scale05 = toppra.algorithm.TOPPRA(
         [vel_c, acc_c], basic_path, solver_wrapper=solver_wrapper, scaling=5)
-    traj1, _ = instance_scale1.compute_trajectory()
-    traj05, _ = instance_scale05.compute_trajectory()
+    traj1 = instance_scale1.compute_trajectory()
+    traj05 = instance_scale05.compute_trajectory()
     # accurate up to 0.1%
     np.testing.assert_allclose(traj1.duration, traj05.duration, rtol=1e-3)

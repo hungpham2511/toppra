@@ -29,7 +29,7 @@ def test_zero_velocity(constraints, basic_path, solver_wrapper):
     """Check that initial and final velocity are correct."""
     instance = toppra.algorithm.TOPPRA(constraints, basic_path,
                                        solver_wrapper=solver_wrapper)
-    jnt_traj, _ = instance.compute_trajectory(0, 0)
+    jnt_traj = instance.compute_trajectory(0, 0)
 
     # assertion
     initial_velocity = jnt_traj(0, 1)
@@ -44,7 +44,7 @@ def test_zero_velocity(constraints, basic_path, solver_wrapper):
 def test_nonzero_velocity(velocity_start, velocity_end, constraints, basic_path, solver_wrapper):
     instance = toppra.algorithm.TOPPRA(constraints, basic_path,
                                        solver_wrapper=solver_wrapper)
-    jnt_traj, _ = instance.compute_trajectory(velocity_start, velocity_end)
+    jnt_traj = instance.compute_trajectory(velocity_start, velocity_end)
 
     # assertion
     initial_velocity = jnt_traj(0, 1)
@@ -62,6 +62,6 @@ def test_invalid_velocity(velocities, constraints, basic_path, solver_wrapper):
     instance = toppra.algorithm.TOPPRA(constraints, basic_path,
                                        solver_wrapper=solver_wrapper)
     with pytest.raises(toppra.exceptions.BadInputVelocities) as err:
-        jnt_traj, _ = instance.compute_trajectory(*velocities)
+        jnt_traj = instance.compute_trajectory(*velocities)
     assert "Negative" in err.value.args[0]
 

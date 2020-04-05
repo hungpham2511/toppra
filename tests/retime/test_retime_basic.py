@@ -30,7 +30,7 @@ def test_simple_set_operations(basic_constraints, basic_path, solver_wrapper):
     assert np.all(K >= 0)
     assert not np.any(np.isnan(K))
 
-    traj, _ = instance.compute_trajectory(0, 0)
+    traj = instance.compute_trajectory(0, 0)
     assert traj is not None
 
 

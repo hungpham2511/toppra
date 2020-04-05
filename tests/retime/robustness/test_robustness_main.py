@@ -76,7 +76,7 @@ def test_robustness_main(request):
             instance.set_desired_duration(problem_data['desired_duration'])
 
         t2 = time.time()
-        jnt_traj, aux_traj = instance.compute_trajectory(0, 0)
+        jnt_traj = instance.compute_trajectory(0, 0)
         data = instance.problem_data
         t3 = time.time()
         
