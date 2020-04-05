@@ -42,7 +42,13 @@ def test_correct_derivatives_as_specified(f_scalar_wd):
     assert_allclose(f_scalar_wd(2, 1), 0)
 
 
-@pytest.mark.skip
-def test_m():
-    f = toppra.SimplePath([0, 1, 2], np.array([[0, 0], [1, 2], [1, 2]]))
-    assert_allclose(f(0), [0, 0])
+@pytest.fixture(name="fm")
+def given_a_vector_path_without_specified_derivative():
+    yield toppra.SimplePath([0, 1, 2], np.array([[0, 0], [1, 2], [1, 2]]))
+
+
+def test_path_interpolate_are_correct(fm):
+    assert fm(0.5).shape == (2,)
+    assert isinstance(fm(0.5)[0], float)
+    assert_allclose(fm(0), [0, 0])
+    assert_allclose(fm(1), [1, 2])

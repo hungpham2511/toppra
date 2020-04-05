@@ -13,26 +13,47 @@ class SimplePath:
      ydd: Second-derivative values.
     """
 
-    def __init__(self, x: np.ndarray, y: np.ndarray, yd: np.ndarray = None, ydd=None):
+    def __init__(
+        self,
+        x: np.ndarray,
+        y: np.ndarray,
+        yd: np.ndarray = None,
+        ydd: np.ndarray = None,
+    ):
         if len(y.shape) == 1:
             y = y.reshape(-1, 1)
-
-        self._polys = []
-        for j in range(y.shape[1]):
-            if yd is None:
-                yd = np.zeros_like(y[:, j], dtype=float)
-                for i in range(1, len(yd) - 1):
-                    yd[i] = (y[i + 1, j] - y[i - 1, j]) / (x[i + 1] - x[i - 1])
-            y_with_derivatives = np.vstack((y[:, j], yd)).T
-            poly = BPoly.from_derivatives(x, y_with_derivatives)
-            self._polys.append(poly)
+        if yd is not None and len(yd.shape) == 1:
+            yd = yd.reshape(-1, 1)
+        self._x = x
+        self._y = y.astype(float)
+        self._yd = yd if yd is None else yd.astype(float)
+        self._ydd = ydd if ydd is None else ydd.astype(float)
+        self._polys = self._construct_polynomials()
 
     def __call__(self, xi, order=0):
-        ret = []
-        for poly in self._polys:
-            if order == 1:
-                val = poly.derivative()(xi)
-            else:
-                val = poly(xi)
-            ret.append(val)
+        """Evaluate the path at given position."""
+        ret = [poly.derivative(order)(xi) for poly in self._polys]
         return np.array(ret)
+
+    def _autofill_yd(self):
+        if self._yd is None:
+            _yd = np.zeros_like(self._y[:], dtype=float)
+            for i in range(1, len(_yd) - 1):
+                _yd[i] = (self._y[i + 1] - self._y[i - 1]) / (
+                    self._x[i + 1] - self._x[i - 1]
+                )
+        else:
+            _yd = np.array(self._yd[:])
+        return _yd
+
+    def _construct_polynomials(self):
+        polys = []
+        _yd = self._autofill_yd()
+
+        for j in range(self._y.shape[1]):
+
+            y_with_derivatives = np.vstack((self._y[:, j], _yd[:, j])).T
+            poly = BPoly.from_derivatives(self._x, y_with_derivatives)
+            polys.append(poly)
+
+        return polys
