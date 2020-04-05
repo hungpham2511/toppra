@@ -2,6 +2,7 @@
 import numpy as np
 from .linear_constraint import LinearConstraint, canlinear_colloc_to_interpolate
 from ..constraint import DiscretizationType
+from ..interpolator import AbstractGeometricPath
 
 
 class JointAccelerationConstraint(LinearConstraint):
@@ -59,27 +60,45 @@ class JointAccelerationConstraint(LinearConstraint):
             self._format_string += "      J{:d}: {:}".format(i + 1, self.alim[i]) + "\n"
         self.identical = True
 
-    def compute_constraint_params(self, path, gridpoints, scaling=None):
-        # type: (Path, np.ndarray, Optional[float]) -> Any
+    def compute_constraint_params(
+        self, path: AbstractGeometricPath, gridpoints: np.ndarray, *args, **kwargs
+    ):
         if path.dof != self.dof:
-            raise ValueError("Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
-                self.dof, path.dof
-            ))
-        if scaling is None:
-            scaling = 1
-        ps_vec = (path(gridpoints / scaling, order=1) / scaling).reshape((-1, path.dof))
-        pss_vec = (path(gridpoints / scaling, order=2) / scaling ** 2).reshape((-1, path.dof))
+            raise ValueError(
+                "Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
+                    self.dof, path.dof
+                )
+            )
+        ps_vec = (path(gridpoints, order=1)).reshape((-1, path.dof))
+        pss_vec = (path(gridpoints, order=2)).reshape((-1, path.dof))
         dof = path.dof
         F_single = np.zeros((dof * 2, dof))
         g_single = np.zeros(dof * 2)
         g_single[0:dof] = self.alim[:, 1]
-        g_single[dof:] = - self.alim[:, 0]
+        g_single[dof:] = -self.alim[:, 0]
         F_single[0:dof, :] = np.eye(dof)
         F_single[dof:, :] = -np.eye(dof)
         if self.discretization_type == DiscretizationType.Collocation:
-            return ps_vec, pss_vec, np.zeros_like(ps_vec), F_single, g_single, None, None
+            return (
+                ps_vec,
+                pss_vec,
+                np.zeros_like(ps_vec),
+                F_single,
+                g_single,
+                None,
+                None,
+            )
         elif self.discretization_type == DiscretizationType.Interpolation:
-            return canlinear_colloc_to_interpolate(ps_vec, pss_vec, np.zeros_like(ps_vec), F_single, g_single, None, None,
-                                                   gridpoints, identical=True)
+            return canlinear_colloc_to_interpolate(
+                ps_vec,
+                pss_vec,
+                np.zeros_like(ps_vec),
+                F_single,
+                g_single,
+                None,
+                None,
+                gridpoints,
+                identical=True,
+            )
         else:
             raise NotImplementedError("Other form of discretization not supported!")

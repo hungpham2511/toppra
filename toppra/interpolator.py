@@ -5,6 +5,7 @@ really simple, requiring only the evaluted values, as well as the
 first and second derivative.
 
 """
+from typing import List
 import logging
 import numpy as np
 from scipy.interpolate import UnivariateSpline, CubicSpline, PPoly
@@ -169,7 +170,7 @@ class RaveTrajectoryWrapper(AbstractGeometricPath):
 
         """
         super(RaveTrajectoryWrapper, self).__init__()
-        self.traj = traj  #: init
+        self.traj = traj
         spec = traj.GetConfigurationSpecification()
         self._dof = robot.GetActiveDOF()
         self._interpolation = self._extract_interpolation_method(spec)
@@ -179,13 +180,13 @@ class RaveTrajectoryWrapper(AbstractGeometricPath):
             traj.GetNumWaypoints(), -1
         )
         valid_wp_indices = [0]
-        self.ss_waypoints = [0.0]
+        ss_waypoints: List[float] = [0.0]
         for i in range(1, traj.GetNumWaypoints()):
             dt = spec.ExtractDeltaTime(all_waypoints[i])
             if dt > 1e-5:  # If delta is too small, skip it.
                 valid_wp_indices.append(i)
-                self.ss_waypoints.append(self.ss_waypoints[-1] + dt)
-        self.ss_waypoints = np.array(self.ss_waypoints)
+                ss_waypoints.append(ss_waypoints[-1] + dt)
+        self.ss_waypoints = np.array(ss_waypoints)
         n_waypoints = len(valid_wp_indices)
 
         def _extract_waypoints(order):
