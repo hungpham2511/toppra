@@ -190,6 +190,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         for i in range(self._N + 1):
             if X[i, 0] < 0:
                 X[i, 0] = 0
+        self._problem_data.update({'X': X})
         return X
 
     def compute_controllable_sets(self, sdmin, sdmax):

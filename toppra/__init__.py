@@ -16,6 +16,7 @@ from .planning_utils import retime_active_joints_kinematics,\
 from . import constraint
 from . import algorithm
 from . import solverwrapper
+from .simplepath import SimplePath
 
 # set nullhandler by default
 logging.getLogger('toppra').addHandler(logging.NullHandler())

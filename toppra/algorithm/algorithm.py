@@ -30,7 +30,7 @@ class ParameterizationAlgorithm(object):
     def __init__(self, constraint_list, path, gridpoints=None):
         self.constraints = constraint_list  # Attr
         self.path = path  # Attr
-        self._problem_data = None
+        self._problem_data = {}
         # Handle gridpoints
         if gridpoints is None:
             gridpoints = interpolator.propose_gridpoints(path, max_err_threshold=1e-3)
@@ -155,8 +155,11 @@ class ParameterizationAlgorithm(object):
             v_grid_ = np.delete(v_grid_, skip_ent, axis=0)
             v_spline = SplineInterpolator(t_grid, v_grid_)
 
-        self._problem_data = {"sdd": sdd_grid, "sd": sd_grid, "v": v_grid, "K": K}
+        self._problem_data.update(
+            {"sdd": sdd_grid, "sd": sd_grid, "v": v_grid, "K": K, "v_traj": v_spline}
+        )
         if self.path.waypoints is not None:
             t_waypts = np.interp(self.path.waypoints[0], gridpoints, t_grid)
             self._problem_data.update({"t_waypts": t_waypts})
-        return traj_spline, v_spline
+
+        return traj_spline

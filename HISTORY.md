@@ -2,6 +2,8 @@
 
 ## 0.2.4 (in progress)
 
+- Simplify TOPPRA class interface.
+- Implement a new trajectory class for specified velocities.
 - [0e022c][cm-0e022c] Update README.md to reflect development roadmap.
 - Format some source files with black.
 - [#78][gh-78] Improve documentation structure.
