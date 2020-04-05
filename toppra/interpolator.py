@@ -20,7 +20,7 @@ if FOUND_OPENRAVE:
 def propose_gridpoints(
     path, max_err_threshold=1e-4, max_iteration=100, max_seg_length=0.05
 ):
-    """Generate gridpoints that sufficiently cover the given path.
+    r"""Generate gridpoints that sufficiently cover the given path.
 
     This function operates in multiple passes through the geometric
     path from the start to the end point. In each pass, for each
