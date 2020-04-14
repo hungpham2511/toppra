@@ -6,15 +6,13 @@ This is a header-only implementation of the TOPP-RA algorithm.
 
 ```sh
 # clone
-git clone --recursive -b feat-cpp https://github.com/hungpham2511/toppra
+git clone -b develop https://github.com/hungpham2511/toppra
 
-# build deps
-cd toppra/cpp/extern/googletest
+# build
 mkdir build && cd build && cmake .. 
 make -j4
 
-# build toppra
-cd ../../.. && mkdir build && cd build && cmake ..
-make -j4
+# run test
+./tests
 ```
 
