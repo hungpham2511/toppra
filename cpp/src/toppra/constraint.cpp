@@ -52,6 +52,88 @@ void LinearConstraint::computeParams(const GeometricPath& path, const Vector& gr
   }
 
   computeParams_impl(path, gridpoints, a, b, c, F, g);
+  if (discretizationType_ == Interpolation)
+    collocationToInterpolate(gridpoints, a, b, c, F, g);
+}
+
+void LinearConstraint::collocationToInterpolate (const Vector& gridpoints,
+    Vectors& a, Vectors& b, Vectors& c,
+    Matrices& F, Vectors& g)
+{
+  std::size_t N (gridpoints.size()-1);
+  Vector deltas (gridpoints.tail(N) - gridpoints.head(N));
+
+  Vectors a_intp (N+1);
+  //a_intp[:, :d] = a
+  //a_intp[:-1, d:] = a[1:] + 2 * deltas.reshape(-1, 1) * b[1:]
+  //a_intp[-1, d:] = a_intp[-1, :d]
+  for (std::size_t i = 0; i <= N; ++i) {
+    a_intp[i].resize(2*m_);
+    a_intp[i].head(m_) = a[i];
+    if (i < N)
+      a_intp[i].tail(m_) = a[i+1] + 2 * deltas.cwiseProduct(b[i+1].tail(N));
+    else
+      a_intp[N].tail(m_) = a[N];
+  }
+
+  Vectors b_intp (N+1);
+  // b_intp[:, :d] = b
+  // b_intp[:-1, d:] = b[1:]
+  // b_intp[-1, d:] = b_intp[-1, :d]
+  for (std::size_t i = 0; i <= N; ++i) {
+    b_intp[i].resize(2*m_);
+    b_intp[i].head(m_) = b[i];
+    b_intp[i].tail(m_) = b[std::min(i+1, N)];
+  }
+
+  Vectors c_intp (N+1);
+  // c_intp[:, :d] = c
+  // c_intp[:-1, d:] = c[1:]
+  // c_intp[-1, d:] = c_intp[-1, :d]
+  for (std::size_t i = 0; i <= N; ++i) {
+    c_intp[i].resize(2*m_);
+    c_intp[i].head(m_) = c[i];
+    c_intp[i].tail(m_) = c[std::min(i+1, N)];
+  }
+
+  const auto zero (Matrix::Zero (2 * k_, 2 * m_));
+  Vectors g_intp;
+  Matrices F_intp;
+  if (constantF()) {
+    g_intp.resize (1);
+    g_intp[0].resize(2 * k_);
+    g_intp[0] << g[0], g[0];
+
+    F_intp.resize (1);
+    F_intp[0].resize(2 * k_, 2 * m_);
+    F_intp[0] << F[0], zero,
+                 zero, F[0];
+  } else {
+    g_intp.resize (N+1);
+    // g_intp[:, :m] = g
+    // g_intp[:-1, m:] = g[1:]
+    // g_intp[-1, m:] = g_intp[-1, :m]
+    for (std::size_t i = 0; i <= N; ++i) {
+      g_intp[i].resize(2 * k_);
+      g_intp[i].head(k_) = g[i];
+      g_intp[i].tail(k_) = g[std::min(i+1,N)];
+    }
+
+    F_intp.resize (N+1);
+    // F_intp[:, :m, :d] = F
+    // F_intp[:-1, m:, d:] = F[1:]
+    // F_intp[-1, m:, d:] = F[-1]
+    for (std::size_t i = 0; i <= N; ++i) {
+      F_intp[i].resize(2 * k_, 2 * m_);
+      F_intp[i] << F[i], zero,
+                   zero, F[std::min(i+1,N)];
+    }
+  }
+  a.swap(a_intp);
+  b.swap(b_intp);
+  c.swap(c_intp);
+  F.swap(F_intp);
+  g.swap(g_intp);
 }
 
 std::ostream& BoxConstraint::print(std::ostream& os) const

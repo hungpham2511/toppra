@@ -115,6 +115,12 @@ class LinearConstraint {
         Vectors& a, Vectors& b, Vectors& c,
         Matrices& F, Vectors& g) = 0;
 
+    /// Convert from Collocation to Interpolation
+    /// \todo in this case, the dimensions of the outputs is changed.
+    void collocationToInterpolate (const Vector& gridpoints,
+        Vectors& a, Vectors& b, Vectors& c,
+        Matrices& F, Vectors& g);
+
     Eigen::Index k_, m_;
     DiscretizationType discretizationType_;
     bool constantF_;
