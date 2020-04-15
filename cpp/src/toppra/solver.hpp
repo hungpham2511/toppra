@@ -86,19 +86,6 @@ class Solver {
     Solver (const LinearConstraintPtrs& constraints, const GeometricPath& path,
         const Vector& times);
 
-  private:
-    LinearConstraintPtrs constraints_;
-    const GeometricPath& path_;
-    Vector times_;
-
-    /// \brief Number of stages.
-    /// The number of gridpoints equals N + 1, where N is the number of stages.
-    std::size_t N_;
-    /// Total number of variables, including u, x.
-    std::size_t nV_;
-    /// Time increment between each stage. Size \ref nbStages
-    Vector deltas_;
-
     struct LinearConstraintParams {
       int cid;
       Vectors a, b, c, g;
@@ -114,6 +101,19 @@ class Solver {
       std::vector<LinearConstraintParams> lin;
       std::vector<BoxConstraintParams   > box;
     } constraintsParams_;
+
+    LinearConstraintPtrs constraints_;
+    const GeometricPath& path_;
+    Vector times_;
+
+  private:
+    /// \brief Number of stages.
+    /// The number of gridpoints equals N + 1, where N is the number of stages.
+    std::size_t N_;
+    /// Total number of variables, including u, x.
+    std::size_t nV_;
+    /// Time increment between each stage. Size \ref nbStages
+    Vector deltas_;
 
 }; // class Solver
 } // namespace toppra
