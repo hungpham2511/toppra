@@ -66,18 +66,28 @@ class LinearConstraint {
       return discretizationType_;
     }
 
+    /** Tells whether the \f$ F \f$ matrix is the same over all the grid points.
+     * In this case, LinearConstraint::computeParams F parameters should only
+     * be of size 1.
+     * */
+    bool constantF () const
+    {
+      return constantF_;
+    }
+
     void discretizationType (DiscretizationType type);
 
     /** Compute numerical coefficients of the given constraint.
      *
      *  \param[in] path The geometric path.
-     *  \param[in] gridpoints Shape (N+1,). Gridpoint use for discretizing path.
+     *  \param[in] gridpoints Vector of size N+1. Gridpoint use for discretizing path.
      *
-     *  \param[out] a Shape (N + 1, m). See notes.
-     *  \param[out] b Shape (N + 1, m). See notes.
-     *  \param[out] c Shape (N + 1, m). See notes.
-     *  \param[out] F Shape (N + 1, k, m). See notes.
-     *  \param[out] g Shape (N + 1, k,). See notes
+     *  \param[out] a N+1 Vector of size m.
+     *  \param[out] b N+1 Vector of size m.
+     *  \param[out] c N+1 Vector of size m.
+     *  \param[out] F N+1 Matrix of shape (k, m). If LinearConstraint::constantF
+     *              is \c true, there is only one such Matrix.
+     *  \param[out] g N+1 Vector of size m.
      *  \param[out] ubound Shape (N + 1, 2). See notes.
      *  \param[out] xbound Shape (N + 1, 2). See notes.
      *
@@ -91,6 +101,12 @@ class LinearConstraint {
         Bounds& ubound, Bounds& xbound);
 
   protected:
+    LinearConstraint()
+      : constraintType_ (CanonicalLinear)
+      , discretizationType_ (Collocation)
+      , constantF_ (false)
+    {}
+
     virtual std::ostream& print(std::ostream& os) const;
     virtual void computeParams_impl(const GeometricPath& path,
         const Vector& gridpoints,
@@ -100,6 +116,7 @@ class LinearConstraint {
 
     ConstraintType constraintType_;
     DiscretizationType discretizationType_;
+    bool constantF_;
 }; // class LinearConstraint
 } // namespace toppra
 

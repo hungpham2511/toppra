@@ -27,7 +27,9 @@ void LinearConstraint::computeParams(const GeometricPath& path, const Vector& gr
     std::invalid_argument("Wrong number of b vectors");
   if (c.size() != N_1)
     std::invalid_argument("Wrong number of c vectors");
-  if (F.size() != N_1)
+  if (constantF() && F.size() != 1)
+    std::invalid_argument("Expected only one F matrix");
+  if (!constantF() && F.size() != N_1)
     std::invalid_argument("Wrong number of F matrices");
   if (g.size() != N_1)
     std::invalid_argument("Wrong number of g vectors");
@@ -41,8 +43,12 @@ void LinearConstraint::computeParams(const GeometricPath& path, const Vector& gr
       std::invalid_argument("Wrong b[i] vector size.");
     if (c[i].size() != m)
       std::invalid_argument("Wrong c[i] vector size.");
-    if (F[i].rows() != k || F[i].cols() != m)
-      std::invalid_argument("Wrong F[i] matrix dimensions.");
+    if (constantF())
+      if (i == 0 && (F[i].rows() != k || F[i].cols() != m))
+        std::invalid_argument("Wrong F[0] matrix dimensions.");
+    else
+      if (F[i].rows() != k || F[i].cols() != m)
+        std::invalid_argument("Wrong F[i] matrix dimensions.");
     if (g[i].size() != k)
       std::invalid_argument("Wrong g[i] vector size.");
   }
