@@ -4,6 +4,11 @@ project(toppra)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 find_package (Threads)
+find_package (Eigen3 REQUIRED)
+
+message(STATUS "Found Eigen version ${Eigen3_VERSION}")
+
+add_subdirectory(src)
 
 # Download and unpack googletest at configure time
 # source: https://github.com/google/googletest/tree/master/googletest
