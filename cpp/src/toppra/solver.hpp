@@ -80,6 +80,8 @@ class Solver {
     virtual void closeSolver ()
     {}
 
+    virtual ~Solver () {}
+
   protected:
     Solver (const LinearConstraintPtrs& constraints, const GeometricPath& path,
         const Vector& times);

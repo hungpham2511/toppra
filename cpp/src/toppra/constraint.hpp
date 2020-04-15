@@ -98,6 +98,8 @@ class LinearConstraint {
 
     virtual std::ostream& print(std::ostream& os) const;
 
+    virtual ~LinearConstraint () {}
+
   protected:
     /**
      * \param k number of inequality constraints.
@@ -167,6 +169,8 @@ class BoxConstraint : public LinearConstraint {
         Bounds& ubound, Bounds& xbound);
 
     virtual std::ostream& print(std::ostream& os) const;
+
+    virtual ~BoxConstraint () {}
 
   protected:
     /**
