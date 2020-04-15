@@ -61,6 +61,18 @@ class LinearConstraint {
       return constantF_;
     }
 
+    /// Dimension of \f$g\f$.
+    Eigen::Index nbConstraints () const
+    {
+      return k_;
+    }
+
+    /// Dimension of \f$a, b, c, v\f$.
+    Eigen::Index nbVariables () const
+    {
+      return m_;
+    }
+
     /** Compute numerical coefficients of the given constraint.
      *
      *  \param[in] path The geometric path.
@@ -94,6 +106,7 @@ class LinearConstraint {
      * */
     LinearConstraint(Eigen::Index k, Eigen::Index m)
       : discretizationType_ (Collocation)
+      , k_ (k), m_ (m)
       , constantF_ (false)
     {}
 
@@ -107,9 +120,7 @@ class LinearConstraint {
     bool constantF_;
 }; // class LinearConstraint
 
-/** Box constraint
- *
- *  They are LinearConstraint of the following form:
+/** BoxConstraint are LinearConstraint of the following form:
  *  \f{eqnarray}
  *      x^b_{i, 0} \leq x & \leq x^b_{i, 1} \\
  *      u^b_{i, 0} \leq u & \leq u^b_{i, 1}
@@ -154,8 +165,8 @@ class BoxConstraint : public LinearConstraint {
 
   protected:
     /**
-     * \param k number of inequality constraints.
-     * \param m number of internal variable (i.e. dimention of \f$v\f$).
+     * \param uBound whether \f$u\f$ is bounded.
+     * \param xBound whether \f$x\f$ is bounded.
      * */
     BoxConstraint(bool uBound, bool xBound)
       : LinearConstraint ((uBound && xBound) ? 4 : 2, (uBound && xBound) ? 4 : 2)
@@ -174,11 +185,11 @@ class BoxConstraint : public LinearConstraint {
     void computeParams_impl(const GeometricPath& path,
         const Vector& gridpoints,
         Vectors&, Vectors&, Vectors&,
-        Matrices&, Vectors&,
-        Bounds&, Bounds&)
+        Matrices&, Vectors&)
     {
-      std::logic_error("BoxConstraint should not be handled as standard LinearConstraint.");
+      throw std::logic_error("BoxConstraint should not be handled as standard LinearConstraint.");
     }
+
     virtual void computeBounds_impl (const GeometricPath& path, const Vector& gridpoint,
         Bounds& ubound, Bounds& xbound) = 0;
 
