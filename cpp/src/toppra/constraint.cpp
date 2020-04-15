@@ -4,9 +4,7 @@ namespace toppra {
 
 std::ostream& LinearConstraint::print(std::ostream& os) const
 {
-  os << "LinearConstraint\n"
-        "    Discretization Scheme: " << discretizationType_ << "\n";
-  return os;
+  return os << "    Discretization Scheme: " << discretizationType_ << "\n";
 }
 
 void LinearConstraint::discretizationType (DiscretizationType type)
@@ -58,10 +56,10 @@ void LinearConstraint::computeParams(const GeometricPath& path, const Vector& gr
 
 std::ostream& BoxConstraint::print(std::ostream& os) const
 {
-  os << "BoxConstraint on " <<
-    ((hasUbounds_ && hasXbounds_) ? "u and v" : (hasUbounds_ ? "u" : "v")) << "\n"
-    "    Discretization Scheme: " << discretizationType_ << "\n";
-  return os;
+  os << "    act on " << ((hasUbounds_ && hasXbounds_)
+      ? "u and v"
+      : (hasUbounds_ ? "u" : "v")) << "\n";
+  return LinearConstraint::print(os);
 }
 
 void BoxConstraint::computeBounds(const GeometricPath& path, const Vector& gridpoints,

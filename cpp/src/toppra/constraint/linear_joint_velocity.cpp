@@ -5,6 +5,7 @@ namespace constraint {
 
 std::ostream& LinearJointVelocity::print (std::ostream& os) const
 {
+  os << "LinearJointVelocity\n";
   return BoxConstraint::print(os) <<
     "    Lower velocity limit: " << lower_.transpose() << "\n"
     "    Upper velocity limit: " << upper_.transpose() << "\n";
