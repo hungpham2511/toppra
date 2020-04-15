@@ -36,7 +36,7 @@ namespace toppra {
 
   class Solver;
   namespace solver {
-    class qpOASESWapper;
+    class qpOASESWrapper;
   } // namespace solver
 
   class GeometricPath;

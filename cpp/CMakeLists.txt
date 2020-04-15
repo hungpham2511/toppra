@@ -3,10 +3,18 @@ cmake_minimum_required(VERSION 3.10)
 project(toppra)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-find_package (Threads)
-find_package (Eigen3 REQUIRED)
+option(BUILD_WITH_qpOASES ON "Compile the wrapper for qpOASES")
 
+find_package (Threads)
+
+find_package (Eigen3 REQUIRED)
 message(STATUS "Found Eigen version ${Eigen3_VERSION}")
+
+IF(BUILD_WITH_qpOASES)
+    set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+    find_package("qpOASES" REQUIRED)
+    message(STATUS "Found qpOASES")
+ENDIF(BUILD_WITH_qpOASES)
 
 add_subdirectory(src)
 add_subdirectory(doc)
