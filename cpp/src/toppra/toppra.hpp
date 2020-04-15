@@ -4,9 +4,13 @@
 #include <Eigen/Core>
 #include <Eigen/StdVector>
 
+/// The TOPP-RA namespace
 namespace toppra {
+  /// The scalar type
   typedef double value_type;
+  /// Column vector type
   typedef Eigen::Matrix<value_type, Eigen::Dynamic, 1> Vector;
+  /// Matrix type
   typedef Eigen::Matrix<value_type, Eigen::Dynamic, Eigen::Dynamic> Matrix;
 
   /// Vector of Vector

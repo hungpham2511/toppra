@@ -9,6 +9,7 @@ find_package (Eigen3 REQUIRED)
 message(STATUS "Found Eigen version ${Eigen3_VERSION}")
 
 add_subdirectory(src)
+add_subdirectory(doc)
 
 # Download and unpack googletest at configure time
 # source: https://github.com/google/googletest/tree/master/googletest
