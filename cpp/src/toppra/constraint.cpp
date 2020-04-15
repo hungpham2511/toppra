@@ -1,5 +1,7 @@
 #include <toppra/constraint.hpp>
 
+#include <toppra/geometric_path.hpp>
+
 namespace toppra {
 
 std::ostream& LinearConstraint::print(std::ostream& os) const

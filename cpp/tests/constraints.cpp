@@ -1,5 +1,7 @@
 #include <toppra/constraint/linear_joint_velocity.hpp>
 
+#include <toppra/geometric_path.hpp>
+
 #include "gtest/gtest.h"
 
 TEST(Constraints, LinearJointVelocity) {

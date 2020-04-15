@@ -1,6 +1,8 @@
 #ifndef TOPPRA_TOPPRA_HPP
 #define TOPPRA_TOPPRA_HPP
 
+#include <memory>
+
 #include <Eigen/Core>
 #include <Eigen/StdVector>
 
@@ -22,6 +24,22 @@ namespace toppra {
   typedef Eigen::Matrix<value_type, 1, 2> Bound;
   /// Vector of Bound
   typedef std::vector<Bound, Eigen::aligned_allocator<Bound> > Bounds;
+
+  class LinearConstraint;
+  typedef std::shared_ptr<LinearConstraint> LinearConstraintPtr;
+  typedef std::vector<LinearConstraintPtr> LinearConstraintPtrs;
+  class BoxConstraint;
+  namespace constraint {
+    class LinearJointVelocity;
+    class LinearJointAcceleration;
+  } // namespace constraint 
+
+  class Solver;
+  namespace solver {
+    class qpOASESWapper;
+  } // namespace solver
+
+  class GeometricPath;
 } // namespace toppra
 
 #endif

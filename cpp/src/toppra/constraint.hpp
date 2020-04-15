@@ -3,7 +3,6 @@
 
 #include <ostream>
 #include <toppra/toppra.hpp>
-#include <toppra/geometric_path.hpp>
 
 namespace toppra {
 /** Enum to mark different Discretization Scheme for LinearConstraint.
