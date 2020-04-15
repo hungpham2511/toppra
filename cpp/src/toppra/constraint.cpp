@@ -40,14 +40,17 @@ void LinearConstraint::computeParams(const GeometricPath& path, const Vector& gr
       throw std::invalid_argument("Wrong b[i] vector size.");
     if (c[i].size() != m_)
       throw std::invalid_argument("Wrong c[i] vector size.");
-    if (constantF())
+    if (constantF()) {
       if (i == 0 && (F[0].rows() != k_ || F[0].cols() != m_))
         throw std::invalid_argument("Wrong F[0] matrix dimensions.");
-    else
+      if (i == 0 && g[0].size() != k_)
+        throw std::invalid_argument("Wrong g[0] vector size.");
+    } else {
       if (F[i].rows() != k_ || F[i].cols() != m_)
         throw std::invalid_argument("Wrong F[i] matrix dimensions.");
-    if (g[i].size() != k_)
-      throw std::invalid_argument("Wrong g[i] vector size.");
+      if (g[i].size() != k_)
+        throw std::invalid_argument("Wrong g[i] vector size.");
+    }
   }
 
   computeParams_impl(path, gridpoints, a, b, c, F, g);
