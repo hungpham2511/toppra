@@ -5,7 +5,6 @@ namespace toppra {
 std::ostream& LinearConstraint::print(std::ostream& os) const
 {
   os << "LinearConstraint\n"
-        "    Type: " << constraintType_ << "\n"
         "    Discretization Scheme: " << discretizationType_ << "\n";
   return os;
 }
@@ -17,7 +16,7 @@ void LinearConstraint::discretizationType (DiscretizationType type)
 }
 
 void LinearConstraint::computeParams(const GeometricPath& path, const Vector& gridpoints,
-    Vectors& a, Vectors& b, Vectors& c, Matrices& F, Vectors& g, Bounds& ubound, Bounds& xbound)
+    Vectors& a, Vectors& b, Vectors& c, Matrices& F, Vectors& g)
 {
   Eigen::Index N_1 = gridpoints.size();
   assert (N_1 > 0);
@@ -34,26 +33,45 @@ void LinearConstraint::computeParams(const GeometricPath& path, const Vector& gr
   if (g.size() != N_1)
     std::invalid_argument("Wrong number of g vectors");
 
-  Eigen::Index m = a[0].cols(),
-               k = g[0].cols();
   for (std::size_t i = 0; i < N_1; ++i) {
-    if (a[i].size() != m)
+    if (a[i].size() != m_)
       std::invalid_argument("Wrong a[i] vector size.");
-    if (b[i].size() != m)
+    if (b[i].size() != m_)
       std::invalid_argument("Wrong b[i] vector size.");
-    if (c[i].size() != m)
+    if (c[i].size() != m_)
       std::invalid_argument("Wrong c[i] vector size.");
     if (constantF())
-      if (i == 0 && (F[i].rows() != k || F[i].cols() != m))
+      if (i == 0 && (F[i].rows() != k_ || F[i].cols() != m_))
         std::invalid_argument("Wrong F[0] matrix dimensions.");
     else
-      if (F[i].rows() != k || F[i].cols() != m)
+      if (F[i].rows() != k_ || F[i].cols() != m_)
         std::invalid_argument("Wrong F[i] matrix dimensions.");
-    if (g[i].size() != k)
+    if (g[i].size() != k_)
       std::invalid_argument("Wrong g[i] vector size.");
   }
 
-  computeParams_impl(path, gridpoints, a, b, c, F, g, ubound, xbound);
+  computeParams_impl(path, gridpoints, a, b, c, F, g);
+}
+
+std::ostream& BoxConstraint::print(std::ostream& os) const
+{
+  os << "BoxConstraint on " <<
+    ((hasUbounds_ && hasXbounds_) ? "u and v" : (hasUbounds_ ? "u" : "v")) << "\n"
+    "    Discretization Scheme: " << discretizationType_ << "\n";
+  return os;
+}
+
+void BoxConstraint::computeBounds(const GeometricPath& path, const Vector& gridpoints,
+    Bounds& ubound, Bounds& xbound)
+{
+  Eigen::Index N_1 = gridpoints.size();
+  assert (N_1 > 0);
+  if (hasUbounds() && ubound.size() != N_1)
+    std::invalid_argument("Wrong ubound vector size.");
+  if (hasXbounds() && xbound.size() != N_1)
+    std::invalid_argument("Wrong ubound vector size.");
+
+  computeBounds_impl(path, gridpoints, ubound, xbound);
 }
 
 } // namespace toppra

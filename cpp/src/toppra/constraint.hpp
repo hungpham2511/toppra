@@ -6,14 +6,6 @@
 #include <toppra/geometric_path.hpp>
 
 namespace toppra {
-/** Type of path parametrization constraint.
- * */
-enum ConstraintType {
-    Unknown         = 0,
-    CanonicalLinear = 1,
-    CanonicalConic  = 2,
-};
-
 /** Enum to mark different Discretization Scheme for LinearConstraint.
  *  In general, the difference in speed is not too large. Should use
  *  \ref Interpolation if possible.
@@ -23,7 +15,6 @@ enum DiscretizationType {
     Interpolation, /// larger problem size, but higher accuracy.
 };
 
-
 /** The base constraint class.
  *
  *  Also known as Second-order Constraint.
@@ -31,9 +22,7 @@ enum DiscretizationType {
  *  A Canonical Linear Constraint has the following form:
  *  \f{eqnarray}
  *      \mathbf a_i u + \mathbf b_i x + \mathbf c_i &= v \\
- *      \mathbf F_i v & \leq \mathbf g_i \\
- *      x^{bound}_{i, 0} \leq x & \leq x^{bound}_{i, 1} \\
- *      u^{bound}_{i, 0} \leq u & \leq u^{bound}_{i, 1}
+ *      \mathbf F_i v & \leq \mathbf g_i
  *  \f}
  *
  *  Alternatively, if \f$ \mathbf F_i \f$ is constant for all values
@@ -56,15 +45,12 @@ enum DiscretizationType {
  * */
 class LinearConstraint {
   public:
-    ConstraintType constraintType () const
-    {
-      return constraintType_;
-    }
-
     DiscretizationType discretizationType () const
     {
       return discretizationType_;
     }
+
+    void discretizationType (DiscretizationType type);
 
     /** Tells whether the \f$ F \f$ matrix is the same over all the grid points.
      * In this case, LinearConstraint::computeParams F parameters should only
@@ -74,8 +60,6 @@ class LinearConstraint {
     {
       return constantF_;
     }
-
-    void discretizationType (DiscretizationType type);
 
     /** Compute numerical coefficients of the given constraint.
      *
@@ -94,30 +78,119 @@ class LinearConstraint {
      * \note the output must be allocated to correct sizes prior to calling this
      * function.
      *
+     * \todo check constness
+     *
      * */
     void computeParams(const GeometricPath& path, const Vector& gridpoints,
         Vectors& a, Vectors& b, Vectors& c,
-        Matrices& F, Vectors& g,
-        Bounds& ubound, Bounds& xbound);
+        Matrices& F, Vectors& g);
+
+    virtual std::ostream& print(std::ostream& os) const;
 
   protected:
-    LinearConstraint()
-      : constraintType_ (CanonicalLinear)
-      , discretizationType_ (Collocation)
+    /**
+     * \param k number of inequality constraints.
+     * \param m number of internal variable (i.e. dimention of \f$v\f$).
+     * */
+    LinearConstraint(Eigen::Index k, Eigen::Index m)
+      : discretizationType_ (Collocation)
       , constantF_ (false)
     {}
 
-    virtual std::ostream& print(std::ostream& os) const;
     virtual void computeParams_impl(const GeometricPath& path,
         const Vector& gridpoints,
         Vectors& a, Vectors& b, Vectors& c,
-        Matrices& F, Vectors& g,
-        Bounds& ubound, Bounds& xbound) = 0;
+        Matrices& F, Vectors& g) = 0;
 
-    ConstraintType constraintType_;
+    Eigen::Index k_, m_;
     DiscretizationType discretizationType_;
     bool constantF_;
 }; // class LinearConstraint
+
+/** Box constraint
+ *
+ *  They are LinearConstraint of the following form:
+ *  \f{eqnarray}
+ *      x^b_{i, 0} \leq x & \leq x^b_{i, 1} \\
+ *      u^b_{i, 0} \leq u & \leq u^b_{i, 1}
+ *  \f}
+ *  where \f$x^b, u^b\f$ are the Bound vectors.
+ *
+ *  This class handles bounds on \f$x\f$, \f$u\f$ or both.
+ *
+ *  The LinearConstraint representation is computed as follows:
+ *  \f{eqnarray}
+ *      \mathbf a_i &= (1, -1, 0, 0).T \\
+ *      \mathbf b_i &= (0, 0, 1, -1).T \\
+ *      \mathbf c_i &= (-u^b_{i,1}, u^b_{i,0}, -x^b_{i,1}, x^b_{i,0}).T \\
+ *      \mathbf F   &= I_4 \\
+ *      \mathbf g_i &= 0_4 \\
+ *  \f}
+ *
+ * */
+class BoxConstraint : public LinearConstraint {
+  public:
+    /** Whether this constraint has bounds on \f$u\f$.
+     * */
+    bool hasUbounds () const
+    {
+      return hasUbounds_;
+    }
+
+    /** Whether this constraint has bounds on \f$x\f$.
+     * */
+    bool hasXbounds () const
+    {
+      return hasXbounds_;
+    }
+
+    /**
+     * \todo check constness.
+     * */
+    void computeBounds(const GeometricPath& path, const Vector& gridpoint,
+        Bounds& ubound, Bounds& xbound);
+
+    virtual std::ostream& print(std::ostream& os) const;
+
+  protected:
+    /**
+     * \param k number of inequality constraints.
+     * \param m number of internal variable (i.e. dimention of \f$v\f$).
+     * */
+    BoxConstraint(bool uBound, bool xBound)
+      : LinearConstraint ((uBound && xBound) ? 4 : 2, (uBound && xBound) ? 4 : 2)
+      , hasUbounds_ (uBound)
+      , hasXbounds_ (xBound)
+    {
+      constantF_ = true;
+      if (!hasXbounds_ && !hasUbounds_)
+        std::invalid_argument("BoxConstraint must have bounds on X or U or both.");
+    }
+
+    /**
+     * \todo at the moment, this methods throws but the matrices a, b, c, F and g
+     * could be easily computed from the bounds.
+     * */
+    void computeParams_impl(const GeometricPath& path,
+        const Vector& gridpoints,
+        Vectors&, Vectors&, Vectors&,
+        Matrices&, Vectors&,
+        Bounds&, Bounds&)
+    {
+      std::logic_error("BoxConstraint should not be handled as standard LinearConstraint.");
+    }
+    virtual void computeBounds_impl (const GeometricPath& path, const Vector& gridpoint,
+        Bounds& ubound, Bounds& xbound) = 0;
+
+  private:
+    bool hasXbounds_, hasUbounds_;
+}; // class BoxConstraint
+
+inline std::ostream& operator<< (std::ostream& os, const LinearConstraint& lc)
+{
+  return lc.print(os);
+}
+
 } // namespace toppra
 
 #endif
