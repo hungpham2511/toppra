@@ -1,4 +1,7 @@
 #include <toppra/constraint/linear_joint_velocity.hpp>
+#include <toppra/constraint/joint_torque/pinocchio.hpp>
+
+#include <pinocchio/parsers/sample-models.hpp>
 
 #include <toppra/geometric_path.hpp>
 
@@ -36,3 +39,12 @@ TEST(Constraints, LinearJointVelocity) {
   }
 }
 
+TEST(Constraints, jointTorquePinocchio) {
+  using namespace toppra;
+  typedef constraint::jointTorque::Pinocchio<> JointTorque;
+
+  JointTorque::Model model;
+  pinocchio::buildModels::manipulator(model);
+  Vector frictions (Vector::Constant(model.nv, 0.001));
+  JointTorque constraint (model, frictions);
+}
