@@ -31,6 +31,20 @@ namespace constraint {
  * */
 class JointTorque : public LinearConstraint {
   public:
+    virtual ~JointTorque () {}
+
+    virtual std::ostream& print(std::ostream& os) const;
+
+    /** Computes the joint torques from
+     * \param q robot configuration
+     * \param v robot velocity
+     * \param a robot acceleration
+     * \param[out] joint torques
+     * */
+    virtual void computeInverseDynamics (const Vector& q, const Vector& v, const Vector& a,
+        Vector& tau) const = 0;
+
+  protected:
     /**
      * \param lowerTlimit lower torque limit
      * \param upperTlimit upper torque limit
@@ -45,18 +59,6 @@ class JointTorque : public LinearConstraint {
     {
       check();
     }
-
-    virtual std::ostream& print(std::ostream& os) const;
-
-
-    /** Computes the joint torques from
-     * \param q robot configuration
-     * \param v robot velocity
-     * \param a robot acceleration
-     * \param[out] joint torques
-     * */
-    virtual void computeInverseDynamics (const Vector& q, const Vector& v, const Vector& a,
-        Vector& tau) const = 0;
 
   private:
     void check();
