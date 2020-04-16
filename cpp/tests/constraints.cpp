@@ -23,6 +23,13 @@ TEST(Constraints, LinearJointVelocity) {
     Bounds ub, xb;
     EXPECT_THROW(ljv.computeParams(path, gridpoints, a, b, c, F, g, ub, xb), std::invalid_argument);
     ljv.allocateParams(gridpoints.size(), a, b, c, F, g, ub, xb);
+    EXPECT_EQ(a .size(), 0);
+    EXPECT_EQ(b .size(), 0);
+    EXPECT_EQ(c .size(), 0);
+    EXPECT_EQ(F .size(), 0);
+    EXPECT_EQ(g .size(), 0);
+    EXPECT_EQ(ub.size(), 0);
+    EXPECT_EQ(xb.size(), N+1);
     EXPECT_NO_THROW(ljv.computeParams(path, gridpoints, a, b, c, F, g, ub, xb));
   }
 }
