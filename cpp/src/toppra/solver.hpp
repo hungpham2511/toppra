@@ -90,12 +90,10 @@ class Solver {
       int cid;
       Vectors a, b, c, g;
       Matrices F;
-      void init(std::size_t N, LinearConstraint* constraint);
     };
     struct BoxConstraintParams {
       int cid;
       Bounds u, x;
-      void init(std::size_t N, BoxConstraint* constraint);
     };
     struct ConstraintsParams {
       std::vector<LinearConstraintParams> lin;

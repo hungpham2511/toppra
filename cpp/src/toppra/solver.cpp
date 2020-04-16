@@ -4,27 +4,6 @@
 #include <toppra/geometric_path.hpp>
 
 namespace toppra {
-void Solver::LinearConstraintParams::init(std::size_t N, LinearConstraint* lin)
-{
-  Eigen::Index nv (lin->nbVariables());
-  Eigen::Index nc (lin->nbConstraints());
-  a.resize(N+1, Vector(nv));
-  b.resize(N+1, Vector(nv));
-  c.resize(N+1, Vector(nv));
-  if (lin->constantF()) {
-    F.resize(1, Matrix(nc, nv));
-    g.resize(1, Vector(nc));
-  } else {
-    F.resize(N+1, Matrix(nc, nv));
-    g.resize(N+1, Vector(nc));
-  }
-}
-
-void Solver::BoxConstraintParams::init(std::size_t N, BoxConstraint* box)
-{
-  if (box->hasUbounds()) u.resize(N+1);
-  if (box->hasXbounds()) x.resize(N+1);
-}
 
 Solver::Solver (const LinearConstraintPtrs& constraints, const GeometricPath& path,
     const Vector& times)
@@ -40,22 +19,30 @@ Solver::Solver (const LinearConstraintPtrs& constraints, const GeometricPath& pa
   /// \todo assert that the time range of the path equals [ times[0], times[N_] ].
 
   // Compute the constraints parameters
+  LinearConstraintParams emptyLinParams;
+  BoxConstraintParams emptyBoxParams;
   for (std::size_t c = 0; c < constraints_.size(); ++c) {
     LinearConstraint* lin = constraints_[c].get();
-    BoxConstraint* box = dynamic_cast<BoxConstraint*> (lin);
-    if (box) {
-      constraintsParams_.box.emplace_back();
-      BoxConstraintParams& param = constraintsParams_.box.back();
-      param.cid = c;
-      param.init(N_, box);
-      box->computeBounds(path, times, param.u, param.x);
-    } else {
+    LinearConstraintParams* lparam;
+    if (lin->hasLinearInequalities()) {
       constraintsParams_.lin.emplace_back();
-      LinearConstraintParams& param = constraintsParams_.lin.back();
-      param.cid = c;
-      param.init(N_, lin);
-      lin->computeParams(path, times, param.a, param.b, param.c, param.F, param.g);
-    }
+      lparam = &constraintsParams_.lin.back();
+      lparam->cid = c;
+    } else
+      lparam = &emptyLinParams;
+    BoxConstraintParams* bparam;
+    if (lin->hasUbounds() || lin->hasXbounds()) {
+      constraintsParams_.box.emplace_back();
+      bparam = &constraintsParams_.box.back();
+      bparam->cid = c;
+    } else
+      bparam = &emptyBoxParams;
+    lin->allocateParams(times.size(),
+        lparam->a, lparam->c, lparam->b, lparam->F, lparam->g,
+        bparam->u, bparam->x);
+    lin->computeParams(path, times,
+        lparam->a, lparam->c, lparam->b, lparam->F, lparam->g,
+        bparam->u, bparam->x);
   }
 }
 

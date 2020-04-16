@@ -28,11 +28,10 @@ namespace toppra {
   class LinearConstraint;
   typedef std::shared_ptr<LinearConstraint> LinearConstraintPtr;
   typedef std::vector<LinearConstraintPtr> LinearConstraintPtrs;
-  class BoxConstraint;
   namespace constraint {
     class LinearJointVelocity;
     class LinearJointAcceleration;
-  } // namespace constraint 
+  } // namespace constraint
 
   class Solver;
   namespace solver {
