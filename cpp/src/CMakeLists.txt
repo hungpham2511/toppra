@@ -2,6 +2,7 @@ set(SOURCE_FILES
   toppra/constraint.cpp
   toppra/constraint/linear_joint_velocity.cpp
   toppra/constraint/linear_joint_acceleration.cpp
+  toppra/constraint/joint_torque.cpp
 
   toppra/solver.cpp
   )
@@ -28,6 +29,7 @@ install(FILES
   toppra/constraint.hpp
   toppra/constraint/linear_joint_velocity.hpp
   toppra/constraint/linear_joint_acceleration.hpp
+  toppra/constraint/joint_torque.hpp
 
   toppra/geometric_path.hpp
   toppra/toppra.hpp
