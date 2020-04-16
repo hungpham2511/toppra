@@ -42,7 +42,7 @@ class JointTorque : public LinearConstraint {
      * \param[out] joint torques
      * */
     virtual void computeInverseDynamics (const Vector& q, const Vector& v, const Vector& a,
-        Vector& tau) const = 0;
+        Vector& tau) = 0;
 
   protected:
     /**
