@@ -4,6 +4,12 @@ project(toppra)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 find_package (Threads)
+find_package (Eigen3 REQUIRED)
+
+message(STATUS "Found Eigen version ${Eigen3_VERSION}")
+
+add_subdirectory(src)
+add_subdirectory(doc)
 
 # Download and unpack googletest at configure time
 # source: https://github.com/google/googletest/tree/master/googletest
@@ -40,8 +46,8 @@ endif()
 
 # Now simply link against gtest or gtest_main as needed. Eg
 set(TEST_SOURCES
+  tests/constraints.cpp
   tests/gtest_main.cpp)
 
 add_executable(tests ${TEST_SOURCES})
-target_link_libraries(tests gmock gtest ${CMAKE_THREAD_LIBS_INIT})
-
+target_link_libraries(tests gmock gtest ${CMAKE_THREAD_LIBS_INIT} toppra)
