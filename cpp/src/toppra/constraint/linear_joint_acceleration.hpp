@@ -10,12 +10,10 @@ namespace constraint {
 class LinearJointAcceleration : public LinearConstraint {
   public:
     LinearJointAcceleration (const Vector& lowerAlimit, const Vector& upperAlimit)
-      : LinearConstraint (lowerAlimit.size() * 2, lowerAlimit.size())
+      : LinearConstraint (lowerAlimit.size() * 2, lowerAlimit.size(), true, false, false)
       , lower_ (lowerAlimit)
       , upper_ (upperAlimit)
     {
-      constantF_ = true;
-
       check();
     }
 
@@ -27,7 +25,8 @@ class LinearJointAcceleration : public LinearConstraint {
     void computeParams_impl(const GeometricPath& path,
         const Vector& gridpoints,
         Vectors& a, Vectors& b, Vectors& c,
-        Matrices& F, Vectors& g);
+        Matrices& F, Vectors& g,
+        Bounds ubound, Bounds& xbound);
 
     Vector lower_, upper_;
 }; // class LinearJointAcceleration

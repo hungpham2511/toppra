@@ -7,10 +7,10 @@ namespace toppra {
 namespace constraint {
 
 /// A Joint Velocity Constraint class.
-class LinearJointVelocity : public BoxConstraint {
+class LinearJointVelocity : public LinearConstraint {
   public:
     LinearJointVelocity (const Vector& lowerVlimit, const Vector& upperVlimit)
-      : BoxConstraint (false, true)
+      : LinearConstraint (0, 0, true, false, true)
       , lower_ (lowerVlimit)
       , upper_ (upperVlimit)
       , maxsd_ (1e8)
@@ -32,8 +32,11 @@ class LinearJointVelocity : public BoxConstraint {
   private:
     void check();
 
-    void computeBounds_impl (const GeometricPath& path, const Vector& gridpoint,
-        Bounds& ubound, Bounds& xbound);
+    void computeParams_impl(const GeometricPath& path,
+        const Vector& gridpoints,
+        Vectors& a, Vectors& b, Vectors& c,
+        Matrices& F, Vectors& g,
+        Bounds ubound, Bounds& xbound);
 
     Vector lower_, upper_;
     value_type maxsd_;
