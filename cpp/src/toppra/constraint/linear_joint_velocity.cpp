@@ -6,23 +6,26 @@ namespace constraint {
 std::ostream& LinearJointVelocity::print (std::ostream& os) const
 {
   os << "LinearJointVelocity\n";
-  return BoxConstraint::print(os) <<
+  return LinearConstraint::print(os) <<
     "    Lower velocity limit: " << lower_.transpose() << "\n"
     "    Upper velocity limit: " << upper_.transpose() << "\n";
 }
 
 void LinearJointVelocity::check ()
 {
+  if (lower_.size() != upper_.size())
+    throw std::invalid_argument("Velocity limits size must match.");
   if ((lower_.array() > upper_.array()).any())
     throw std::invalid_argument("Bad velocity limits.");
 }
 
-void LinearJointVelocity::computeBounds_impl (
-    const GeometricPath& path, const Vector& gridpoint,
-    Bounds&, Bounds& xbound)
+void LinearJointVelocity::computeParams_impl(const GeometricPath& path,
+        const Vector& gridpoints,
+        Vectors&, Vectors&, Vectors&, Matrices&, Vectors&,
+        Bounds , Bounds& xbound)
 {
-  Eigen::Index N_1 = gridpoint.size();
-  Eigen::Index ndofs (nbVariables());
+  Eigen::Index N_1 = gridpoints.size();
+  Eigen::Index ndofs (lower_.size());
 
   /// \todo Use GeometricPath evaluation
   Vectors vs(N_1, Vector(ndofs)); // (path(gridpoints / scaling, 1) / scaling

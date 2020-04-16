@@ -6,7 +6,11 @@ namespace toppra {
 
 std::ostream& LinearConstraint::print(std::ostream& os) const
 {
-  return os << "    Discretization Scheme: " << discretizationType_ << "\n";
+  return os <<
+    "    Discretization Scheme: " << discretizationType_ << "\n"
+    "    Has " << (hasLinearInequalities() ? "linear inequalities, " : "")
+    << (hasUbounds() ? "bounds on u, " : "")
+    << (hasXbounds() ? "bounds on x, " : "") << "\n";
 }
 
 void LinearConstraint::discretizationType (DiscretizationType type)
@@ -15,148 +19,183 @@ void LinearConstraint::discretizationType (DiscretizationType type)
   discretizationType_ = type;
 }
 
-void LinearConstraint::computeParams(const GeometricPath& path, const Vector& gridpoints,
-    Vectors& a, Vectors& b, Vectors& c, Matrices& F, Vectors& g)
+/// \internal
+/// \param k number of constraints
+/// \param m number of variables
+void allocateLinearPart(std::size_t N, Eigen::Index k, Eigen::Index m,
+    bool constantF, Vectors& a, Vectors& b, Vectors& c, Matrices& F, Vectors& g)
 {
-  Eigen::Index N_1 = gridpoints.size();
-  assert (N_1 > 0);
-  if (a.size() != N_1)
+  a.resize(N);
+  b.resize(N);
+  c.resize(N);
+  if (constantF) {
+    F.resize(1);
+    g.resize(1);
+  } else {
+    F.resize(N);
+    g.resize(N);
+  }
+  for (Vector& x : a) x.resize(m);
+  for (Vector& x : b) x.resize(m);
+  for (Vector& x : c) x.resize(m);
+  for (Matrix& x : F) x.resize(k, m);
+  for (Vector& x : g) x.resize(k);
+}
+
+void checkSizes (std::size_t N, Eigen::Index k, Eigen::Index m,
+    bool constantF, Vectors& a, Vectors& b, Vectors& c, Matrices& F, Vectors& g)
+{
+  if (a.size() != N)
     throw std::invalid_argument("Wrong number of a vectors");
-  if (b.size() != N_1)
+  if (b.size() != N)
     throw std::invalid_argument("Wrong number of b vectors");
-  if (c.size() != N_1)
+  if (c.size() != N)
     throw std::invalid_argument("Wrong number of c vectors");
-  if (constantF() && F.size() != 1)
+  if (constantF && F.size() != 1)
     throw std::invalid_argument("Expected only one F matrix");
-  if (!constantF() && F.size() != N_1)
+  if (!constantF && F.size() != N)
     throw std::invalid_argument("Wrong number of F matrices");
-  if (g.size() != N_1)
+  if (g.size() != N)
     throw std::invalid_argument("Wrong number of g vectors");
 
-  for (std::size_t i = 0; i < N_1; ++i) {
-    if (a[i].size() != m_)
+  for (std::size_t i = 0; i < N; ++i) {
+    if (a[i].size() != m)
       throw std::invalid_argument("Wrong a[i] vector size.");
-    if (b[i].size() != m_)
+    if (b[i].size() != m)
       throw std::invalid_argument("Wrong b[i] vector size.");
-    if (c[i].size() != m_)
+    if (c[i].size() != m)
       throw std::invalid_argument("Wrong c[i] vector size.");
-    if (constantF()) {
-      if (i == 0 && (F[0].rows() != k_ || F[0].cols() != m_))
+    if (constantF) {
+      if (i == 0 && (F[0].rows() != k || F[0].cols() != m))
         throw std::invalid_argument("Wrong F[0] matrix dimensions.");
-      if (i == 0 && g[0].size() != k_)
+      if (i == 0 && g[0].size() != k)
         throw std::invalid_argument("Wrong g[0] vector size.");
     } else {
-      if (F[i].rows() != k_ || F[i].cols() != m_)
+      if (F[i].rows() != k || F[i].cols() != m)
         throw std::invalid_argument("Wrong F[i] matrix dimensions.");
-      if (g[i].size() != k_)
+      if (g[i].size() != k)
         throw std::invalid_argument("Wrong g[i] vector size.");
     }
   }
-
-  computeParams_impl(path, gridpoints, a, b, c, F, g);
-  if (discretizationType_ == Interpolation)
-    collocationToInterpolate(gridpoints, a, b, c, F, g);
 }
 
-void LinearConstraint::collocationToInterpolate (const Vector& gridpoints,
-    Vectors& a, Vectors& b, Vectors& c,
-    Matrices& F, Vectors& g)
+/// Convert from Collocation to Interpolation
+void collocationToInterpolate (const Vector& gridpoints,
+    bool constantF,
+    const Vectors& a_col, const Vectors& b_col, const Vectors& c_col,
+    const Matrices& F_col, const Vectors& g_col,
+    Vectors& a_intp, Vectors& b_intp, Vectors& c_intp,
+    Matrices& F_intp, Vectors& g_intp)
 {
   std::size_t N (gridpoints.size()-1);
   Vector deltas (gridpoints.tail(N) - gridpoints.head(N));
+  Eigen::Index m (a_col[0].size()),
+               k (g_col[0].size());
 
-  Vectors a_intp (N+1);
   //a_intp[:, :d] = a
   //a_intp[:-1, d:] = a[1:] + 2 * deltas.reshape(-1, 1) * b[1:]
   //a_intp[-1, d:] = a_intp[-1, :d]
   for (std::size_t i = 0; i <= N; ++i) {
-    a_intp[i].resize(2*m_);
-    a_intp[i].head(m_) = a[i];
+    a_intp[i].head(m) = a_col[i];
     if (i < N)
-      a_intp[i].tail(m_) = a[i+1] + 2 * deltas.cwiseProduct(b[i+1].tail(N));
+      a_intp[i].tail(m) = a_col[i+1] + 2 * deltas.cwiseProduct(b_col[i+1].tail(N));
     else
-      a_intp[N].tail(m_) = a[N];
+      a_intp[N].tail(m) = a_col[N];
   }
 
-  Vectors b_intp (N+1);
   // b_intp[:, :d] = b
   // b_intp[:-1, d:] = b[1:]
   // b_intp[-1, d:] = b_intp[-1, :d]
   for (std::size_t i = 0; i <= N; ++i) {
-    b_intp[i].resize(2*m_);
-    b_intp[i].head(m_) = b[i];
-    b_intp[i].tail(m_) = b[std::min(i+1, N)];
+    b_intp[i].head(m) = b_col[i];
+    b_intp[i].tail(m) = b_col[std::min(i+1, N)];
   }
 
-  Vectors c_intp (N+1);
   // c_intp[:, :d] = c
   // c_intp[:-1, d:] = c[1:]
   // c_intp[-1, d:] = c_intp[-1, :d]
   for (std::size_t i = 0; i <= N; ++i) {
-    c_intp[i].resize(2*m_);
-    c_intp[i].head(m_) = c[i];
-    c_intp[i].tail(m_) = c[std::min(i+1, N)];
+    c_intp[i].head(m) = c_col[i];
+    c_intp[i].tail(m) = c_col[std::min(i+1, N)];
   }
 
-  const auto zero (Matrix::Zero (2 * k_, 2 * m_));
-  Vectors g_intp;
-  Matrices F_intp;
-  if (constantF()) {
-    g_intp.resize (1);
-    g_intp[0].resize(2 * k_);
-    g_intp[0] << g[0], g[0];
+  const auto zero (Matrix::Zero (2 * k, 2 * m));
+  if (constantF) {
+    g_intp[0] << g_col[0], g_col[0];
 
-    F_intp.resize (1);
-    F_intp[0].resize(2 * k_, 2 * m_);
-    F_intp[0] << F[0], zero,
-                 zero, F[0];
+    F_intp[0] << F_col[0], zero,
+                 zero, F_col[0];
   } else {
-    g_intp.resize (N+1);
     // g_intp[:, :m] = g
     // g_intp[:-1, m:] = g[1:]
     // g_intp[-1, m:] = g_intp[-1, :m]
     for (std::size_t i = 0; i <= N; ++i) {
-      g_intp[i].resize(2 * k_);
-      g_intp[i].head(k_) = g[i];
-      g_intp[i].tail(k_) = g[std::min(i+1,N)];
+      g_intp[i].head(k) = g_col[i];
+      g_intp[i].tail(k) = g_col[std::min(i+1,N)];
     }
 
-    F_intp.resize (N+1);
     // F_intp[:, :m, :d] = F
     // F_intp[:-1, m:, d:] = F[1:]
     // F_intp[-1, m:, d:] = F[-1]
     for (std::size_t i = 0; i <= N; ++i) {
-      F_intp[i].resize(2 * k_, 2 * m_);
-      F_intp[i] << F[i], zero,
-                   zero, F[std::min(i+1,N)];
+      F_intp[i] << F_col[i], zero,
+                   zero, F_col[std::min(i+1,N)];
     }
   }
-  a.swap(a_intp);
-  b.swap(b_intp);
-  c.swap(c_intp);
-  F.swap(F_intp);
-  g.swap(g_intp);
 }
 
-std::ostream& BoxConstraint::print(std::ostream& os) const
+/// \endinternal
+
+void LinearConstraint::allocateParams(std::size_t N,
+    Vectors& a, Vectors& b, Vectors& c, Matrices& F, Vectors& g,
+    Bounds ubound, Bounds& xbound)
 {
-  os << "    act on " << ((hasUbounds_ && hasXbounds_)
-      ? "u and v"
-      : (hasUbounds_ ? "u" : "v")) << "\n";
-  return LinearConstraint::print(os);
+  if (hasLinearInequalities()) {
+    Eigen::Index m (nbVariables()), k (nbConstraints());
+    if (discretizationType_ == Interpolation) {
+      m *= 2;
+      k *= 2;
+    }
+
+    allocateLinearPart (N, k, m, constantF(), a, b, c, F, g);
+  }
+  if (hasUbounds())
+    ubound.resize(N);
+  if (hasXbounds())
+    xbound.resize(N);
 }
 
-void BoxConstraint::computeBounds(const GeometricPath& path, const Vector& gridpoints,
-    Bounds& ubound, Bounds& xbound)
+void LinearConstraint::computeParams(const GeometricPath& path, const Vector& gridpoints,
+    Vectors& a, Vectors& b, Vectors& c, Matrices& F, Vectors& g,
+    Bounds ubound, Bounds& xbound)
 {
-  Eigen::Index N_1 = gridpoints.size();
-  assert (N_1 > 0);
-  if (hasUbounds() && ubound.size() != N_1)
-    throw std::invalid_argument("Wrong ubound vector size.");
-  if (hasXbounds() && xbound.size() != N_1)
-    throw std::invalid_argument("Wrong ubound vector size.");
+  Eigen::Index N = gridpoints.size();
+  assert (N > 0);
+  if (hasLinearInequalities()) {
+    Eigen::Index m (nbVariables()), k (nbConstraints());
+    if (discretizationType_ == Interpolation) {
+      m *= 2;
+      k *= 2;
+    }
+    checkSizes (N, k, m, constantF(), a, b, c, F, g);
+  }
 
-  computeBounds_impl(path, gridpoints, ubound, xbound);
+  if (hasUbounds() && ubound.size() != N)
+    throw std::invalid_argument("Wrong ubound vector size.");
+  if (hasXbounds() && xbound.size() != N)
+    throw std::invalid_argument("Wrong xbound vector size.");
+
+  if (discretizationType_ == Interpolation && hasLinearInequalities()) {
+    Vectors a_col, b_col, c_col, g_col;
+    Matrices F_col;
+    allocateLinearPart (N, k_, m_, constantF(), a, b, c, F, g);
+    computeParams_impl(path, gridpoints, a_col, b_col, c_col, F_col, g_col, ubound, xbound);
+    collocationToInterpolate(gridpoints, constantF(),
+        a_col, b_col, c_col, F_col, g_col,
+        a, b, c, F, g);
+  } else {
+    computeParams_impl(path, gridpoints, a, b, c, F, g, ubound, xbound);
+  }
 }
 
 } // namespace toppra

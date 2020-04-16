@@ -21,7 +21,8 @@ void LinearJointAcceleration::check ()
 void LinearJointAcceleration::computeParams_impl(const GeometricPath& path,
         const Vector& gridpoints,
         Vectors& a, Vectors& b, Vectors& c,
-        Matrices& F, Vectors& g)
+        Matrices& F, Vectors& g,
+        Bounds, Bounds&)
 {
   Eigen::Index N_1 = gridpoints.size();
 
