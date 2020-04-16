@@ -1,7 +1,9 @@
 #include <toppra/constraint/linear_joint_velocity.hpp>
-#include <toppra/constraint/joint_torque/pinocchio.hpp>
 
+#ifdef BUILD_WITH_PINOCCHIO
+#include <toppra/constraint/joint_torque/pinocchio.hpp>
 #include <pinocchio/parsers/sample-models.hpp>
+#endif
 
 #include <toppra/geometric_path.hpp>
 
@@ -39,6 +41,7 @@ TEST(Constraints, LinearJointVelocity) {
   }
 }
 
+#ifdef BUILD_WITH_PINOCCHIO
 TEST(Constraints, jointTorquePinocchio) {
   using namespace toppra;
   typedef constraint::jointTorque::Pinocchio<> JointTorque;
@@ -51,3 +54,4 @@ TEST(Constraints, jointTorquePinocchio) {
   EXPECT_EQ(constraint.nbVariables(), model.nv);
   EXPECT_EQ(constraint.nbConstraints(), 2*model.nv);
 }
+#endif

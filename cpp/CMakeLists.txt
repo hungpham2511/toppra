@@ -4,9 +4,9 @@ project(toppra)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Dynamics
-option(BUILD_WITH_PINOCCHIO "Compile with Pinocchio library" ON)
+option(BUILD_WITH_PINOCCHIO "Compile with Pinocchio library" OFF)
 # Solvers
-option(BUILD_WITH_qpOASES "Compile the wrapper for qpOASES" ON)
+option(BUILD_WITH_qpOASES "Compile the wrapper for qpOASES" OFF)
 
 find_package (Threads)
 
@@ -68,5 +68,9 @@ set(TEST_SOURCES
 add_executable(tests ${TEST_SOURCES})
 target_link_libraries(tests gmock gtest ${CMAKE_THREAD_LIBS_INIT} toppra)
 if(BUILD_WITH_PINOCCHIO)
+  target_compile_definitions(tests PRIVATE -DBUILD_WITH_PINOCCHIO)
   target_link_libraries(tests pinocchio::pinocchio)
+endif()
+if(BUILD_WITH_qpOASES)
+  target_compile_definitions(tests PRIVATE -DBUILD_WITH_qpOASES)
 endif()

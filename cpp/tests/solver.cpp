@@ -7,6 +7,7 @@
 
 #include "gtest/gtest.h"
 
+#ifdef BUILD_WITH_qpOASES
 TEST(Solver, qpOASESWrapper) {
   using namespace toppra;
   int nDof = 5;
@@ -27,3 +28,4 @@ TEST(Solver, qpOASESWrapper) {
   for (int i = 0; i < N-1; ++i)
     EXPECT_NEAR(solver.deltas()[i], 0.01, 1e-10);
 }
+#endif
