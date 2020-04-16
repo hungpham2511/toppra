@@ -47,4 +47,7 @@ TEST(Constraints, jointTorquePinocchio) {
   pinocchio::buildModels::manipulator(model);
   Vector frictions (Vector::Constant(model.nv, 0.001));
   JointTorque constraint (model, frictions);
+
+  EXPECT_EQ(constraint.nbVariables(), model.nv);
+  EXPECT_EQ(constraint.nbConstraints(), 2*model.nv);
 }

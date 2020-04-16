@@ -29,7 +29,7 @@ class qpOASESWrapper : public Solver {
     bool solveStagewiseOptim(std::size_t i,
         const Matrix& H, const Vector& g,
         const Bound& x, const Bound& xNext,
-        Vector& solution) = 0;
+        Vector& solution);
 
     ~qpOASESWrapper();
 

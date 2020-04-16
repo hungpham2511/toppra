@@ -62,6 +62,7 @@ endif()
 # Now simply link against gtest or gtest_main as needed. Eg
 set(TEST_SOURCES
   tests/constraints.cpp
+  tests/solver.cpp
   tests/gtest_main.cpp)
 
 add_executable(tests ${TEST_SOURCES})

@@ -53,10 +53,10 @@ void checkSizes (std::size_t N, Eigen::Index k, Eigen::Index m,
     throw std::invalid_argument("Wrong number of c vectors");
   if (constantF && F.size() != 1)
     throw std::invalid_argument("Expected only one F matrix");
-  if (!constantF && F.size() != N)
-    throw std::invalid_argument("Wrong number of F matrices");
-  if (g.size() != N)
-    throw std::invalid_argument("Wrong number of g vectors");
+  if (constantF && g.size() != 1)
+    throw std::invalid_argument("Expected only one g matrix");
+  if (!constantF && g.size() != N)
+    throw std::invalid_argument("Wrong number of g matrices");
 
   for (std::size_t i = 0; i < N; ++i) {
     if (a[i].size() != m)
