@@ -2,6 +2,7 @@
 
 #include "gtest/gtest.h"
 
+
 TEST(Constraints, LinearJointVelocity) {
   using namespace toppra;
   int nDof = 5;
