@@ -1,6 +1,7 @@
 #include <toppra/geometric_path.hpp>
 
 namespace toppra {
+
 Matrix differentiateCoefficients(const Matrix &coefficients) {
   Matrix deriv(coefficients.rows(), coefficients.cols());
   deriv.setZero();

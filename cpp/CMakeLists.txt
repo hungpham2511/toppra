@@ -44,15 +44,5 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
   include_directories("${gtest_SOURCE_DIR}/include")
 endif()
 
-# Now simply link against gtest or gtest_main as needed. Eg
-set(TEST_SOURCES
-  tests/gtest_main.cpp
-  tests/constraints.cpp
-  tests/test_poly_geometric_path.cpp
-  )
 
-add_executable(tests ${TEST_SOURCES})
-target_link_libraries(tests toppra gmock gtest ${CMAKE_THREAD_LIBS_INIT})
-target_include_directories(tests PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
-  )
+add_subdirectory(tests)
