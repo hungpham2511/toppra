@@ -4,7 +4,6 @@ project(toppra)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-
 find_package (Threads)
 find_package (Eigen3 REQUIRED)
 

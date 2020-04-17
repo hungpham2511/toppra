@@ -1,5 +1,6 @@
 #include "toppra/toppra.hpp"
 #include <cstddef>
+#include <stdexcept>
 #include <toppra/geometric_path.hpp>
 
 namespace toppra {
@@ -18,32 +19,21 @@ PiecewisePolyPath::PiecewisePolyPath(const Matrices &coefficients,
     : m_coefficients(coefficients), m_breakpoints(breakpoints),
       m_dof(coefficients[0].cols()), m_degree(coefficients[0].rows() - 1) {
 
-  for(size_t seg_index =0; seg_index < m_coefficients.size(); seg_index++){
-    m_coefficients_1.push_back(differentiateCoefficients(m_coefficients[seg_index]));
-    m_coefficients_2.push_back(differentiateCoefficients(m_coefficients_1[seg_index]));
-  }
-  
+  checkInputArgs();
+  computeDerivativesCoefficients();
 }
 
 Vector PiecewisePolyPath::eval(value_type pos, int order) {
   Vector v(m_dof);
   v.setZero();
   size_t seg_index = findSegmentIndex(pos);
-
-  Matrix coeff;
-  if (order == 0){
-    coeff = m_coefficients[seg_index];
-  } else if (order == 1) {
-    coeff = m_coefficients_1[seg_index];
-  } else if (order == 2) {
-    coeff = m_coefficients_2[seg_index];
-  }
+  Matrix coeff = getCoefficient(seg_index, order);
   for (int power = 0; power < m_degree + 1; power++) {
-    v += coeff.row(power) * pow(pos - m_breakpoints[seg_index], m_degree - power);
+    v += coeff.row(power) *
+         pow(pos - m_breakpoints[seg_index], m_degree - power);
   }
   return v;
 }
-
 
 // Not the most efficient implementation. Coefficients are
 // recompoted. Should be refactorred.
@@ -68,6 +58,40 @@ size_t PiecewisePolyPath::findSegmentIndex(value_type pos) const {
     throw std::runtime_error("Given position is outside of breakpoints' range");
   }
   return seg_index;
+}
+void PiecewisePolyPath::checkInputArgs() {
+  if ((1 + m_coefficients.size()) != m_breakpoints.size()) {
+    throw std::runtime_error(
+        "Number of breakpoints must equals number of segments plus 1.");
+  }
+  for (size_t seg_index = 0; seg_index < m_coefficients.size(); seg_index++) {
+    if (m_breakpoints[seg_index] >= m_breakpoints[seg_index + 1]) {
+      throw std::runtime_error("Require strictly increasing breakpoints");
+    }
+  }
+}
+
+void PiecewisePolyPath::computeDerivativesCoefficients() {
+  m_coefficients_1.reserve(m_coefficients.size());
+  m_coefficients_2.reserve(m_coefficients.size());
+  for (size_t seg_index = 0; seg_index < m_coefficients.size(); seg_index++) {
+    m_coefficients_1.push_back(
+        differentiateCoefficients(m_coefficients[seg_index]));
+    m_coefficients_2.push_back(
+        differentiateCoefficients(m_coefficients_1[seg_index]));
+  }
+}
+
+Matrix PiecewisePolyPath::getCoefficient(int seg_index, int order) {
+  Matrix coeff;
+  if (order == 0) {
+    coeff = m_coefficients[seg_index];
+  } else if (order == 1) {
+    coeff = m_coefficients_1[seg_index];
+  } else if (order == 2) {
+    coeff = m_coefficients_2[seg_index];
+  }
+  return coeff;
 }
 
 } // namespace toppra

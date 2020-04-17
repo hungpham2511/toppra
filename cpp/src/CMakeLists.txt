@@ -1,8 +1,8 @@
 add_library(toppra SHARED
-  toppra/piecewise_poly_path.cpp
   toppra/constraint.cpp
   toppra/constraint/linear_joint_velocity.cpp
   toppra/constraint/linear_joint_acceleration.cpp
+  toppra/geometric_path/piecewise_poly_path.cpp
   )
 
 target_include_directories(toppra PUBLIC

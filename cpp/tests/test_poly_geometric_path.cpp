@@ -80,6 +80,10 @@ TEST_F(ConstructPiecewisePoly, ConstructManyPoints) {
   ASSERT_DOUBLE_EQ(positions[1](0), 1 * pow(0.2, 2) + 2 * pow(0.2, 1) + 3);
 }
 
+TEST_F(ConstructPiecewisePoly, CorrectDOF) {
+  ASSERT_THAT(path.dof(), testing::Eq(2));
+}
+
 // Current profile result (Release build)
 // Took ~ 400 usec to evaluate 1000 points.
 // scipy.PPoly took ~ 125 usec.
@@ -110,6 +114,23 @@ TEST(ProfileEvaluationSpeed, Test1) {
             << " usec" << std::endl;
 }
 
-// throw when path_positions not increasing
-// throw when pos is not path_positions
-// throw when break_points have wrong size
+
+class BadInputs : public testing::Test {
+  public:
+  BadInputs(): coeff(4, 2){
+    coeff << 0, 0, 1, 1, 2, 2, 4, 4;
+    coefficents.push_back(coeff);
+    coefficents.push_back(coeff);
+  }
+  toppra::Matrix coeff;
+  toppra::Matrices coefficents;
+  
+};
+
+TEST_F(BadInputs, ThrowIfBreakPointsNotIncreasing) {
+  ASSERT_THROW(toppra::PiecewisePolyPath(coefficents, std::vector<double>{0, 2, 1}), std::runtime_error);
+}
+
+TEST_F(BadInputs, ThrowIfWrongNumberOfBreakPoints) {
+  ASSERT_THROW(toppra::PiecewisePolyPath(coefficents, std::vector<double>{0, 1, 2, 3}), std::runtime_error);
+}
