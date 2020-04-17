@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.10)
 project(toppra)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+
 find_package (Threads)
 find_package (Eigen3 REQUIRED)
 
@@ -43,6 +45,5 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
 if (CMAKE_VERSION VERSION_LESS 2.8.11)
   include_directories("${gtest_SOURCE_DIR}/include")
 endif()
-
 
 add_subdirectory(tests)

@@ -6,8 +6,8 @@ set(TEST_SOURCES
   test_poly_geometric_path.cpp
   )
 
-add_executable(tests ${TEST_SOURCES})
-target_link_libraries(tests toppra gmock gtest ${CMAKE_THREAD_LIBS_INIT})
-target_include_directories(tests PUBLIC
+add_executable(all_tests ${TEST_SOURCES})
+target_link_libraries(all_tests PUBLIC Eigen3::Eigen toppra gmock gtest ${CMAKE_THREAD_LIBS_INIT})
+target_include_directories(all_tests PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
   )
