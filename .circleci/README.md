@@ -23,3 +23,6 @@ Publish source code to venues (PyPI). NOTE: This is currently not done.
 Some tasks are done directly with Github Action. 
 
 - Linting for C++ code with clang-tidy.
+
+  Note: `cppcoreguidelines-pro-bounds-array-to-pointer-decay` leads to false reported error, thus disabled.
+
