@@ -1,6 +1,6 @@
 # CI
 
-We have the following CI workflows
+We have the following CI workflows in CirclCI.
 
 ## integrate
 
@@ -18,3 +18,8 @@ Check release branch for proper version.
 
 Publish source code to venues (PyPI). NOTE: This is currently not done.
 
+
+# Github Action
+Some tasks are done directly with Github Action. 
+
+- Linting for C++ code with clang-tidy.
