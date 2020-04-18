@@ -35,7 +35,7 @@ jobs:
           path: test-reports
           destination: test-reports
 
-  test-python-3:
+  build-python-3:
     docker:
       - image: hungpham2511/toppra-dep:0.0.3
 
@@ -72,6 +72,25 @@ jobs:
       - store_test_results:
           path: test-reports
 
+  build-cpp:
+    docker:
+      - image: hungpham2511/toppra-dep:0.0.3
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - run:
+          name: build
+          command: |
+            mkdir build && cd build && cmake ..
+            make -j4
+          working_directory: ~/repo/cpp
+
+      # - run:
+      #     name: test
+
+
   pre-release:
     docker:
       - image: buildpack-deps:trusty
@@ -107,8 +126,9 @@ workflows:
   version: 2
   integrate:
     jobs:
-      - test-python-3
+      - build-cpp
       - check-codestyle
+      - build-python-3
 
   release:
     jobs:
