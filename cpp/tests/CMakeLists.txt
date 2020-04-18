@@ -9,9 +9,6 @@ set(TEST_SOURCES
 
 add_executable(all_tests ${TEST_SOURCES})
 target_link_libraries(all_tests PUBLIC toppra gmock gtest ${CMAKE_THREAD_LIBS_INIT})
-target_include_directories(all_tests PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
-  )
 
 if(BUILD_WITH_PINOCCHIO)
   target_compile_definitions(all_tests PRIVATE -DBUILD_WITH_PINOCCHIO)
