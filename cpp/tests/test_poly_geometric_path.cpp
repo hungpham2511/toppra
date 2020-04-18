@@ -39,45 +39,38 @@ public:
 };
 
 TEST_F(ConstructPiecewisePoly, OutputValueHasCorrectDOF) {
-  toppra::Vector pos = path.eval(0.5, 0);
+  toppra::Vector pos = path.eval_single(0.5, 0);
   ASSERT_THAT(pos.rows(), testing::Eq(2));
 }
 
 TEST_F(ConstructPiecewisePoly, CorrectOutputValueFirstSegment) {
-  toppra::Vector pos = path.eval(0.5, 0);
+  toppra::Vector pos = path.eval_single(0.5, 0);
   ASSERT_DOUBLE_EQ(pos(0), 1 * pow(0.5, 2) + 2 * pow(0.5, 1) + 3);
 }
 
 TEST_F(ConstructPiecewisePoly, CorrectOutputValueSecondSegment) {
-  toppra::Vector pos = path.eval(1.5, 0);
+  toppra::Vector pos = path.eval_single(1.5, 0);
   ASSERT_DOUBLE_EQ(pos(0), 1 * pow(0.5, 2) + 2 * pow(0.5, 1) + 3);
 }
 
 TEST_F(ConstructPiecewisePoly, ThrowWhenOutOfrange) {
   toppra::value_type out_of_range_pos{10};
-  ASSERT_THROW(path.eval(out_of_range_pos, 0), std::runtime_error);
+  ASSERT_THROW(path.eval_single(out_of_range_pos, 0), std::runtime_error);
 }
 
 TEST_F(ConstructPiecewisePoly, DeriveDerivativeOfCoefficients) {
   toppra::value_type out_of_range_pos{10};
-  ASSERT_THROW(path.eval(out_of_range_pos, 0), std::runtime_error);
+  ASSERT_THROW(path.eval_single(out_of_range_pos, 0), std::runtime_error);
 }
 
 TEST_F(ConstructPiecewisePoly, CorrectDerivative) {
-  toppra::Vector pos = path.eval(0.5, 1);
+  toppra::Vector pos = path.eval_single(0.5, 1);
   ASSERT_DOUBLE_EQ(pos(0), 2 * pow(0.5, 1) + 2 * 1 + 0);
 }
 
 TEST_F(ConstructPiecewisePoly, CorrectDoubldDerivative) {
-  toppra::Vector pos = path.eval(0.5, 2);
+  toppra::Vector pos = path.eval_single(0.5, 2);
   ASSERT_DOUBLE_EQ(pos(0), 2 * 1 + 0 + 0);
-}
-
-TEST_F(ConstructPiecewisePoly, ComputeManyPoints) {
-  toppra::Vectors positions =
-      path.eval(std::vector<toppra::value_type>{0.5, 1.2}, 0);
-  ASSERT_DOUBLE_EQ(positions[0](0), 1 * pow(0.5, 2) + 2 * pow(0.5, 1) + 3);
-  ASSERT_DOUBLE_EQ(positions[1](0), 1 * pow(0.2, 2) + 2 * pow(0.2, 1) + 3);
 }
 
 TEST_F(ConstructPiecewisePoly, ComputeManyPointsEigen) {
@@ -103,9 +96,9 @@ TEST(ProfileEvaluationSpeed, Test1) {
     coeffs.col(i_col) << 2, 4, 5, 6;
   }
   toppra::Matrices coefficients{10, coeffs};
-  std::vector<toppra::value_type> path_positions;
-  for (toppra::value_type s = 0; s < 10; s += 0.01) {
-    path_positions.push_back(s);
+  toppra::Vector path_positions{1000};
+  for (size_t i = 0; i < 1000; i++) {
+    path_positions(0) = (toppra::value_type)(i) / 100.0;
   }
   std::chrono::steady_clock::time_point begin =
       std::chrono::steady_clock::now();

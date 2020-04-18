@@ -10,28 +10,28 @@
 namespace toppra {
 class GeometricPath {
 public:
-  virtual ~GeometricPath(){};
   /**
    * /brief Evaluate the path at given position.
    */
-  virtual Vector eval(value_type, int order = 0)=0;
+  virtual Vector eval_single(value_type, int order = 0) = 0;
 
   /**
    * /brief Evaluate the path at given positions (vector).
+   *
+   * Default implementation: Evaluation each point one-by-one.
    */
-  virtual Vectors eval(std::vector<value_type>, int order = 0)=0;
+  virtual Vectors eval(const Vector &positions, int order = 0);
 
   /**
    * Return the degrees-of-freedom of the path.
    */
-  virtual int dof()=0;
+  virtual int dof() = 0;
 
   /**
    * Return the starting and ending path positions.
    */
-  virtual Vector pathInterval()=0;
+  virtual Vector pathInterval() = 0;
 };
-
 
 /**
  * \brief Piecewise polynomial geometric path.
@@ -52,17 +52,12 @@ public:
   /**
    * /brief Evaluate the path at given position.
    */
-  Vector eval(value_type, int order = 0);
+  Vector eval_single(value_type, int order = 0);
 
   /**
    * /brief Evaluate the path at given positions (vector).
    */
-  Vectors eval(std::vector<value_type>, int order = 0);
-
-  /**
-   * /brief Evaluate the path at given positions (vector).
-   */
-  Vectors eval(Vector, int order = 0);
+  Vectors eval(const Vector &, int order = 0);
 
   /**
    * Return the degrees-of-freedom of the path.
