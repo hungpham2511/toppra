@@ -10,27 +10,26 @@
 namespace toppra {
 class GeometricPath {
 public:
-  GeometricPath(){};
-
+  virtual ~GeometricPath(){};
   /**
    * /brief Evaluate the path at given position.
    */
-  virtual Vector eval(value_type, int order = 0);
+  virtual Vector eval(value_type, int order = 0)=0;
 
   /**
    * /brief Evaluate the path at given positions (vector).
    */
-  virtual Vectors eval(std::vector<value_type>, int order = 0);
+  virtual Vectors eval(std::vector<value_type>, int order = 0)=0;
 
   /**
    * Return the degrees-of-freedom of the path.
    */
-  virtual int dof();
+  virtual int dof()=0;
 
   /**
    * Return the starting and ending path positions.
    */
-  virtual Vector pathInterval();
+  virtual Vector pathInterval()=0;
 };
 
 
@@ -59,6 +58,11 @@ public:
    * /brief Evaluate the path at given positions (vector).
    */
   Vectors eval(std::vector<value_type>, int order = 0);
+
+  /**
+   * /brief Evaluate the path at given positions (vector).
+   */
+  Vectors eval(Vector, int order = 0);
 
   /**
    * Return the degrees-of-freedom of the path.

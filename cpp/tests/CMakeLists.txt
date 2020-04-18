@@ -2,7 +2,7 @@
 # Now simply link against gtest or gtest_main as needed. Eg
 set(TEST_SOURCES
   gtest_main.cpp
-  constraints.cpp
+  # constraints.cpp
   test_poly_geometric_path.cpp
   )
 

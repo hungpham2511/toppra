@@ -73,9 +73,17 @@ TEST_F(ConstructPiecewisePoly, CorrectDoubldDerivative) {
   ASSERT_DOUBLE_EQ(pos(0), 2 * 1 + 0 + 0);
 }
 
-TEST_F(ConstructPiecewisePoly, ConstructManyPoints) {
+TEST_F(ConstructPiecewisePoly, ComputeManyPoints) {
   toppra::Vectors positions =
       path.eval(std::vector<toppra::value_type>{0.5, 1.2}, 0);
+  ASSERT_DOUBLE_EQ(positions[0](0), 1 * pow(0.5, 2) + 2 * pow(0.5, 1) + 3);
+  ASSERT_DOUBLE_EQ(positions[1](0), 1 * pow(0.2, 2) + 2 * pow(0.2, 1) + 3);
+}
+
+TEST_F(ConstructPiecewisePoly, ComputeManyPointsEigen) {
+  toppra::Vector times{2};
+  times << 0.5, 1.2;
+  toppra::Vectors positions = path.eval(times, 0);
   ASSERT_DOUBLE_EQ(positions[0](0), 1 * pow(0.5, 2) + 2 * pow(0.5, 1) + 3);
   ASSERT_DOUBLE_EQ(positions[1](0), 1 * pow(0.2, 2) + 2 * pow(0.2, 1) + 3);
 }
@@ -114,23 +122,25 @@ TEST(ProfileEvaluationSpeed, Test1) {
             << " usec" << std::endl;
 }
 
-
 class BadInputs : public testing::Test {
-  public:
-  BadInputs(): coeff(4, 2){
+public:
+  BadInputs() : coeff(4, 2) {
     coeff << 0, 0, 1, 1, 2, 2, 4, 4;
     coefficents.push_back(coeff);
     coefficents.push_back(coeff);
   }
   toppra::Matrix coeff;
   toppra::Matrices coefficents;
-  
 };
 
 TEST_F(BadInputs, ThrowIfBreakPointsNotIncreasing) {
-  ASSERT_THROW(toppra::PiecewisePolyPath(coefficents, std::vector<double>{0, 2, 1}), std::runtime_error);
+  ASSERT_THROW(
+      toppra::PiecewisePolyPath(coefficents, std::vector<double>{0, 2, 1}),
+      std::runtime_error);
 }
 
 TEST_F(BadInputs, ThrowIfWrongNumberOfBreakPoints) {
-  ASSERT_THROW(toppra::PiecewisePolyPath(coefficents, std::vector<double>{0, 1, 2, 3}), std::runtime_error);
+  ASSERT_THROW(
+      toppra::PiecewisePolyPath(coefficents, std::vector<double>{0, 1, 2, 3}),
+      std::runtime_error);
 }

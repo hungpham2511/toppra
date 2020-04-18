@@ -46,6 +46,18 @@ Vectors PiecewisePolyPath::eval(std::vector<value_type> positions, int order) {
   return outputs;
 }
 
+// Not the most efficient implementation. Coefficients are
+// recompoted. Should be refactorred.
+Vectors PiecewisePolyPath::eval(Vector positions, int order) {
+  Vectors outputs;
+  outputs.resize(positions.size());
+  for (size_t i = 0; i < positions.size(); i++) {
+    outputs[i] = eval(positions(i), order);
+  }
+  return outputs;
+}
+
+
 size_t PiecewisePolyPath::findSegmentIndex(value_type pos) const {
   size_t seg_index = -1;
   for (size_t i = 0; i < m_coefficients.size(); i++) {
