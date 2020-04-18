@@ -1,5 +1,7 @@
 #include <toppra/constraint/linear_joint_velocity.hpp>
 
+#include <toppra/geometric_path.hpp>
+
 namespace toppra {
 namespace constraint {
 
@@ -26,14 +28,13 @@ void LinearJointVelocity::computeParams_impl(const GeometricPath& path,
 {
   Eigen::Index N_1 = gridpoints.size();
   Eigen::Index ndofs (lower_.size());
+  assert(path.dof() == lower_.size());
 
-  /// \todo Use GeometricPath evaluation
-  Vectors vs(N_1, Vector(ndofs)); // (path(gridpoints / scaling, 1) / scaling
-  assert(ndofs == vs[0].size());
-
-  Vector v_inv(ndofs), lb_v(ndofs);
+  Vector v, v_inv(ndofs), lb_v(ndofs);
   for (std::size_t i = 0; i < N_1; ++i) {
-    const Vector& v (vs[i]);
+    v = path.eval_single (gridpoints[i], 1);
+    assert(ndofs == v.size());
+
     v_inv.noalias() = v.cwiseInverse();
 
     value_type sdmin = - maxsd_,

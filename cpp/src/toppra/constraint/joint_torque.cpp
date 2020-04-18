@@ -1,5 +1,7 @@
 #include <toppra/constraint/joint_torque.hpp>
 
+#include <toppra/geometric_path.hpp>
+
 namespace toppra {
 namespace constraint {
 
@@ -22,11 +24,11 @@ void JointTorque::check ()
 }
 
 void JointTorque::computeParams_impl(const GeometricPath& path,
-        const Vector& gridpoints,
+        const Vector& times,
         Vectors& a, Vectors& b, Vectors& c, Matrices& F, Vectors& g,
         Bounds , Bounds&)
 {
-  Eigen::Index N = gridpoints.size();
+  Eigen::Index N = times.size();
   Eigen::Index ndofs (lower_.size());
 
   // Compute static F and g
@@ -38,10 +40,11 @@ void JointTorque::computeParams_impl(const GeometricPath& path,
 
   Vector zero = Vector::Zero(ndofs);
   for (std::size_t i = 0; i < N; ++i) {
-    /// \todo Use GeometricPath evaluation
-    Vector cfg = Vector(ndofs); // (path(gridpoints / scaling, 1) / scaling
-    Vector vel = Vector(ndofs); // (path(gridpoints / scaling, 1) / scaling
-    Vector acc = Vector(ndofs); // (path(gridpoints / scaling, 1) / scaling
+    Vector cfg = path.eval_single(times[i], 0);
+    Vector vel = path.eval_single(times[i], 1);
+    Vector acc = path.eval_single(times[i], 2);
+    assert(vel.size() == ndofs);
+    assert(acc.size() == ndofs);
 
     computeInverseDynamics(cfg, zero, zero, c[i]);
     computeInverseDynamics(cfg, zero, vel, a[i]);
