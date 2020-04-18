@@ -1,4 +1,5 @@
 version: 2
+
 jobs:
   check-codestyle:
     docker:
@@ -34,7 +35,7 @@ jobs:
           path: test-reports
           destination: test-reports
 
-  test-python-3:
+  build-python-3:
     docker:
       - image: hungpham2511/toppra-dep:0.0.3
 
@@ -71,7 +72,7 @@ jobs:
       - store_test_results:
           path: test-reports
 
-  test-python-2:
+  build-cpp:
     docker:
       - image: hungpham2511/toppra-dep:0.0.3
 
@@ -79,40 +80,18 @@ jobs:
 
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - v1-dependencies2-{{ checksum "requirements.txt" }}
-
       - run:
-          name: install dependencies
+          name: build
           command: |
-            python -m pip install virtualenv --user
-            python -m virtualenv venv && . venv/bin/activate
-            python -m pip install invoke pathlib2 numpy cython
-            python -m invoke install-solvers
-            pip install -e .[dev]
-
-      - save_cache:
-          paths:
-            - ./venv
-          key: v1-dependencies2-{{ checksum "requirements.txt" }}
+            mkdir build && cd build && cmake ..
+            make -j4
+          working_directory: ~/repo/cpp
 
       - run:
           name: test
           command: |
-            . venv/bin/activate
-            export PYTHONPATH=$PYTHONPATH:`openrave-config --python-dir`
-            mkdir test-reports
-            pytest --durations=3 --junitxml=test-reports/junit.xml
-
-      - run:
-          name: Collect log data
-          command: |
-            cp /tmp/toppra.log ~/repo/test-reports/
-
-      - store_test_results:
-          path: test-reports
-          destination: test-reports
+            ./tests/all_tests
+          working_directory: ~/repo/cpp/build
 
   pre-release:
     docker:
@@ -147,11 +126,14 @@ jobs:
 
 workflows:
   version: 2
-  test-and-lint:
+  integrate:
     jobs:
-      - test-python-2
-      - test-python-3
+      - build-cpp
       - check-codestyle
+      - build-python-3:
+          requires:
+            - check-codestyle
+
   release:
     jobs:
       - pre-release:
@@ -160,6 +142,9 @@ workflows:
               only:
               - fix-ci
               - /release-.*/
+
+  publish:
+    jobs:
       - release:
           filters:
             branches:

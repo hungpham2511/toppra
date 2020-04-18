@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.5)
 
 project(toppra)
 set(CMAKE_CXX_STANDARD 11)
@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 find_package (Threads)
 find_package (Eigen3 REQUIRED)
 
-message(STATUS "Found Eigen version ${Eigen3_VERSION}")
+message(STATUS "Found Eigen version ${EIGEN3_VERSION_STRING}")
 
 add_subdirectory(src)
 add_subdirectory(doc)
