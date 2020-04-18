@@ -8,6 +8,11 @@
 #include <vector>
 
 namespace toppra {
+
+
+/**
+ * \brief Abstract interface for geometric paths.
+ */
 class GeometricPath {
 public:
   /**
