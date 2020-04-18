@@ -36,7 +36,7 @@ class LinearJointVelocity : public LinearConstraint {
         const Vector& gridpoints,
         Vectors& a, Vectors& b, Vectors& c,
         Matrices& F, Vectors& g,
-        Bounds ubound, Bounds& xbound);
+        Bounds& ubound, Bounds& xbound);
 
     Vector lower_, upper_;
     value_type maxsd_;

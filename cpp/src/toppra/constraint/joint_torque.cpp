@@ -26,7 +26,7 @@ void JointTorque::check ()
 void JointTorque::computeParams_impl(const GeometricPath& path,
         const Vector& times,
         Vectors& a, Vectors& b, Vectors& c, Matrices& F, Vectors& g,
-        Bounds , Bounds&)
+        Bounds&, Bounds&)
 {
   Eigen::Index N = times.size();
   Eigen::Index ndofs (lower_.size());

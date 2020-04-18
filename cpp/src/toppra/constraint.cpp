@@ -167,7 +167,7 @@ void LinearConstraint::allocateParams(std::size_t N,
 
 void LinearConstraint::computeParams(const GeometricPath& path, const Vector& gridpoints,
     Vectors& a, Vectors& b, Vectors& c, Matrices& F, Vectors& g,
-    Bounds ubound, Bounds& xbound)
+    Bounds& ubound, Bounds& xbound)
 {
   Eigen::Index N = gridpoints.size();
   assert (N > 0);

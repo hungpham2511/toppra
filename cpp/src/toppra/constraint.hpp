@@ -124,7 +124,7 @@ class LinearConstraint {
     void computeParams(const GeometricPath& path, const Vector& gridpoints,
         Vectors& a, Vectors& b, Vectors& c,
         Matrices& F, Vectors& g,
-        Bounds ubound, Bounds& xbound);
+        Bounds& ubound, Bounds& xbound);
 
     virtual std::ostream& print(std::ostream& os) const;
 
@@ -151,7 +151,7 @@ class LinearConstraint {
         const Vector& gridpoints,
         Vectors& a, Vectors& b, Vectors& c,
         Matrices& F, Vectors& g,
-        Bounds ubound, Bounds& xbound) = 0;
+        Bounds& ubound, Bounds& xbound) = 0;
 
     Eigen::Index k_, m_;
     DiscretizationType discretizationType_;

@@ -24,7 +24,7 @@ void LinearJointVelocity::check ()
 void LinearJointVelocity::computeParams_impl(const GeometricPath& path,
         const Vector& gridpoints,
         Vectors&, Vectors&, Vectors&, Matrices&, Vectors&,
-        Bounds , Bounds& xbound)
+        Bounds&, Bounds& xbound)
 {
   Eigen::Index N_1 = gridpoints.size();
   Eigen::Index ndofs (lower_.size());
