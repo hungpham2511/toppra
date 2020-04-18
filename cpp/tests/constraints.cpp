@@ -17,15 +17,8 @@ public:
   }
 
   toppra::PiecewisePolyPath constructPath() {
-    toppra::Matrix coeff{4, 2};
-    coeff(0, 0) = 0;
-    coeff(0, 1) = 0;
-    coeff(1, 0) = 1;
-    coeff(1, 1) = 1;
-    coeff(2, 0) = 2;
-    coeff(2, 1) = 2;
-    coeff(3, 0) = 3;
-    coeff(3, 1) = 3;
+    toppra::Matrix coeff{4, 6};
+    coeff.colwise() = toppra::Vector::LinSpaced(4, 0, 3);
     toppra::Matrices coefficents = {coeff, coeff};
     toppra::PiecewisePolyPath p =
         toppra::PiecewisePolyPath(coefficents, std::vector<double>{0, 1, 2});
@@ -82,5 +75,21 @@ TEST_F(Constraint, jointTorquePinocchio) {
 
   EXPECT_EQ(constraint.nbVariables(), model.nv);
   EXPECT_EQ(constraint.nbConstraints(), 2*model.nv);
+
+  int N = 10;
+  Vector gridpoints;
+  {
+    Bound I (path.pathInterval());
+    gridpoints = toppra::Vector::LinSpaced (N, I[0], I[1]);
+  }
+
+  {
+    Vectors a, b, c, g;
+    Matrices F;
+    Bounds ub, xb;
+    EXPECT_THROW(constraint.computeParams(path, gridpoints, a, b, c, F, g, ub, xb), std::invalid_argument);
+    constraint.allocateParams(gridpoints.size(), a, b, c, F, g, ub, xb);
+    EXPECT_NO_THROW(constraint.computeParams(path, gridpoints, a, b, c, F, g, ub, xb));
+  }
 }
 #endif

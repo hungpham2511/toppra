@@ -50,13 +50,25 @@ TEST_F(Solver, qpOASESWrapper) {
 
   int N = 10;
   Vector times (getTimes(N));
-  for (int i = 0; i < N; ++i) times[i] = .01 * i;
   solver::qpOASESWrapper solver ({ ljv, lja }, path, times);
 
   EXPECT_EQ(solver.nbStages(), N-1);
   EXPECT_EQ(solver.nbVars(), 2);
   ASSERT_EQ(solver.deltas().size(), N-1);
   for (int i = 0; i < N-1; ++i)
-    EXPECT_NEAR(solver.deltas()[i], 0.01, 1e-10);
+    EXPECT_NEAR(solver.deltas()[i], times[i+1] - times[i], 1e-10);
+
+  solver.setupSolver();
+  Vector g (Vector::Ones(2)), solution;
+  Matrix H;
+  const value_type infty (std::numeric_limits<value_type>::infinity());
+  Bound x, xNext;
+  x << -infty, infty;
+  xNext << -infty, infty;
+  for (int i = 0; i < N; ++i) {
+    EXPECT_TRUE(solver.solveStagewiseOptim(i, H, g, x, xNext, solution));
+    EXPECT_EQ(solution.size(), solver.nbVars());
+  }
+  solver.closeSolver();
 }
 #endif
