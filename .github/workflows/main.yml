@@ -35,7 +35,7 @@ jobs:
 
     - name: lint
       run: |
-        cd $GITHUB_WORKSPACE/cpp && mkdir build && cd build
+        cd $GITHUB_WORKSPACE/cpp/build
         clang-tidy  ../src/**/*.cpp -checks="clang-analyzer-*,clang-analyzer-cplusplus*,cppcoreguidelines-*,performance-*,modernize-*,readability-*"
 
         
