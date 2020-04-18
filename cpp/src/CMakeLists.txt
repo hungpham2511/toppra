@@ -2,7 +2,11 @@ add_library(toppra SHARED
   toppra/constraint.cpp
   toppra/constraint/linear_joint_velocity.cpp
   toppra/constraint/linear_joint_acceleration.cpp
+
+  toppra/geometric_path.cpp
+  toppra/geometric_path/piecewise_poly_path.cpp
   )
+
 target_include_directories(toppra PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<INSTALL_INTERFACE:include>)

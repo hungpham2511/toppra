@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 project(toppra)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+
 find_package (Threads)
 find_package (Eigen3 REQUIRED)
 
@@ -44,10 +45,4 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
   include_directories("${gtest_SOURCE_DIR}/include")
 endif()
 
-# Now simply link against gtest or gtest_main as needed. Eg
-set(TEST_SOURCES
-  tests/constraints.cpp
-  tests/gtest_main.cpp)
-
-add_executable(tests ${TEST_SOURCES})
-target_link_libraries(tests gmock gtest ${CMAKE_THREAD_LIBS_INIT} toppra)
+add_subdirectory(tests)

@@ -1,4 +1,3 @@
-
 #include <toppra/constraint/linear_joint_acceleration.hpp>
 
 namespace toppra {
