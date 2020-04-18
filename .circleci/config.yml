@@ -87,9 +87,11 @@ jobs:
             make -j4
           working_directory: ~/repo/cpp
 
-      # - run:
-      #     name: test
-
+      - run:
+          name: test
+          command: |
+            ./tests/all_tests
+          working_directory: ~/repo/cpp/build
 
   pre-release:
     docker:
