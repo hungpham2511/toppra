@@ -10,7 +10,14 @@ add_library(toppra SHARED
 target_include_directories(toppra PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<INSTALL_INTERFACE:include>)
-target_link_libraries(toppra PUBLIC Eigen3::Eigen)
+ 
+if (${EIGEN3_VERSION_STRING} VERSION_LESS 3.3) 
+  target_compile_definitions     (toppra PUBLIC ${EIGEN3_DEFINITIONS} ) 
+  target_include_directories (toppra PUBLIC ${EIGEN3_INCLUDE_DIRS} ) 
+else (${EIGEN3_VERSION_STRING} VERSION_LESS 3.3) 
+  target_link_libraries(toppra PUBLIC Eigen3::Eigen3) 
+endif (${EIGEN3_VERSION_STRING} VERSION_LESS 3.3) 
+
 
 install(TARGETS toppra EXPORT toppra::toppra
   DESTINATION lib)
@@ -24,3 +31,4 @@ install(FILES
   toppra/geometric_path.hpp
   toppra/toppra.hpp
   DESTINATION include/toppra)
+
