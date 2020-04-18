@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: lint (C++)
+name: Lint (C++, clang-tidy)
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -33,9 +33,9 @@ jobs:
         cd $GITHUB_WORKSPACE/cpp && mkdir build && cd build
         cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 ..
 
-    - name: lint
+    - name: Lint
       run: |
         cd $GITHUB_WORKSPACE/cpp/build
-        clang-tidy  ../src/**/*.cpp -checks="clang-analyzer-*,clang-analyzer-cplusplus*,cppcoreguidelines-*,performance-*,modernize-*,readability-*"
-
-        
+        clang-tidy  ../src/**/*.cpp \
+        -checks=clang-analyzer-*,clang-analyzer-cplusplus*,cppcoreguidelines-*,performance-*,modernize-*,readability-*\
+        -warnings-as-errors=clang-analyzer-*,clang-analyzer-cplusplus*,cppcoreguidelines-*,modernize-*
