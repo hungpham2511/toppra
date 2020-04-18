@@ -23,7 +23,7 @@ PiecewisePolyPath::PiecewisePolyPath(const Matrices &coefficients,
   computeDerivativesCoefficients();
 }
 
-Vector PiecewisePolyPath::eval_single(value_type pos, int order) {
+Vector PiecewisePolyPath::eval_single(value_type pos, int order) const {
   Vector v(m_dof);
   v.setZero();
   size_t seg_index = findSegmentIndex(pos);
@@ -37,7 +37,7 @@ Vector PiecewisePolyPath::eval_single(value_type pos, int order) {
 
 // Not the most efficient implementation. Coefficients are
 // recompoted. Should be refactorred.
-Vectors PiecewisePolyPath::eval(const Vector &positions, int order) {
+Vectors PiecewisePolyPath::eval(const Vector &positions, int order) const {
   Vectors outputs;
   outputs.resize(positions.size());
   for (size_t i = 0; i < positions.size(); i++) {
@@ -59,6 +59,7 @@ size_t PiecewisePolyPath::findSegmentIndex(value_type pos) const {
   }
   return seg_index;
 }
+
 void PiecewisePolyPath::checkInputArgs() {
   if ((1 + m_coefficients.size()) != m_breakpoints.size()) {
     throw std::runtime_error(
@@ -82,7 +83,7 @@ void PiecewisePolyPath::computeDerivativesCoefficients() {
   }
 }
 
-Matrix PiecewisePolyPath::getCoefficient(int seg_index, int order) {
+Matrix PiecewisePolyPath::getCoefficient(int seg_index, int order) const {
   Matrix coeff;
   if (order == 0) {
     coeff = m_coefficients[seg_index];
