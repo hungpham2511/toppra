@@ -9,10 +9,35 @@
 
 #include "gtest/gtest.h"
 
+class Constraint : public testing::Test {
+public:
+  Constraint() : path(constructPath()) {
 
-TEST(Constraints, LinearJointVelocity) {
+    // path has the equation: 0 * x ^ 3 + 1 * x ^ 2 + 2 x ^ 1 + 3
+  }
+
+  toppra::PiecewisePolyPath constructPath() {
+    toppra::Matrix coeff{4, 2};
+    coeff(0, 0) = 0;
+    coeff(0, 1) = 0;
+    coeff(1, 0) = 1;
+    coeff(1, 1) = 1;
+    coeff(2, 0) = 2;
+    coeff(2, 1) = 2;
+    coeff(3, 0) = 3;
+    coeff(3, 1) = 3;
+    toppra::Matrices coefficents = {coeff, coeff};
+    toppra::PiecewisePolyPath p =
+        toppra::PiecewisePolyPath(coefficents, std::vector<double>{0, 1, 2});
+    return p;
+  }
+
+  toppra::PiecewisePolyPath path;
+};
+
+TEST_F(Constraint, LinearJointVelocity) {
   using namespace toppra;
-  int nDof = 5;
+  int nDof = path.dof();
   Vector lb (-Vector::Ones(nDof)),
          ub ( Vector::Ones(nDof));
   constraint::LinearJointVelocity ljv (lb, ub);
@@ -22,9 +47,12 @@ TEST(Constraints, LinearJointVelocity) {
   EXPECT_EQ(ljv.nbConstraints(), 0);
   EXPECT_EQ(ljv.nbVariables(), 0);
 
-  GeometricPath path;
   int N = 10;
-  Vector gridpoints (N+1);
+  Vector gridpoints;
+  {
+    Bound I (path.pathInterval());
+    gridpoints = toppra::Vector::LinSpaced (N, I[0], I[1]);
+  }
   {
     Vectors a, b, c, g;
     Matrices F;
@@ -37,13 +65,13 @@ TEST(Constraints, LinearJointVelocity) {
     EXPECT_EQ(F .size(), 0);
     EXPECT_EQ(g .size(), 0);
     EXPECT_EQ(ub.size(), 0);
-    EXPECT_EQ(xb.size(), N+1);
+    EXPECT_EQ(xb.size(), N);
     EXPECT_NO_THROW(ljv.computeParams(path, gridpoints, a, b, c, F, g, ub, xb));
   }
 }
 
 #ifdef BUILD_WITH_PINOCCHIO
-TEST(Constraints, jointTorquePinocchio) {
+TEST_F(Constraint, jointTorquePinocchio) {
   using namespace toppra;
   typedef constraint::jointTorque::Pinocchio<> JointTorque;
 
