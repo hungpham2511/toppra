@@ -1,4 +1,0 @@
-[submodule "cpp/extern/googletest"]
-	path = cpp/extern/googletest
-	url = https://github.com/google/googletest
-	ignore = dirty
