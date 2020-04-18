@@ -16,6 +16,16 @@ namespace toppra {
 class GeometricPath {
 public:
   /**
+   * Constructor of GeometricPath on vector spaces.
+   */
+  GeometricPath(int nDof) : m_configSize(nDof), m_dof (nDof) {}
+
+  /**
+   * Constructor of GeometricPath on non-vector spaces.
+   */
+  GeometricPath(int configSize, int nDof) : m_configSize(configSize), m_dof (nDof) {}
+
+  /**
    * /brief Evaluate the path at given position.
    */
   virtual Vector eval_single(value_type, int order = 0) const = 0;
@@ -28,9 +38,20 @@ public:
   virtual Vectors eval(const Vector &positions, int order = 0) const;
 
   /**
-   * Return the degrees-of-freedom of the path.
+   * \return the dimension of the configuration space
    */
-  virtual int dof() const = 0;
+  int configSize() const
+  {
+    return m_configSize;
+  }
+
+  /**
+   * \return the number of degrees-of-freedom of the path.
+   */
+  int dof() const
+  {
+    return m_dof;
+  }
 
   /**
    * \return the starting and ending path positions.
@@ -39,6 +60,8 @@ public:
 
   virtual ~GeometricPath () {}
 
+protected:
+  int m_configSize, m_dof;
 };
 
 /**
@@ -68,11 +91,6 @@ public:
   Vectors eval(const Vector &, int order = 0) const;
 
   /**
-   * Return the degrees-of-freedom of the path.
-   */
-  int dof() { return m_coefficients[0].cols(); };
-
-  /**
    * Return the starting and ending path positions.
    */
   Bound pathInterval() const {
@@ -88,7 +106,7 @@ private:
   Matrix getCoefficient(int seg_index, int order) const;
   Matrices m_coefficients, m_coefficients_1, m_coefficients_2;
   std::vector<value_type> m_breakpoints;
-  int m_dof, m_degree;
+  int m_degree;
 };
 
 } // namespace toppra
