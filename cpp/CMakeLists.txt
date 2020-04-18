@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.5)
 
 project(toppra)
 set(CMAKE_CXX_STANDARD 11)
@@ -11,7 +11,7 @@ option(BUILD_WITH_qpOASES "Compile the wrapper for qpOASES" OFF)
 find_package (Threads)
 
 find_package (Eigen3 REQUIRED)
-message(STATUS "Found Eigen version ${Eigen3_VERSION}")
+message(STATUS "Found Eigen version ${EIGEN3_VERSION_STRING}")
 
 if(BUILD_WITH_PINOCCHIO)
     find_package(pinocchio REQUIRED)
@@ -59,18 +59,4 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
   include_directories("${gtest_SOURCE_DIR}/include")
 endif()
 
-# Now simply link against gtest or gtest_main as needed. Eg
-set(TEST_SOURCES
-  tests/constraints.cpp
-  tests/solver.cpp
-  tests/gtest_main.cpp)
-
-add_executable(tests ${TEST_SOURCES})
-target_link_libraries(tests gmock gtest ${CMAKE_THREAD_LIBS_INIT} toppra)
-if(BUILD_WITH_PINOCCHIO)
-  target_compile_definitions(tests PRIVATE -DBUILD_WITH_PINOCCHIO)
-  target_link_libraries(tests pinocchio::pinocchio)
-endif()
-if(BUILD_WITH_qpOASES)
-  target_compile_definitions(tests PRIVATE -DBUILD_WITH_qpOASES)
-endif()
+add_subdirectory(tests)
