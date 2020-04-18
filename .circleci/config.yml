@@ -1,6 +1,5 @@
 version: 2
 
-
 jobs:
   check-codestyle:
     docker:
@@ -106,7 +105,7 @@ jobs:
 
 workflows:
   version: 2
-  test-and-lint:
+  integrate:
     jobs:
       - test-python-3
       - check-codestyle
@@ -119,6 +118,9 @@ workflows:
               only:
               - fix-ci
               - /release-.*/
+
+  publish:
+    jobs:
       - release:
           filters:
             branches:
