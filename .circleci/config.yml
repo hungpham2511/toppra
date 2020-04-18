@@ -128,7 +128,9 @@ workflows:
     jobs:
       - build-cpp
       - check-codestyle
-      - build-python-3
+      - build-python-3:
+          requires:
+            - check-codestyle
 
   release:
     jobs:
