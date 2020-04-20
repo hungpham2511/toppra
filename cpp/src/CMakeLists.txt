@@ -15,7 +15,7 @@ if (${EIGEN3_VERSION_STRING} VERSION_LESS 3.3)
   target_compile_definitions     (toppra PUBLIC ${EIGEN3_DEFINITIONS} ) 
   target_include_directories (toppra PUBLIC ${EIGEN3_INCLUDE_DIRS} ) 
 else (${EIGEN3_VERSION_STRING} VERSION_LESS 3.3) 
-  target_link_libraries(toppra PUBLIC Eigen3::Eigen3) 
+  target_link_libraries(toppra PUBLIC Eigen3::Eigen) 
 endif (${EIGEN3_VERSION_STRING} VERSION_LESS 3.3) 
 
 

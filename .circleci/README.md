@@ -1,6 +1,6 @@
 # CI
 
-We have the following CI workflows
+We have the following CI workflows in CirclCI.
 
 ## integrate
 
@@ -17,4 +17,12 @@ Check release branch for proper version.
 ## publish
 
 Publish source code to venues (PyPI). NOTE: This is currently not done.
+
+
+# Github Action
+Some tasks are done directly with Github Action. 
+
+- Linting for C++ code with clang-tidy.
+
+  Note: `cppcoreguidelines-pro-bounds-array-to-pointer-decay` leads to false reported error, thus disabled.
 
