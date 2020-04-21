@@ -32,12 +32,11 @@ qpOASESWrapper::qpOASESWrapper (const LinearConstraintPtrs& constraints, const G
   m_lA = -Vector::Ones(nC);
   m_hA = -Vector::Ones(nC);
 
-  m_impl = new Impl(nV, nC);
+  m_impl = std::unique_ptr<Impl>(new Impl(nV, nC));
 }
 
 qpOASESWrapper::~qpOASESWrapper ()
 {
-  delete m_impl;
 }
 
 bool qpOASESWrapper::solveStagewiseOptim(std::size_t i,

@@ -1,6 +1,7 @@
 #ifndef TOPPRA_SOLVER_QPOASES_WRAPPER_HPP
 #define TOPPRA_SOLVER_QPOASES_WRAPPER_HPP
 
+#include <memory.h>
 #include <toppra/solver.hpp>
 
 // Forward declare qpOASES solver.
@@ -31,7 +32,7 @@ class qpOASESWrapper : public Solver {
         const Bound& x, const Bound& xNext,
         Vector& solution);
 
-    ~qpOASESWrapper();
+    virtual ~qpOASESWrapper();
 
   private:
     /// qpOASES uses row-major storage order.
@@ -41,7 +42,7 @@ class qpOASESWrapper : public Solver {
     Vector m_lA, m_hA;
 
     struct Impl;
-    Impl* m_impl;
+    std::unique_ptr<Impl> m_impl;
 }; // class qpOASESWrapper
 
 } // namespace solver
