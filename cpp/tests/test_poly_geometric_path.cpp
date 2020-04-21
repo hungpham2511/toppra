@@ -98,7 +98,7 @@ TEST(ProfileEvaluationSpeed, Test1) {
   toppra::Matrices coefficients{10, coeffs};
   toppra::Vector path_positions{1000};
   for (size_t i = 0; i < 1000; i++) {
-    path_positions(0) = (toppra::value_type)(i) / 100.0;
+    path_positions(i) = std::min(0., std::max(10., (toppra::value_type)(i) / 100.0));
   }
   std::chrono::steady_clock::time_point begin =
       std::chrono::steady_clock::now();

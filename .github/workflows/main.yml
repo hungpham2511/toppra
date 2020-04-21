@@ -14,18 +14,10 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    - name: Install dep
-      run: |
-        sudo apt-get install -y clang-tidy libeigen3-dev
-
-    - name: Build
-      run: |
-        cd $GITHUB_WORKSPACE/cpp && mkdir build && cd build
-        cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 ..
-
     - name: Lint
       run: |
-        cd $GITHUB_WORKSPACE/cpp/build
-        clang-tidy  ../src/**/*.cpp \
+        sudo apt install -y clang-tidy
+        cd $GITHUB_WORKSPACE/cpp
+        clang-tidy  src/**/*.cpp \
         -checks=clang-analyzer-*,clang-analyzer-cplusplus*,cppcoreguidelines-*,performance-*,modernize-*,readability-,-cppcoreguidelines-pro-bounds-array-to-pointer-decay\
         -warnings-as-errors=clang-analyzer-*,clang-analyzer-cplusplus*,cppcoreguidelines-*,modernize-*

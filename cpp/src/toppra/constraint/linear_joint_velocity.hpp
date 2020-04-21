@@ -11,9 +11,9 @@ class LinearJointVelocity : public LinearConstraint {
   public:
     LinearJointVelocity (const Vector& lowerVlimit, const Vector& upperVlimit)
       : LinearConstraint (0, 0, true, false, true)
-      , lower_ (lowerVlimit)
-      , upper_ (upperVlimit)
-      , maxsd_ (1e8)
+      , m_lower (lowerVlimit)
+      , m_upper (upperVlimit)
+      , m_maxsd (1e8)
     {
       check();
     }
@@ -24,7 +24,7 @@ class LinearJointVelocity : public LinearConstraint {
     void maxSDot (value_type maxsd)
     {
       assert(maxsd > 0);
-      maxsd_ = maxsd;
+      m_maxsd = maxsd;
     }
 
     virtual std::ostream& print(std::ostream& os) const;
@@ -36,10 +36,10 @@ class LinearJointVelocity : public LinearConstraint {
         const Vector& gridpoints,
         Vectors& a, Vectors& b, Vectors& c,
         Matrices& F, Vectors& g,
-        Bounds ubound, Bounds& xbound);
+        Bounds& ubound, Bounds& xbound);
 
-    Vector lower_, upper_;
-    value_type maxsd_;
+    Vector m_lower, m_upper;
+    value_type m_maxsd;
 }; // class LinearJointVelocity
 } // namespace constraint
 } // namespace toppra

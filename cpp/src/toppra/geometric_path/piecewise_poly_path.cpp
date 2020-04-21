@@ -1,6 +1,7 @@
 #include "toppra/toppra.hpp"
 #include <cstddef>
 #include <stdexcept>
+#include <ostream>
 #include <toppra/geometric_path.hpp>
 
 namespace toppra {
@@ -16,14 +17,15 @@ Matrix differentiateCoefficients(const Matrix &coefficients) {
 
 PiecewisePolyPath::PiecewisePolyPath(const Matrices &coefficients,
                                      const std::vector<value_type> &breakpoints)
-    : m_coefficients(coefficients), m_breakpoints(breakpoints),
-      m_dof(coefficients[0].cols()), m_degree(coefficients[0].rows() - 1) {
+    : GeometricPath (coefficients[0].cols()),
+      m_coefficients(coefficients), m_breakpoints(breakpoints),
+      m_degree(coefficients[0].rows() - 1) {
 
   checkInputArgs();
   computeDerivativesCoefficients();
 }
 
-Vector PiecewisePolyPath::eval_single(value_type pos, int order) {
+Vector PiecewisePolyPath::eval_single(value_type pos, int order) const {
   Vector v(m_dof);
   v.setZero();
   size_t seg_index = findSegmentIndex(pos);
@@ -37,7 +39,7 @@ Vector PiecewisePolyPath::eval_single(value_type pos, int order) {
 
 // Not the most efficient implementation. Coefficients are
 // recompoted. Should be refactorred.
-Vectors PiecewisePolyPath::eval(const Vector &positions, int order) {
+Vectors PiecewisePolyPath::eval(const Vector &positions, int order) const {
   Vectors outputs;
   outputs.resize(positions.size());
   for (size_t i = 0; i < positions.size(); i++) {
@@ -55,10 +57,14 @@ size_t PiecewisePolyPath::findSegmentIndex(value_type pos) const {
     }
   }
   if (seg_index == -1) {
-    throw std::runtime_error("Given position is outside of breakpoints' range");
+    std::ostringstream oss;
+    oss << "Position " << pos << " is outside of range [ " << m_breakpoints[0]
+      << ", " << m_breakpoints[m_breakpoints.size()-1] << ']';
+    throw std::runtime_error(oss.str());
   }
   return seg_index;
 }
+
 void PiecewisePolyPath::checkInputArgs() {
   if ((1 + m_coefficients.size()) != m_breakpoints.size()) {
     throw std::runtime_error(
@@ -82,7 +88,7 @@ void PiecewisePolyPath::computeDerivativesCoefficients() {
   }
 }
 
-Matrix PiecewisePolyPath::getCoefficient(int seg_index, int order) {
+Matrix PiecewisePolyPath::getCoefficient(int seg_index, int order) const {
   Matrix coeff;
   if (order == 0) {
     coeff = m_coefficients[seg_index];

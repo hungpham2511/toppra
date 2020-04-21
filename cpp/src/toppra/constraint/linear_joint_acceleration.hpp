@@ -11,8 +11,8 @@ class LinearJointAcceleration : public LinearConstraint {
   public:
     LinearJointAcceleration (const Vector& lowerAlimit, const Vector& upperAlimit)
       : LinearConstraint (lowerAlimit.size() * 2, lowerAlimit.size(), true, false, false)
-      , lower_ (lowerAlimit)
-      , upper_ (upperAlimit)
+      , m_lower (lowerAlimit)
+      , m_upper (upperAlimit)
     {
       check();
     }
@@ -26,9 +26,9 @@ class LinearJointAcceleration : public LinearConstraint {
         const Vector& gridpoints,
         Vectors& a, Vectors& b, Vectors& c,
         Matrices& F, Vectors& g,
-        Bounds ubound, Bounds& xbound);
+        Bounds& ubound, Bounds& xbound);
 
-    Vector lower_, upper_;
+    Vector m_lower, m_upper;
 }; // class LinearJointAcceleration
 } // namespace constraint
 } // namespace toppra

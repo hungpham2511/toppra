@@ -1,11 +1,13 @@
 #include <toppra/constraint.hpp>
 
+#include <toppra/geometric_path.hpp>
+
 namespace toppra {
 
 std::ostream& LinearConstraint::print(std::ostream& os) const
 {
   return os <<
-    "    Discretization Scheme: " << discretizationType_ << "\n"
+    "    Discretization Scheme: " << m_discretizationType << "\n"
     "    Has " << (hasLinearInequalities() ? "linear inequalities, " : "")
     << (hasUbounds() ? "bounds on u, " : "")
     << (hasXbounds() ? "bounds on x, " : "") << "\n";
@@ -14,7 +16,7 @@ std::ostream& LinearConstraint::print(std::ostream& os) const
 void LinearConstraint::discretizationType (DiscretizationType type)
 {
   // I don't think the check done in Python is useful in C++.
-  discretizationType_ = type;
+  m_discretizationType = type;
 }
 
 /// \internal
@@ -51,10 +53,10 @@ void checkSizes (std::size_t N, Eigen::Index k, Eigen::Index m,
     throw std::invalid_argument("Wrong number of c vectors");
   if (constantF && F.size() != 1)
     throw std::invalid_argument("Expected only one F matrix");
-  if (!constantF && F.size() != N)
-    throw std::invalid_argument("Wrong number of F matrices");
-  if (g.size() != N)
-    throw std::invalid_argument("Wrong number of g vectors");
+  if (constantF && g.size() != 1)
+    throw std::invalid_argument("Expected only one g matrix");
+  if (!constantF && g.size() != N)
+    throw std::invalid_argument("Wrong number of g matrices");
 
   for (std::size_t i = 0; i < N; ++i) {
     if (a[i].size() != m)
@@ -150,7 +152,7 @@ void LinearConstraint::allocateParams(std::size_t N,
 {
   if (hasLinearInequalities()) {
     Eigen::Index m (nbVariables()), k (nbConstraints());
-    if (discretizationType_ == Interpolation) {
+    if (m_discretizationType == Interpolation) {
       m *= 2;
       k *= 2;
     }
@@ -165,28 +167,16 @@ void LinearConstraint::allocateParams(std::size_t N,
 
 void LinearConstraint::computeParams(const GeometricPath& path, const Vector& gridpoints,
     Vectors& a, Vectors& b, Vectors& c, Matrices& F, Vectors& g,
-    Bounds ubound, Bounds& xbound)
+    Bounds& ubound, Bounds& xbound)
 {
   Eigen::Index N = gridpoints.size();
   assert (N > 0);
-  if (hasLinearInequalities()) {
-    Eigen::Index m (nbVariables()), k (nbConstraints());
-    if (discretizationType_ == Interpolation) {
-      m *= 2;
-      k *= 2;
-    }
-    checkSizes (N, k, m, constantF(), a, b, c, F, g);
-  }
+  allocateParams(gridpoints.size(), a, b, c, F, g, ubound, xbound);
 
-  if (hasUbounds() && ubound.size() != N)
-    throw std::invalid_argument("Wrong ubound vector size.");
-  if (hasXbounds() && xbound.size() != N)
-    throw std::invalid_argument("Wrong xbound vector size.");
-
-  if (discretizationType_ == Interpolation && hasLinearInequalities()) {
+  if (m_discretizationType == Interpolation && hasLinearInequalities()) {
     Vectors a_col, b_col, c_col, g_col;
     Matrices F_col;
-    allocateLinearPart (N, k_, m_, constantF(), a, b, c, F, g);
+    allocateLinearPart (N, m_k, m_m, constantF(), a, b, c, F, g);
     computeParams_impl(path, gridpoints, a_col, b_col, c_col, F_col, g_col, ubound, xbound);
     collocationToInterpolate(gridpoints, constantF(),
         a_col, b_col, c_col, F_col, g_col,

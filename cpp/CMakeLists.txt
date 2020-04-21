@@ -3,11 +3,25 @@ cmake_minimum_required(VERSION 3.5)
 project(toppra)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+# Dynamics
+option(BUILD_WITH_PINOCCHIO "Compile with Pinocchio library" OFF)
+# Solvers
+option(BUILD_WITH_qpOASES "Compile the wrapper for qpOASES" OFF)
 
 find_package (Threads)
-find_package (Eigen3 REQUIRED)
 
+find_package (Eigen3 REQUIRED)
 message(STATUS "Found Eigen version ${EIGEN3_VERSION_STRING}")
+
+if(BUILD_WITH_PINOCCHIO)
+    find_package(pinocchio REQUIRED)
+    message(STATUS "Found pinocchio ${pinocchio_VERSION}")
+endif()
+if(BUILD_WITH_qpOASES)
+    set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+    find_package("qpOASES" REQUIRED)
+    message(STATUS "Found qpOASES")
+endif()
 
 add_subdirectory(src)
 add_subdirectory(doc)
@@ -45,4 +59,5 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
   include_directories("${gtest_SOURCE_DIR}/include")
 endif()
 
+enable_testing()
 add_subdirectory(tests)

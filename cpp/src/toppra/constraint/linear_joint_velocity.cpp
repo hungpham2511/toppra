@@ -1,5 +1,7 @@
 #include <toppra/constraint/linear_joint_velocity.hpp>
 
+#include <toppra/geometric_path.hpp>
+
 namespace toppra {
 namespace constraint {
 
@@ -7,46 +9,45 @@ std::ostream& LinearJointVelocity::print (std::ostream& os) const
 {
   os << "LinearJointVelocity\n";
   return LinearConstraint::print(os) <<
-    "    Lower velocity limit: " << lower_.transpose() << "\n"
-    "    Upper velocity limit: " << upper_.transpose() << "\n";
+    "    Lower velocity limit: " << m_lower.transpose() << "\n"
+    "    Upper velocity limit: " << m_upper.transpose() << "\n";
 }
 
 void LinearJointVelocity::check ()
 {
-  if (lower_.size() != upper_.size())
+  if (m_lower.size() != m_upper.size())
     throw std::invalid_argument("Velocity limits size must match.");
-  if ((lower_.array() > upper_.array()).any())
+  if ((m_lower.array() > m_upper.array()).any())
     throw std::invalid_argument("Bad velocity limits.");
 }
 
 void LinearJointVelocity::computeParams_impl(const GeometricPath& path,
         const Vector& gridpoints,
         Vectors&, Vectors&, Vectors&, Matrices&, Vectors&,
-        Bounds , Bounds& xbound)
+        Bounds&, Bounds& xbound)
 {
   Eigen::Index N_1 = gridpoints.size();
-  Eigen::Index ndofs (lower_.size());
+  Eigen::Index ndofs (m_lower.size());
+  assert(path.dof() == m_lower.size());
 
-  /// \todo Use GeometricPath evaluation
-  Vectors vs(N_1, Vector(ndofs)); // (path(gridpoints / scaling, 1) / scaling
-  assert(ndofs == vs[0].size());
-
-  Vector v_inv(ndofs), lb_v(ndofs);
+  Vector v, v_inv(ndofs), lb_v(ndofs);
   for (std::size_t i = 0; i < N_1; ++i) {
-    const Vector& v (vs[i]);
+    v = path.eval_single (gridpoints[i], 1);
+    assert(ndofs == v.size());
+
     v_inv.noalias() = v.cwiseInverse();
 
-    value_type sdmin = - maxsd_,
-               sdmax =   maxsd_;
+    value_type sdmin = - m_maxsd,
+               sdmax =   m_maxsd;
     for (Eigen::Index k = 0; k < ndofs; ++k) {
       if (v[k] > 0) {
-        sdmax = std::min(upper_[k] * v_inv[k], sdmax);
-        sdmin = std::max(lower_[k] * v_inv[k], sdmin);
+        sdmax = std::min(m_upper[k] * v_inv[k], sdmax);
+        sdmin = std::max(m_lower[k] * v_inv[k], sdmin);
       } else if (v[k] < 0) {
-        sdmax = std::min(lower_[k] * v_inv[k], sdmax);
-        sdmin = std::max(upper_[k] * v_inv[k], sdmin);
+        sdmax = std::min(m_lower[k] * v_inv[k], sdmax);
+        sdmin = std::max(m_upper[k] * v_inv[k], sdmin);
       } else {
-        if (upper_[k] < 0 || lower_[k] > 0)
+        if (m_upper[k] < 0 || m_lower[k] > 0)
           /// \todo the problem is infeasible. How should we inform the user ?
           throw std::runtime_error("BoxConstraint is infeasible");
       }
