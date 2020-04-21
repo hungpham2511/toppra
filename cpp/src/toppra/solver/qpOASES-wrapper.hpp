@@ -21,6 +21,9 @@ namespace solver {
  *        & l  <=  y <= h       \\
  *  \f}
  *
+ *  \todo Add a solver that inherits from qpOASESWrapper and that uses the warm
+ *  start capabilities of qpOASES
+ *
  * */
 class qpOASESWrapper : public Solver {
   public:
