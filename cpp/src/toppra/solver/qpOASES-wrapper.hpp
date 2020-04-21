@@ -37,12 +37,27 @@ class qpOASESWrapper : public Solver {
 
     virtual ~qpOASESWrapper();
 
+    value_type setBoundary () const
+    {
+      return m_boundary;
+    }
+
+    void setBoundary (const value_type& v)
+    {
+      m_boundary = v;
+    }
+
+    static void setDefaultBoundary (const value_type& v);
+
   private:
     /// qpOASES uses row-major storage order.
     typedef Eigen::Matrix<value_type, Eigen::Dynamic, Eigen::Dynamic,
             Eigen::RowMajor> RMatrix;
     RMatrix m_H, m_A;
     Vector m_lA, m_hA;
+    value_type m_boundary;
+
+    static value_type m_defaultBoundary;
 
     struct Impl;
     std::unique_ptr<Impl> m_impl;
