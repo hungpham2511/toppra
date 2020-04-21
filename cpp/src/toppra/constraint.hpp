@@ -14,7 +14,7 @@ enum DiscretizationType {
     Interpolation, /// larger problem size, but higher accuracy.
 };
 
-/** The base constraint class.
+/** \brief Abstract interface for the constraints.
  *
  *  Also known as Second-order Constraint.
  *

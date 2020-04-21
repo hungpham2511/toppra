@@ -5,7 +5,7 @@
 
 namespace toppra {
 
-/** The base class for all solver wrappers.
+/** \brief The base class for all solver wrappers.
  *
  *  All Solver can solve Linear/Quadratic Program subject to linear constraints
  *  at the given stage, and possibly with additional auxiliary constraints.
