@@ -1,6 +1,7 @@
 #include "toppra/toppra.hpp"
 #include <cstddef>
 #include <stdexcept>
+#include <ostream>
 #include <toppra/geometric_path.hpp>
 
 namespace toppra {
@@ -56,7 +57,10 @@ size_t PiecewisePolyPath::findSegmentIndex(value_type pos) const {
     }
   }
   if (seg_index == -1) {
-    throw std::runtime_error("Given position is outside of breakpoints' range");
+    std::ostringstream oss;
+    oss << "Position " << pos << " is outside of range [ " << m_breakpoints[0]
+      << ", " << m_breakpoints[m_breakpoints.size()-1] << ']';
+    throw std::runtime_error(oss.str());
   }
   return seg_index;
 }
