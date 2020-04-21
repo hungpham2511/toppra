@@ -38,7 +38,7 @@ enum DiscretizationType {
  *  LinearConstraint::constantF will be \c true.
  *
  *  \note Derived classes should at least implement the method
- *  LinearConstraint::computeParams.
+ *  LinearConstraint::computeParams_impl.
  *
  *  \sa JointAccelerationConstraint, JointVelocityConstraint,
  *  CanonicalLinearSecondOrderConstraint
@@ -53,9 +53,9 @@ class LinearConstraint {
 
     void discretizationType (DiscretizationType type);
 
-    /** Tells whether the \f$ F \f$ matrix is the same over all the grid points.
-     * In this case, LinearConstraint::computeParams F parameters should only
-     * be of size 1.
+    /** Tells whether \f$ F, g \f$ matrices are the same over all the grid points.
+     * In this case, LinearConstraint::computeParams F and g parameters should
+     * only be of size 1.
      * */
     bool constantF () const
     {

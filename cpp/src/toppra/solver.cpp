@@ -37,9 +37,6 @@ Solver::Solver (const LinearConstraintPtrs& constraints, const GeometricPath& pa
       bparam->cid = c;
     } else
       bparam = &emptyBoxParams;
-    lin->allocateParams(times.size(),
-        lparam->a, lparam->c, lparam->b, lparam->F, lparam->g,
-        bparam->u, bparam->x);
     lin->computeParams(path, times,
         lparam->a, lparam->c, lparam->b, lparam->F, lparam->g,
         bparam->u, bparam->x);

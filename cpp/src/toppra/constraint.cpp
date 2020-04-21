@@ -171,19 +171,7 @@ void LinearConstraint::computeParams(const GeometricPath& path, const Vector& gr
 {
   Eigen::Index N = gridpoints.size();
   assert (N > 0);
-  if (hasLinearInequalities()) {
-    Eigen::Index m (nbVariables()), k (nbConstraints());
-    if (m_discretizationType == Interpolation) {
-      m *= 2;
-      k *= 2;
-    }
-    checkSizes (N, k, m, constantF(), a, b, c, F, g);
-  }
-
-  if (hasUbounds() && ubound.size() != N)
-    throw std::invalid_argument("Wrong ubound vector size.");
-  if (hasXbounds() && xbound.size() != N)
-    throw std::invalid_argument("Wrong xbound vector size.");
+  allocateParams(gridpoints.size(), a, b, c, F, g, ubound, xbound);
 
   if (m_discretizationType == Interpolation && hasLinearInequalities()) {
     Vectors a_col, b_col, c_col, g_col;

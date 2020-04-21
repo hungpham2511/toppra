@@ -50,7 +50,6 @@ TEST_F(Constraint, LinearJointVelocity) {
     Vectors a, b, c, g;
     Matrices F;
     Bounds ub, xb;
-    EXPECT_THROW(ljv.computeParams(path, gridpoints, a, b, c, F, g, ub, xb), std::invalid_argument);
     ljv.allocateParams(gridpoints.size(), a, b, c, F, g, ub, xb);
     EXPECT_EQ(a .size(), 0);
     EXPECT_EQ(b .size(), 0);
@@ -59,7 +58,7 @@ TEST_F(Constraint, LinearJointVelocity) {
     EXPECT_EQ(g .size(), 0);
     EXPECT_EQ(ub.size(), 0);
     EXPECT_EQ(xb.size(), N);
-    EXPECT_NO_THROW(ljv.computeParams(path, gridpoints, a, b, c, F, g, ub, xb));
+    ljv.computeParams(path, gridpoints, a, b, c, F, g, ub, xb);
   }
 }
 
@@ -91,9 +90,7 @@ TEST_F(Constraint, jointTorquePinocchio) {
     Vectors a, b, c, g;
     Matrices F;
     Bounds ub, xb;
-    EXPECT_THROW(constraint.computeParams(path, gridpoints, a, b, c, F, g, ub, xb), std::invalid_argument);
-    constraint.allocateParams(gridpoints.size(), a, b, c, F, g, ub, xb);
-    EXPECT_NO_THROW(constraint.computeParams(path, gridpoints, a, b, c, F, g, ub, xb));
+    constraint.computeParams(path, gridpoints, a, b, c, F, g, ub, xb);
   }
 }
 #endif
