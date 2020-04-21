@@ -2,8 +2,8 @@
 # Now simply link against gtest or gtest_main as needed. Eg
 set(TEST_SOURCES
   gtest_main.cpp
-  constraints.cpp
-  solver.cpp
+  test_constraints.cpp
+  test_solver.cpp
   test_poly_geometric_path.cpp
   )
 
