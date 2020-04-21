@@ -1,0 +1,13 @@
+
+# Now simply link against gtest or gtest_main as needed. Eg
+set(TEST_SOURCES
+  gtest_main.cpp
+  # constraints.cpp
+  test_poly_geometric_path.cpp
+  )
+
+add_executable(all_tests ${TEST_SOURCES})
+target_link_libraries(all_tests PUBLIC toppra gmock gtest ${CMAKE_THREAD_LIBS_INIT})
+target_include_directories(all_tests PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+  )
