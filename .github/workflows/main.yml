@@ -16,12 +16,22 @@ jobs:
 
     - name: Install dep
       run: |
-        sudo apt-get install -y clang-tidy libeigen3-dev
+        sudo apt install -y curl
+        echo "deb [arch=amd64] http://robotpkg.openrobots.org/packages/debian/pub $(lsb_release -sc) robotpkg" \
+          | sudo tee /etc/apt/sources.list.d/robotpkg.list
+        curl http://robotpkg.openrobots.org/packages/debian/robotpkg.key \
+          | sudo apt-key add -
+        sudo apt update
+        sudo apt install -y clang-tidy libeigen3-dev robotpkg-pinocchio robotpkg-qpoases
 
     - name: Build
       run: |
+        export LD_LIBRARY_PATH=/opt/openrobots/lib:${LD_LIBRARY_PATH}
+        export CMAKE_PREFIX_PATH=/opt/openrobots
         cd $GITHUB_WORKSPACE/cpp && mkdir build && cd build
-        cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=1 ..
+        cmake -DBUILD_WITH_PINOCCHIO=ON -DBUILD_WITH_qpOASES=ON -DCMAKE_EXPORT_COMPILE_COMMANDS=1 ..
+        make
+        make test
 
     - name: Lint
       run: |
