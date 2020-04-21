@@ -25,7 +25,7 @@ def main():
 
     instance = algo.TOPPRA([pc_vel, pc_acc], path, solver_wrapper='seidel',
                            gridpoints=np.linspace(0, 1.0, 1001))
-    jnt_traj, aux_traj = instance.compute_trajectory(0, 0)
+    jnt_traj = instance.compute_trajectory(0, 0)
 
     duration = jnt_traj.duration
     print("Found optimal trajectory with duration {:f} sec".format(duration))

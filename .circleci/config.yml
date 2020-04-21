@@ -52,7 +52,7 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            python3 -m virtualenv --python python3 venv3 && . venv3/bin/activate
+            virtualenv --python python3.7 venv3 && . venv3/bin/activate
             pip install invoke pathlib2 numpy cython
             invoke install-solvers
             pip install -e .[dev]
@@ -67,7 +67,8 @@ jobs:
           command: |
             . venv3/bin/activate
             mkdir test-reports
-            pytest -q tests --durations=3 --junitxml=test-reports/junit.xml
+            python --version
+            python -m pytest -q tests --durations=3 --junitxml=test-reports/junit.xml
 
       - store_test_results:
           path: test-reports

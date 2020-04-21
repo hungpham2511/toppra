@@ -1,6 +1,8 @@
 """Base class for all path parametrization contraints. """
 from enum import Enum
 import logging
+import numpy as np
+from ..interpolator import AbstractGeometricPath
 
 logger = logging.getLogger(__name__)
 
@@ -92,6 +94,8 @@ class Constraint(object):
                 discretization_type
             )
 
-    def compute_constraint_params(self, *args, **kwargs):
+    def compute_constraint_params(
+        self, path: AbstractGeometricPath, gridpoints: np.ndarray, *args, **kwargs
+    ):
         """Evaluate parameters of the constraint."""
         raise NotImplementedError

@@ -185,7 +185,7 @@ simple kinematic example, or any other situation.
 
     all_constraints = [pc_vel, pc_acc, pc_cart_acc]
     instance = algo.TOPPRA(all_constraints, path, solver_wrapper='seidel')
-    jnt_traj, _ = instance.compute_trajectory(0, 0)  # resulting trajectory
+    jnt_traj = instance.compute_trajectory(0, 0)  # resulting trajectory
 
 On my computer the whole process including evaluation of the dynamic
 coefficients, which is quite costly, takes 5-8 ms.  Cartesian
