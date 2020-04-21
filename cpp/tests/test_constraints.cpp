@@ -70,6 +70,10 @@ TEST_F(Constraint, jointTorquePinocchio) {
 
   JointTorque::Model model;
   pinocchio::buildModels::manipulator(model);
+#if PINOCCHIO_VERSION_AT_MOST(2,4,1)
+  // Work around bug solved by https://github.com/stack-of-tasks/pinocchio/pull/1155
+  model.effortLimit.setConstant(10);
+#endif
   Vector frictions (Vector::Constant(model.nv, 0.001));
   JointTorque constraint (model, frictions);
 
