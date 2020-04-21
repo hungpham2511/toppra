@@ -53,9 +53,9 @@ class JointTorque : public LinearConstraint {
     JointTorque (const Vector& lowerTlimit, const Vector& upperTlimit,
         const Vector& frictionCoeffs)
       : LinearConstraint (2*lowerTlimit.size(), lowerTlimit.size(), true, false, false)
-      , lower_ (lowerTlimit)
-      , upper_ (upperTlimit)
-      , frictionCoeffs_ (frictionCoeffs)
+      , m_lower (lowerTlimit)
+      , m_upper (upperTlimit)
+      , m_frictionCoeffs (frictionCoeffs)
     {
       check();
     }
@@ -69,7 +69,7 @@ class JointTorque : public LinearConstraint {
         Matrices& F, Vectors& g,
         Bounds& ubound, Bounds& xbound);
 
-    Vector lower_, upper_, frictionCoeffs_;
+    Vector m_lower, m_upper, m_frictionCoeffs;
 }; // class JointTorque
 } // namespace constraint
 } // namespace toppra

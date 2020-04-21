@@ -26,22 +26,22 @@ namespace toppra {
  * */
 class Solver {
   public:
-    /// \copydoc Solver::deltas_
+    /// \copydoc Solver::m_deltas
     const Vector& deltas () const
     {
-      return deltas_;
+      return m_deltas;
     }
 
-    /// \copydoc Solver::N_
+    /// \copydoc Solver::m_N
     std::size_t nbStages () const
     {
-      return N_;
+      return m_N;
     }
 
-    /// \copydoc Solver::nV_
+    /// \copydoc Solver::m_nV
     std::size_t nbVars () const
     {
-      return nV_;
+      return m_nV;
     }
 
     /** Solve a stage-wise quadratic (or linear) optimization problem.
@@ -98,20 +98,20 @@ class Solver {
     struct ConstraintsParams {
       std::vector<LinearConstraintParams> lin;
       std::vector<BoxConstraintParams   > box;
-    } constraintsParams_;
+    } m_constraintsParams;
 
-    LinearConstraintPtrs constraints_;
-    const GeometricPath& path_;
-    Vector times_;
+    LinearConstraintPtrs m_constraints;
+    const GeometricPath& m_path;
+    Vector m_times;
 
   private:
     /// \brief Number of stages.
     /// The number of gridpoints equals N + 1, where N is the number of stages.
-    std::size_t N_;
+    std::size_t m_N;
     /// Total number of variables, including u, x.
-    std::size_t nV_;
+    std::size_t m_nV;
     /// Time increment between each stage. Size \ref nbStages
-    Vector deltas_;
+    Vector m_deltas;
 
 }; // class Solver
 } // namespace toppra

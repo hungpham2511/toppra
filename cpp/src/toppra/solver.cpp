@@ -7,33 +7,33 @@ namespace toppra {
 
 Solver::Solver (const LinearConstraintPtrs& constraints, const GeometricPath& path,
     const Vector& times)
-  : constraints_ (constraints)
-  , path_ (path)
-  , times_ (times)
-  , N_ (times.size()-1)
-  , nV_ (2)
-  , deltas_ (times.tail(N_) - times.head(N_))
+  : m_constraints (constraints)
+  , m_path (path)
+  , m_times (times)
+  , m_N (times.size()-1)
+  , m_nV (2)
+  , m_deltas (times.tail(m_N) - times.head(m_N))
 {
-  if ((deltas_.array() <= 0).any())
+  if ((m_deltas.array() <= 0).any())
     throw std::invalid_argument("Invalid times.");
-  /// \todo assert that the time range of the path equals [ times[0], times[N_] ].
+  /// \todo assert that the time range of the path equals [ times[0], times[m_N] ].
 
   // Compute the constraints parameters
   LinearConstraintParams emptyLinParams;
   BoxConstraintParams emptyBoxParams;
-  for (std::size_t c = 0; c < constraints_.size(); ++c) {
-    LinearConstraint* lin = constraints_[c].get();
+  for (std::size_t c = 0; c < m_constraints.size(); ++c) {
+    LinearConstraint* lin = m_constraints[c].get();
     LinearConstraintParams* lparam;
     if (lin->hasLinearInequalities()) {
-      constraintsParams_.lin.emplace_back();
-      lparam = &constraintsParams_.lin.back();
+      m_constraintsParams.lin.emplace_back();
+      lparam = &m_constraintsParams.lin.back();
       lparam->cid = c;
     } else
       lparam = &emptyLinParams;
     BoxConstraintParams* bparam;
     if (lin->hasUbounds() || lin->hasXbounds()) {
-      constraintsParams_.box.emplace_back();
-      bparam = &constraintsParams_.box.back();
+      m_constraintsParams.box.emplace_back();
+      bparam = &m_constraintsParams.box.back();
       bparam->cid = c;
     } else
       bparam = &emptyBoxParams;

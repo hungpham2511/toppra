@@ -37,11 +37,11 @@ class qpOASESWrapper : public Solver {
     /// qpOASES uses row-major storage order.
     typedef Eigen::Matrix<value_type, Eigen::Dynamic, Eigen::Dynamic,
             Eigen::RowMajor> RMatrix;
-    RMatrix H_, A_;
-    Vector lA_, hA_;
+    RMatrix m_H, m_A;
+    Vector m_lA, m_hA;
 
     struct Impl;
-    Impl* impl_;
+    Impl* m_impl;
 }; // class qpOASESWrapper
 
 } // namespace solver

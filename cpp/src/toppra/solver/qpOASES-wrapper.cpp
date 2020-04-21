@@ -23,21 +23,21 @@ qpOASESWrapper::qpOASESWrapper (const LinearConstraintPtrs& constraints, const G
 {
   // Currently only support Canonical Linear Constraint
   Eigen::Index nC = 2; // First constraint is x + 2 D u <= xnext_max, second is xnext_min <= x + 2D u
-  for (const Solver::LinearConstraintParams& linParam : constraintsParams_.lin)
+  for (const Solver::LinearConstraintParams& linParam : m_constraintsParams.lin)
     nC += linParam.F[0].rows();
 
   Eigen::Index nV (nbVars());
   assert(nV == 2);
-  A_  = RMatrix::Zero(nC, nV);
-  lA_ = -Vector::Ones(nC);
-  hA_ = -Vector::Ones(nC);
+  m_A  = RMatrix::Zero(nC, nV);
+  m_lA = -Vector::Ones(nC);
+  m_hA = -Vector::Ones(nC);
 
-  impl_ = new Impl(nV, nC);
+  m_impl = new Impl(nV, nC);
 }
 
 qpOASESWrapper::~qpOASESWrapper ()
 {
-  delete impl_;
+  delete m_impl;
 }
 
 bool qpOASESWrapper::solveStagewiseOptim(std::size_t i,
@@ -58,30 +58,30 @@ bool qpOASESWrapper::solveStagewiseOptim(std::size_t i,
   if (i < N) {
     value_type delta = deltas()[i];
     // TODO self._A[0] access 0-th row ?
-    A_.row(0) << -2 * delta, -1;
-    hA_[0] = - xNext[0];
-    lA_[0] = - INF;
+    m_A.row(0) << -2 * delta, -1;
+    m_hA[0] = - xNext[0];
+    m_lA[0] = - INF;
 
     // TODO self._A[1] access 1-th row ?
-    A_.row(1).setZero();
-    hA_[1] = xNext[1];
-    lA_[1] = -INF;
+    m_A.row(1).setZero();
+    m_hA[1] = xNext[1];
+    m_lA[1] = -INF;
   }
   Eigen::Index cur_index = 2;
-  for (const Solver::LinearConstraintParams& lin : constraintsParams_.lin)
+  for (const Solver::LinearConstraintParams& lin : m_constraintsParams.lin)
   {
     std::size_t j (lin.F.size() == 1 ? 0 : i);
     const Matrix& _F (lin.F[j]);
     const Vector& _g (lin.g[j]);
     Eigen::Index nC (_F.rows());
 
-    A_.block(cur_index, 0, nC, 1) = _F * lin.a[i];
-    A_.block(cur_index, 1, nC, 1) = _F * lin.b[i];
-    hA_.segment(cur_index, nC) = _g - _F * lin.c[i];
-    lA_.segment(cur_index, nC).setConstant(-INF);
+    m_A.block(cur_index, 0, nC, 1) = _F * lin.a[i];
+    m_A.block(cur_index, 1, nC, 1) = _F * lin.b[i];
+    m_hA.segment(cur_index, nC) = _g - _F * lin.c[i];
+    m_lA.segment(cur_index, nC).setConstant(-INF);
     cur_index += nC;
   }
-  for (const Solver::BoxConstraintParams& box : constraintsParams_.box)
+  for (const Solver::BoxConstraintParams& box : m_constraintsParams.box)
   {
     if (!box.u.empty()) {
       l[0] = std::max(l[0], box.u[i][0]);
@@ -100,24 +100,24 @@ bool qpOASESWrapper::solveStagewiseOptim(std::size_t i,
   //)
   int nWSR = 1000;
   if (H.size() == 0) {
-    impl_->qp.setHessianType(qpOASES::HST_ZERO);
-    res = impl_->qp.init (NULL, g.data(),
-        A_.data(),
+    m_impl->qp.setHessianType(qpOASES::HST_ZERO);
+    res = m_impl->qp.init (NULL, g.data(),
+        m_A.data(),
         l.data(), h.data(),
-        lA_.data(), hA_.data(),
+        m_lA.data(), m_hA.data(),
         nWSR);
   } else {
-    H_ = H; // Convert to row-major
-    res = impl_->qp.init (H_.data(), g.data(),
-        A_.data(),
+    m_H = H; // Convert to row-major
+    res = m_impl->qp.init (m_H.data(), g.data(),
+        m_A.data(),
         l.data(), h.data(),
-        lA_.data(), hA_.data(),
+        m_lA.data(), m_hA.data(),
         nWSR);
   }
 
   if (res == qpOASES::SUCCESSFUL_RETURN) {
     solution.resize(nbVars());
-    impl_->qp.getPrimalSolution(solution.data());
+    m_impl->qp.getPrimalSolution(solution.data());
     return true;
   }
   return false;

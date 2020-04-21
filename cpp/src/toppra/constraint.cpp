@@ -7,7 +7,7 @@ namespace toppra {
 std::ostream& LinearConstraint::print(std::ostream& os) const
 {
   return os <<
-    "    Discretization Scheme: " << discretizationType_ << "\n"
+    "    Discretization Scheme: " << m_discretizationType << "\n"
     "    Has " << (hasLinearInequalities() ? "linear inequalities, " : "")
     << (hasUbounds() ? "bounds on u, " : "")
     << (hasXbounds() ? "bounds on x, " : "") << "\n";
@@ -16,7 +16,7 @@ std::ostream& LinearConstraint::print(std::ostream& os) const
 void LinearConstraint::discretizationType (DiscretizationType type)
 {
   // I don't think the check done in Python is useful in C++.
-  discretizationType_ = type;
+  m_discretizationType = type;
 }
 
 /// \internal
@@ -152,7 +152,7 @@ void LinearConstraint::allocateParams(std::size_t N,
 {
   if (hasLinearInequalities()) {
     Eigen::Index m (nbVariables()), k (nbConstraints());
-    if (discretizationType_ == Interpolation) {
+    if (m_discretizationType == Interpolation) {
       m *= 2;
       k *= 2;
     }
@@ -173,7 +173,7 @@ void LinearConstraint::computeParams(const GeometricPath& path, const Vector& gr
   assert (N > 0);
   if (hasLinearInequalities()) {
     Eigen::Index m (nbVariables()), k (nbConstraints());
-    if (discretizationType_ == Interpolation) {
+    if (m_discretizationType == Interpolation) {
       m *= 2;
       k *= 2;
     }
@@ -185,10 +185,10 @@ void LinearConstraint::computeParams(const GeometricPath& path, const Vector& gr
   if (hasXbounds() && xbound.size() != N)
     throw std::invalid_argument("Wrong xbound vector size.");
 
-  if (discretizationType_ == Interpolation && hasLinearInequalities()) {
+  if (m_discretizationType == Interpolation && hasLinearInequalities()) {
     Vectors a_col, b_col, c_col, g_col;
     Matrices F_col;
-    allocateLinearPart (N, k_, m_, constantF(), a, b, c, F, g);
+    allocateLinearPart (N, m_k, m_m, constantF(), a, b, c, F, g);
     computeParams_impl(path, gridpoints, a_col, b_col, c_col, F_col, g_col, ubound, xbound);
     collocationToInterpolate(gridpoints, constantF(),
         a_col, b_col, c_col, F_col, g_col,

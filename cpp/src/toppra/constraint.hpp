@@ -48,7 +48,7 @@ class LinearConstraint {
   public:
     DiscretizationType discretizationType () const
     {
-      return discretizationType_;
+      return m_discretizationType;
     }
 
     void discretizationType (DiscretizationType type);
@@ -59,19 +59,19 @@ class LinearConstraint {
      * */
     bool constantF () const
     {
-      return constantF_;
+      return m_constantF;
     }
 
     /// Dimension of \f$g\f$.
     Eigen::Index nbConstraints () const
     {
-      return k_;
+      return m_k;
     }
 
     /// Dimension of \f$a, b, c, v\f$.
     Eigen::Index nbVariables () const
     {
-      return m_;
+      return m_m;
     }
 
     bool hasLinearInequalities () const
@@ -83,14 +83,14 @@ class LinearConstraint {
      * */
     bool hasUbounds () const
     {
-      return hasUbounds_;
+      return m_hasUbounds;
     }
 
     /** Whether this constraint has bounds on \f$x\f$.
      * */
     bool hasXbounds () const
     {
-      return hasXbounds_;
+      return m_hasXbounds;
     }
 
     /**
@@ -140,11 +140,11 @@ class LinearConstraint {
      * */
     LinearConstraint(Eigen::Index k, Eigen::Index m, bool constantF,
         bool uBound, bool xBound)
-      : discretizationType_ (Collocation)
-      , k_ (k), m_ (m)
-      , constantF_ (constantF)
-      , hasUbounds_ (uBound)
-      , hasXbounds_ (xBound)
+      : m_discretizationType (Collocation)
+      , m_k (k), m_m (m)
+      , m_constantF (constantF)
+      , m_hasUbounds (uBound)
+      , m_hasXbounds (xBound)
     {}
 
     virtual void computeParams_impl(const GeometricPath& path,
@@ -153,9 +153,9 @@ class LinearConstraint {
         Matrices& F, Vectors& g,
         Bounds& ubound, Bounds& xbound) = 0;
 
-    Eigen::Index k_, m_;
-    DiscretizationType discretizationType_;
-    bool constantF_, hasUbounds_, hasXbounds_;
+    Eigen::Index m_k, m_m;
+    DiscretizationType m_discretizationType;
+    bool m_constantF, m_hasUbounds, m_hasXbounds;
 }; // class LinearConstraint
 
 inline std::ostream& operator<< (std::ostream& os, const LinearConstraint& lc)

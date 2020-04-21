@@ -30,20 +30,19 @@ class Pinocchio : public JointTorque {
     void computeInverseDynamics (const Vector& q, const Vector& v, const Vector& a,
         Vector& tau)
     {
-      tau = pinocchio::rnea(model_, data_, q, v, a);
+      tau = pinocchio::rnea(m_model, m_data, q, v, a);
     }
 
     Pinocchio (const Model& model, const Vector& frictionCoeffs)
       : JointTorque (-model.effortLimit, model.effortLimit, frictionCoeffs)
-      , model_ (model)
-      , data_ (model)
+      , m_model (model)
+      , m_data (model)
     {
     }
 
   private:
-    const Model& model_;
-    Data data_;
-    Vector lower_, upper_, frictionCoeffs_;
+    const Model& m_model;
+    Data m_data;
 }; // class Pinocchio
 
 } // namespace jointTorque
