@@ -17,3 +17,5 @@ endif()
 if(BUILD_WITH_qpOASES)
   target_compile_definitions(all_tests PRIVATE -DBUILD_WITH_qpOASES)
 endif()
+
+add_test(NAME all_tests COMMAND all_tests)
