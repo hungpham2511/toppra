@@ -114,6 +114,8 @@ class Solver {
     Vector m_deltas;
 
 }; // class Solver
+
+typedef std::shared_ptr<Solver> SolverPtr;
 } // namespace toppra
 
 #endif

@@ -8,6 +8,8 @@ set(SOURCE_FILES
 
   toppra/geometric_path.cpp
   toppra/geometric_path/piecewise_poly_path.cpp
+
+  toppra/algorithm/toppra.cpp
   )
 if(BUILD_WITH_qpOASES)
     list(APPEND SOURCE_FILES
