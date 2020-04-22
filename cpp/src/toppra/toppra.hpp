@@ -37,6 +37,7 @@ namespace toppra {
   } // namespace constraint
 
   class Solver;
+  typedef std::shared_ptr<Solver> SolverPtr;
   namespace solver {
     class qpOASESWrapper;
   } // namespace solver

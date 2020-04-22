@@ -115,7 +115,6 @@ class Solver {
 
 }; // class Solver
 
-typedef std::shared_ptr<Solver> SolverPtr;
 } // namespace toppra
 
 #endif

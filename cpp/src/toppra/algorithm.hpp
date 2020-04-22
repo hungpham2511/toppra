@@ -10,6 +10,7 @@ namespace toppra {
 
 struct ParametrizationData {
   Vector K, X;
+  Matrix Vs;
   int ret_code = -1;
 };
 
@@ -25,7 +26,10 @@ public:
    */
   void setN(int N) { m_N = N; };
 
-  ParametrizationData getParameterizationData();
+  ParametrizationData getParameterizationData() const {
+    return m_internal_data;
+  };
+
   virtual int computePathParametrization(Vector &path_parametrization) = 0;
   virtual ~PathParametrizationAlgorithm() {}
 
@@ -34,6 +38,7 @@ protected:
   const GeometricPath &m_path;
   SolverPtr m_solver;
   int m_N = 100;
+  ParametrizationData m_internal_data;
 };
 
 } // namespace toppra
