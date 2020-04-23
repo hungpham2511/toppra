@@ -14,11 +14,19 @@ struct ParametrizationData {
   int ret_code = -1;
 };
 
+/** Base class for time parametrization algorithms.
+ *
+ */
 class PathParametrizationAlgorithm {
 public:
+  /** Construct the problem instance.
+   *
+   *  \param  constraints  List of constraints.
+   *  \param  path  The geometric path.
+   *
+   */
   PathParametrizationAlgorithm(const LinearConstraintPtrs &constraints,
-                               const GeometricPath &path)
-      : m_constraints(constraints), m_path(path){};
+                               const GeometricPath &path);
 
   /** \brief Set the level of discretization used by the solver.
    *
@@ -30,10 +38,25 @@ public:
     return m_internal_data;
   };
 
-  virtual int computePathParametrization(Vector &path_parametrization) = 0;
+  /** Compute the time parametrization of the given path.
+   *
+   * \param path_parametrization[out] The result path parametrization.
+   * \param vel_start
+   * \param vel_end
+   * \return Return code.
+   */
+  virtual int computePathParametrization(Vector &path_parametrization,
+                                         double vel_start = 0,
+                                         double vel_end = 0);
   virtual ~PathParametrizationAlgorithm() {}
 
+  int computeFeasibleSets(Matrix &feasible_sets);
+  int computeControllableSets(Matrix &controllable_sets,
+                              Bound vel_ends = Bound{0, 0});
+
 protected:
+  /** To be implemented in child method. */
+  int forwardStep(int i, Bound L_current, Bound K_next, Vector & solution);
   LinearConstraintPtrs m_constraints;
   const GeometricPath &m_path;
   SolverPtr m_solver;
