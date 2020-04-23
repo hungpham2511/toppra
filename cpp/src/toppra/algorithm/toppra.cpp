@@ -6,9 +6,8 @@
 namespace toppra {
 namespace algorithm {
 
-TOPPRA::TOPPRA(const LinearConstraintPtrs &constraints,
-               const GeometricPath &path)
+TOPPRA::TOPPRA(const LinearConstraintPtrs &constraints, const GeometricPath &path)
     : PathParametrizationAlgorithm{constraints, path} {};
 
-} // namespace algorithm
-} // namespace toppra
+}  // namespace algorithm
+}  // namespace toppra

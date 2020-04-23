@@ -42,7 +42,6 @@ public:
 };
 
 TEST_F(ProblemInstance, ConstructNewInstance) {
-
   toppra::LinearConstraintPtrs v{
       std::make_shared<toppra::constraint::LinearJointVelocity>(
           -toppra::Vector::Ones(nDof), toppra::Vector::Ones(nDof)),

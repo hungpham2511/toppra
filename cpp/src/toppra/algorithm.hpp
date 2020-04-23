@@ -8,6 +8,13 @@
 
 namespace toppra {
 
+enum ReturnCode {
+  OK = 0,
+  ERR_UNKNOWN = 1,
+  ERR_FAIL_CONTROLLABLE = 2,
+  ERR_FAIL_FORWARD_PASS = 3
+};
+
 struct ParametrizationData {
   Vector K, X;
   Matrix Vs;
@@ -18,7 +25,7 @@ struct ParametrizationData {
  *
  */
 class PathParametrizationAlgorithm {
-public:
+ public:
   /** Construct the problem instance.
    *
    *  \param  constraints  List of constraints.
@@ -34,9 +41,7 @@ public:
    */
   void setN(int N) { m_N = N; };
 
-  ParametrizationData getParameterizationData() const {
-    return m_internal_data;
-  };
+  ParametrizationData getParameterizationData() const { return m_internal_data; };
 
   /** Compute the time parametrization of the given path.
    *
@@ -45,25 +50,38 @@ public:
    * \param vel_end
    * \return Return code.
    */
-  virtual int computePathParametrization(Vector &path_parametrization,
-                                         double vel_start = 0,
-                                         double vel_end = 0);
+  virtual ReturnCode computePathParametrization(Vector &path_parametrization,
+                                                double vel_start = 0,
+                                                double vel_end = 0);
   virtual ~PathParametrizationAlgorithm() {}
 
-  int computeFeasibleSets(Matrix &feasible_sets);
-  int computeControllableSets(Matrix &controllable_sets,
-                              Bound vel_ends = Bound{0, 0});
+ protected:
+  /** \brief Select solver and gridpoints to use.
+   *
+   * This method implements a simple way to select gridpoints.
+   */
+  virtual void initialize();
 
-protected:
+  ReturnCode computeFeasibleSets(Matrix &feasible_sets);
+  ReturnCode computeControllableSets(Matrix &controllable_sets,
+                                     Bound vel_ends = Bound{0, 0});
+
   /** To be implemented in child method. */
-  int forwardStep(int i, Bound L_current, Bound K_next, Vector & solution);
+  ReturnCode forwardStep(int i, Bound L_current, Bound K_next, Vector &solution);
   LinearConstraintPtrs m_constraints;
   const GeometricPath &m_path;
   SolverPtr m_solver;
+
+  /// \brief Number of segments in the discretized problems.
+  /// See m_gridpoints for more information.
   int m_N = 100;
+
+  /// \brief Grid-points used for solving the discretized problem.
+  /// The number of points must equal m_N + 1.
+  Vector m_gridpoints;
   ParametrizationData m_internal_data;
 };
 
-} // namespace toppra
+}  // namespace toppra
 
 #endif
