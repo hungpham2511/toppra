@@ -85,6 +85,14 @@ TEST_F(ConstructPiecewisePoly, CorrectDOF) {
   ASSERT_THAT(path.dof(), testing::Eq(2));
 }
 
+TEST_F(ConstructPiecewisePoly, CorrectPathInterval) {
+  toppra::Bound b = path.pathInterval();
+  ASSERT_DOUBLE_EQ(b[0], 0);
+  ASSERT_DOUBLE_EQ(b[1], 2);
+}
+
+
+
 // Current profile result (Release build)
 // Took ~ 400 usec to evaluate 1000 points.
 // scipy.PPoly took ~ 125 usec.

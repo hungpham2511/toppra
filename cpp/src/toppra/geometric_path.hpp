@@ -93,11 +93,7 @@ public:
   /**
    * Return the starting and ending path positions.
    */
-  Bound pathInterval() const {
-    Bound v;
-    v << m_breakpoints[0], m_breakpoints[-1];
-    return v;
-  };
+  Bound pathInterval() const;
 
 private:
   size_t findSegmentIndex(value_type pos) const;
