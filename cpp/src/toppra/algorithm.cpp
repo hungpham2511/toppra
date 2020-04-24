@@ -9,68 +9,69 @@ PathParametrizationAlgorithm::PathParametrizationAlgorithm(
     : m_constraints(constraints), m_path(path){};
 
 ReturnCode PathParametrizationAlgorithm::computePathParametrization(
-    Vector &path_parametrization, double vel_start, double vel_end) {
+    double vel_start, double vel_end) {
   ReturnCode ret;
   initialize();
   m_solver->setupSolver();
   Bound vel_ends;
   vel_ends << vel_end, vel_end;
   ret = computeControllableSets(vel_ends);
-  if (ret > 0) {
+  if ((int) ret > 0) {
     return ret;
   }
   ret = computeForwardPass(vel_start);
-  path_parametrization = m_parametrization;
-  return OK;
+  return ret;
 };
 
 ReturnCode PathParametrizationAlgorithm::computeControllableSets(Bound vel_ends) {
-  ReturnCode ret = OK;
+  ReturnCode ret = ReturnCode::OK;
   bool solver_ret;
   Vector g_upper{2}, g_lower{2}, solution;
   g_upper << 1e-9, -1;
   g_lower << - 1e-9, 1;
-  m_controllable_sets(m_N, 0) = vel_ends(0);
-  m_controllable_sets(m_N, 1) = vel_ends(1);
+  m_data.controllable_sets(m_N, 0) = vel_ends(0);
+  m_data.controllable_sets(m_N, 1) = vel_ends(1);
 
   Matrix H;
-  Bound x, xNext;
+  Bound x, x_next;
   x << 0, 100;
-  xNext << 0, 1;
+  x_next << 0, 1;
   for (int i = m_N - 1; i >= 0; i--) {
-    // xNext << controllable_sets(i + 1, 0), controllable_sets(i + 1, 1);
-    solver_ret = m_solver->solveStagewiseOptim(m_N - 1, H, g_upper, x, xNext, solution);
+    // x_next << controllable_sets(i + 1, 0), controllable_sets(i + 1, 1);
+    solver_ret = m_solver->solveStagewiseOptim(m_N - 1, H, g_upper, x, x_next, solution);
     // std::cout << "up: " << solution << std::endl;
 
 
     if (!solver_ret) {
-      ret = ERR_FAIL_CONTROLLABLE;
+      ret = ReturnCode::ERR_FAIL_CONTROLLABLE;
       std::cout << "Fail: controllable, upper problem, idx: " << i << std::endl;
       break;
     }
 
-    m_controllable_sets(i, 1) = solution[1];
+    m_data.controllable_sets(i, 1) = solution[1];
 
-    solver_ret = m_solver->solveStagewiseOptim(m_N - 1, H, g_lower, x, xNext, solution);
+    solver_ret = m_solver->solveStagewiseOptim(m_N - 1, H, g_lower, x, x_next, solution);
     // std::cout << "down: " << solution << std::endl;
 
     if (!solver_ret) {
-      ret = ERR_FAIL_CONTROLLABLE;
+      ret = ReturnCode::ERR_FAIL_CONTROLLABLE;
       std::cout << "Fail: controllable, lower problem, idx: " << i << std::endl;
       break;
     }
 
-    m_controllable_sets(i, 0) = solution[1];
+    m_data.controllable_sets(i, 0) = solution[1];
   }
   return ret;
 }
 
 void PathParametrizationAlgorithm::initialize() {
-  m_gridpoints =
+  m_data.gridpoints =
       Vector::LinSpaced(m_N + 1, m_path.pathInterval()(0), m_path.pathInterval()(1));
-  m_parametrization.resize(m_N + 1);
-  m_controllable_sets.resize(m_N + 1, 2);
+  m_data.parametrization.resize(m_N + 1);
+  m_data.controllable_sets.resize(m_N + 1, 2);
   m_solver =
-      std::make_shared<solver::qpOASESWrapper>(m_constraints, m_path, m_gridpoints);
+      std::make_shared<solver::qpOASESWrapper>(m_constraints, m_path, m_data.gridpoints);
 }
+
+
 }  // namespace toppra

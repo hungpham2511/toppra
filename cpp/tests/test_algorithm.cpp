@@ -49,7 +49,6 @@ TEST_F(ProblemInstance, ConstructNewInstance) {
       std::make_shared<toppra::constraint::LinearJointAcceleration>(
           -0.2 * toppra::Vector::Ones(nDof), 0.2 * toppra::Vector::Ones(nDof))};
   toppra::algorithm::TOPPRA instance{v, path};
-  toppra::Vector pp;
-  int ret_code = instance.computePathParametrization(pp);
-  ASSERT_THAT(ret_code, toppra::OK);
+  toppra::ReturnCode ret_code = instance.computePathParametrization();
+  ASSERT_THAT(ret_code, toppra::ReturnCode::OK) << "actual return code: " << (int) ret_code;
 }

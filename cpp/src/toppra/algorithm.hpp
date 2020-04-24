@@ -8,17 +8,28 @@
 
 namespace toppra {
 
-enum ReturnCode {
+enum class ReturnCode {
   OK = 0,
   ERR_UNKNOWN = 1,
   ERR_FAIL_CONTROLLABLE = 2,
-  ERR_FAIL_FORWARD_PASS = 3
+  ERR_FAIL_FORWARD_PASS = 3,
+  ERR_UNINITIALIZED = 4,
 };
 
 struct ParametrizationData {
-  Vector K, X;
-  Matrix Vs;
-  int ret_code = -1;
+
+  /// \brief Grid-points used for solving the discretized problem.
+  /// The number of points must equal m_N + 1.
+  Vector gridpoints;
+
+  ///  Output parametrization (squared path velocity)
+  Vector parametrization;
+
+  Matrix controllable_sets;
+  Matrix feasible_sets;
+
+  ///  Return code of the algorithm.
+  ReturnCode ret_code = ReturnCode::ERR_UNINITIALIZED;
 };
 
 /** Base class for time parametrization algorithms.
@@ -43,17 +54,15 @@ class PathParametrizationAlgorithm {
 
   /** \brief Get output or result of algorithm.
    */
-  ParametrizationData getParameterizationData() const { return m_internal_data; };
+  ParametrizationData getParameterizationData() const { return m_data; };
 
   /** Compute the time parametrization of the given path.
    *
-   * \param path_parametrization[out] The result path parametrization.
    * \param vel_start
    * \param vel_end
    * \return Return code.
    */
-  virtual ReturnCode computePathParametrization(Vector &path_parametrization,
-                                                double vel_start = 0,
+  virtual ReturnCode computePathParametrization(double vel_start = 0,
                                                 double vel_end = 0);
   virtual ~PathParametrizationAlgorithm() {}
 
@@ -74,15 +83,12 @@ class PathParametrizationAlgorithm {
   const GeometricPath &m_path;
   SolverPtr m_solver;
 
+  /// Struct containing algorithm output.
+  ParametrizationData m_data;
+
   /// \brief Number of segments in the discretized problems.
   /// See m_gridpoints for more information.
   int m_N = 100;
-
-  /// \brief Grid-points used for solving the discretized problem.
-  /// The number of points must equal m_N + 1.
-  Vector m_gridpoints, m_parametrization;
-  ParametrizationData m_internal_data;
-  Matrix m_controllable_sets, m_feasible_sets;
 };
 
 }  // namespace toppra
