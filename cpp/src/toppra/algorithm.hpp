@@ -17,7 +17,6 @@ enum class ReturnCode {
 };
 
 struct ParametrizationData {
-
   /// \brief Grid-points used for solving the discretized problem.
   /// The number of points must equal m_N + 1.
   Vector gridpoints;
@@ -72,9 +71,9 @@ class PathParametrizationAlgorithm {
    * This method implements a simple way to select gridpoints.
    */
   virtual void initialize();
-  
+
   /** \brief Compute the forward pass.
-   *    
+   *
    * Derived class should provide a suitable forward pass function,
    * depending on the desired objective.
    */
@@ -83,7 +82,6 @@ class PathParametrizationAlgorithm {
   /** Compute the sets of feasible squared velocities.
    */
   ReturnCode computeFeasibleSets(Matrix &feasible_sets);
-
 
   /** Compute the sets of controllable squared path velocities.
    */
