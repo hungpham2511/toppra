@@ -1,3 +1,4 @@
+#include "toppra/algorithm.hpp"
 #include <gmock/gmock-matchers.h>
 #include <memory>
 #include <toppra/algorithm/toppra.hpp>
@@ -50,5 +51,5 @@ TEST_F(ProblemInstance, ConstructNewInstance) {
   toppra::algorithm::TOPPRA instance{v, path};
   toppra::Vector pp;
   int ret_code = instance.computePathParametrization(pp);
-  ASSERT_THAT(ret_code, testing::Ge(0));
+  ASSERT_THAT(ret_code, toppra::OK);
 }

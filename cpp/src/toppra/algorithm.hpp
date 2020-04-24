@@ -41,6 +41,8 @@ class PathParametrizationAlgorithm {
    */
   void setN(int N) { m_N = N; };
 
+  /** \brief Get output or result of algorithm.
+   */
   ParametrizationData getParameterizationData() const { return m_internal_data; };
 
   /** Compute the time parametrization of the given path.
@@ -61,10 +63,10 @@ class PathParametrizationAlgorithm {
    * This method implements a simple way to select gridpoints.
    */
   virtual void initialize();
+  virtual ReturnCode computeForwardPass(double vel_start) = 0;
 
   ReturnCode computeFeasibleSets(Matrix &feasible_sets);
-  ReturnCode computeControllableSets(Matrix &controllable_sets,
-                                     Bound vel_ends = Bound{0, 0});
+  ReturnCode computeControllableSets(Bound vel_ends);
 
   /** To be implemented in child method. */
   ReturnCode forwardStep(int i, Bound L_current, Bound K_next, Vector &solution);
@@ -78,8 +80,9 @@ class PathParametrizationAlgorithm {
 
   /// \brief Grid-points used for solving the discretized problem.
   /// The number of points must equal m_N + 1.
-  Vector m_gridpoints;
+  Vector m_gridpoints, m_parametrization;
   ParametrizationData m_internal_data;
+  Matrix m_controllable_sets, m_feasible_sets;
 };
 
 }  // namespace toppra
