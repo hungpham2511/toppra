@@ -72,13 +72,24 @@ class PathParametrizationAlgorithm {
    * This method implements a simple way to select gridpoints.
    */
   virtual void initialize();
+  
+  /** \brief Compute the forward pass.
+   *    
+   * Derived class should provide a suitable forward pass function,
+   * depending on the desired objective.
+   */
   virtual ReturnCode computeForwardPass(double vel_start) = 0;
 
+  /** Compute the sets of feasible squared velocities.
+   */
   ReturnCode computeFeasibleSets(Matrix &feasible_sets);
+
+
+  /** Compute the sets of controllable squared path velocities.
+   */
   ReturnCode computeControllableSets(Bound vel_ends);
 
   /** To be implemented in child method. */
-  ReturnCode forwardStep(int i, Bound L_current, Bound K_next, Vector &solution);
   LinearConstraintPtrs m_constraints;
   const GeometricPath &m_path;
   SolverPtr m_solver;
