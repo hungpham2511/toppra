@@ -1,8 +1,6 @@
 #include "gtest/gtest.h"
 #include <Eigen/Dense>
 
-#include <Eigen/src/Core/util/Constants.h>
-#include <gmock/gmock-matchers.h>
 #include <iostream>
 #include <stdexcept>
 #include <vector>

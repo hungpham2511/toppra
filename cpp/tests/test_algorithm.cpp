@@ -1,4 +1,3 @@
-#include <gmock/gmock-matchers.h>
 #include <memory>
 #include <toppra/algorithm/toppra.hpp>
 #include <toppra/constraint.hpp>
@@ -8,7 +7,6 @@
 #include <toppra/toppra.hpp>
 #include "toppra/algorithm.hpp"
 
-#include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
 #define TOPPRA_PRECISION 1e-6
