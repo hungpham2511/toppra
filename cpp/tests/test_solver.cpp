@@ -33,6 +33,8 @@ public:
   toppra::PiecewisePolyPath path;
 };
 
+std::map<std::string, toppra::Vectors> solutions;
+
 #ifdef BUILD_WITH_qpOASES
 TEST_F(Solver, qpOASESWrapper) {
   using namespace toppra;
@@ -59,11 +61,15 @@ TEST_F(Solver, qpOASESWrapper) {
   Bound x, xNext;
   x << -infty, infty;
   xNext << -infty, infty;
+  Vectors sols;
   for (int i = 0; i < N; ++i) {
     EXPECT_TRUE(solver.solveStagewiseOptim(i, H, g, x, xNext, solution));
     EXPECT_EQ(solution.size(), solver.nbVars());
+    sols.emplace_back(solution);
   }
   solver.closeSolver();
+
+  solutions.emplace("qpOASES", sols);
 }
 #endif
 
@@ -93,10 +99,38 @@ TEST_F(Solver, GLPKWrapper) {
   Bound x, xNext;
   x << -infty, infty;
   xNext << -infty, infty;
+  Vectors sols;
   for (int i = 0; i < N; ++i) {
     EXPECT_TRUE(solver.solveStagewiseOptim(i, H, g, x, xNext, solution));
     EXPECT_EQ(solution.size(), solver.nbVars());
+    sols.emplace_back(solution);
   }
   solver.closeSolver();
+
+  solutions.emplace("GLPK", sols);
 }
 #endif
+
+// Check that all the solvers returns the same solution.
+// TODO each solver is expected to be tested on the same inputs. It should be
+// templated, so that we know the same problem is setup (with a template hook to
+// enable adding code specific to one solver).
+TEST_F(Solver, consistency)
+{
+  auto ref = solutions.begin();
+  bool first = true;
+  for(const auto& pair : solutions) {
+    if (first) {
+      first = false;
+      continue;
+    }
+    ASSERT_EQ(pair.second.size(), ref->second.size());
+    for (int i = 0; i < pair.second.size(); ++i) {
+      ASSERT_EQ(pair.second[i].size(), ref->second[i].size());
+      for (int j = 0; j < pair.second[i].size(); ++j) {
+        EXPECT_NEAR(pair.second[i][j], ref->second[i][j], 1e-6)
+          << " solvers " << ref->first << " and " << pair.first << " disagree.";
+      }
+    }
+  }
+}

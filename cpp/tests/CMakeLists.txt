@@ -17,7 +17,7 @@ endif()
 if(BUILD_WITH_qpOASES)
   target_compile_definitions(all_tests PRIVATE -DBUILD_WITH_qpOASES)
 endif()
-if(BUILD_WITH_qpOASES)
+if(BUILD_WITH_GLPK)
   target_compile_definitions(all_tests PRIVATE -DBUILD_WITH_GLPK)
 endif()
 
