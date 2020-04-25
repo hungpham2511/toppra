@@ -90,14 +90,14 @@ jobs:
             curl http://robotpkg.openrobots.org/packages/debian/robotpkg.key \
               | sudo apt-key add -
             sudo apt update
-            sudo apt install -y clang-tidy libeigen3-dev robotpkg-pinocchio robotpkg-qpoases
+            sudo apt install -y clang-tidy libeigen3-dev robotpkg-pinocchio robotpkg-qpoases libglpk-dev
 
       - run:
           name: build
           command: |
             export LD_LIBRARY_PATH=/opt/openrobots/lib:${LD_LIBRARY_PATH}
             export CMAKE_PREFIX_PATH=/opt/openrobots
-            mkdir build && cd build && cmake -DBUILD_WITH_PINOCCHIO=ON -DBUILD_WITH_qpOASES=ON ..
+            mkdir build && cd build && cmake -DBUILD_WITH_PINOCCHIO=ON -DBUILD_WITH_qpOASES=ON -DBUILD_WITH_GLPK=ON ..
             make -j4
           working_directory: ~/repo/cpp
 
