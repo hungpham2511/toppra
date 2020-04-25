@@ -1,5 +1,9 @@
+#ifdef BUILD_WITH_qpOASES
 #include <toppra/solver/qpOASES-wrapper.hpp>
+#endif
+#ifdef BUILD_WITH_GLPK
 #include <toppra/solver/glpk-wrapper.hpp>
+#endif
 
 #include <toppra/constraint/linear_joint_velocity.hpp>
 #include <toppra/constraint/linear_joint_acceleration.hpp>
