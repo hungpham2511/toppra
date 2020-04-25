@@ -7,21 +7,26 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 option(BUILD_WITH_PINOCCHIO "Compile with Pinocchio library" OFF)
 # Solvers
 option(BUILD_WITH_qpOASES "Compile the wrapper for qpOASES" OFF)
+option(BUILD_WITH_GLPK "Compile the wrapper for GLPK (GPL license)" OFF)
 
 find_package (Threads)
 
 find_package (Eigen3 REQUIRED)
 message(STATUS "Found Eigen version ${EIGEN3_VERSION_STRING}")
 
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 if(BUILD_WITH_PINOCCHIO)
     find_package(pinocchio REQUIRED)
     message(STATUS "Found pinocchio ${pinocchio_VERSION}")
 endif()
 if(BUILD_WITH_qpOASES)
-    set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
-    find_package("qpOASES" REQUIRED)
+    find_package(qpOASES REQUIRED)
     message(STATUS "Found qpOASES")
 endif()
+if(BUILD_WITH_GLPK)
+    find_package(GLPK REQUIRED)
+    message(STATUS "Found glpk ${GLPK_LIBRARY} ${GLPK_INCLUDE_DIR}")
+endif(BUILD_WITH_GLPK)
 
 add_subdirectory(src)
 add_subdirectory(doc)

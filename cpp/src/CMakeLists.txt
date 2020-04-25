@@ -13,15 +13,22 @@ if(BUILD_WITH_qpOASES)
     list(APPEND SOURCE_FILES
         toppra/solver/qpOASES-wrapper.cpp)
 endif()
+if(BUILD_WITH_GLPK)
+    list(APPEND SOURCE_FILES
+        toppra/solver/glpk-wrapper.cpp)
+endif()
 
 add_library(toppra SHARED ${SOURCE_FILES})
 target_include_directories(toppra PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<INSTALL_INTERFACE:include>
-  ${qpOASES_INCLUDE_DIRS})
+  ${qpOASES_INCLUDE_DIRS}
+  ${GLPK_INCLUDE_DIRS}
+  )
 target_link_libraries(toppra PUBLIC
-    ${qpOASES_LIBRARY}
-    )
+  ${qpOASES_LIBRARIES}
+  ${GLPK_LIBRARIES}
+  )
 
 if (${EIGEN3_VERSION_STRING} VERSION_LESS 3.3) 
   target_compile_definitions     (toppra PUBLIC ${EIGEN3_DEFINITIONS} ) 
@@ -43,7 +50,7 @@ install(FILES
   toppra/geometric_path.hpp
   toppra/toppra.hpp
 
-  toppra/solver.cpp
+  toppra/solver.hpp
   toppra/solver/qpOASES-wrapper.hpp
 
   DESTINATION include/toppra)
