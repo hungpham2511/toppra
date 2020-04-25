@@ -2,12 +2,18 @@
 
 ## 0.2.4 (in progress)
 
-- Simplify TOPPRA class interface.
-- Implement a new trajectory class for specified velocities.
-- [0e022c][cm-0e022c] Update README.md to reflect development roadmap.
-- Format some source files with black.
-- [#78][gh-78] Improve documentation structure.
-- [#79][gh-79] Improve documentation structure.
+### Added
+
+- [cpp] Initial cpp TOPPRA implementation.
+- [python] Implement a new trajectory class for specified velocities.
+
+### Changed
+- [cpp] Bug fixes in solver wrapper.
+- [python] Simplify TOPPRA class interface.
+- [python] [0e022c][cm-0e022c] Update README.md to reflect development roadmap.
+- [python] Format some source files with black.
+- [python] [#78][gh-78] Improve documentation structure.
+- [python] [#79][gh-79] Improve documentation structure.
 
 
 ### 0.2.3 (Jan 25 2020)
