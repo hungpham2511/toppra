@@ -15,6 +15,9 @@ namespace toppra {
  */
 class GeometricPath {
 public:
+
+  GeometricPath()  = default;
+
   /**
    * Constructor of GeometricPath on vector spaces.
    */
@@ -72,6 +75,9 @@ protected:
  */
 class PiecewisePolyPath : public GeometricPath {
 public:
+
+  PiecewisePolyPath() = default;
+
   /**
    * Consructor.
    *

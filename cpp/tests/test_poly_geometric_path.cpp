@@ -3,6 +3,7 @@
 #include <Eigen/Dense>
 
 #include <Eigen/src/Core/util/Constants.h>
+#include <gmock/gmock-matchers.h>
 #include <iostream>
 #include <stdexcept>
 #include <vector>
@@ -145,3 +146,113 @@ TEST_F(BadInputs, ThrowIfWrongNumberOfBreakPoints) {
       toppra::PiecewisePolyPath(coefficents, std::vector<double>{0, 1, 2, 3}),
       std::runtime_error);
 }
+
+
+
+// import toppra as ta
+// 
+// path = ta.SplineInterpolator([0, 1, 2, 3], [[0, 0], [1, 3], [2, 4], [0, 0]])
+// 
+// def print_cpp_code(p):
+//     out = ""
+//     for seg_idx in range(p.cspl.c.shape[1]):
+//         out += "coeff{:d} << ".format(seg_idx)
+//         for i, t in enumerate(p.cspl.c[:, seg_idx, :].flatten().tolist()):
+//             if i == len(p.cspl.c[:, seg_idx, :].flatten().tolist()) - 1:
+//                 out += "{:f};\n".format(t)
+//             else:
+//                 out += "{:f}, ".format(t)
+//     return out
+// 
+// print(print_cpp_code(path))
+// print("breakpoints: {}".format([0, 1, 2, 3]))
+// x_eval = [0, 0.5, 1., 1.1, 2.5]
+// print("Eval for x_eval = {:}\npath(x_eval)=\n{}\npath(x_eval, 1)=\n{}\npath(x_eval, 2)=\n{}".format(
+//     x_eval, path(x_eval), path(x_eval, 1), path(x_eval, 2)))
+
+
+class CompareWithScipyCubicSpline : public testing::Test {
+
+public:
+  CompareWithScipyCubicSpline() {
+    toppra::Matrix coeff0{4, 2}, coeff1{4, 2}, coeff2{4, 2};
+    coeff0 << -0.500000, -0.500000, 1.500000, 0.500000, 0.000000, 3.000000, 0.000000, 0.000000;
+    coeff1 << -0.500000, -0.500000, 0.000000, -1.000000, 1.500000, 2.500000, 1.000000, 3.000000;
+    coeff2 << -0.500000, -0.500000, -1.500000, -2.500000, 0.000000, -1.000000, 2.000000, 4.000000;
+    toppra::Matrices coefficents = {coeff0, coeff1, coeff2};
+    path = toppra::PiecewisePolyPath(coefficents, std::vector<double>{0, 1, 2, 3});
+
+    x_eval.resize(5);
+    x_eval << 0, 0.5, 1, 1.1, 2.5;
+  // Eval for x_eval = [0, 0.5, 1.0, 1.1, 2.5]
+  // path(x_eval)=
+  // [[0.     0.    ]
+  //  [0.3125 1.5625]
+  //  [1.     3.    ]
+  //  [1.1495 3.2395]
+  //  [1.5625 2.8125]]
+  toppra::Vector v0(2); v0 << 0, 0;
+  toppra::Vector v1(2); v1 << 0.3125, 1.5625;
+  toppra::Vector v2(2); v2 << 1.    , 3.    ;
+  toppra::Vector v3(2); v3 << 1.1495, 3.2395;
+  toppra::Vector v4(2); v4 << 1.5625, 2.8125;
+  expected_pos = toppra::Vectors{v0, v1, v2, v3, v4};
+
+  // Eval for x_eval = [0, 0.5, 1.0, 1.1, 2.5]
+  // path(x_eval, 1)=
+  // [[ 0.     3.   ]
+  //  [ 1.125  3.125]
+  //  [ 1.5    2.5  ]
+  //  [ 1.485  2.285]
+  //  [-1.875 -3.875]]
+  v0 <<  0.   ,  3.   ;
+  v1 <<  1.125,  3.125;
+  v2 <<  1.5  ,  2.5  ;
+  v3 <<  1.485,  2.285;
+  v4 << -1.875, -3.875;
+  expected_vel = toppra::Vectors{v0, v1, v2, v3, v4};
+
+  // path(x_eval, 2)=
+  // [[ 3.   1. ]
+  //  [ 1.5 -0.5]
+  //  [ 0.  -2. ]
+  //  [-0.3 -2.3]
+  //  [-4.5 -6.5]]
+  v0 << 3. ,  1. ;
+  v1 << 1.5, -0.5;
+  v2 << 0. , -2. ;
+  v3 <<-0.3, -2.3;
+  v4 <<-4.5, -6.5;
+  expected_acc = toppra::Vectors{v0, v1, v2, v3, v4};
+  }
+  
+
+  toppra::Vector x_eval;
+  toppra::PiecewisePolyPath path;
+  toppra::Vectors expected_pos, expected_vel, expected_acc;
+};
+
+
+TEST_F(CompareWithScipyCubicSpline, 0thDerivative){
+
+  auto res = path.eval(x_eval);
+  for(int i=0; i < 5; i++){
+    ASSERT_TRUE(res[i].isApprox(expected_pos[i])) << "Comparing the " << i << "th" << res[i] << expected_pos[i];
+  }
+}
+
+TEST_F(CompareWithScipyCubicSpline, 1stDerivative){
+  auto res = path.eval(x_eval, 1);
+  for(int i=0; i < 5; i++){
+    ASSERT_TRUE(res[i].isApprox(expected_vel[i])) << "Comparing the " << i << "th" << res[i] << expected_vel[i];
+  }
+}
+
+
+TEST_F(CompareWithScipyCubicSpline, 2stDerivative){
+  auto res = path.eval(x_eval, 2);
+  for(int i=0; i < 5; i++){
+    ASSERT_TRUE(res[i].isApprox(expected_acc[i])) << "Comparing the " << i << "th" << res[i] << "," << expected_acc[i];
+  }
+}
+
