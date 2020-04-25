@@ -42,7 +42,7 @@ class ProblemInstance : public testing::Test {
   int nDof = 2;
 };
 
-TEST_F(ProblemInstance, DISABLED_ConstructNewInstance) {
+TEST_F(ProblemInstance, ConstructNewInstance) {
   toppra::LinearConstraintPtrs v{
       std::make_shared<toppra::constraint::LinearJointVelocity>(
           -toppra::Vector::Ones(nDof), toppra::Vector::Ones(nDof)),

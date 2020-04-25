@@ -1,3 +1,4 @@
+#include "toppra/toppra.hpp"
 #include <cstddef>
 #include <iostream>
 #include <toppra/algorithm.hpp>
@@ -26,27 +27,30 @@ ReturnCode PathParametrizationAlgorithm::computePathParametrization(double vel_s
 
 ReturnCode PathParametrizationAlgorithm::computeControllableSets(
     const Bound &vel_ends) {
+
+  LOG_DEBUG("computeControllableSets");
   ReturnCode ret = ReturnCode::OK;
   bool solver_ret;
   Vector g_upper{2}, g_lower{2}, solution;
   g_upper << 1e-9, -1;
   g_lower << -1e-9, 1;
-  m_data.controllable_sets(m_N, 0) = vel_ends(0);
-  m_data.controllable_sets(m_N, 1) = vel_ends(1);
+  m_data.controllable_sets(m_N, 0) = pow(vel_ends(0), 2);
+  m_data.controllable_sets(m_N, 1) = pow(vel_ends(1), 2);
 
   Matrix H;
   Bound x, x_next;
   x << 0, 100;
   x_next << 0, 1;
-  for (std::size_t i = m_N - 1; i >= 0; i--) {
-    // x_next << controllable_sets(i + 1, 0), controllable_sets(i + 1, 1);
+  for (std::size_t i = m_N - 1; i != (std::size_t) - 1; i--) {
+    LOG_DEBUG(i << ", " << m_N) ;
+    x_next << m_data.controllable_sets(i + 1, 0), m_data.controllable_sets(i + 1, 1);
     solver_ret =
         m_solver->solveStagewiseOptim(m_N - 1, H, g_upper, x, x_next, solution);
-    // std::cout << "up: " << solution << std::endl;
+    std::cout << "up: " << solution << std::endl;
 
     if (!solver_ret) {
       ret = ReturnCode::ERR_FAIL_CONTROLLABLE;
-      std::cout << "Fail: controllable, upper problem, idx: " << i << std::endl;
+      LOG_DEBUG("Fail: controllable, upper problem, idx: " << i);
       break;
     }
 
@@ -54,11 +58,12 @@ ReturnCode PathParametrizationAlgorithm::computeControllableSets(
 
     solver_ret =
         m_solver->solveStagewiseOptim(m_N - 1, H, g_lower, x, x_next, solution);
-    // std::cout << "down: " << solution << std::endl;
+
+    LOG_DEBUG("down: " << solution);
 
     if (!solver_ret) {
       ret = ReturnCode::ERR_FAIL_CONTROLLABLE;
-      std::cout << "Fail: controllable, lower problem, idx: " << i << std::endl;
+      LOG_DEBUG("Fail: controllable, lower problem, idx: " << i);
       break;
     }
 
