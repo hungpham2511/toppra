@@ -63,15 +63,17 @@ bool qpOASESWrapper::solveStagewiseOptim(std::size_t i,
 
   if (i < N) {
     value_type delta = deltas()[i];
-    // TODO self._A[0] access 0-th row ?
     m_A.row(0) << -2 * delta, -1;
     m_hA[0] = - xNext[0];
     m_lA[0] = - m_boundary;
 
-    // TODO self._A[1] access 1-th row ?
-    m_A.row(1).setZero();
+    m_A.row(1) << 2 * delta, 1;
     m_hA[1] = xNext[1];
     m_lA[1] = -m_boundary;
+  } else {
+    m_A.topRows<2>().setZero();
+    m_lA.head<2>().setConstant(-1);
+    m_hA.head<2>().setOnes();
   }
   Eigen::Index cur_index = 2;
   for (const Solver::LinearConstraintParams& lin : m_constraintsParams.lin)

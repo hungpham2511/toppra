@@ -95,7 +95,7 @@ public:
    */
   Bound pathInterval() const {
     Bound v;
-    v << m_breakpoints[0], m_breakpoints[-1];
+    v << m_breakpoints.front(), m_breakpoints.back();
     return v;
   };
 
