@@ -4,11 +4,6 @@
 #include <memory.h>
 #include <toppra/solver.hpp>
 
-// Forward declare qpOASES solver.
-namespace qpOASES {
-  class SQProblem;
-} // namespace qpOASES
-
 namespace toppra {
 namespace solver {
 

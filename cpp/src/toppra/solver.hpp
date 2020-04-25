@@ -74,9 +74,13 @@ class Solver {
         const Bound& x, const Bound& xNext,
         Vector& solution) = 0;
 
+    /** \brief Initialize the wrapped solver
+     */
     virtual void setupSolver ()
     {}
 
+    /** \brief Free the wrapped solver
+     */
     virtual void closeSolver ()
     {}
 

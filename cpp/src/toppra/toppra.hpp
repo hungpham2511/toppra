@@ -33,7 +33,9 @@ namespace toppra {
   typedef std::vector<Bound, Eigen::aligned_allocator<Bound> > Bounds;
 
   class LinearConstraint;
+  /// Shared pointer to a LinearConstraint
   typedef std::shared_ptr<LinearConstraint> LinearConstraintPtr;
+  /// Vector of LinearConstraintPtr
   typedef std::vector<LinearConstraintPtr> LinearConstraintPtrs;
   namespace constraint {
     class LinearJointVelocity;

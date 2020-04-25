@@ -4,16 +4,19 @@
 
 ## Added
 
-- #84, #85, #86, #87, #88: Initial development of the cpp codebase.
+- [cpp] Initial cpp TOPPRA implementation.
+- [python] Implement a new trajectory class for specified velocities.
 
 ## Changed
 
-- Simplify TOPPRA class interface.
-- Implement a new trajectory class for specified velocities.
-- [0e022c][cm-0e022c] Update README.md to reflect development roadmap.
-- Format some source files with black.
-- [#78][gh-78] Improve documentation structure.
-- [#79][gh-79] Improve documentation structure.
+- [python] Simplify TOPPRA class interface.
+- [python] [0e022c][cm-0e022c] Update README.md to reflect development roadmap.
+- [python] Format some source files with black.
+- [python] [#78][gh-78] Improve documentation structure.
+- [python] [#79][gh-79] Improve documentation structure.
+
+### Changed
+- [cpp] Bug fixes in solver wrapper.
 
 ## Removed
 

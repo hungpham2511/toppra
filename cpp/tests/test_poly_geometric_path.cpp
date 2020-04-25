@@ -1,4 +1,3 @@
-#include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include <Eigen/Dense>
 
@@ -41,7 +40,7 @@ public:
 
 TEST_F(ConstructPiecewisePoly, OutputValueHasCorrectDOF) {
   toppra::Vector pos = path.eval_single(0.5, 0);
-  ASSERT_THAT(pos.rows(), testing::Eq(2));
+  ASSERT_EQ(pos.rows(), 2);
 }
 
 TEST_F(ConstructPiecewisePoly, CorrectOutputValueFirstSegment) {
@@ -83,7 +82,7 @@ TEST_F(ConstructPiecewisePoly, ComputeManyPointsEigen) {
 }
 
 TEST_F(ConstructPiecewisePoly, CorrectDOF) {
-  ASSERT_THAT(path.dof(), testing::Eq(2));
+  ASSERT_EQ(path.dof(), 2);
 }
 
 TEST_F(ConstructPiecewisePoly, CorrectPathInterval) {
