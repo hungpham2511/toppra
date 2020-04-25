@@ -1,6 +1,7 @@
 #ifndef TOPPRA_ALGORITHM_HPP
 #define TOPPRA_ALGORITHM_HPP
 
+#include <stdexcept>
 #include <toppra/constraint.hpp>
 #include <toppra/geometric_path.hpp>
 #include <toppra/solver.hpp>
@@ -81,11 +82,11 @@ class PathParametrizationAlgorithm {
 
   /** Compute the sets of feasible squared velocities.
    */
-  ReturnCode computeFeasibleSets(Matrix &feasible_sets);
+  ReturnCode computeFeasibleSets() { throw std::runtime_error("Not implemented"); };
 
   /** Compute the sets of controllable squared path velocities.
    */
-  ReturnCode computeControllableSets(Bound vel_ends);
+  ReturnCode computeControllableSets(const Bound &vel_ends);
 
   /** To be implemented in child method. */
   LinearConstraintPtrs m_constraints;

@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <iostream>
 #include <toppra/algorithm.hpp>
 #include <toppra/solver/qpOASES-wrapper.hpp>
@@ -23,7 +24,8 @@ ReturnCode PathParametrizationAlgorithm::computePathParametrization(double vel_s
   return ret;
 };
 
-ReturnCode PathParametrizationAlgorithm::computeControllableSets(Bound vel_ends) {
+ReturnCode PathParametrizationAlgorithm::computeControllableSets(
+    const Bound &vel_ends) {
   ReturnCode ret = ReturnCode::OK;
   bool solver_ret;
   Vector g_upper{2}, g_lower{2}, solution;
@@ -36,7 +38,7 @@ ReturnCode PathParametrizationAlgorithm::computeControllableSets(Bound vel_ends)
   Bound x, x_next;
   x << 0, 100;
   x_next << 0, 1;
-  for (int i = m_N - 1; i >= 0; i--) {
+  for (std::size_t i = m_N - 1; i >= 0; i--) {
     // x_next << controllable_sets(i + 1, 0), controllable_sets(i + 1, 1);
     solver_ret =
         m_solver->solveStagewiseOptim(m_N - 1, H, g_upper, x, x_next, solution);

@@ -1,3 +1,4 @@
+#include <c++/7/bits/c++config.h>
 #include <memory>
 #include <toppra/algorithm.hpp>
 #include <toppra/algorithm/toppra.hpp>
@@ -18,7 +19,7 @@ ReturnCode TOPPRA::computeForwardPass(double vel_start) {
   // std::cout << deltas << std::endl;
   Bound x, x_next;
   m_data.parametrization(0) = vel_start;
-  for (int i = 0; i < m_N; i++) {
+  for (std::size_t i = 0; i < m_N; i++) {
     g_upper << -2 * deltas(i), -1;
     x << m_data.parametrization(i), m_data.parametrization(i);
     x_next << m_data.controllable_sets(i + 1, 0), m_data.controllable_sets(i + 1, 1);
