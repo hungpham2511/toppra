@@ -101,6 +101,10 @@ bool qpOASESWrapper::solveStagewiseOptim(std::size_t i,
     }
   }
 
+  // TOPPRA_LOG_DEBUG("lA: " << std::endl << m_lA);
+  // TOPPRA_LOG_DEBUG("hA: " << std::endl << m_hA);
+  // TOPPRA_LOG_DEBUG(" A: " << std::endl << m_A);
+
   qpOASES::returnValue res;
   // TODO I assumed 1000 is the argument nWSR of the SQProblem.init function.
   //res = self.solver.init(

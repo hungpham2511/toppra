@@ -45,7 +45,6 @@ ReturnCode PathParametrizationAlgorithm::computeControllableSets(
     x_next << m_data.controllable_sets(i + 1, 0), m_data.controllable_sets(i + 1, 1);
     solver_ret =
         m_solver->solveStagewiseOptim(m_N - 1, H, g_upper, x, x_next, solution);
-    std::cout << "up: " << solution << std::endl;
 
     if (!solver_ret) {
       ret = ReturnCode::ERR_FAIL_CONTROLLABLE;
