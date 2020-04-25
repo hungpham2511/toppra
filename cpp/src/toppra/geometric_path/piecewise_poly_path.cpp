@@ -100,10 +100,4 @@ Matrix PiecewisePolyPath::getCoefficient(int seg_index, int order) const {
   return coeff;
 }
 
-Bound PiecewisePolyPath::pathInterval() const {
-  Bound v;
-  v << m_breakpoints[0], m_breakpoints[m_breakpoints.size() - 1];
-  return v;
-};
-
 } // namespace toppra

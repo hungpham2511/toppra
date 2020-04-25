@@ -99,7 +99,6 @@ public:
   /**
    * Return the starting and ending path positions.
    */
-  Bound pathInterval() const;
   Bound pathInterval() const {
     Bound v;
     v << m_breakpoints.front(), m_breakpoints.back();
