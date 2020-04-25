@@ -1,4 +1,3 @@
-#include <c++/7/bits/c++config.h>
 #include <memory>
 #include <toppra/algorithm.hpp>
 #include <toppra/algorithm/toppra.hpp>
