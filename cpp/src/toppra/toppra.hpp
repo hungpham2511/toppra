@@ -8,7 +8,9 @@
 #include <Eigen/StdVector>
 #include <vector>
 
-#define LOG_DEBUG(X) std::cout << "[DEBUG]: " <<  X << std::endl
+
+#define TOPPRA_LOG_DEBUG(X) std::cout << "[DEBUG]: " <<  X << std::endl
+
 
 /// The TOPP-RA namespace
 namespace toppra {

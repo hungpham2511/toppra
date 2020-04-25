@@ -46,9 +46,12 @@ class ProblemInstance : public testing::Test {
  public:
   ProblemInstance() {
     toppra::Matrix coeff0{4, 2}, coeff1{4, 2}, coeff2{4, 2};
-    coeff0 << -0.500000, -0.500000, 1.500000, 0.500000, 0.000000, 3.000000, 0.000000, 0.000000;
-    coeff1 << -0.500000, -0.500000, 0.000000, -1.000000, 1.500000, 2.500000, 1.000000, 3.000000;
-    coeff2 << -0.500000, -0.500000, -1.500000, -2.500000, 0.000000, -1.000000, 2.000000, 4.000000;
+    coeff0 << -0.500000, -0.500000, 1.500000, 0.500000, 0.000000, 3.000000, 0.000000,
+        0.000000;
+    coeff1 << -0.500000, -0.500000, 0.000000, -1.000000, 1.500000, 2.500000, 1.000000,
+        3.000000;
+    coeff2 << -0.500000, -0.500000, -1.500000, -2.500000, 0.000000, -1.000000, 2.000000,
+        4.000000;
     toppra::Matrices coefficents = {coeff0, coeff1, coeff2};
     path = toppra::PiecewisePolyPath(coefficents, std::vector<double>{0, 1, 2, 3});
     toppra::LinearConstraintPtrs v{
@@ -63,9 +66,54 @@ class ProblemInstance : public testing::Test {
   int nDof = 2;
 };
 
-TEST_F(ProblemInstance, SimpleGridpoints) {
+TEST_F(ProblemInstance, GridpointsHasCorrectShape) {
   toppra::algorithm::TOPPRA problem{v, path};
-  toppra::ReturnCode ret_code = problem.computePathParametrization();
-  // ASSERT_THAT(ret_code, toppra::ReturnCode::OK) << "actual return code: " <<
-  // (int)ret_code; auto problem_data = problem_ptr->getParameterizationData();
+  problem.setN(50);
+  problem.computePathParametrization();
+  auto data = problem.getParameterizationData();
+
+  ASSERT_EQ(data.gridpoints.size(), 51);
+  ASSERT_TRUE(data.gridpoints.isApprox(toppra::Vector::LinSpaced(51, 0, 3)));
+}
+
+TEST_F(ProblemInstance, ControllableSets) {
+  toppra::algorithm::TOPPRA problem{v, path};
+  problem.setN(50);
+  auto ret_code = problem.computePathParametrization();
+  auto data = problem.getParameterizationData();
+  toppra::Vector e_K_max(51);
+  e_K_max << 0.06666667, 0.07576745, 0.08538251, 0.09551183, 0.1005511, 0.09982804,
+      0.09979021, 0.1004364, 0.10178673, 0.0991224, 0.09423567, 0.08976427, 0.0856601,
+      0.08188198, 0.07839447, 0.07516693, 0.07217274, 0.06938868, 0.06679442, 0.0643721,
+      0.06210595, 0.05998203, 0.05798797, 0.05611274, 0.05434655, 0.05268066,
+      0.05110754, 0.04962257, 0.04823299, 0.04688841, 0.04761905, 0.05457026,
+      0.06044905, 0.06527948, 0.075, 0.08635149, 0.09642753, 0.10534652, 0.11322472,
+      0.12017269, 0.09525987, 0.07397325, 0.0568159, 0.04339803, 0.0327621, 0.02423354,
+      0.01732675, 0.0116854, 0.00704361, 0.0032, 0.;
+  ASSERT_EQ(ret_code, toppra::ReturnCode::OK)
+      << "actual return code: " << (int)ret_code;
+  ASSERT_DOUBLE_EQ(data.controllable_sets(50, 1), e_K_max(50));
+  ASSERT_DOUBLE_EQ(data.controllable_sets(49, 1), e_K_max(49));
+}
+
+TEST_F(ProblemInstance, OutputParmetrization) {
+  toppra::algorithm::TOPPRA problem{v, path};
+  problem.setN(50);
+  auto ret_code = problem.computePathParametrization();
+  auto data = problem.getParameterizationData();
+  toppra::Vector expected_parametrization(51);
+  expected_parametrization << 0., 0.00761179, 0.01498625, 0.02225818, 0.0295301,
+      0.03682582, 0.04426912, 0.05198486, 0.06010488, 0.06877432, 0.07815896,
+      0.08811985, 0.08566009, 0.08188197, 0.07839446, 0.07516692, 0.07217273,
+      0.06938867, 0.06679441, 0.06437209, 0.06210594, 0.05998202, 0.05798796,
+      0.05611273, 0.05434654, 0.05268065, 0.05110753, 0.04962256, 0.04813771, 0.0468884,
+      0.04560085, 0.04431338, 0.04320243, 0.04209148, 0.04103459, 0.04002688,
+      0.03906509, 0.03814624, 0.03726759, 0.03642665, 0.03562111, 0.03484884, 0.0341079,
+      0.03339645, 0.03271282, 0.02423353, 0.01732674, 0.01168539, 0.0070436, 0.00319999,
+      0.;
+
+  ASSERT_EQ(ret_code, toppra::ReturnCode::OK)
+      << "actual return code: " << (int)ret_code;
+  ASSERT_TRUE(data.parametrization.isApprox(expected_parametrization))
+      << "actual parametrization: \n " << data.parametrization;
 }
