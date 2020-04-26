@@ -44,7 +44,7 @@ ReturnCode PathParametrizationAlgorithm::computeControllableSets(
     TOPPRA_LOG_DEBUG(i << ", " << m_N);
     x_next << m_data.controllable_sets(i + 1, 0), m_data.controllable_sets(i + 1, 1);
     solver_ret =
-        m_solver->solveStagewiseOptim(m_N - 1, H, g_upper, x, x_next, solution);
+        m_solver->solveStagewiseOptim(i, H, g_upper, x, x_next, solution);
 
     if (!solver_ret) {
       ret = ReturnCode::ERR_FAIL_CONTROLLABLE;
@@ -55,7 +55,7 @@ ReturnCode PathParametrizationAlgorithm::computeControllableSets(
     m_data.controllable_sets(i, 1) = solution[1];
 
     solver_ret =
-        m_solver->solveStagewiseOptim(m_N - 1, H, g_lower, x, x_next, solution);
+        m_solver->solveStagewiseOptim(i, H, g_lower, x, x_next, solution);
 
     TOPPRA_LOG_DEBUG("down: " << solution);
 

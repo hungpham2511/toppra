@@ -11,7 +11,7 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
-#define TOPPRA_PRECISION 1e-8
+#define TOPPRA_PRECISION 1e-6
 
 //// Code use to generate the test scenario using the Python implementation
 
@@ -120,5 +120,5 @@ TEST_F(ProblemInstance, OutputParmetrization) {
 
   for (int i = 0; i < 51; i++)
     EXPECT_NEAR(data.parametrization(i), expected_parametrization(i), TOPPRA_PRECISION)
-        << "idx: " << i;
+        << "idx: " << i << ", abs diff=" << data.parametrization(i) - expected_parametrization(i);
 }
