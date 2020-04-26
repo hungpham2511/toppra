@@ -8,8 +8,11 @@
 #include <Eigen/StdVector>
 #include <vector>
 
-
+#ifdef TOPPRA_DEBUG_ON
 #define TOPPRA_LOG_DEBUG(X) std::cout << "[DEBUG]: " <<  X << std::endl
+#else
+#define TOPPRA_LOG_DEBUG(X) if (true) {} else {std::cout << "[DEBUG]: " <<  X << std::endl;}
+#endif
 
 
 /// The TOPP-RA namespace

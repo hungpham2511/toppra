@@ -25,6 +25,9 @@ target_include_directories(toppra PUBLIC
 target_link_libraries(toppra PUBLIC
     ${qpOASES_LIBRARY}
     )
+if (TOPPRA_DEBUG_ON)
+  target_compile_definitions(toppra PRIVATE TOPPRA_DEBUG_ON)
+endif()
 
 if (${EIGEN3_VERSION_STRING} VERSION_LESS 3.3) 
   target_compile_definitions     (toppra PUBLIC ${EIGEN3_DEFINITIONS} ) 
