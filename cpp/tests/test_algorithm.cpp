@@ -120,5 +120,6 @@ TEST_F(ProblemInstance, OutputParmetrization) {
 
   for (int i = 0; i < 51; i++)
     EXPECT_NEAR(data.parametrization(i), expected_parametrization(i), TOPPRA_PRECISION)
-        << "idx: " << i << ", abs diff=" << data.parametrization(i) - expected_parametrization(i);
+        << "idx: " << i
+        << ", abs diff=" << data.parametrization(i) - expected_parametrization(i);
 }
