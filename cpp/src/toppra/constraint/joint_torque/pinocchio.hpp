@@ -11,16 +11,16 @@ namespace toppra {
 namespace constraint {
 namespace jointTorque {
 
-template<int _Options=0, template<typename,int> class JointCollectionTpl=pinocchio::JointCollectionDefaultTpl>
+template<typename Model = pinocchio::Model>
 class Pinocchio;
 
 /** Implementation of JointTorque using pinocchio::rnea function.
  * */
-template<int _Options, template<typename,int> class JointCollectionTpl>
+template<typename _Model>
 class Pinocchio : public JointTorque {
   public:
-    typedef pinocchio::ModelTpl<value_type, _Options, JointCollectionTpl> Model;
-    typedef pinocchio::DataTpl <value_type, _Options, JointCollectionTpl> Data;
+    typedef _Model Model;
+    typedef typename _Model::Data Data;
 
     std::ostream& print(std::ostream& os) const
     {
