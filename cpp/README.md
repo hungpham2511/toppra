@@ -1,6 +1,5 @@
 # Description
-
-This is a header-only implementation of the TOPP-RA algorithm.
+This is a implementation of the TOPP-RA algorithm.
 
 # Building Tests
 
@@ -9,10 +8,12 @@ This is a header-only implementation of the TOPP-RA algorithm.
 git clone -b develop https://github.com/hungpham2511/toppra
 
 # build
-mkdir build && cd build && cmake .. 
+export LD_LIBRARY_PATH=/opt/openrobots/lib:${LD_LIBRARY_PATH}
+export CMAKE_PREFIX_PATH=/opt/openrobots
+mkdir build && cd build && cmake -DBUILD_WITH_PINOCCHIO=ON -DBUILD_WITH_qpOASES=ON ..
 make -j4
 
 # run test
-./tests
+./tests/all_tests
 ```
 

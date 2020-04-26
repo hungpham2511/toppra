@@ -8,6 +8,9 @@ set(SOURCE_FILES
 
   toppra/geometric_path.cpp
   toppra/geometric_path/piecewise_poly_path.cpp
+
+  toppra/algorithm.cpp
+  toppra/algorithm/toppra.cpp
   )
 if(BUILD_WITH_qpOASES)
     list(APPEND SOURCE_FILES
@@ -29,6 +32,9 @@ target_link_libraries(toppra PUBLIC
   ${qpOASES_LIBRARIES}
   ${GLPK_LIBRARIES}
   )
+if (TOPPRA_DEBUG_ON)
+  target_compile_definitions(toppra PRIVATE TOPPRA_DEBUG_ON)
+endif()
 
 if (${EIGEN3_VERSION_STRING} VERSION_LESS 3.3) 
   target_compile_definitions     (toppra PUBLIC ${EIGEN3_DEFINITIONS} ) 

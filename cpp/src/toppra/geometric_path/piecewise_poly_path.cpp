@@ -15,10 +15,10 @@ Matrix differentiateCoefficients(const Matrix &coefficients) {
   return deriv;
 }
 
-PiecewisePolyPath::PiecewisePolyPath(const Matrices &coefficients,
-                                     const std::vector<value_type> &breakpoints)
+PiecewisePolyPath::PiecewisePolyPath(const Matrices & coefficients,
+                                     std::vector<value_type> breakpoints)
     : GeometricPath (coefficients[0].cols()),
-      m_coefficients(coefficients), m_breakpoints(breakpoints),
+      m_coefficients(coefficients), m_breakpoints(std::move(breakpoints)),
       m_degree(coefficients[0].rows() - 1) {
 
   checkInputArgs();

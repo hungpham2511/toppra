@@ -5,6 +5,7 @@ set(TEST_SOURCES
   test_constraints.cpp
   test_solver.cpp
   test_poly_geometric_path.cpp
+  test_algorithm.cpp
   )
 
 add_executable(all_tests ${TEST_SOURCES})

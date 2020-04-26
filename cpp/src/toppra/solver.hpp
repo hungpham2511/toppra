@@ -118,6 +118,7 @@ class Solver {
     Vector m_deltas;
 
 }; // class Solver
+
 } // namespace toppra
 
 #endif
