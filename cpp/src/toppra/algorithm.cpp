@@ -10,8 +10,8 @@ PathParametrizationAlgorithm::PathParametrizationAlgorithm(
     LinearConstraintPtrs constraints, const GeometricPath &path)
     : m_constraints(std::move(constraints)), m_path(path){};
 
-ReturnCode PathParametrizationAlgorithm::computePathParametrization(double vel_start,
-                                                                    double vel_end) {
+ReturnCode PathParametrizationAlgorithm::computePathParametrization(value_type vel_start,
+                                                                    value_type vel_end) {
   ReturnCode ret;
   initialize();
   m_solver->setupSolver();
