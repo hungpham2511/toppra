@@ -73,6 +73,9 @@ install(FILES
   toppra/constraint/joint_torque.hpp
   DESTINATION include/toppra/constraint)
 install(FILES
+  toppra/constraint/joint_torque/pinocchio.hpp
+  DESTINATION include/toppra/constraint/joint_torque)
+install(FILES
   toppra/solver/qpOASES-wrapper.hpp
   toppra/solver/glpk-wrapper.hpp
   DESTINATION include/toppra/solver)
