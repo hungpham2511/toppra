@@ -17,3 +17,12 @@ make -j4
 ./tests/all_tests
 ```
 
+# Using TOPPRA in CMake-based project
+
+In your CMakeLists.txt,
+```cmake
+# The following line defines cmake target toppra::toppra
+find_package(toppra)
+...
+target_link_library(foo PUBLIC toppra::toppra)
+```
