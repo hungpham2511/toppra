@@ -47,6 +47,7 @@ install(TARGETS toppra EXPORT toppra::toppra
   DESTINATION lib)
 install(FILES
   toppra/algorithm.hpp
+  toppra/algorithm/toppra.hpp
 
   toppra/constraint.hpp
   toppra/constraint/linear_joint_velocity.hpp
@@ -58,6 +59,7 @@ install(FILES
 
   toppra/solver.hpp
   toppra/solver/qpOASES-wrapper.hpp
+  toppra/solver/glpk-wrapper.hpp
 
   DESTINATION include/toppra)
 
