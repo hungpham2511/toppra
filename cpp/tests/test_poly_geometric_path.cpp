@@ -1,8 +1,5 @@
 #include "gtest/gtest.h"
 #include <Eigen/Dense>
-
-#include <Eigen/src/Core/util/Constants.h>
-#include <gmock/gmock-matchers.h>
 #include <iostream>
 #include <stdexcept>
 #include <vector>
@@ -147,28 +144,29 @@ TEST_F(BadInputs, ThrowIfWrongNumberOfBreakPoints) {
 }
 
 
+/* Python code to generate this test data
 
-// import toppra as ta
-// 
-// path = ta.SplineInterpolator([0, 1, 2, 3], [[0, 0], [1, 3], [2, 4], [0, 0]])
-// 
-// def print_cpp_code(p):
-//     out = ""
-//     for seg_idx in range(p.cspl.c.shape[1]):
-//         out += "coeff{:d} << ".format(seg_idx)
-//         for i, t in enumerate(p.cspl.c[:, seg_idx, :].flatten().tolist()):
-//             if i == len(p.cspl.c[:, seg_idx, :].flatten().tolist()) - 1:
-//                 out += "{:f};\n".format(t)
-//             else:
-//                 out += "{:f}, ".format(t)
-//     return out
-// 
-// print(print_cpp_code(path))
-// print("breakpoints: {}".format([0, 1, 2, 3]))
-// x_eval = [0, 0.5, 1., 1.1, 2.5]
-// print("Eval for x_eval = {:}\npath(x_eval)=\n{}\npath(x_eval, 1)=\n{}\npath(x_eval, 2)=\n{}".format(
-//     x_eval, path(x_eval), path(x_eval, 1), path(x_eval, 2)))
+import toppra as ta
 
+path = ta.SplineInterpolator([0, 1, 2, 3], [[0, 0], [1, 3], [2, 4], [0, 0]])
+
+def print_cpp_code(p):
+    out = ""
+    for seg_idx in range(p.cspl.c.shape[1]):
+        out += "coeff{:d} << ".format(seg_idx)
+        for i, t in enumerate(p.cspl.c[:, seg_idx, :].flatten().tolist()):
+            if i == len(p.cspl.c[:, seg_idx, :].flatten().tolist()) - 1:
+                out += "{:f};\n".format(t)
+            else:
+                out += "{:f}, ".format(t)
+    return out
+
+print(print_cpp_code(path))
+print("breakpoints: {}".format([0, 1, 2, 3]))
+x_eval = [0, 0.5, 1., 1.1, 2.5]
+print("Eval for x_eval = {:}\npath(x_eval)=\n{}\npath(x_eval, 1)=\n{}\npath(x_eval, 2)=\n{}".format(
+    x_eval, path(x_eval), path(x_eval, 1), path(x_eval, 2)))
+ */
 
 class CompareWithScipyCubicSpline : public testing::Test {
 

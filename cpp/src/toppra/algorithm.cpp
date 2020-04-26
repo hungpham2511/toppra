@@ -33,8 +33,7 @@ ReturnCode PathParametrizationAlgorithm::computeControllableSets(
   Vector g_upper{2}, g_lower{2}, solution;
   g_upper << 1e-9, -1;
   g_lower << -1e-9, 1;
-  m_data.controllable_sets(m_N, 0) = pow(vel_ends(0), 2);
-  m_data.controllable_sets(m_N, 1) = pow(vel_ends(1), 2);
+  m_data.controllable_sets.row(m_N) = vel_ends.cwiseAbs2();
 
   Matrix H;
   Bound x, x_next;
@@ -42,7 +41,7 @@ ReturnCode PathParametrizationAlgorithm::computeControllableSets(
   x_next << 0, 1;
   for (std::size_t i = m_N - 1; i != (std::size_t)-1; i--) {
     TOPPRA_LOG_DEBUG(i << ", " << m_N);
-    x_next << m_data.controllable_sets(i + 1, 0), m_data.controllable_sets(i + 1, 1);
+    x_next << m_data.controllable_sets.row(i + 1);
     solver_ret = m_solver->solveStagewiseOptim(i, H, g_upper, x, x_next, solution);
 
     if (!solver_ret) {

@@ -11,38 +11,44 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
-#define TOPPRA_PRECISION 1e-6
+#define TEST_PRECISION 1e-6
 
-//// Code use to generate the test scenario using the Python implementation
+// clang-format off
 
-// import toppra as ta
-// import numpy as np
-//
-// path = ta.SplineInterpolator([0, 1, 2, 3], [[0, 0], [1, 3], [2, 4], [0, 0]])
-//
-// def print_cpp_code(p):
-//     out = ""
-//     for seg_idx in range(p.cspl.c.shape[1]):
-//         out += "coeff{:d} << ".format(seg_idx)
-//         for i, t in enumerate(p.cspl.c[:, seg_idx, :].flatten().tolist()):
-//             if i == len(p.cspl.c[:, seg_idx, :].flatten().tolist()) - 1:
-//                 out += "{:f};\n".format(t)
-//             else:
-//                 out += "{:f}, ".format(t)
-//     return out
-//
-// print(print_cpp_code(path))
-// print("breakpoints: {}".format([0, 1, 2, 3]))
-// x_eval = [0, 0.5, 1., 1.1, 2.5]
-// print("Eval for x_eval = {:}\npath(x_eval)=\n{}\npath(x_eval, 1)=\n{}\npath(x_eval,
-// 2)=\n{}".format(
-//     x_eval, path(x_eval), path(x_eval, 1), path(x_eval, 2)))
-//
-// pc_vel = ta.constraint.JointVelocityConstraint([1.0, 1.0])
-// pc_acc = ta.constraint.JointAccelerationConstraint([0.2, 0.2])
-//
-// instance = ta.algorithm.TOPPRA([pc_vel, pc_acc], path, gridpoints=np.linspace(0, 3,
-// 51)) sdds, sds, _ = instance.compute_parameterization(0, 0)
+/* Code use to generate the test scenario using the Python implementation
+// Diable format to keep python code identation
+
+import toppra as ta
+import numpy as np
+
+path = ta.SplineInterpolator([0, 1, 2, 3], [[0, 0], [1, 3], [2, 4], [0, 0]])
+
+def print_cpp_code(p):
+    out = ""
+    for seg_idx in range(p.cspl.c.shape[1]):
+        out += "coeff{:d} << ".format(seg_idx)
+        for i, t in enumerate(p.cspl.c[:, seg_idx, :].flatten().tolist()):
+            if i == len(p.cspl.c[:, seg_idx, :].flatten().tolist()) - 1:
+                out += "{:f};\n".format(t)
+            else:
+                out += "{:f}, ".format(t)
+    return out
+
+print(print_cpp_code(path))
+print("breakpoints: {}".format([0, 1, 2, 3]))
+x_eval = [0, 0.5, 1., 1.1, 2.5]
+print("Eval for x_eval = {:}\npath(x_eval)=\n{}\npath(x_eval, 1)=\n{}\npath(x_eval, 2)=\n{}".format(
+    x_eval, path(x_eval), path(x_eval, 1), path(x_eval, 2)))
+
+pc_vel = ta.constraint.JointVelocityConstraint([1.0, 1.0])
+pc_acc = ta.constraint.JointAccelerationConstraint([0.2, 0.2], discretization_scheme=0)
+
+instance = ta.algorithm.TOPPRA([pc_vel, pc_acc], path, gridpoints=np.linspace(0, 3, 51), solver_wrapper='qpoases')
+sdds, sds, _, K = instance.compute_parameterization(0, 0, return_data=True)
+print(sds)
+
+ */
+// clang-format on
 
 class ProblemInstance : public testing::Test {
  public:
@@ -96,7 +102,7 @@ TEST_F(ProblemInstance, ControllableSets) {
   ASSERT_EQ(ret_code, toppra::ReturnCode::OK)
       << "actual return code: " << (int)ret_code;
   for (int i = 0; i < 51; i++)
-    EXPECT_NEAR(data.controllable_sets(i, 1), e_K_max(i), TOPPRA_PRECISION)
+    EXPECT_NEAR(data.controllable_sets(i, 1), e_K_max(i), TEST_PRECISION)
         << "idx: " << i;
 }
 
@@ -119,7 +125,7 @@ TEST_F(ProblemInstance, OutputParmetrization) {
       << "actual return code: " << (int)ret_code;
 
   for (int i = 0; i < 51; i++)
-    EXPECT_NEAR(data.parametrization(i), expected_parametrization(i), TOPPRA_PRECISION)
+    EXPECT_NEAR(data.parametrization(i), expected_parametrization(i), TEST_PRECISION)
         << "idx: " << i
         << ", abs diff=" << data.parametrization(i) - expected_parametrization(i);
 }
