@@ -67,13 +67,52 @@ ReturnCode PathParametrizationAlgorithm::computeControllableSets(
   return ret;
 }
 
+ReturnCode PathParametrizationAlgorithm::computeFeasibleSets() {
+  initialize();
+  ReturnCode ret = ReturnCode::OK;
+  bool solver_ret;
+  Vector g_upper{2}, g_lower{2}, solution;
+  g_upper << 1e-9, -1;
+  g_lower << -1e-9, 1;
+
+  Matrix H;
+  Bound x, x_next;
+  x << 0, 100;
+  x_next << 0, 100;
+  for (std::size_t i = 0; i < m_N + 1; i++) {
+    solver_ret = m_solver->solveStagewiseOptim(i, H, g_upper, x, x_next, solution);
+
+    if (!solver_ret) {
+      ret = ReturnCode::ERR_FAIL_FEASIBLE;
+      TOPPRA_LOG_DEBUG("Fail: controllable, upper problem, idx: " << i);
+      break;
+    }
+
+    m_data.feasible_sets(i, 1) = solution[1];
+
+    solver_ret = m_solver->solveStagewiseOptim(i, H, g_lower, x, x_next, solution);
+
+    if (!solver_ret) {
+      ret = ReturnCode::ERR_FAIL_FEASIBLE;
+      TOPPRA_LOG_DEBUG("Fail: controllable, lower problem, idx: " << i);
+      break;
+    }
+
+    m_data.feasible_sets(i, 0) = solution[1];
+  }
+  return ret;
+}
+
 void PathParametrizationAlgorithm::initialize() {
+  if (m_initialized) return;
   m_data.gridpoints =
       Vector::LinSpaced(m_N + 1, m_path.pathInterval()(0), m_path.pathInterval()(1));
   m_data.parametrization.resize(m_N + 1);
   m_data.controllable_sets.resize(m_N + 1, 2);
+  m_data.feasible_sets.resize(m_N + 1, 2);
   m_solver = std::make_shared<solver::qpOASESWrapper>(m_constraints, m_path,
                                                       m_data.gridpoints);
+  m_initialized = true;
 }
 
 }  // namespace toppra

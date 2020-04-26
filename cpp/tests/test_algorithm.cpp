@@ -45,7 +45,7 @@ pc_acc = ta.constraint.JointAccelerationConstraint([0.2, 0.2], discretization_sc
 
 instance = ta.algorithm.TOPPRA([pc_vel, pc_acc], path, gridpoints=np.linspace(0, 3, 51), solver_wrapper='qpoases')
 sdds, sds, _, K = instance.compute_parameterization(0, 0, return_data=True)
-print(sds)
+feasible_sets = instance.compute_feasible_sets().
 
  */
 // clang-format on
@@ -128,4 +128,28 @@ TEST_F(ProblemInstance, OutputParmetrization) {
     EXPECT_NEAR(data.parametrization(i), expected_parametrization(i), TEST_PRECISION)
         << "idx: " << i
         << ", abs diff=" << data.parametrization(i) - expected_parametrization(i);
+}
+
+TEST_F(ProblemInstance, FeasibleSets) {
+  toppra::algorithm::TOPPRA problem{v, path};
+  problem.setN(50);
+  auto ret_code = problem.computeFeasibleSets();
+  auto data = problem.getParameterizationData();
+  toppra::Vector expected_feasible_max(51);
+  expected_feasible_max << 0.06666667, 0.07624309, 0.08631706, 0.09690258, 0.1005511,
+      0.09982804, 0.09979021, 0.1004364, 0.10178673, 0.10388394, 0.10679654, 0.11062383,
+      0.11550389, 0.12162517, 0.12924407, 0.13871115, 0.15051124, 0.16532619,
+      0.18413615, 0.20838854, 0.24029219, 0.27052997, 0.2601227, 0.2447933, 0.22462845,
+      0.2, 0.17154989, 0.14013605, 0.10674847, 0.07241209, 0.04761905, 0.05457026,
+      0.06044905, 0.06527948, 0.08479263, 0.10990991, 0.13252362, 0.15269631,
+      0.15777077, 0.12111776, 0.09525987, 0.07641998, 0.06232537, 0.05154506,
+      0.04314353, 0.03648939, 0.0311448, 0.02679888, 0.02322632, 0.02026086, 0.01777778;
+
+  ASSERT_EQ(ret_code, toppra::ReturnCode::OK)
+      << "actual return code: " << (int)ret_code;
+
+  for (int i = 0; i < 51; i++)
+    EXPECT_NEAR(data.feasible_sets(i, 1), expected_feasible_max(i), TEST_PRECISION)
+        << "idx: " << i
+        << ", abs diff=" << data.parametrization(i) - expected_feasible_max(i);
 }
