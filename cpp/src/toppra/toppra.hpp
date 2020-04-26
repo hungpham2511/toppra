@@ -8,6 +8,8 @@
 #include <Eigen/StdVector>
 #include <vector>
 
+#include <toppra/export.hpp>
+
 #ifdef TOPPRA_DEBUG_ON
 #define TOPPRA_LOG_DEBUG(X) std::cout << "[DEBUG]: " <<  X << std::endl
 #else

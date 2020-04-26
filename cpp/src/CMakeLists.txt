@@ -1,3 +1,5 @@
+include(GenerateExportHeader)
+
 set(SOURCE_FILES
   toppra/constraint.cpp
   toppra/constraint/linear_joint_velocity.cpp
@@ -22,7 +24,13 @@ if(BUILD_WITH_GLPK)
 endif()
 
 add_library(toppra SHARED ${SOURCE_FILES})
+FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/toppra)
+generate_export_header(toppra
+  EXPORT_FILE_NAME toppra/export.hpp
+  #INCLUDE_GUARD_NAME TOPPRA_EXPORT_HPP # CMake >= 3.11 only
+  )
 target_include_directories(toppra PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<INSTALL_INTERFACE:include>
   ${qpOASES_INCLUDE_DIRS}

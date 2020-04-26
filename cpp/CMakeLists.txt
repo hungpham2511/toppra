@@ -16,7 +16,7 @@ find_package (Threads)
 find_package (Eigen3 REQUIRED)
 message(STATUS "Found Eigen version ${EIGEN3_VERSION_STRING}")
 
-set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 if(BUILD_WITH_PINOCCHIO)
     find_package(pinocchio REQUIRED)
     message(STATUS "Found pinocchio ${pinocchio_VERSION}")
