@@ -55,19 +55,24 @@ install(TARGETS toppra EXPORT toppra::toppra
   DESTINATION lib)
 install(FILES
   toppra/algorithm.hpp
-  toppra/algorithm/toppra.hpp
-
   toppra/constraint.hpp
-  toppra/constraint/linear_joint_velocity.hpp
-  toppra/constraint/linear_joint_acceleration.hpp
-  toppra/constraint/joint_torque.hpp
+  ${CMAKE_CURRENT_BINARY_DIR}/toppra/export.hpp
 
   toppra/geometric_path.hpp
   toppra/toppra.hpp
 
   toppra/solver.hpp
-  toppra/solver/qpOASES-wrapper.hpp
-  toppra/solver/glpk-wrapper.hpp
 
   DESTINATION include/toppra)
-
+install(FILES
+  toppra/algorithm/toppra.hpp
+  DESTINATION include/toppra/algorithm)
+install(FILES
+  toppra/constraint/linear_joint_velocity.hpp
+  toppra/constraint/linear_joint_acceleration.hpp
+  toppra/constraint/joint_torque.hpp
+  DESTINATION include/toppra/constraint)
+install(FILES
+  toppra/solver/qpOASES-wrapper.hpp
+  toppra/solver/glpk-wrapper.hpp
+  DESTINATION include/toppra/solver)
