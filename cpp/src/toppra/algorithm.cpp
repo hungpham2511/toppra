@@ -7,8 +7,8 @@
 namespace toppra {
 
 PathParametrizationAlgorithm::PathParametrizationAlgorithm(
-    const LinearConstraintPtrs &constraints, const GeometricPath &path)
-    : m_constraints(constraints), m_path(path){};
+    LinearConstraintPtrs constraints, const GeometricPath &path)
+    : m_constraints(std::move(constraints)), m_path(path){};
 
 ReturnCode PathParametrizationAlgorithm::computePathParametrization(double vel_start,
                                                                     double vel_end) {

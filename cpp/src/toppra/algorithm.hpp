@@ -43,7 +43,7 @@ class PathParametrizationAlgorithm {
    *  \param  path  The geometric path.
    *
    */
-  PathParametrizationAlgorithm(const LinearConstraintPtrs &constraints,
+  PathParametrizationAlgorithm(LinearConstraintPtrs constraints,
                                const GeometricPath &path);
 
   /** \brief Set the level of discretization used by the solver.

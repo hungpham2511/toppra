@@ -6,8 +6,8 @@
 namespace toppra {
 namespace algorithm {
 
-TOPPRA::TOPPRA(const LinearConstraintPtrs &constraints, const GeometricPath &path)
-    : PathParametrizationAlgorithm{constraints, path} {};
+TOPPRA::TOPPRA(LinearConstraintPtrs constraints, const GeometricPath &path)
+    : PathParametrizationAlgorithm{std::move(constraints), path} {};
 
 ReturnCode TOPPRA::computeForwardPass(double vel_start) {
   TOPPRA_LOG_DEBUG("computeForwardPass");
