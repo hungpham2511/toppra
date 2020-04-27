@@ -28,7 +28,7 @@ ReturnCode TOPPRA::computeForwardPass(double vel_start) {
       TOPPRA_LOG_DEBUG("Fail: forward pass, idx: " << i);
       break;
     }
-    // \todo This can be optimized further by solving a 1D problem instead of 2D
+    /// \todo This can be optimized further by solving a 1D problem instead of 2D
     m_data.parametrization(i + 1) =
         m_data.parametrization(i) + 2 * deltas(i) * solution(0);
   }
