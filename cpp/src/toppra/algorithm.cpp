@@ -16,7 +16,7 @@ ReturnCode PathParametrizationAlgorithm::computePathParametrization(double vel_s
   initialize();
   m_solver->setupSolver();
   Bound vel_ends;
-  vel_ends << vel_end, vel_end;
+  vel_ends.setConstant(vel_end);
   ret = computeControllableSets(vel_ends);
   if ((int)ret > 0) {
     return ret;
