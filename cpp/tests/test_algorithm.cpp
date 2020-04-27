@@ -9,38 +9,44 @@
 
 #include "gtest/gtest.h"
 
-#define TOPPRA_PRECISION 1e-6
+#define TEST_PRECISION 1e-6
 
-//// Code use to generate the test scenario using the Python implementation
+// clang-format off
 
-// import toppra as ta
-// import numpy as np
-//
-// path = ta.SplineInterpolator([0, 1, 2, 3], [[0, 0], [1, 3], [2, 4], [0, 0]])
-//
-// def print_cpp_code(p):
-//     out = ""
-//     for seg_idx in range(p.cspl.c.shape[1]):
-//         out += "coeff{:d} << ".format(seg_idx)
-//         for i, t in enumerate(p.cspl.c[:, seg_idx, :].flatten().tolist()):
-//             if i == len(p.cspl.c[:, seg_idx, :].flatten().tolist()) - 1:
-//                 out += "{:f};\n".format(t)
-//             else:
-//                 out += "{:f}, ".format(t)
-//     return out
-//
-// print(print_cpp_code(path))
-// print("breakpoints: {}".format([0, 1, 2, 3]))
-// x_eval = [0, 0.5, 1., 1.1, 2.5]
-// print("Eval for x_eval = {:}\npath(x_eval)=\n{}\npath(x_eval, 1)=\n{}\npath(x_eval,
-// 2)=\n{}".format(
-//     x_eval, path(x_eval), path(x_eval, 1), path(x_eval, 2)))
-//
-// pc_vel = ta.constraint.JointVelocityConstraint([1.0, 1.0])
-// pc_acc = ta.constraint.JointAccelerationConstraint([0.2, 0.2])
-//
-// instance = ta.algorithm.TOPPRA([pc_vel, pc_acc], path, gridpoints=np.linspace(0, 3,
-// 51)) sdds, sds, _ = instance.compute_parameterization(0, 0)
+/* Code use to generate the test scenario using the Python implementation
+// Diable format to keep python code identation
+
+import toppra as ta
+import numpy as np
+
+path = ta.SplineInterpolator([0, 1, 2, 3], [[0, 0], [1, 3], [2, 4], [0, 0]])
+
+def print_cpp_code(p):
+    out = ""
+    for seg_idx in range(p.cspl.c.shape[1]):
+        out += "coeff{:d} << ".format(seg_idx)
+        for i, t in enumerate(p.cspl.c[:, seg_idx, :].flatten().tolist()):
+            if i == len(p.cspl.c[:, seg_idx, :].flatten().tolist()) - 1:
+                out += "{:f};\n".format(t)
+            else:
+                out += "{:f}, ".format(t)
+    return out
+
+print(print_cpp_code(path))
+print("breakpoints: {}".format([0, 1, 2, 3]))
+x_eval = [0, 0.5, 1., 1.1, 2.5]
+print("Eval for x_eval = {:}\npath(x_eval)=\n{}\npath(x_eval, 1)=\n{}\npath(x_eval, 2)=\n{}".format(
+    x_eval, path(x_eval), path(x_eval, 1), path(x_eval, 2)))
+
+pc_vel = ta.constraint.JointVelocityConstraint([1.0, 1.0])
+pc_acc = ta.constraint.JointAccelerationConstraint([0.2, 0.2], discretization_scheme=0)
+
+instance = ta.algorithm.TOPPRA([pc_vel, pc_acc], path, gridpoints=np.linspace(0, 3, 51), solver_wrapper='qpoases')
+sdds, sds, _, K = instance.compute_parameterization(0, 0, return_data=True)
+feasible_sets = instance.compute_feasible_sets().
+
+ */
+// clang-format on
 
 class ProblemInstance : public testing::Test {
  public:
@@ -94,7 +100,7 @@ TEST_F(ProblemInstance, ControllableSets) {
   ASSERT_EQ(ret_code, toppra::ReturnCode::OK)
       << "actual return code: " << (int)ret_code;
   for (int i = 0; i < 51; i++)
-    EXPECT_NEAR(data.controllable_sets(i, 1), e_K_max(i), TOPPRA_PRECISION)
+    EXPECT_NEAR(data.controllable_sets(i, 1), e_K_max(i), TEST_PRECISION)
         << "idx: " << i;
 }
 
@@ -117,7 +123,31 @@ TEST_F(ProblemInstance, OutputParmetrization) {
       << "actual return code: " << (int)ret_code;
 
   for (int i = 0; i < 51; i++)
-    EXPECT_NEAR(data.parametrization(i), expected_parametrization(i), TOPPRA_PRECISION)
+    EXPECT_NEAR(data.parametrization(i), expected_parametrization(i), TEST_PRECISION)
         << "idx: " << i
         << ", abs diff=" << data.parametrization(i) - expected_parametrization(i);
+}
+
+TEST_F(ProblemInstance, FeasibleSets) {
+  toppra::algorithm::TOPPRA problem{v, path};
+  problem.setN(50);
+  auto ret_code = problem.computeFeasibleSets();
+  auto data = problem.getParameterizationData();
+  toppra::Vector expected_feasible_max(51);
+  expected_feasible_max << 0.06666667, 0.07624309, 0.08631706, 0.09690258, 0.1005511,
+      0.09982804, 0.09979021, 0.1004364, 0.10178673, 0.10388394, 0.10679654, 0.11062383,
+      0.11550389, 0.12162517, 0.12924407, 0.13871115, 0.15051124, 0.16532619,
+      0.18413615, 0.20838854, 0.24029219, 0.27052997, 0.2601227, 0.2447933, 0.22462845,
+      0.2, 0.17154989, 0.14013605, 0.10674847, 0.07241209, 0.04761905, 0.05457026,
+      0.06044905, 0.06527948, 0.08479263, 0.10990991, 0.13252362, 0.15269631,
+      0.15777077, 0.12111776, 0.09525987, 0.07641998, 0.06232537, 0.05154506,
+      0.04314353, 0.03648939, 0.0311448, 0.02679888, 0.02322632, 0.02026086, 0.01777778;
+
+  ASSERT_EQ(ret_code, toppra::ReturnCode::OK)
+      << "actual return code: " << (int)ret_code;
+
+  for (int i = 0; i < 51; i++)
+    EXPECT_NEAR(data.feasible_sets(i, 1), expected_feasible_max(i), TEST_PRECISION)
+        << "idx: " << i
+        << ", abs diff=" << data.parametrization(i) - expected_feasible_max(i);
 }

@@ -9,12 +9,26 @@
 
 namespace toppra {
 
+/// Return code for Path Parametrization algorithm.
 enum class ReturnCode {
+
+  /// Success
   OK = 0,
+
+  /// Unknown error
   ERR_UNKNOWN = 1,
+
+  /// Fail during computing controllable sets. Problem might be infeasible.
   ERR_FAIL_CONTROLLABLE = 2,
+
+  /// Fail during forward pass. Numerical error occured.
   ERR_FAIL_FORWARD_PASS = 3,
+
+  /// Problem is not initialized
   ERR_UNINITIALIZED = 4,
+
+  /// Fail to ocmpute feasible sets.
+  ERR_FAIL_FEASIBLE = 5,
 };
 
 struct ParametrizationData {
@@ -64,6 +78,11 @@ class PathParametrizationAlgorithm {
    */
   virtual ReturnCode computePathParametrization(value_type vel_start = 0,
                                                 value_type vel_end = 0);
+
+  /** Compute the sets of feasible squared velocities.
+   */
+  ReturnCode computeFeasibleSets();
+
   virtual ~PathParametrizationAlgorithm() {}
 
  protected:
@@ -80,10 +99,6 @@ class PathParametrizationAlgorithm {
    */
   virtual ReturnCode computeForwardPass(value_type vel_start) = 0;
 
-  /** Compute the sets of feasible squared velocities.
-   */
-  ReturnCode computeFeasibleSets() { throw std::runtime_error("Not implemented"); };
-
   /** Compute the sets of controllable squared path velocities.
    */
   ReturnCode computeControllableSets(const Bound &vel_ends);
@@ -99,6 +114,8 @@ class PathParametrizationAlgorithm {
   /// \brief Number of segments in the discretized problems.
   /// See m_gridpoints for more information.
   int m_N = 100;
+
+  int m_initialized = false;
 };
 
 }  // namespace toppra

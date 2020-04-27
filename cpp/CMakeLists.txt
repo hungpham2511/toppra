@@ -12,7 +12,7 @@ option(BUILD_WITH_PINOCCHIO "Compile with Pinocchio library" OFF)
 option(BUILD_WITH_qpOASES "Compile the wrapper for qpOASES" OFF)
 option(BUILD_WITH_GLPK "Compile the wrapper for GLPK (GPL license)" OFF)
 # General options
-option(TOPPRA_DEBUG_ON "Set debug mode to on." OFF)
+option(TOPPRA_DEBUG_ON "Set logging mode to on." OFF)
 
 find_package (Threads)
 
