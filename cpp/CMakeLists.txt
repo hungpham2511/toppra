@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 option(BUILD_WITH_PINOCCHIO "Compile with Pinocchio library" OFF)
 # Solvers
 option(BUILD_WITH_qpOASES "Compile the wrapper for qpOASES" OFF)
+option(TOPPRA_DEBUG_ON "Set logging mode to on." OFF)
 
 find_package (Threads)
 
