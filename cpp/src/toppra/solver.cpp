@@ -5,15 +5,16 @@
 
 namespace toppra {
 
-Solver::Solver (const LinearConstraintPtrs& constraints, const GeometricPath& path,
+void Solver::initialize (const LinearConstraintPtrs& constraints, const GeometricPathPtr& path,
     const Vector& times)
-  : m_constraints (constraints)
-  , m_path (path)
-  , m_times (times)
-  , m_N (times.size()-1)
-  , m_nV (2)
-  , m_deltas (times.tail(m_N) - times.head(m_N))
 {
+  m_constraints = constraints;
+  m_path = path;
+  m_times = times;
+  m_N = times.size()-1;
+  m_nV = 2;
+  m_deltas = times.tail(m_N) - times.head(m_N);
+
   if ((m_deltas.array() <= 0).any())
     throw std::invalid_argument("Invalid times.");
   /// \todo assert that the time range of the path equals [ times[0], times[m_N] ].
@@ -37,7 +38,7 @@ Solver::Solver (const LinearConstraintPtrs& constraints, const GeometricPath& pa
       bparam->cid = c;
     } else
       bparam = &emptyBoxParams;
-    lin->computeParams(path, times,
+    lin->computeParams(*path, times,
         lparam->a, lparam->b, lparam->c, lparam->F, lparam->g,
         bparam->u, bparam->x);
   }

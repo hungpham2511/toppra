@@ -74,6 +74,11 @@ class Solver {
         const Bound& x, const Bound& xNext,
         Vector& solution) = 0;
 
+    /// \brief Initialize the solver
+    /// \note Child classes should call the parent implementation.
+    virtual void initialize (const LinearConstraintPtrs& constraints, const GeometricPathPtr& path,
+        const Vector& times);
+
     /** \brief Initialize the wrapped solver
      */
     virtual void setupSolver ()
@@ -87,7 +92,9 @@ class Solver {
     virtual ~Solver () {}
 
   protected:
-    Solver (const LinearConstraintPtrs& constraints, const GeometricPath& path,
+    Solver () {}
+
+    void init (const LinearConstraintPtrs& constraints, const GeometricPathPtr& path,
         const Vector& times);
 
     struct LinearConstraintParams {
@@ -105,7 +112,7 @@ class Solver {
     } m_constraintsParams;
 
     LinearConstraintPtrs m_constraints;
-    const GeometricPath& m_path;
+    GeometricPathPtr m_path;
     Vector m_times;
 
   private:

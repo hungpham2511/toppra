@@ -25,11 +25,14 @@ void qpOASESWrapper::setDefaultBoundary (const value_type& v)
   m_defaultBoundary = v;
 }
 
-qpOASESWrapper::qpOASESWrapper (const LinearConstraintPtrs& constraints, const GeometricPath& path,
+qpOASESWrapper::qpOASESWrapper () {}
+
+void qpOASESWrapper::initialize (const LinearConstraintPtrs& constraints, const GeometricPathPtr& path,
         const Vector& times)
-  : Solver (constraints, path, times)
-  , m_boundary (m_defaultBoundary)
 {
+  Solver::initialize (constraints, path, times);
+  m_boundary = m_defaultBoundary;
+
   // Currently only support Canonical Linear Constraint
   Eigen::Index nC = 2; // First constraint is x + 2 D u <= xnext_max, second is xnext_min <= x + 2D u
   for (const Solver::LinearConstraintParams& linParam : m_constraintsParams.lin)

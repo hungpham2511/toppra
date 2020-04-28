@@ -32,7 +32,9 @@ namespace solver {
  * */
 class GLPKWrapper : public Solver {
   public:
-    GLPKWrapper (const LinearConstraintPtrs& constraints, const GeometricPath& path,
+    GLPKWrapper () : m_lp (NULL) {}
+
+    void initialize (const LinearConstraintPtrs& constraints, const GeometricPathPtr& path,
         const Vector& times);
 
     bool solveStagewiseOptim(std::size_t i,
