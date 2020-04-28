@@ -78,7 +78,7 @@ class JointVelocityConstraintVarying(LinearConstraint):
             raise ValueError(
                 "Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})"
                 .format(self.get_dof(), path.dof))
-        qs = path.evald(gridpoints / scaling) / scaling
+        qs = path((gridpoints / scaling), 1) / scaling
         vlim_grid = np.array([self.vlim_func(s) for s in gridpoints])
         _, _, xbound_ = _create_velocity_constraint_varying(qs, vlim_grid)
         xbound = np.array(xbound_)
