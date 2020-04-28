@@ -46,7 +46,7 @@ struct ParametrizationData {
   ReturnCode ret_code = ReturnCode::ERR_UNINITIALIZED;
 };
 
-/** Base class for time parametrization algorithms.
+/** \brief Base class for time parametrization algorithms.
  *
  */
 class PathParametrizationAlgorithm {
