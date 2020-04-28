@@ -59,9 +59,9 @@ def test_correctness(coefficients_functions):
         path, np.linspace(0, path.duration, 10), 1.0)
 
     # Correct params
-    q_vec = path.eval(np.linspace(0, path.duration, 10))
-    qs_vec = path.evald(np.linspace(0, path.duration, 10))
-    qss_vec = path.evaldd(np.linspace(0, path.duration, 10))
+    q_vec = path(np.linspace(0, path.duration, 10))
+    qs_vec = path(np.linspace(0, path.duration, 10), 1)
+    qss_vec = path(np.linspace(0, path.duration, 10), 2)
 
     for i in range(10):
         ai_ = A(q_vec[i]).dot(qs_vec[i])
@@ -99,9 +99,9 @@ def test_joint_torque(coefficients_functions, friction):
         path, np.linspace(0, path.duration, 10), 1.0)
 
     # Correct params
-    p_vec = path.eval(np.linspace(0, path.duration, 10))
-    ps_vec = path.evald(np.linspace(0, path.duration, 10))
-    pss_vec = path.evaldd(np.linspace(0, path.duration, 10))
+    p_vec = path(np.linspace(0, path.duration, 10))
+    ps_vec = path(np.linspace(0, path.duration, 10), 1)
+    pss_vec = path(np.linspace(0, path.duration, 10), 2)
 
     dof = 2
     F_actual = np.vstack((np.eye(dof), - np.eye(dof)))
