@@ -1,12 +1,13 @@
 #ifndef TOPPRA_TOPPRA_HPP
 #define TOPPRA_TOPPRA_HPP
 
-#include <memory>
 #include <iostream>
+#include <limits>
+#include <memory>
+#include <vector>
 
 #include <Eigen/Core>
 #include <Eigen/StdVector>
-#include <vector>
 
 #include <toppra/export.hpp>
 
@@ -21,6 +22,8 @@
 namespace toppra {
   /// The scalar type
   typedef double value_type;
+
+  constexpr value_type infty = std::numeric_limits<value_type>::infinity();
 
   /// Column vector type
   typedef Eigen::Matrix<value_type, Eigen::Dynamic, 1> Vector;

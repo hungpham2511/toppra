@@ -20,6 +20,7 @@ void LinearConstraint::discretizationType (DiscretizationType type)
 }
 
 /// \internal
+
 /// \param k number of constraints
 /// \param m number of variables
 void allocateLinearPart(std::size_t N, Eigen::Index k, Eigen::Index m,

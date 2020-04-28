@@ -7,8 +7,6 @@
 namespace toppra {
 namespace solver {
 
-constexpr value_type infty = std::numeric_limits<value_type>::infinity();
-
 void intersection (const Bound& a, const Bound& b, Bound& c)
 {
   c[0] = std::max(a[0], b[0]);
