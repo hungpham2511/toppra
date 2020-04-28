@@ -12,7 +12,7 @@ class JointVelocityConstraint(LinearConstraint):
     ----------
     vlim: np.ndarray
         Shape (dof, 2). The lower and upper velocity bounds of the j-th joint
-        are given by alim[j, 0] and alim[j, 1] respectively.
+        are given by vlim[j, 0] and vlim[j, 1] respectively.
 
     """
 
