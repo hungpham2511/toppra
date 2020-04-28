@@ -7,8 +7,10 @@
 namespace toppra {
 
 PathParametrizationAlgorithm::PathParametrizationAlgorithm(
-    LinearConstraintPtrs constraints, const GeometricPath &path)
-    : m_constraints(std::move(constraints)), m_path(path){};
+    LinearConstraintPtrs constraints, const GeometricPathPtr &path)
+    : m_constraints(std::move(constraints)), m_path(path),
+    m_solver (std::make_shared<solver::qpOASESWrapper>())
+{};
 
 ReturnCode PathParametrizationAlgorithm::computePathParametrization(value_type vel_start,
                                                                     value_type vel_end) {
@@ -105,13 +107,12 @@ ReturnCode PathParametrizationAlgorithm::computeFeasibleSets() {
 
 void PathParametrizationAlgorithm::initialize() {
   if (m_initialized) return;
-  m_data.gridpoints =
-      Vector::LinSpaced(m_N + 1, m_path.pathInterval()(0), m_path.pathInterval()(1));
+  Bound I (m_path->pathInterval());
+  m_data.gridpoints = Vector::LinSpaced(m_N + 1, I(0), I(1));
   m_data.parametrization.resize(m_N + 1);
   m_data.controllable_sets.resize(m_N + 1, 2);
   m_data.feasible_sets.resize(m_N + 1, 2);
-  m_solver = std::make_shared<solver::qpOASESWrapper>(m_constraints, m_path,
-                                                      m_data.gridpoints);
+  m_solver->initialize(m_constraints, m_path, m_data.gridpoints);
   m_initialized = true;
 }
 

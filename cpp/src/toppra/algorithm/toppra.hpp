@@ -10,7 +10,7 @@ namespace toppra {
 namespace algorithm {
 class TOPPRA : public PathParametrizationAlgorithm {
  public:
-  TOPPRA(LinearConstraintPtrs constraints, const GeometricPath &path);
+  TOPPRA(LinearConstraintPtrs constraints, const GeometricPathPtr &path);
 
  protected:
   ReturnCode computeForwardPass(value_type vel_start);
