@@ -27,7 +27,7 @@ def test_robustness_main(request):
     parsed_problems = []
     path = pathlib.Path(__file__)
     path = path / '../problem_suite_1.yaml'
-    problem_dict = yaml.load(path.resolve().read_text())
+    problem_dict = yaml.load(path.resolve().read_text(), Loader=yaml.SafeLoader)
     for key in problem_dict:
         if len(problem_dict[key]['ss_waypoints']) == 2:
             ss_waypoints = np.linspace(problem_dict[key]['ss_waypoints'][0],
