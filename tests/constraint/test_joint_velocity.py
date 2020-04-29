@@ -56,7 +56,7 @@ class TestClass_JointVelocityConstraint(object):
         constraint_param = pc.compute_constraint_params(path, ss, 1.0)
         _, _, _, _, _, _, xlimit = constraint_param
 
-        qs = path.evald(ss)
+        qs = path(ss, 1)
         N = ss.shape[0] - 1
 
         sd = cvx.Variable()
@@ -107,7 +107,7 @@ def test_jnt_vel_varying_basic():
     gridpoints = np.linspace(0, 2, 10)
     _, _, _, _, _, _, xlimit = constraint.compute_constraint_params(path, gridpoints, 1.0)
     # constraint splines
-    qs = path.evald(gridpoints)
+    qs = path(gridpoints, 1)
     # test
     sd = cvx.Variable()
     for i in range(ss_wpts.shape[0]):

@@ -19,7 +19,7 @@ class DiscretizationType(Enum):
     """Enum to mark different Discretization Scheme for constraint.
 
     1. `Collocation`: smaller problem size, but lower accuracy.
-    2. `Interplation`: larger problem size, but higher accuracy.
+    2. `Interpolation`: larger problem size, but higher accuracy.
 
     In general, the difference in speed is not too large. Should use
     Interpolation if possible.
