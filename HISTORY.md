@@ -9,6 +9,7 @@
 
 ### Changed
 
+- [python] #98: Eliminate use of deprecated method.
 - [cpp] Bug fixes in solver wrapper.
 - [python] Simplify TOPPRA class interface.
 - [python] [0e022c][cm-0e022c] Update README.md to reflect development roadmap.
