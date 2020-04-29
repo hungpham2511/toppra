@@ -1,7 +1,12 @@
 #include <cstddef>
 #include <iostream>
 #include <toppra/algorithm.hpp>
+#ifdef BUILD_WITH_qpOASES
 #include <toppra/solver/qpOASES-wrapper.hpp>
+#endif
+#ifdef BUILD_WITH_GLPK
+#include <toppra/solver/glpk-wrapper.hpp>
+#endif
 #include "toppra/toppra.hpp"
 
 namespace toppra {
@@ -9,7 +14,13 @@ namespace toppra {
 PathParametrizationAlgorithm::PathParametrizationAlgorithm(
     LinearConstraintPtrs constraints, const GeometricPathPtr &path)
     : m_constraints(std::move(constraints)), m_path(path),
+#ifdef BUILD_WITH_qpOASES
     m_solver (std::make_shared<solver::qpOASESWrapper>())
+#elif BUILD_WITH_GLPK
+    m_solver (std::make_shared<solver::qpOASESWrapper>())
+#else
+    m_solver ()
+#endif
 {};
 
 ReturnCode PathParametrizationAlgorithm::computePathParametrization(value_type vel_start,
@@ -107,6 +118,8 @@ ReturnCode PathParametrizationAlgorithm::computeFeasibleSets() {
 
 void PathParametrizationAlgorithm::initialize() {
   if (m_initialized) return;
+  if (!m_solver)
+    throw std::logic_error("You must set a solver first.");
   Bound I (m_path->pathInterval());
   m_data.gridpoints = Vector::LinSpaced(m_N + 1, I(0), I(1));
   m_data.parametrization.resize(m_N + 1);
