@@ -135,7 +135,7 @@ class ParameterizationAlgorithm(object):
         t_grid = np.delete(t_grid, skip_ent)
         scaling = self.gridpoints[-1] / self.path.duration
         gridpoints = np.delete(self.gridpoints, skip_ent) / scaling
-        q_grid = self.path.eval(gridpoints)
+        q_grid = self.path(gridpoints)
 
         traj_spline = SplineInterpolator(
             t_grid,
