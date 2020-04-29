@@ -17,3 +17,18 @@ make -j4
 ./tests/all_tests
 ```
 
+# Using TOPPRA in CMake-based project
+
+In your CMakeLists.txt,
+```cmake
+# The following line defines cmake target toppra::toppra
+find_package(toppra)
+...
+target_link_library(foo PUBLIC toppra::toppra)
+```
+
+## How to install optional dependencies:
+
+- GLPK: `sudo apt install libglpk-dev`
+- qpOASES: `sudo apt install robotpkg-qpoases` (follow http://robotpkg.openrobots.org/debian.html for robotpkg)
+- pinocchio: `sudo apt install robotpkg-pinocchio` (follow http://robotpkg.openrobots.org/debian.html for robotpkg)

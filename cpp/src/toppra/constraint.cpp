@@ -20,8 +20,13 @@ void LinearConstraint::discretizationType (DiscretizationType type)
 }
 
 /// \internal
+
 /// \param k number of constraints
 /// \param m number of variables
+void allocateLinearPart(std::size_t N, Eigen::Index k, Eigen::Index m,
+    bool constantF, Vectors& a, Vectors& b, Vectors& c, Matrices& F, Vectors& g)
+  TOPPRA_NO_EXPORT;
+
 void allocateLinearPart(std::size_t N, Eigen::Index k, Eigen::Index m,
     bool constantF, Vectors& a, Vectors& b, Vectors& c, Matrices& F, Vectors& g)
 {
@@ -41,6 +46,10 @@ void allocateLinearPart(std::size_t N, Eigen::Index k, Eigen::Index m,
   for (Matrix& x : F) x.resize(k, m);
   for (Vector& x : g) x.resize(k);
 }
+
+void checkSizes (std::size_t N, Eigen::Index k, Eigen::Index m,
+    bool constantF, Vectors& a, Vectors& b, Vectors& c, Matrices& F, Vectors& g)
+  TOPPRA_NO_EXPORT;
 
 void checkSizes (std::size_t N, Eigen::Index k, Eigen::Index m,
     bool constantF, Vectors& a, Vectors& b, Vectors& c, Matrices& F, Vectors& g)
@@ -80,6 +89,14 @@ void checkSizes (std::size_t N, Eigen::Index k, Eigen::Index m,
 }
 
 /// Convert from Collocation to Interpolation
+void collocationToInterpolate (const Vector& gridpoints,
+    bool constantF,
+    const Vectors& a_col, const Vectors& b_col, const Vectors& c_col,
+    const Matrices& F_col, const Vectors& g_col,
+    Vectors& a_intp, Vectors& b_intp, Vectors& c_intp,
+    Matrices& F_intp, Vectors& g_intp)
+  TOPPRA_NO_EXPORT;
+
 void collocationToInterpolate (const Vector& gridpoints,
     bool constantF,
     const Vectors& a_col, const Vectors& b_col, const Vectors& c_col,

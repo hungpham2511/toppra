@@ -9,7 +9,7 @@ set(TEST_SOURCES
   )
 
 add_executable(all_tests ${TEST_SOURCES})
-target_link_libraries(all_tests PUBLIC toppra gmock gtest ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(all_tests PUBLIC toppra gtest ${CMAKE_THREAD_LIBS_INIT})
 
 if(BUILD_WITH_PINOCCHIO)
   target_compile_definitions(all_tests PRIVATE -DBUILD_WITH_PINOCCHIO)
@@ -17,6 +17,9 @@ if(BUILD_WITH_PINOCCHIO)
 endif()
 if(BUILD_WITH_qpOASES)
   target_compile_definitions(all_tests PRIVATE -DBUILD_WITH_qpOASES)
+endif()
+if(BUILD_WITH_GLPK)
+  target_compile_definitions(all_tests PRIVATE -DBUILD_WITH_GLPK)
 endif()
 
 add_test(NAME all_tests COMMAND all_tests)

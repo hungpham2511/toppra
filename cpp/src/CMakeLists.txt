@@ -1,3 +1,5 @@
+include(GenerateExportHeader)
+
 set(SOURCE_FILES
   toppra/constraint.cpp
   toppra/constraint/linear_joint_velocity.cpp
@@ -16,15 +18,28 @@ if(BUILD_WITH_qpOASES)
     list(APPEND SOURCE_FILES
         toppra/solver/qpOASES-wrapper.cpp)
 endif()
+if(BUILD_WITH_GLPK)
+    list(APPEND SOURCE_FILES
+        toppra/solver/glpk-wrapper.cpp)
+endif()
 
 add_library(toppra SHARED ${SOURCE_FILES})
+FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/toppra)
+generate_export_header(toppra
+  EXPORT_FILE_NAME toppra/export.hpp
+  #INCLUDE_GUARD_NAME TOPPRA_EXPORT_HPP # CMake >= 3.11 only
+  )
 target_include_directories(toppra PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<INSTALL_INTERFACE:include>
-  ${qpOASES_INCLUDE_DIRS})
+  ${qpOASES_INCLUDE_DIRS}
+  ${GLPK_INCLUDE_DIRS}
+  )
 target_link_libraries(toppra PUBLIC
-    ${qpOASES_LIBRARY}
-    )
+  ${qpOASES_LIBRARIES}
+  ${GLPK_LIBRARIES}
+  )
 if (TOPPRA_DEBUG_ON)
   target_compile_definitions(toppra PRIVATE TOPPRA_DEBUG_ON)
 endif()
@@ -40,17 +55,27 @@ install(TARGETS toppra EXPORT toppra::toppra
   DESTINATION lib)
 install(FILES
   toppra/algorithm.hpp
-
   toppra/constraint.hpp
-  toppra/constraint/linear_joint_velocity.hpp
-  toppra/constraint/linear_joint_acceleration.hpp
-  toppra/constraint/joint_torque.hpp
+  ${CMAKE_CURRENT_BINARY_DIR}/toppra/export.hpp
 
   toppra/geometric_path.hpp
   toppra/toppra.hpp
 
-  toppra/solver.cpp
-  toppra/solver/qpOASES-wrapper.hpp
+  toppra/solver.hpp
 
   DESTINATION include/toppra)
-
+install(FILES
+  toppra/algorithm/toppra.hpp
+  DESTINATION include/toppra/algorithm)
+install(FILES
+  toppra/constraint/linear_joint_velocity.hpp
+  toppra/constraint/linear_joint_acceleration.hpp
+  toppra/constraint/joint_torque.hpp
+  DESTINATION include/toppra/constraint)
+install(FILES
+  toppra/constraint/joint_torque/pinocchio.hpp
+  DESTINATION include/toppra/constraint/joint_torque)
+install(FILES
+  toppra/solver/qpOASES-wrapper.hpp
+  toppra/solver/glpk-wrapper.hpp
+  DESTINATION include/toppra/solver)

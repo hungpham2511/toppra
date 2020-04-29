@@ -46,7 +46,7 @@ struct ParametrizationData {
   ReturnCode ret_code = ReturnCode::ERR_UNINITIALIZED;
 };
 
-/** Base class for time parametrization algorithms.
+/** \brief Base class for time parametrization algorithms.
  *
  */
 class PathParametrizationAlgorithm {
@@ -76,8 +76,8 @@ class PathParametrizationAlgorithm {
    * \param vel_end
    * \return Return code.
    */
-  virtual ReturnCode computePathParametrization(double vel_start = 0,
-                                                double vel_end = 0);
+  virtual ReturnCode computePathParametrization(value_type vel_start = 0,
+                                                value_type vel_end = 0);
 
   /** Compute the sets of feasible squared velocities.
    */
@@ -97,7 +97,7 @@ class PathParametrizationAlgorithm {
    * Derived class should provide a suitable forward pass function,
    * depending on the desired objective.
    */
-  virtual ReturnCode computeForwardPass(double vel_start) = 0;
+  virtual ReturnCode computeForwardPass(value_type vel_start) = 0;
 
   /** Compute the sets of controllable squared path velocities.
    */

@@ -1,12 +1,18 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(toppra)
+project(toppra
+  VERSION 0.2.3
+  # Disable because not available in CMake 3.5
+  #DESCRIPTION "Library computing the time-optimal path parameterization."
+  LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Dynamics
 option(BUILD_WITH_PINOCCHIO "Compile with Pinocchio library" OFF)
 # Solvers
 option(BUILD_WITH_qpOASES "Compile the wrapper for qpOASES" OFF)
+option(BUILD_WITH_GLPK "Compile the wrapper for GLPK (GPL license)" OFF)
+# General options
 option(TOPPRA_DEBUG_ON "Set logging mode to on." OFF)
 
 find_package (Threads)
@@ -14,15 +20,19 @@ find_package (Threads)
 find_package (Eigen3 REQUIRED)
 message(STATUS "Found Eigen version ${EIGEN3_VERSION_STRING}")
 
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 if(BUILD_WITH_PINOCCHIO)
     find_package(pinocchio REQUIRED)
     message(STATUS "Found pinocchio ${pinocchio_VERSION}")
 endif()
 if(BUILD_WITH_qpOASES)
-    set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
-    find_package("qpOASES" REQUIRED)
+    find_package(qpOASES REQUIRED)
     message(STATUS "Found qpOASES")
 endif()
+if(BUILD_WITH_GLPK)
+    find_package(GLPK REQUIRED)
+    message(STATUS "Found glpk ${GLPK_LIBRARY} ${GLPK_INCLUDE_DIR}")
+endif(BUILD_WITH_GLPK)
 
 add_subdirectory(src)
 add_subdirectory(doc)
@@ -62,3 +72,26 @@ endif()
 
 enable_testing()
 add_subdirectory(tests)
+
+# Generate and install CMake config, version and target files.
+include(CMakePackageConfigHelpers)
+set(CONFIG_INSTALL_DIR "lib/cmake/${PROJECT_NAME}")
+set(GENERATED_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
+set(VERSION_CONFIG "${GENERATED_DIR}/${PROJECT_NAME}ConfigVersion.cmake")
+set(PROJECT_CONFIG "${GENERATED_DIR}/${PROJECT_NAME}Config.cmake")
+write_basic_package_version_file(
+    "${VERSION_CONFIG}" VERSION ${PROJECT_VERSION} COMPATIBILITY SameMajorVersion
+)
+
+configure_package_config_file(
+    "cmake/Config.cmake.in"
+    "${PROJECT_CONFIG}"
+    INSTALL_DESTINATION "${CONFIG_INSTALL_DIR}"
+)
+
+install(FILES "${PROJECT_CONFIG}" "${VERSION_CONFIG}"
+    DESTINATION "${CONFIG_INSTALL_DIR}")
+install(EXPORT toppra::toppra
+  NAMESPACE toppra::
+  FILE toppraTargets.cmake
+  DESTINATION "${CONFIG_INSTALL_DIR}")

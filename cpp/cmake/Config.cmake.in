@@ -1,0 +1,13 @@
+set(TOPPRA_WITH_PINOCCHIO @BUILD_WITH_PINOCCHIO@)
+set(TOPPRA_WITH_qpOASES   @BUILD_WITH_qpOASES@)
+set(TOPPRA_WITH_GLPK      @BUILD_WITH_GLPK@)
+
+find_package(Eigen3 REQUIRED)
+
+if(TOPPRA_WITH_PINOCCHIO)
+  find_package(pinocchio REQUIRED)
+endif()
+# qpOASES and GLPK do not need to be found again, because
+# they are not used as targets.
+
+include("${CMAKE_CURRENT_LIST_DIR}/toppraTargets.cmake")

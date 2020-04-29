@@ -9,7 +9,7 @@ namespace algorithm {
 TOPPRA::TOPPRA(LinearConstraintPtrs constraints, const GeometricPath &path)
     : PathParametrizationAlgorithm{std::move(constraints), path} {};
 
-ReturnCode TOPPRA::computeForwardPass(double vel_start) {
+ReturnCode TOPPRA::computeForwardPass(value_type vel_start) {
   TOPPRA_LOG_DEBUG("computeForwardPass");
   ReturnCode ret = ReturnCode::OK;
   bool solver_ret;
