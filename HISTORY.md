@@ -4,7 +4,8 @@
 
 ### Added
 
-- [cpp] Initial cpp TOPPRA implementation: compute parametrization, feasible sets.
+- [cpp] Add solver wrapper based on GLPK.
+- [cpp] Initial cpp TOPPRA implementation: compute parametrization, feasible sets, qpOASES solver wrapper.
 - [python] Implement a new trajectory class for specified velocities.
 
 ### Changed
