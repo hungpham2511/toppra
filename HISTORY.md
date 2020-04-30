@@ -1,6 +1,8 @@
 # History
 
-## 0.2.4 (in progress)
+## 0.3.0 (Apr 30 2020)
+
+Major release! Implement TOPPRA in C++ and several improvements to Python codebase.
 
 ### Added
 
