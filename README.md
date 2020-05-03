@@ -1,4 +1,4 @@
-# `toppra`
+# `toppra`: Time-Optimal Path Parameterization
 [![CircleCI](https://circleci.com/gh/hungpham2511/toppra/tree/develop.svg?style=svg)](https://circleci.com/gh/hungpham2511/toppra/tree/develop)
 [![Coverage Status](https://coveralls.io/repos/github/hungpham2511/toppra/badge.svg?branch=master)](https://coveralls.io/github/hungpham2511/toppra?branch=master)
 [![Documentation Status](https://readthedocs.org/projects/toppra/badge/?version=latest)](https://toppra.readthedocs.io/en/latest/?badge=latest)
@@ -28,7 +28,7 @@ given constraints can be found.
 (https://toppra.readthedocs.io/en/latest/index.html).
 
 
-## Quick-start
+## Installation (Python)
 
 To install **TOPP-RA**, simply clone the repo and install with pip
 
@@ -42,6 +42,12 @@ To install depencidencies for development, replace the second command with:
 cd toppra && pip install -e .[dev]
 ```
 
+## `toppra` C++
+
+`toppra` is also implemented as a stand-alone C++ library. See `cpp`
+for the source code. Be warned that this implementation is relatively
+new and is not yet stable enough for production use.
+
 # Development roadmap
 
 The following is a non-exhautive list of features that we are
@@ -53,22 +59,23 @@ considering to include in the library.
 - Improve the numerical stability of the solvers for degenerate cases.
 - Post-processing of output trajectories: [#56](https://github.com/hungpham2511/toppra/issues/56), [#80](https://github.com/hungpham2511/toppra/issues/80)
 
-## Contributions
-
-Pull Requests are welcomed!
-- Go ahead and create a Pull Request and we will review your proposal!
-- For new features, or bug fixes, preferably the request should
-  contain unit tests. Note that `toppra` uses
-  [pytest](https://docs.pytest.org/en/latest/contents.html) for all
-  tests. Check out the test folder for more details.
-
 # Supports
+
+## Bug tracking
 Please report any issues, questions or feature request via 
 [Github issues tracker](https://github.com/hungpham2511/toppra/issues).
 
 Please provide more details on the errors/bugs that you encounter. The
 best way is to provide a Minimal Working Example that produces the
 reported bug and attach it with the issue report.
+
+## Contributions
+Pull Requests are welcomed!
+- Go ahead and create a Pull Request and we will review your proposal!
+- For new features, or bug fixes, preferably the request should
+  contain unit tests. Note that `toppra` uses
+  [pytest](https://docs.pytest.org/en/latest/contents.html) for all
+  tests. Check out the test folder for more details.
 
 
 # Citing `toppra`
