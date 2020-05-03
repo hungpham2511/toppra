@@ -64,46 +64,9 @@ Rave Trajectory Wrapper
 .. autofunction:: toppra.interpolator.propose_gridpoints
 
 Constraints
-------------
+--------------
 
-Joint Acceleration Constraint
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: toppra.constraint.JointAccelerationConstraint
-   :members:
-   :special-members:
-
-Joint Velocity Constraint
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: toppra.constraint.JointVelocityConstraint
-   :members:
-   :special-members:
-
-Second Order Constraint
-^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: toppra.constraint.SecondOrderConstraint
-   :members:
-   :special-members:
-
-Robust Linear Constraint
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: toppra.constraint.RobustLinearConstraint
-   :members:
-
-Canonical Linear Constraint (base class)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: toppra.constraint.LinearConstraint
-   :members:
-   :special-members:
-
-
-Constraints (base class)
-^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: toppra.constraint.Constraint
-
-DiscretizationType (enum)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: toppra.constraint.DiscretizationType
-   :members:
+.. automodule:: toppra.constraint
 
 Solver Wrapper
 ----------------

@@ -1,5 +1,6 @@
 """Algorithms implemented in :mod:`toppra` requires geometric paths
 that implements the abstract class
+
 :class:`toppra.interpolator.AbstractGeometricPath`. The interface is
 really simple, requiring only the evaluted values, as well as the
 first and second derivative.

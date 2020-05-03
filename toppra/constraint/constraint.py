@@ -10,22 +10,24 @@ logger = logging.getLogger(__name__)
 class ConstraintType(Enum):
     """Type of path parametrization constraint."""
 
+    #: Unknown
     Unknown = -1
+    #: Simple linear constraints with only linear inequalities
     CanonicalLinear = 0
+    #: Linear constraints with linear conic inequalities.
     CanonicalConic = 1
 
 
 class DiscretizationType(Enum):
     """Enum to mark different Discretization Scheme for constraint.
 
-    1. `Collocation`: smaller problem size, but lower accuracy.
-    2. `Interpolation`: larger problem size, but higher accuracy.
-
     In general, the difference in speed is not too large. Should use
     Interpolation if possible.
     """
-
+    #: Smaller problem size, but lower accuracy.
     Collocation = 0
+
+    #: Larger problem size, but higher accuracy.
     Interpolation = 1
 
 
