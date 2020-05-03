@@ -3,7 +3,24 @@
 #include <toppra/constraint.hpp>
 #include <toppra/geometric_path.hpp>
 
+#ifdef BUILD_WITH_qpOASES
+#include <toppra/solver/qpOASES-wrapper.hpp>
+#endif
+#ifdef BUILD_WITH_GLPK
+#include <toppra/solver/glpk-wrapper.hpp>
+#endif
+
 namespace toppra {
+
+SolverPtr Solver::createDefault() {
+#ifdef BUILD_WITH_qpOASES
+    return std::make_shared<solver::qpOASESWrapper>();
+#elif BUILD_WITH_GLPK
+    return std::make_shared<solver::GLPKWrapper>();
+#else
+    return SolverPtr();
+#endif
+}
 
 void Solver::initialize (const LinearConstraintPtrs& constraints, const GeometricPathPtr& path,
     const Vector& times)

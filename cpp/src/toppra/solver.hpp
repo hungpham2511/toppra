@@ -26,6 +26,13 @@ namespace toppra {
  * */
 class Solver {
   public:
+    /// \brief Create a solver based on the compilation option.
+    /// At the time of writing, the preference order is
+    /// - qpOASES
+    /// - GLPK
+    /// If none of these is available, this function returns a null pointer.
+    static SolverPtr createDefault();
+
     /// \copydoc Solver::m_deltas
     const Vector& deltas () const
     {
