@@ -1,8 +1,9 @@
-#include "toppra/toppra.hpp"
+#include <toppra/geometric_path.hpp>
+
 #include <cstddef>
 #include <stdexcept>
 #include <ostream>
-#include <toppra/geometric_path.hpp>
+#include "toppra/toppra.hpp"
 
 namespace toppra {
 

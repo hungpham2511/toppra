@@ -1,6 +1,7 @@
+#include <toppra/algorithm.hpp>
+
 #include <cstddef>
 #include <iostream>
-#include <toppra/algorithm.hpp>
 #include "toppra/toppra.hpp"
 
 namespace toppra {

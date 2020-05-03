@@ -1,7 +1,7 @@
-#include <toppra/toppra.hpp>
 #include <toppra/solver/qpOASES-wrapper.hpp>
 
 #include <qpOASES.hpp>
+#include <toppra/toppra.hpp>
 
 namespace toppra {
 namespace solver {
