@@ -10,6 +10,7 @@
 
 ### Changed
 
+- [python] Improve documentation for `toppra.constraint`
 - [python] #98: Eliminate use of deprecated method.
 - [cpp] Bug fixes in solver wrapper.
 - [python] Simplify TOPPRA class interface.
