@@ -1,5 +1,12 @@
-"""This module implements interpolators for representing geometric paths and trajectories.
+"""Algorithms implemented in :mod:`toppra` requires geometric paths
+that implements the abstract class
+
+:class:`toppra.interpolator.AbstractGeometricPath`. The interface is
+really simple, requiring only the evaluted values, as well as the
+first and second derivative.
+
 """
+from typing import List
 import logging
 import numpy as np
 from scipy.interpolate import UnivariateSpline, CubicSpline, PPoly
@@ -12,27 +19,45 @@ if FOUND_OPENRAVE:
     import openravepy as orpy  # pylint: disable=import-error
 
 
-def propose_gridpoints(path, max_err_threshold=1e-4, max_iteration=100, max_seg_length=0.05):
-    """Generate a set of grid pooint for the given path.
+def propose_gridpoints(
+    path, max_err_threshold=1e-4, max_iteration=100, max_seg_length=0.05
+):
+    r"""Generate gridpoints that sufficiently cover the given path.
 
     This function operates in multiple passes through the geometric
     path from the start to the end point. In each pass, for each
     segment, the maximum interpolation error is estimated using the
     following equation:
 
-        0.5 * max(abs(p'' * d_segment ^ 2))
+    .. math::
 
-    Here p'' is the second derivative of the path and d_segment is the
-    length of the segment. Intuitively, at positions with higher
-    curvature, there must be more points in order to improve
-    approximation quality.
+        err_{est} = 0.5 * \mathrm{max}(\mathrm{abs}(p'' * d_{segment} ^ 2))
+
+    Here :math:`p''` is the second derivative of the path and
+    d_segment is the length of the segment. If the estimated error
+    :math:`err_{test}` is greater than the given threshold
+    `max_err_threshold` then the segment is divided in two half.
+
+    Intuitively, at positions with higher curvature, there must be
+    more points in order to improve approximation
+    quality. Theoretically toppra performs the best when the proposed
+    gridpoint is optimally distributed.
 
     Arguments
     ---------
-    path: Input geometric path.
-    max_err_threshold: Maximum worstcase error thrshold allowable.
-    max_iteration: Maximum number of iterations.
-    max_seg_length: All segments length should be smaller than this value.
+    path: :class:`AbstractGeometricPath`
+      Input geometric path.
+    max_err_threshold: float
+      Maximum worstcase error thrshold allowable.
+    max_iteration: int
+      Maximum number of iterations.
+    max_seg_length: float
+      All segments length should be smaller than this value.
+
+    Returns
+    ----------
+    gridpoints_ept: np.ndarray(N,)
+      The proposed gridpoints.
 
     """
     gridpoints_ept = [path.path_interval[0], path.path_interval[1]]
@@ -58,10 +83,10 @@ def propose_gridpoints(path, max_err_threshold=1e-4, max_iteration=100, max_seg_
     return gridpoints_ept
 
 
-class AbstractGeometricPath(object):
-    """Base geometric path.
+class AbstractGeometricPath:
+    """The base class to represent geometric paths.
 
-    Derive geometric paths classes should derive the below abstract methods.
+    Derive geometric paths classes should implement the below abstract methods.
     """
 
     def __call__(self, path_positions, order=0):
@@ -81,14 +106,17 @@ class AbstractGeometricPath(object):
 
         Returns
         -------
-            np.ndarray
-                Evaluated values.
+            np.ndarray(N, dof)
+                The evaluated joint positions, velocity or
+                accelerations. The shape of the result depends on the
+                shape of the input.
 
         """
         raise NotImplementedError
 
     @property
     def dof(self):
+        # type: () -> int
         """Return the degrees-of-freedom of the path."""
         raise NotImplementedError
 
@@ -98,11 +126,16 @@ class AbstractGeometricPath(object):
 
         Returns
         -------
-        out:
+        np.ndarray(2,)
             The starting and ending path positions.
 
         """
         raise NotImplementedError
+
+    @property
+    def waypoints(self):
+        """Tuple[ndarray, ndarray] or None: The path's waypoints if applicable. None otherwise."""
+        return None
 
 
 class RaveTrajectoryWrapper(AbstractGeometricPath):
@@ -115,10 +148,11 @@ class RaveTrajectoryWrapper(AbstractGeometricPath):
     object.
 
     """
+
     @staticmethod
     def _extract_interpolation_method(spec):
-        _interpolation = spec.GetGroupFromName('joint').interpolation
-        if _interpolation not in ['quadratic', 'cubic']:
+        _interpolation = spec.GetGroupFromName("joint").interpolation
+        if _interpolation not in ["quadratic", "cubic"]:
             raise ValueError(
                 "This class only handles trajectories with quadratic or cubic interpolation"
             )
@@ -137,29 +171,34 @@ class RaveTrajectoryWrapper(AbstractGeometricPath):
 
         """
         super(RaveTrajectoryWrapper, self).__init__()
-        self.traj = traj  #: init
+        self.traj = traj
         spec = traj.GetConfigurationSpecification()
         self._dof = robot.GetActiveDOF()
         self._interpolation = self._extract_interpolation_method(spec)
         self._duration = traj.GetDuration()
 
         all_waypoints = traj.GetWaypoints(0, traj.GetNumWaypoints()).reshape(
-            traj.GetNumWaypoints(), -1)
+            traj.GetNumWaypoints(), -1
+        )
         valid_wp_indices = [0]
-        self.ss_waypoints = [0.0]
+        ss_waypoints: List[float] = [0.0]
         for i in range(1, traj.GetNumWaypoints()):
             dt = spec.ExtractDeltaTime(all_waypoints[i])
             if dt > 1e-5:  # If delta is too small, skip it.
                 valid_wp_indices.append(i)
-                self.ss_waypoints.append(self.ss_waypoints[-1] + dt)
-        self.ss_waypoints = np.array(self.ss_waypoints)
+                ss_waypoints.append(ss_waypoints[-1] + dt)
+        self.ss_waypoints = np.array(ss_waypoints)
         n_waypoints = len(valid_wp_indices)
 
         def _extract_waypoints(order):
-            return np.array([
-                spec.ExtractJointValues(all_waypoints[i], robot, robot.GetActiveDOFIndices(), order)
-                for i in valid_wp_indices
-            ])
+            return np.array(
+                [
+                    spec.ExtractJointValues(
+                        all_waypoints[i], robot, robot.GetActiveDOFIndices(), order
+                    )
+                    for i in valid_wp_indices
+                ]
+            )
 
         def _make_ppoly():
             if n_waypoints == 1:
@@ -174,8 +213,9 @@ class RaveTrajectoryWrapper(AbstractGeometricPath):
                 waypoints_d = _extract_waypoints(1)
                 waypoints_dd = []
                 for i in range(n_waypoints - 1):
-                    qdd = ((waypoints_d[i + 1] - waypoints_d[i]) /
-                           (self.ss_waypoints[i + 1] - self.ss_waypoints[i]))
+                    qdd = (waypoints_d[i + 1] - waypoints_d[i]) / (
+                        self.ss_waypoints[i + 1] - self.ss_waypoints[i]
+                    )
                     waypoints_dd.append(qdd)
                 waypoints_dd = np.array(waypoints_dd)
 
@@ -186,7 +226,7 @@ class RaveTrajectoryWrapper(AbstractGeometricPath):
                         pp_coeffs[:, iseg, idof] = [
                             waypoints_dd[iseg, idof] / 2,
                             waypoints_d[iseg, idof],
-                            waypoints[iseg, idof]
+                            waypoints[iseg, idof],
                         ]
                 return PPoly(pp_coeffs, self.ss_waypoints)
 
@@ -196,8 +236,9 @@ class RaveTrajectoryWrapper(AbstractGeometricPath):
                 waypoints_dd = _extract_waypoints(2)
                 waypoints_ddd = []
                 for i in range(n_waypoints - 1):
-                    qddd = ((waypoints_dd[i + 1] - waypoints_dd[i]) /
-                            (self.ss_waypoints[i + 1] - self.ss_waypoints[i]))
+                    qddd = (waypoints_dd[i + 1] - waypoints_dd[i]) / (
+                        self.ss_waypoints[i + 1] - self.ss_waypoints[i]
+                    )
                     waypoints_ddd.append(qddd)
                 waypoints_ddd = np.array(waypoints_ddd)
 
@@ -209,7 +250,7 @@ class RaveTrajectoryWrapper(AbstractGeometricPath):
                             waypoints_ddd[iseg, idof] / 6,
                             waypoints_dd[iseg, idof] / 2,
                             waypoints_d[iseg, idof],
-                            waypoints[iseg, idof]
+                            waypoints[iseg, idof],
                         ]
                 return PPoly(pp_coeffs, self.ss_waypoints)
             raise ValueError("An error has occured. Unable to form PPoly.")
@@ -270,43 +311,37 @@ class SplineInterpolator(AbstractGeometricPath):
 
     Parameters
     ----------
-    ss_waypoints: array
-        Shaped (N+1,). Path positions of the waypoints.
-    waypoints: array
-        Shaped (N+1, dof). Waypoints.
+    ss_waypoints: np.ndarray(m,)
+        Path positions of the waypoints.
+    waypoints: np.ndarray(m, d)
+        Waypoints.
     bc_type: optional
         Boundary conditions of the spline. Can be 'not-a-knot',
         'clamped', 'natural' or 'periodic'.
 
-        - 'not-a-knot': The most default option, return to natural
+        - 'not-a-knot': The most default option, return the most naturally
           looking spline.
         - 'clamped': First-order derivatives of the spline at the two
-          end are zeroed.
+          end are clamped at zero.
 
         See scipy.CubicSpline documentation for more details.
 
-    Attributes
-    ----------
-    dof : int
-        Output dimension of the function
-    cspl : :class:`scipy.interpolate.CubicSpline`
-        The underlying cubic spline.
     """
 
-    def __init__(self, ss_waypoints, waypoints, bc_type='not-a-knot'):
+    def __init__(self, ss_waypoints, waypoints, bc_type="not-a-knot"):
         super(SplineInterpolator, self).__init__()
         self.ss_waypoints = np.array(ss_waypoints)  # type: np.ndarray
-        self.waypoints = np.array(waypoints)  # type: np.ndarray
-        assert self.ss_waypoints.shape[0] == self.waypoints.shape[0]
+        self._q_waypoints = np.array(waypoints)  # type: np.ndarray
+        assert self.ss_waypoints.shape[0] == self._q_waypoints.shape[0]
 
         if len(ss_waypoints) == 1:
 
             def _1dof_cspl(s):
                 try:
                     ret = np.zeros((len(s), self.dof))
-                    ret[:, :] = self.waypoints[0]
+                    ret[:, :] = self._q_waypoints[0]
                 except TypeError:
-                    ret = self.waypoints[0]
+                    ret = self._q_waypoints[0]
                 return ret
 
             def _1dof_cspld(s):
@@ -333,9 +368,15 @@ class SplineInterpolator(AbstractGeometricPath):
             return self.cspldd(path_positions)
         raise ValueError("Invalid order %s" % order)
 
-    def get_waypoints(self):
-        """Return the appropriate scaled waypoints."""
-        return self.ss_waypoints, self.waypoints
+    @property
+    def waypoints(self):
+        """Tuple[np.ndarray, np.ndarray]: Return the waypoints.
+
+        The first element is the positions, the second element is the
+        array of waypoints.
+
+        """
+        return self.ss_waypoints, self._q_waypoints
 
     @deprecated
     def get_duration(self):
@@ -359,9 +400,9 @@ class SplineInterpolator(AbstractGeometricPath):
 
     @property
     def dof(self):
-        if np.isscalar(self.waypoints[0]):
+        if np.isscalar(self._q_waypoints[0]):
             return 1
-        return self.waypoints[0].shape[0]
+        return self._q_waypoints[0].shape[0]
 
     @deprecated
     def get_dof(self):  # type: () -> int
@@ -398,7 +439,7 @@ class SplineInterpolator(AbstractGeometricPath):
         """
 
         traj = orpy.RaveCreateTrajectory(robot.GetEnv(), "")
-        spec = robot.GetActiveConfigurationSpecification('cubic')
+        spec = robot.GetActiveConfigurationSpecification("cubic")
         spec.AddDerivativeGroups(1, False)
         spec.AddDerivativeGroups(2, True)
 
@@ -410,15 +451,16 @@ class SplineInterpolator(AbstractGeometricPath):
             q = self(0)
             qd = self(0, 1)
             qdd = self(0, 2)
-            traj.Insert(traj.GetNumWaypoints(),
-                        list(q) + list(qd) + list(qdd) + [0])
+            traj.Insert(traj.GetNumWaypoints(), list(q) + list(qd) + list(qdd) + [0])
         else:
             qs = self(self.ss_waypoints)
             qds = self(self.ss_waypoints, 1)
             qdds = self(self.ss_waypoints, 2)
             for (q, qd, qdd, dt) in zip(qs, qds, qdds, deltas):
-                traj.Insert(traj.GetNumWaypoints(),
-                            q.tolist() + qd.tolist() + qdd.tolist() + [dt])
+                traj.Insert(
+                    traj.GetNumWaypoints(),
+                    q.tolist() + qd.tolist() + qdd.tolist() + [dt],
+                )
         return traj
 
 
@@ -440,16 +482,17 @@ class UnivariateSplineInterpolator(AbstractGeometricPath):
         super(UnivariateSplineInterpolator, self).__init__()
         assert ss_waypoints[0] == 0, "First index must equals zero."
         self.ss_waypoints = np.array(ss_waypoints)
-        self.waypoints = np.array(waypoints)
+        self._q_waypoints = np.array(waypoints)
         if np.isscalar(waypoints[0]):
             self._dof = 1
         else:
             self._dof = waypoints[0].shape[0]
-        assert self.ss_waypoints.shape[0] == self.waypoints.shape[0]
+        assert self.ss_waypoints.shape[0] == self._q_waypoints.shape[0]
         self.uspl = []
         for i in range(self.dof):
             self.uspl.append(
-                UnivariateSpline(self.ss_waypoints, self.waypoints[:, i]))
+                UnivariateSpline(self.ss_waypoints, self._q_waypoints[:, i])
+            )
         self.uspld = [spl.derivative() for spl in self.uspl]
         self.uspldd = [spl.derivative() for spl in self.uspld]
 
@@ -535,8 +578,7 @@ class PolynomialPath(AbstractGeometricPath):
             self.coeff = self.coeff.reshape(1, -1)
         else:
             self.poly = [
-                np.polynomial.Polynomial(self.coeff[i])
-                for i in range(self.dof)
+                np.polynomial.Polynomial(self.coeff[i]) for i in range(self.dof)
             ]
 
         self.polyd = [poly.deriv() for poly in self.poly]

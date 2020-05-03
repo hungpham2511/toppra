@@ -8,12 +8,14 @@ from ..constants import CVXPY_MAXX, CVXPY_MAXU
 logger = logging.getLogger(__name__)
 try:
     import cvxpy
+
     FOUND_CVXPY = True
 except ImportError:
     logger.info("CVXPY installation not found.")
     FOUND_CVXPY = False
 try:
     import mosek
+
     FOUND_MOSEK = True
 except ImportError:
     logger.info("Mosek installation not found!")
@@ -55,10 +57,7 @@ class cvxpyWrapper(SolverWrapper):
         ux = cvxpy.Variable(2)
         u = ux[0]
         x = ux[1]
-        cvxpy_constraints = [
-            - CVXPY_MAXU <= u, u <= CVXPY_MAXU,
-            0 <= x, x <= CVXPY_MAXX
-        ]
+        cvxpy_constraints = [-CVXPY_MAXU <= u, u <= CVXPY_MAXU, 0 <= x, x <= CVXPY_MAXX]
 
         if not np.isnan(x_min):
             cvxpy_constraints.append(x_min <= x)
@@ -88,7 +87,7 @@ class cvxpyWrapper(SolverWrapper):
                 # large bound. The below max(), min() operators is a
                 # workaround to get pass this issue.
                 if ubound is not None:
-                    cvxpy_constraints.append(max(- CVXPY_MAXU, ubound[i, 0]) <= u)
+                    cvxpy_constraints.append(max(-CVXPY_MAXU, ubound[i, 0]) <= u)
                     cvxpy_constraints.append(u <= min(CVXPY_MAXU, ubound[i, 1]))
 
                 if xbound is not None:
@@ -102,11 +101,15 @@ class cvxpyWrapper(SolverWrapper):
                     d = a.shape[1]
                     for j in range(d):
                         cvxpy_constraints.append(
-                            a[i, j] * u + b[i, j] * x + c[i, j]
-                            + cvxpy.norm(P[i, j].T[:, :2] * ux + P[i, j].T[:, 2]) <= 0)
+                            a[i, j] * u
+                            + b[i, j] * x
+                            + c[i, j]
+                            + cvxpy.norm(P[i, j].T[:, :2] * ux + P[i, j].T[:, 2])
+                            <= 0
+                        )
 
                 if ubound is not None:
-                    cvxpy_constraints.append(max(- CVXPY_MAXU, ubound[i, 0]) <= u)
+                    cvxpy_constraints.append(max(-CVXPY_MAXU, ubound[i, 0]) <= u)
                     cvxpy_constraints.append(u <= min(CVXPY_MAXU, ubound[i, 1]))
 
                 if xbound is not None:
@@ -123,10 +126,12 @@ class cvxpyWrapper(SolverWrapper):
         except cvxpy.SolverError:
             # solve fail
             pass
-        if problem.status == cvxpy.OPTIMAL or problem.status == cvxpy.OPTIMAL_INACCURATE:
+        if (
+            problem.status == cvxpy.OPTIMAL
+            or problem.status == cvxpy.OPTIMAL_INACCURATE
+        ):
             return np.array(ux.value).flatten()
         else:
             res = np.empty(self.get_no_vars())
             res[:] = np.nan
             return res
-

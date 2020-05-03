@@ -4,8 +4,8 @@ import toppra
 import toppra.constraint as constraint
 
 
-@pytest.fixture(params=["spline", "poly"])
-def basic_path(request):
+@pytest.fixture(params=["spline", "poly"], name="basic_path")
+def given_basic_path(request):
     """ Return a generic path.
     """
     if request.param == "spline":
@@ -18,13 +18,18 @@ def basic_path(request):
     yield path
 
 
-@pytest.mark.parametrize("solver_wrapper", ["hotqpoases", "seidel"])
-def test_zero_velocity(basic_constraints, basic_path, solver_wrapper):
-    """Check that initial and final velocity are correct."""
+@pytest.fixture(name='constraints')
+def given_simple_constraints(basic_constraints):
     vel_c, acc_c, ro_acc_c = basic_constraints
-    instance = toppra.algorithm.TOPPRA([vel_c, acc_c], basic_path,
+    yield [vel_c, acc_c]
+
+
+@pytest.mark.parametrize("solver_wrapper", ["hotqpoases", "seidel"])
+def test_zero_velocity(constraints, basic_path, solver_wrapper):
+    """Check that initial and final velocity are correct."""
+    instance = toppra.algorithm.TOPPRA(constraints, basic_path,
                                        solver_wrapper=solver_wrapper)
-    jnt_traj, _ = instance.compute_trajectory(0, 0)
+    jnt_traj = instance.compute_trajectory(0, 0)
 
     # assertion
     initial_velocity = jnt_traj(0, 1)
@@ -36,11 +41,10 @@ def test_zero_velocity(basic_constraints, basic_path, solver_wrapper):
 @pytest.mark.parametrize("velocity_start", [0, 0.1])
 @pytest.mark.parametrize("velocity_end", [0, 0.1])
 @pytest.mark.parametrize("solver_wrapper", ["hotqpoases", "seidel"])
-def test_nonzero_velocity(velocity_start, velocity_end, basic_constraints, basic_path, solver_wrapper):
-    vel_c, acc_c, ro_acc_c = basic_constraints
-    instance = toppra.algorithm.TOPPRA([vel_c, acc_c], basic_path,
+def test_nonzero_velocity(velocity_start, velocity_end, constraints, basic_path, solver_wrapper):
+    instance = toppra.algorithm.TOPPRA(constraints, basic_path,
                                        solver_wrapper=solver_wrapper)
-    jnt_traj, _ = instance.compute_trajectory(velocity_start, velocity_end)
+    jnt_traj = instance.compute_trajectory(velocity_start, velocity_end)
 
     # assertion
     initial_velocity = jnt_traj(0, 1)
@@ -54,11 +58,10 @@ def test_nonzero_velocity(velocity_start, velocity_end, basic_constraints, basic
 
 @pytest.mark.parametrize("solver_wrapper", ["hotqpoases", "seidel"])
 @pytest.mark.parametrize("velocities", [[0, -1], [-1, 0], [-1, -1]])
-def test_invalid_velocity(velocities, basic_constraints, basic_path, solver_wrapper):
-    vel_c, acc_c, ro_acc_c = basic_constraints
-    instance = toppra.algorithm.TOPPRA([vel_c, acc_c], basic_path,
+def test_invalid_velocity(velocities, constraints, basic_path, solver_wrapper):
+    instance = toppra.algorithm.TOPPRA(constraints, basic_path,
                                        solver_wrapper=solver_wrapper)
-    with pytest.raises(ValueError) as err:
-        jnt_traj, _ = instance.compute_trajectory(*velocities)
+    with pytest.raises(toppra.exceptions.BadInputVelocities) as err:
+        jnt_traj = instance.compute_trajectory(*velocities)
     assert "Negative" in err.value.args[0]
 

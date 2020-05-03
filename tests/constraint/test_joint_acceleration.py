@@ -77,8 +77,8 @@ def test_constraint_params(accel_constraint_setup):
     N = ss.shape[0] - 1
     dof = path.dof
 
-    ps = path.evald(ss)
-    pss = path.evaldd(ss)
+    ps = path(ss, 1)
+    pss = path(ss, 2)
 
     F_actual = np.vstack((np.eye(dof), - np.eye(dof)))
     g_actual = np.hstack((alim[:, 1], - alim[:, 0]))

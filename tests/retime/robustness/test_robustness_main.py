@@ -27,7 +27,7 @@ def test_robustness_main(request):
     parsed_problems = []
     path = pathlib.Path(__file__)
     path = path / '../problem_suite_1.yaml'
-    problem_dict = yaml.load(path.resolve().read_text())
+    problem_dict = yaml.load(path.resolve().read_text(), Loader=yaml.SafeLoader)
     for key in problem_dict:
         if len(problem_dict[key]['ss_waypoints']) == 2:
             ss_waypoints = np.linspace(problem_dict[key]['ss_waypoints'][0],
@@ -76,7 +76,8 @@ def test_robustness_main(request):
             instance.set_desired_duration(problem_data['desired_duration'])
 
         t2 = time.time()
-        jnt_traj, aux_traj, data = instance.compute_trajectory(0, 0, return_data=True)
+        jnt_traj = instance.compute_trajectory(0, 0)
+        data = instance.problem_data
         t3 = time.time()
         
         if visualize:

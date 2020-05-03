@@ -13,7 +13,7 @@ toppra.setup_logging(level="INFO")
 
 
 @pytest.mark.parametrize("solver_wrapper", ["qpoases", "hotqpoases", "seidel"])
-def test_toppra_linear(basic_constraints, basic_path, solver_wrapper):
+def test_simple_set_operations(basic_constraints, basic_path, solver_wrapper):
     """Solve some basic problem instances.
 
     Passing this test guaranetees that the basic functionalities are
@@ -30,7 +30,7 @@ def test_toppra_linear(basic_constraints, basic_path, solver_wrapper):
     assert np.all(K >= 0)
     assert not np.any(np.isnan(K))
 
-    traj, _ = instance.compute_trajectory(0, 0)
+    traj = instance.compute_trajectory(0, 0)
     assert traj is not None
 
 

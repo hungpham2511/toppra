@@ -1,4 +1,5 @@
 version: 2
+
 jobs:
   check-codestyle:
     docker:
@@ -34,7 +35,7 @@ jobs:
           path: test-reports
           destination: test-reports
 
-  test-python-3:
+  build-python-3:
     docker:
       - image: hungpham2511/toppra-dep:0.0.3
 
@@ -51,7 +52,7 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            python3 -m virtualenv --python python3 venv3 && . venv3/bin/activate
+            virtualenv --python python3.7 venv3 && . venv3/bin/activate
             pip install invoke pathlib2 numpy cython
             invoke install-solvers
             pip install -e .[dev]
@@ -66,12 +67,13 @@ jobs:
           command: |
             . venv3/bin/activate
             mkdir test-reports
-            pytest -q tests --durations=3 --junitxml=test-reports/junit.xml
+            python --version
+            python -m pytest -q tests --durations=3 --junitxml=test-reports/junit.xml
 
       - store_test_results:
           path: test-reports
 
-  test-python-2:
+  build-cpp:
     docker:
       - image: hungpham2511/toppra-dep:0.0.3
 
@@ -79,40 +81,31 @@ jobs:
 
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - v1-dependencies2-{{ checksum "requirements.txt" }}
+      - run:
+          name: dependencies
+          command: |
+            sudo apt install -y curl
+            echo "deb [arch=amd64] http://robotpkg.openrobots.org/packages/debian/pub $(lsb_release -sc) robotpkg" \
+              | sudo tee /etc/apt/sources.list.d/robotpkg.list
+            curl http://robotpkg.openrobots.org/packages/debian/robotpkg.key \
+              | sudo apt-key add -
+            sudo apt update
+            sudo apt install -y clang-tidy libeigen3-dev robotpkg-pinocchio robotpkg-qpoases libglpk-dev
 
       - run:
-          name: install dependencies
+          name: build
           command: |
-            python -m pip install virtualenv --user
-            python -m virtualenv venv && . venv/bin/activate
-            python -m pip install invoke pathlib2 numpy cython
-            python -m invoke install-solvers
-            pip install -e .[dev]
-
-      - save_cache:
-          paths:
-            - ./venv
-          key: v1-dependencies2-{{ checksum "requirements.txt" }}
+            export LD_LIBRARY_PATH=/opt/openrobots/lib:${LD_LIBRARY_PATH}
+            export CMAKE_PREFIX_PATH=/opt/openrobots
+            mkdir build && cd build && cmake -DBUILD_WITH_PINOCCHIO=ON -DBUILD_WITH_qpOASES=ON -DBUILD_WITH_GLPK=ON ..
+            make -j4
+          working_directory: ~/repo/cpp
 
       - run:
           name: test
           command: |
-            . venv/bin/activate
-            export PYTHONPATH=$PYTHONPATH:`openrave-config --python-dir`
-            mkdir test-reports
-            pytest --durations=3 --junitxml=test-reports/junit.xml
-
-      - run:
-          name: Collect log data
-          command: |
-            cp /tmp/toppra.log ~/repo/test-reports/
-
-      - store_test_results:
-          path: test-reports
-          destination: test-reports
+            ./tests/all_tests
+          working_directory: ~/repo/cpp/build
 
   pre-release:
     docker:
@@ -147,11 +140,14 @@ jobs:
 
 workflows:
   version: 2
-  test-and-lint:
+  integrate:
     jobs:
-      - test-python-2
-      - test-python-3
+      - build-cpp
       - check-codestyle
+      - build-python-3:
+          requires:
+            - check-codestyle
+
   release:
     jobs:
       - pre-release:
@@ -160,6 +156,9 @@ workflows:
               only:
               - fix-ci
               - /release-.*/
+
+  publish:
+    jobs:
       - release:
           filters:
             branches:

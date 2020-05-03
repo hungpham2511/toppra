@@ -9,28 +9,45 @@ class TOPPRA(ReachabilityAlgorithm):
     """Time-Optimal Path Parameterization based on Reachability
     Analysis (TOPPRA).
 
+    Examples
+    -----------
+    >>> instance = algo.TOPPRA([pc_vel, pc_acc], path)
+    >>> jnt_traj = instance.compute_trajectory()  # rest-to-rest motion
+    >>> instance.problem_data # intermediate result
 
     Parameters
     ----------
-    constraint_list: :class:`~toppra.constraint.Constraint` []
+    constraint_list: List[:class:`~toppra.constraint.Constraint`]
         List of constraints to which the robotic system is subjected to.
-    path: :class:`~toppra.Interpolator`
+    path: :class:`.AbstractGeometricPath`
         Input geometric path.
-    gridpoints: array, optional
+    gridpoints: Optional[np.ndarray]
         Gridpoints for discretization of the geometric path. The start
-        and end points must agree with the geometric path's domain.
+        and end points must agree with the geometric path's
+        `path_interval`. If omited a gridpoint will be automatically
+        selected.
     solver_wrapper: str, optional
-        Name of the solver wrapper to use.
-        See :class:`toppra.solverwrapper.hotqpOASESSolverWrapper`,
-        :class:`toppra.solverwrapper.seidelWrapper`
+        Name of the solver wrapper to use. Possible value are:
+
+        - 'seidel'
+        - 'hotqpoases'
+
+        For more details see the solverwrappers documentation.
+
 
     Notes
     -----
     In addition to the given constraints, there are additional
     constraints on the solutions enforced by the solver-warpper.
-    Therefore, different parametrizations are returned for different solver
-    wrappers. However, the different should be very small, especially
-    for well-conditioned problems.
+    Therefore, different parametrizations are returned for different
+    solver wrappers. However, the difference should be very small,
+    especially for well-conditioned problems.
+
+    See also
+    --------
+    :class:`toppra.solverwrapper.seidelWrapper`
+    :class:`toppra.solverwrapper.hotqpOASESSolverWrapper`
+
     """
 
     def _forward_step(self, i, x, K_next):
@@ -60,14 +77,14 @@ class TOPPRA(ReachabilityAlgorithm):
 
         nV = self.solver_wrapper.get_no_vars()
         g_upper = np.zeros(nV)
-        g_upper[1] = - 1
-        g_upper[0] = - 2 * self.solver_wrapper.get_deltas()[i]
+        g_upper[1] = -1
+        g_upper[0] = -2 * self.solver_wrapper.get_deltas()[i]
 
         # Account for propagating numerical errors
         K_next_max = K_next[1]
         K_next_min = K_next[0]
 
         optim_var = self.solver_wrapper.solve_stagewise_optim(
-            i, None, g_upper, x, x, K_next_min, K_next_max)
+            i, None, g_upper, x, x, K_next_min, K_next_max
+        )
         return optim_var
-

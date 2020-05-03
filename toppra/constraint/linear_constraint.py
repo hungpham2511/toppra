@@ -1,7 +1,7 @@
 """This module defines the abstract linear constraint class."""
 import numpy as np
-from .constraint import Constraint
-from .constraint import ConstraintType, DiscretizationType
+from .constraint import ConstraintType, DiscretizationType, Constraint
+from ..interpolator import AbstractGeometricPath
 
 
 class LinearConstraint(Constraint):
@@ -48,7 +48,9 @@ class LinearConstraint(Constraint):
         self.n_extra_vars = 0
         self.identical = False
 
-    def compute_constraint_params(self, path, gridpoints, scaling=1):
+    def compute_constraint_params(
+        self, path: AbstractGeometricPath, gridpoints: np.ndarray, *args, **kwargs
+    ):
         """Compute numerical coefficients of the given constraint.
 
         Parameters

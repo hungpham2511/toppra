@@ -43,6 +43,6 @@ def test_toppra_conic(vel_accel_robustaccel, path, solver_wrapper):
     assert np.all(K >= 0)
     assert not np.any(np.isnan(K))
 
-    traj, _ = ro_instance.compute_trajectory(0, 0)
+    traj = ro_instance.compute_trajectory(0, 0)
     assert traj is not None
     assert traj.duration < 20 and traj.duration > 0
