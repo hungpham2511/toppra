@@ -30,7 +30,7 @@ given constraints can be found.
 
 ## Installation (Python)
 
-To install **TOPP-RA**, simply clone the repo and install with pip
+To install the latest development version, simply clone the repo and install with pip
 
 ``` shell
 git clone https://github.com/hungpham2511/toppra
@@ -42,11 +42,12 @@ To install depencidencies for development, replace the second command with:
 cd toppra && pip install -e .[dev]
 ```
 
-## `toppra` C++
+## C++ API
 
-`toppra` is also implemented as a stand-alone C++ library. See `cpp`
-for the source code. Be warned that this implementation is relatively
-new and is not yet stable enough for production use.
+`toppra` is also implemented as a stand-alone C++ library with minimal
+dependency. See `cpp/README.md` for installation instruction and the
+test cases for example usage. Be warned that this implementation is
+relatively new and is not yet stable enough for production use.
 
 # Development roadmap
 
