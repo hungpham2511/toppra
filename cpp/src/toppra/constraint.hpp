@@ -158,6 +158,7 @@ class LinearConstraint {
     bool m_constantF, m_hasUbounds, m_hasXbounds;
 }; // class LinearConstraint
 
+/// \brief write a LinearConstraint to an output stream
 inline std::ostream& operator<< (std::ostream& os, const LinearConstraint& lc)
 {
   return lc.print(os);
