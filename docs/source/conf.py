@@ -41,6 +41,7 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.napoleon',
               'sphinx.ext.viewcode',
               'sphinx.ext.intersphinx',
+              "recommonmark",
               'nbsphinx']
 
 intersphinx_mapping = {
@@ -59,8 +60,7 @@ templates_path = ['_templates']
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-# source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = ['.rst', '.md']
 
 # The master toctree document.
 master_doc = 'index'
@@ -114,8 +114,9 @@ html_theme_options = {
     'description': 'A robotic motion planning library for path-parametrization',
     'fixed_sidebar': True,
     "sidebar_width": "270px",
-    "page_width": "1040px",
-    "show_related": True}
+    "page_width": "1240px",
+    "show_related": True
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
