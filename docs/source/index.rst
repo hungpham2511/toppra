@@ -1,14 +1,22 @@
-.. TOPP-RA documentation master file
-**TOPP-RA**: Path-parameterization for robots
+:code:`toppra` : Path-parameterization for robots
 ===================================================
 
-.. image:: https://circleci.com/gh/hungpham2511/toppra/tree/develop.svg?style=svg
-    :target: https://circleci.com/gh/hungpham2511/toppra/tree/develop
+|github release| |docs| |circleci|
 
-.. image:: https://readthedocs.org/projects/toppra/badge/?version=latest
+|pypi|
+
+.. |pypi| image:: https://badge.fury.io/py/toppra.svg
+    :target: https://badge.fury.io/py/toppra
+
+.. |docs| image:: https://readthedocs.org/projects/toppra/badge/?version=latest
     :target: https://toppra.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
+.. |github release| image:: https://img.shields.io/github/release/hungpham2511/toppra
+   :target: https://github.com/hungpham2511/toppra/releases/
+
+.. |circleci| image:: https://circleci.com/gh/hungpham2511/toppra/tree/develop.svg?style=svg
+    :target: https://circleci.com/gh/hungpham2511/toppra/tree/develop
 
 
 
@@ -38,7 +46,7 @@ easier to generate high-quality motions for robots:
    TOPP-RA. See :ref:`tutorials` for more examples.
   
 Site overview
------------
+----------------------
 
 .. toctree::
    :maxdepth: 1
