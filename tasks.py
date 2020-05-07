@@ -21,6 +21,12 @@ def type_check(c):
 
 
 @task
+def build_docs(c):
+    """Build documentation"""
+    c.run("cd docs && make html")
+
+
+@task
 def install_solvers(c, user=False):
     """Install backend solvers, e.g, qpoases."""
     install_dir = "/tmp/tox-qpoases"
