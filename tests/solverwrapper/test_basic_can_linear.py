@@ -31,8 +31,7 @@ class RandomSecondOrderLinearConstraint(constraint.linear_constraint.LinearConst
         self._format_string = "    Random Second-Order constraint (dof={:d}) \n".format(
             self.dof)
 
-    def compute_constraint_params(self, path, gridpoints, scaling=1.0):
-        assert scaling == 1.0, "In this mock class scaling needs to be 1"
+    def compute_constraint_params(self, path, gridpoints):
         N = gridpoints.shape[0] - 1
         a = np.random.randn(N + 1, self.dof)
         b = np.random.randn(N + 1, self.dof)
