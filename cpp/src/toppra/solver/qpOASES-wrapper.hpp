@@ -22,7 +22,9 @@ namespace solver {
  * */
 class qpOASESWrapper : public Solver {
   public:
-    qpOASESWrapper (const LinearConstraintPtrs& constraints, const GeometricPath& path,
+    qpOASESWrapper ();
+
+    void initialize (const LinearConstraintPtrs& constraints, const GeometricPathPtr& path,
         const Vector& times);
 
     bool solveStagewiseOptim(std::size_t i,

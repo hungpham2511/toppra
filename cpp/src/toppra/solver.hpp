@@ -26,6 +26,13 @@ namespace toppra {
  * */
 class Solver {
   public:
+    /// \brief Create a solver based on the compilation option.
+    /// At the time of writing, the preference order is
+    /// - qpOASES
+    /// - GLPK
+    /// If none of these is available, this function returns a null pointer.
+    static SolverPtr createDefault();
+
     /// \copydoc Solver::m_deltas
     const Vector& deltas () const
     {
@@ -74,6 +81,11 @@ class Solver {
         const Bound& x, const Bound& xNext,
         Vector& solution) = 0;
 
+    /// \brief Initialize the solver
+    /// \note Child classes should call the parent implementation.
+    virtual void initialize (const LinearConstraintPtrs& constraints, const GeometricPathPtr& path,
+        const Vector& times);
+
     /** \brief Initialize the wrapped solver
      */
     virtual void setupSolver ()
@@ -87,7 +99,9 @@ class Solver {
     virtual ~Solver () {}
 
   protected:
-    Solver (const LinearConstraintPtrs& constraints, const GeometricPath& path,
+    Solver () {}
+
+    void init (const LinearConstraintPtrs& constraints, const GeometricPathPtr& path,
         const Vector& times);
 
     struct LinearConstraintParams {
@@ -105,7 +119,7 @@ class Solver {
     } m_constraintsParams;
 
     LinearConstraintPtrs m_constraints;
-    const GeometricPath& m_path;
+    GeometricPathPtr m_path;
     Vector m_times;
 
   private:

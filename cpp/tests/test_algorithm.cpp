@@ -59,7 +59,7 @@ class ProblemInstance : public testing::Test {
     coeff2 << -0.500000, -0.500000, -1.500000, -2.500000, 0.000000, -1.000000, 2.000000,
         4.000000;
     toppra::Matrices coefficents = {coeff0, coeff1, coeff2};
-    path = toppra::PiecewisePolyPath(coefficents, std::vector<double>{0, 1, 2, 3});
+    path = std::make_shared<toppra::PiecewisePolyPath>(coefficents, std::vector<double>{0, 1, 2, 3});
     v = toppra::LinearConstraintPtrs{
         std::make_shared<toppra::constraint::LinearJointVelocity>(
             -toppra::Vector::Ones(nDof), toppra::Vector::Ones(nDof)),
@@ -67,7 +67,7 @@ class ProblemInstance : public testing::Test {
             -0.2 * toppra::Vector::Ones(nDof), 0.2 * toppra::Vector::Ones(nDof))};
   };
 
-  toppra::PiecewisePolyPath path;
+  std::shared_ptr<toppra::PiecewisePolyPath> path;
   toppra::LinearConstraintPtrs v;
   int nDof = 2;
 };

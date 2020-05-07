@@ -19,7 +19,7 @@ void LinearConstraint::discretizationType (DiscretizationType type)
   m_discretizationType = type;
 }
 
-/// \internal
+/// \cond INTERNAL
 
 /// \param k number of constraints
 /// \param m number of variables
@@ -161,7 +161,7 @@ void collocationToInterpolate (const Vector& gridpoints,
   }
 }
 
-/// \endinternal
+/// \endcond
 
 void LinearConstraint::allocateParams(std::size_t N,
     Vectors& a, Vectors& b, Vectors& c, Matrices& F, Vectors& g,

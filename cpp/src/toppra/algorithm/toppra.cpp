@@ -1,13 +1,16 @@
+#include <toppra/algorithm/toppra.hpp>
+
 #include <memory>
 #include <toppra/algorithm.hpp>
-#include <toppra/algorithm/toppra.hpp>
 #include <toppra/toppra.hpp>
 
 namespace toppra {
 namespace algorithm {
 
-TOPPRA::TOPPRA(LinearConstraintPtrs constraints, const GeometricPath &path)
-    : PathParametrizationAlgorithm{std::move(constraints), path} {};
+TOPPRA::TOPPRA(LinearConstraintPtrs constraints, const GeometricPathPtr &path)
+    : PathParametrizationAlgorithm{std::move(constraints), path} {
+  m_solver = Solver::createDefault();
+}
 
 ReturnCode TOPPRA::computeForwardPass(value_type vel_start) {
   TOPPRA_LOG_DEBUG("computeForwardPass");

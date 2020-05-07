@@ -36,10 +36,13 @@ target_include_directories(toppra PUBLIC
   ${qpOASES_INCLUDE_DIRS}
   ${GLPK_INCLUDE_DIRS}
   )
-target_link_libraries(toppra PUBLIC
-  ${qpOASES_LIBRARIES}
-  ${GLPK_LIBRARIES}
-  )
+foreach(solver qpOASES GLPK)
+  if(BUILD_WITH_${solver})
+    target_compile_definitions(toppra PRIVATE -DBUILD_WITH_${solver})
+    target_link_libraries(toppra PUBLIC ${${solver}_LIBRARIES})
+    target_include_directories(toppra PUBLIC ${${solver}_INCLUDE_DIRS})
+  endif()
+endforeach()
 if (TOPPRA_DEBUG_ON)
   target_compile_definitions(toppra PRIVATE TOPPRA_DEBUG_ON)
 endif()

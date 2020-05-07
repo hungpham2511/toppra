@@ -58,6 +58,7 @@ namespace toppra {
   } // namespace solver
 
   class GeometricPath;
+  typedef std::shared_ptr<GeometricPath> GeometricPathPtr;
 } // namespace toppra
 
 #endif

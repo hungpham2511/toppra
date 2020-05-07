@@ -8,7 +8,7 @@ IF(DOXYGEN)
 
   # Find all the public headers
   set(HEADERS_DIR ${CMAKE_SOURCE_DIR}/src)
-  file(GLOB_RECURSE HEADERS ${HEADERS_DIR}/*.hpp)
+  file(GLOB_RECURSE HEADERS ${HEADERS_DIR}/*.hpp ${HEADERS_DIR}/*.cpp)
 
   set(DOXYGEN_INDEX_FILE ${CMAKE_CURRENT_BINARY_DIR}/html/index.html)
   add_custom_command(OUTPUT ${DOXYGEN_INDEX_FILE}

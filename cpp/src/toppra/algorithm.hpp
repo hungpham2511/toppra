@@ -58,13 +58,19 @@ class PathParametrizationAlgorithm {
    *
    */
   PathParametrizationAlgorithm(LinearConstraintPtrs constraints,
-                               const GeometricPath &path);
+                               const GeometricPathPtr &path);
 
   /** \brief Set the level of discretization used by the solver.
    *
    * If is zero, will attempt to detect automatically the most suitable grid.
    */
   void setN(int N) { m_N = N; };
+
+  /** \brief Set the LP/QP solver
+   *
+   * Default to \ref solver::qpOASESWrapper
+   */
+  void solver(SolverPtr solver) { m_solver.swap(solver); };
 
   /** \brief Get output or result of algorithm.
    */
@@ -105,7 +111,7 @@ class PathParametrizationAlgorithm {
 
   /** To be implemented in child method. */
   LinearConstraintPtrs m_constraints;
-  const GeometricPath &m_path;
+  GeometricPathPtr m_path;
   SolverPtr m_solver;
 
   /// Struct containing algorithm output.

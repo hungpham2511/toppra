@@ -30,11 +30,13 @@ void set_row_bnds(glp_prob* lp, int i, const value_type& l, const value_type& u)
 }
 void set_row_bnds(glp_prob* lp, int i, const Bound& b) { set_row_bnds(lp, i, b[0], b[1]); }
 
-GLPKWrapper::GLPKWrapper (const LinearConstraintPtrs& constraints, const GeometricPath& path,
+void GLPKWrapper::initialize (const LinearConstraintPtrs& constraints, const GeometricPathPtr& path,
         const Vector& times)
-  : Solver (constraints, path, times)
-  , m_lp (glp_create_prob())
 {
+  Solver::initialize (constraints, path, times);
+  if (m_lp != NULL) glp_delete_prob(m_lp);
+  m_lp = glp_create_prob();
+
   // Currently only support Canonical Linear Constraint
   assert(nbVars() == 2);
 
