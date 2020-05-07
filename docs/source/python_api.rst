@@ -3,40 +3,40 @@
 Python API Reference
 ================================
 
-Path-parametrization Algorithms
---------------------------------
-
 .. automodule:: toppra.algorithm
-
-TOPPRA (time-optimal)
-^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: toppra.algorithm.TOPPRA
-   :members: problem_data, compute_parameterization, compute_trajectory, compute_feasible_sets, compute_controllable_sets
-
-TOPPRAsd (specific-duration)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: toppra.algorithm.TOPPRAsd
-   :members: problem_data, set_desired_duration, compute_parameterization, compute_trajectory, compute_feasible_sets, compute_controllable_sets
-
 
 Geometric paths
 --------------------------------
 
 .. automodule:: toppra.interpolator
 
+.. autosummary::
+
+   toppra.interpolator.AbstractGeometricPath
+   toppra.SplineInterpolator
+   toppra.RaveTrajectoryWrapper
+   toppra.simplepath.SimplePath
+
+AbstractGeometricPath
+^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: toppra.interpolator.AbstractGeometricPath
    :members: __call__, dof, path_interval, waypoints
 
-
-Spline Interplator
+SplineInterplator
 ^^^^^^^^^^^^^^^^^^^
 .. autoclass:: toppra.SplineInterpolator
    :members: __call__, dof, path_interval, waypoints
 
-Rave Trajectory Wrapper
+RaveTrajectoryWrapper
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: toppra.RaveTrajectoryWrapper
    :members: __call__, dof, path_interval, waypoints
+
+SimplePath
+^^^^^^^^^^^^
+.. autoclass:: toppra.simplepath.SimplePath
+   :members: __call__, dof, path_interval
 
 .. autofunction:: toppra.interpolator.propose_gridpoints
 

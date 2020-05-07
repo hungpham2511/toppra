@@ -34,6 +34,23 @@ def test_simple_set_operations(basic_constraints, basic_path, solver_wrapper):
     assert traj is not None
 
 
+@pytest.mark.parametrize("solver_wrapper", ["qpoases", "hotqpoases", "seidel"])
+def test_compute_parametrization_and_get_data(basic_constraints, basic_path, solver_wrapper):
+    """Solve some basic problem instances.
+
+    Passing this test guaranetees that the basic functionalities are
+    inplace.
+    """
+    vel_c, acc_c, ro_acc_c = basic_constraints
+    instance = toppra.algorithm.TOPPRA(
+        [vel_c, acc_c], basic_path, solver_wrapper=solver_wrapper)
+    instance.compute_parameterization(0, 0)
+
+    assert instance.problem_data.return_code == toppra.algorithm.ParameterizationReturnCode.Ok
+    assert instance.problem_data.sd_vec.shape[0] == instance.problem_data.gridpoints.shape[0]
+    assert instance.problem_data.sd_vec[0] == 0
+
+
 @pytest.mark.parametrize("solver_wrapper", [
     "qpoases,hotqpoases",
     "qpoases,seidel",

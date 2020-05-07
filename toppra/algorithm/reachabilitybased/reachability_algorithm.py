@@ -1,4 +1,4 @@
-from ..algorithm import ParameterizationAlgorithm
+from ..algorithm import ParameterizationAlgorithm, ParameterizationReturnCode
 from ...constants import LARGE, SMALL, TINY, INFTY, CVXPY_MAXX, MAX_TRIES
 from ...constraint import ConstraintType
 import toppra.solverwrapper
@@ -51,8 +51,6 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         super(ReachabilityAlgorithm, self).__init__(
             constraint_list, path, gridpoints=gridpoints
         )
-
-        self.gridpoints = self.gridpoints
 
         # Check for conic constraints
         has_conic = False
@@ -161,7 +159,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         for i in range(self._N + 1):
             if X[i, 0] < 0:
                 X[i, 0] = 0
-        self._problem_data.update({'X': X})
+        self._problem_data.X = X
         return X
 
     def compute_controllable_sets(self, sdmin, sdmax):
@@ -282,10 +280,12 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
                 "An error occurred when computing controllable velocities. "
                 "The path is not controllable, or is badly conditioned."
             )
+            self._problem_data.return_code = ParameterizationReturnCode.FailUncontrollable
             if return_data:
                 return None, None, None, K
             else:
                 return None, None, None
+        self._problem_data.K = K
 
         x_start = sd_start ** 2
         if x_start + SMALL < K[0, 0] or K[0, 1] + SMALL < x_start:
@@ -294,6 +294,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
                     x_start, K[0, 0], K[0, 1]
                 )
             )
+            self._problem_data.return_code = ParameterizationReturnCode.FailUncontrollable
             if return_data:
                 return None, None, None, K
             else:
@@ -362,6 +363,12 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
 
         sd_vec = np.sqrt(xs)
         sdd_vec = np.copy(us)
+        self._problem_data.sd_vec = sd_vec
+        self._problem_data.sdd_vec = sdd_vec
+        if np.isnan(sd_vec).any():
+            self._problem_data.return_code = ParameterizationReturnCode.ErrUnknown
+        else:
+            self._problem_data.return_code = ParameterizationReturnCode.Ok
         if return_data:
             return sdd_vec, sd_vec, v_vec, K
         else:

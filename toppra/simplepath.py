@@ -7,11 +7,16 @@ from .interpolator import AbstractGeometricPath
 class SimplePath(AbstractGeometricPath):
     """A standard class for representing continuous multi-dimentional function.
 
-    Args:
-     x: "Time instances" of the waypoints.
-     y: Function values at waypoints.
-     yd: First-derivative values.
-     ydd: Second-derivative values.
+    Parameters
+    ---------
+     x:
+       "Time instances" of the waypoints.
+     y:
+       Function values at waypoints.
+     yd:
+       First-derivative values.
+     ydd:
+       Second-derivative values.
     """
 
     def __init__(

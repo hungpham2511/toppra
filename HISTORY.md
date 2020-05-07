@@ -3,6 +3,7 @@
 ## [unrelease]
 
 ### Changed
+- [python] Parametrization output accessible via ParameterizationData class.
 - [python] Remove useless `scaling` in parameter computation.
 
 
