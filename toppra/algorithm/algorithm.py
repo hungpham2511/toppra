@@ -1,8 +1,9 @@
 """Abstract types for parametrization algorithm.
 """
 from typing import Dict, Any, List, Tuple
-import numpy as np
 import abc
+import enum
+import numpy as np
 
 from ..constants import TINY
 from toppra.interpolator import SplineInterpolator, AbstractGeometricPath
@@ -16,7 +17,29 @@ logger = logging.getLogger(__name__)
 
 class ParameterizationData(dict):
     """Parametrization output."""
-    pass
+
+    def __init__(self, *arg, **kwargs):
+        super().__init__(*arg, **kwargs)
+        self.return_code: ParameterizationReturnCode = ParameterizationReturnCode.ErrUnknown
+        "ParameterizationReturnCode: Return code of the last parametrization attempt."
+        self.gridpoints: np.ndarray
+        "np.ndarray: Shape (N+1, 1). Gridpoints"
+
+
+class ParameterizationReturnCode(enum.Enum):
+    """Return codes from a parametrization attempt."""
+    #:
+    Ok = "Terminate ok"
+    #:
+    ErrUnknown = "Error: Unknown issue"
+    #:
+    ErrShortPath = "Error: Input path is very short"
+
+    def __repr__(self):
+        return super().__repr__()
+
+    def __str__(self):
+        return super().__repr__()
 
 
 class ParameterizationAlgorithm(object):
@@ -30,6 +53,8 @@ class ParameterizationAlgorithm(object):
     For details on how to *construct* a :class:`ParameterizationAlgorithm` instance, refer to the
     specific class. It should be noted that all derived algorithms must follow the specifications
     documented in this abstract class.
+
+    .. seealso:: :class:`~ParameterizationReturnCode`, :class:`~ParameterizationData`
 
     """
 

@@ -1,13 +1,20 @@
-"""TOPP-RA implements multiple path-parametrization algorithms.
+"""Algorithms overview.
 
 
-Abstract class
-^^^^^^^^^^^^^^^^^^^
-.. autoclass:: toppra.algorithm.algorithm.ParameterizationData
-   :members:
+High-level interfaces
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: toppra.algorithm.algorithm.ParameterizationAlgorithm
    :members:
+
+
+.. autoclass:: toppra.algorithm.algorithm.ParameterizationReturnCode
+   :members:
+
+.. autoclass:: toppra.algorithm.algorithm.ParameterizationData
+   :members:
+
+
 
 TOPPRA (time-optimal)
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -18,7 +25,6 @@ TOPPRAsd (specific-duration)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: toppra.algorithm.TOPPRAsd
    :members: problem_data, set_desired_duration, compute_parameterization, compute_trajectory, compute_feasible_sets, compute_controllable_sets
-
 
 """
 from .algorithm import ParameterizationAlgorithm, ParameterizationData
