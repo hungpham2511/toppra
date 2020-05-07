@@ -2,3 +2,4 @@ sphinx>=1.4
 ipykernel
 nbsphinx
 recommonmark
+sphinx-autodoc-typehints
