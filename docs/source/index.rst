@@ -1,17 +1,23 @@
-.. TOPP-RA documentation master file
-**TOPP-RA**: Path-parameterization for robots
+:code:`toppra` : Path-parameterization for robots
 ===================================================
 
-.. image:: https://circleci.com/gh/hungpham2511/toppra/tree/develop.svg?style=svg
-    :target: https://circleci.com/gh/hungpham2511/toppra/tree/develop
+|github release| |docs| |circleci|
 
-.. image:: https://readthedocs.org/projects/toppra/badge/?version=latest
+|pypi|
+
+.. |pypi| image:: https://badge.fury.io/py/toppra.svg
+    :target: https://badge.fury.io/py/toppra
+
+.. |docs| image:: https://readthedocs.org/projects/toppra/badge/?version=latest
     :target: https://toppra.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
+.. |github release| image:: https://img.shields.io/github/release/hungpham2511/toppra
+   :target: https://github.com/hungpham2511/toppra/releases/
 
-Overview
------------
+.. |circleci| image:: https://circleci.com/gh/hungpham2511/toppra/tree/develop.svg?style=svg
+    :target: https://circleci.com/gh/hungpham2511/toppra/tree/develop
+
 
 
 TOPP-RA is a library for computing path parametrizations for geometric
@@ -39,8 +45,8 @@ easier to generate high-quality motions for robots:
    joint accelerations and velocities constraints computed using
    TOPP-RA. See :ref:`tutorials` for more examples.
   
-User guide
---------------
+Site overview
+----------------------
 
 .. toctree::
    :maxdepth: 1
@@ -48,7 +54,8 @@ User guide
    installation
    tutorials
    notes
-   history
+   python_api
+   HISTORY
 
 
 Citing TOPP-RA!

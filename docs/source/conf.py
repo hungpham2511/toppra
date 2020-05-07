@@ -27,20 +27,13 @@ except ImportError:
 
 
 # -- General configuration ------------------------------------------------
-
-# If your documentation needs a minimal Sphinx version, state it here.
-#
-# needs_sphinx = '1.0'
-
-# Add any Sphinx extension module names here, as strings. They can be
-# extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
-# ones.
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.coverage',
               'sphinx.ext.mathjax',
               'sphinx.ext.napoleon',
               'sphinx.ext.viewcode',
               'sphinx.ext.intersphinx',
+              "recommonmark",
               'nbsphinx']
 
 intersphinx_mapping = {
@@ -56,18 +49,13 @@ napoleon_use_ivar = True
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
-# The suffix(es) of source filenames.
-# You can specify multiple suffix as a list of string:
-#
-# source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = ['.rst', '.md']
 
-# The master toctree document.
 master_doc = 'index'
 
 # General information about the project.
-project = 'TOPP-RA'
-copyright = '2019, Hung Pham'
+project = 'toppra'
+copyright = '2020, Hung Pham'
 author = 'Hung Pham'
 
 version = pathlib.Path('./../../VERSION').read_text()
@@ -85,8 +73,7 @@ language = None
 exclude_patterns = ['_build', '**.ipynb_checkpoints']
 
 
-# The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+# pygments_style = 'friendly'
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
@@ -114,12 +101,10 @@ html_theme_options = {
     'description': 'A robotic motion planning library for path-parametrization',
     'fixed_sidebar': True,
     "sidebar_width": "270px",
-    "page_width": "1040px",
-    "show_related": True}
+    "page_width": "1240px",
+    "show_related": True
+}
 
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
 
@@ -139,9 +124,6 @@ html_sidebars = {
 }
 sidebar_collapse = True
 
-# -- Options for HTMLHelp output ------------------------------------------
-
-# Output file base name for HTML help builder.
 htmlhelp_basename = 'TOPP-RAdoc'
 
 
@@ -196,8 +178,3 @@ texinfo_documents = [
      author, 'TOPP-RA', 'One line description of project.',
      'Miscellaneous'),
 ]
-
-
-
-html_theme = 'alabaster'
-html_static_path = ['_static']
