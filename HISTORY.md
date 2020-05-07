@@ -2,6 +2,9 @@
 
 ## [unrelease]
 
+### Changed
+- [python] Remove useless `scaling` in parameter computation.
+
 
 ## 0.3.0 (May 3 2020)
 

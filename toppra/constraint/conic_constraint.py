@@ -92,10 +92,10 @@ class RobustLinearConstraint(ConicConstraint):
             "    Robust constraint generated from a canonical linear constraint\n"
         )
 
-    def compute_constraint_params(self, path, gridpoints, scaling):
+    def compute_constraint_params(self, path, gridpoints):
         self.base_constraint.set_discretization_type(self.discretization_type)
         a_, b_, c_, F_, g_, u_, x_ = self.base_constraint.compute_constraint_params(
-            path, gridpoints, scaling
+            path, gridpoints
         )
         N = len(gridpoints) - 1
         if self.base_constraint.identical:

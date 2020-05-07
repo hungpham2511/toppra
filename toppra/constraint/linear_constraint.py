@@ -59,13 +59,6 @@ class LinearConstraint(Constraint):
             The geometric path.
         gridpoints: np.ndarray
             Shape (N+1,). Gridpoint use for discretizing path.
-        scaling: float
-            Numerical scaling. If is 1, no scaling is performed.
-            NOTE: This parameter is deprecated. For numerical
-            stability it is better to scale at the solver level, as
-            then one can perform solver-specific optimization, as well
-            as strictly more general scaling strategy. Another
-            advantage of scaling at the solver level is a cleaner API.
 
         Returns
         -------

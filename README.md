@@ -41,6 +41,11 @@ To install depencidencies for development, replace the second command with:
 cd toppra && pip install -e .[dev]
 ```
 
+You can also build documentation locally
+``` shell
+invoke build-docs
+```
+
 ## New C++ API
 
 `toppra` is also implemented as a stand-alone C++ library with minimal

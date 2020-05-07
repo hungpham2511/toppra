@@ -78,9 +78,6 @@ class SolverWrapper(object):
         self.constraints = constraint_list
         self.path = path
         self.path_discretization = np.array(path_discretization)
-        # path scaling: intuitively, if this value is not 1, the TOPP
-        # problem will be solved as if the input path is scaled linearly.
-        self.scaling = self.path_discretization[-1] / self.path.duration
         # End main attributes
         self.N = (
             len(path_discretization) - 1
@@ -91,7 +88,7 @@ class SolverWrapper(object):
 
         self.params = [
             c.compute_constraint_params(
-                self.path, self.path_discretization, self.scaling
+                self.path, self.path_discretization
             )
             for c in self.constraints
         ]

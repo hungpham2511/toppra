@@ -24,18 +24,6 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         Shape (N+1,). Gridpoints for discretization of the path position.
     solver_wrapper: str, optional
         Name of solver to use. If is None, select the most suitable wrapper.
-    scaling: float, optional
-        Scale input path such that its position changes from [0, s_end] to [0, s_end * scaling].
-
-        Note that the path is unchanged; only the numerical coefficients evaluated.
-        This is to make it easier on the user who wish to
-        implement an Interpolator class by herself (which she should
-        do).
-
-        The default value is 1.0, which means no scaling. Any positive
-        float is valid. However, one should attempt to
-        choose a scaling factor that leads to unit velocity
-        approximately. Choose -1 for automatic scaling.
 
     Notes
     -----
@@ -58,30 +46,13 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
     """
 
     def __init__(
-        self, constraint_list, path, gridpoints=None, solver_wrapper=None, scaling=1
+        self, constraint_list, path, gridpoints=None, solver_wrapper=None
     ):
         super(ReachabilityAlgorithm, self).__init__(
             constraint_list, path, gridpoints=gridpoints
         )
 
-        # path scaling (for numerical stability)
-        if scaling < 0:  # automatic scaling factor selection
-            # sample a few gradient and compute the average derivatives
-            qs_sam = path(np.linspace(0, 1, 5) * path.duration, 1)
-            qs_average = np.sum(np.abs(qs_sam)) / path.dof / 5
-            scaling = np.sqrt(qs_average)
-            logger.info(
-                "[auto-scaling] Average path derivative: {:}".format(qs_average)
-            )
-            logger.info("[auto-scaling] Selected scaling factor: {:}".format(scaling))
-        else:
-            logger.info("Scaling factor: {:f}".format(scaling))
-
-        # NOTE: Scaling `gridpoints` making the two endpoints different from the domain of the given path
-        # signal to the lower level solver wrapper that it has to scale the problem. The solver
-        # wrapper will simply use
-        # scaling = self.gridpoints[-1] / path.duration
-        self.gridpoints = self.gridpoints * scaling
+        self.gridpoints = self.gridpoints
 
         # Check for conic constraints
         has_conic = False
