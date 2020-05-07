@@ -24,8 +24,7 @@ constraints.  In general, given the inputs:
 (s)`, from which the fastest trajectory `q(t)` that satisfies the
 given constraints can be found.
 
-**Documentation and tutorials** are available at
-(https://toppra.readthedocs.io/en/latest/index.html).
+**Documentation and tutorials** are available [here](https://toppra.readthedocs.io/en/latest/index.html).
 
 
 ## Installation (Python API)
@@ -46,7 +45,7 @@ cd toppra && pip install -e .[dev]
 
 `toppra` is also implemented as a stand-alone C++ library with minimal
 dependency. See `cpp/README.md` for installation instruction and the
-test cases for example usage. Be warned that this implementation is
+test cases for example usage. Be noted that this implementation is
 relatively new and is not yet stable enough for production use.
 
 # Supports
@@ -56,24 +55,25 @@ Please report any issues, questions or feature request via
 [Github issues tracker](https://github.com/hungpham2511/toppra/issues).
 
 ## Contributions
-Pull Requests are welcomed! Go ahead to create a Pull Request and we
-will review your proposal!
+Pull Requests are welcomed! Rreate a Pull Request and we will review
+your proposal!
 
 # Credits
 
 `toppra` was originally developed by [Hung
-PHam](https://hungpham2511.github.com/) (Eureka Robotics, former CRI
-Group) and [Pham Quang-Cuong](https://www.ntu.edu.sg/home/cuong/) with
-major contributions from many contributors.  If you have taken part in
-developing and supporting the library, feel free to add your name to
-the list.
+Pham](https://hungpham2511.github.com/) (Eureka Robotics, former CRI
+Group) and [Pham Quang-Cuong](https://www.ntu.edu.sg/home/cuong/)
+((Eureka Robotics, CRI Group)) with major contributions from talented
+contributors:
 - [Joseph Mirabel](https://github.com/jmirabel) (C+ API)
-- @EdsterG: (Python3 support).
+- EdsterG (Python3 support).
 
+If you have taken part in developing and supporting the library, feel
+free to add your name to the list.
 
-The library is supported by [Eureka Robotics](https://eurekarobotics.com/).
+The development is also generously supported by [Eureka Robotics](https://eurekarobotics.com/).
 
-# Citing
+# Citing toppra
 If you use this library for your research, we encourage you to 
 
 1. reference the accompanying paper [«A new approach to Time-Optimal Path Parameterization based on Reachability Analysis»](https://www.researchgate.net/publication/318671280_A_New_Approach_to_Time-Optimal_Path_Parameterization_Based_on_Reachability_Analysis),
