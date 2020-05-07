@@ -1,10 +1,6 @@
 """Algorithms implemented in :mod:`toppra` requires geometric paths
 that implements the abstract class
 
-:class:`toppra.interpolator.AbstractGeometricPath`. The interface is
-really simple, requiring only the evaluted values, as well as the
-first and second derivative.
-
 """
 from typing import List
 import logging
@@ -84,39 +80,40 @@ def propose_gridpoints(
 
 
 class AbstractGeometricPath:
-    """The base class to represent geometric paths.
+    """Abstract base class that represents geometric paths.
 
-    Derive geometric paths classes should implement the below abstract methods.
+    Derive geometric paths classes should implement the below abstract
+    methods. These methods are expected in different steps of the
+    algorithm.
+
     """
 
-    def __call__(self, path_positions, order=0):
-        # type: (np.ndarray, int) -> np.ndarray
+    def __call__(self, path_positions: np.ndarray, order: int = 0) -> np.ndarray:
         """Evaluate the path at given positions.
 
         Parameters
         ----------
-            path_positions: float or np.ndarray
-                Path positions to evaluate the interpolator.
-            order: int
-                Order of the evaluation call.
+        path_positions: float or np.ndarray
+            Path positions to evaluate the interpolator.
+        order: int
+            Order of the evaluation call.
 
-                - 0: position
-                - 1: first-order derivative
-                - 2: second-order derivative
+            - 0: position
+            - 1: first-order derivative
+            - 2: second-order derivative
 
         Returns
         -------
-            np.ndarray(N, dof)
-                The evaluated joint positions, velocity or
-                accelerations. The shape of the result depends on the
-                shape of the input.
+        :
+            The evaluated joint positions, velocity or
+            accelerations. The shape of the result depends on the
+            shape of the input.
 
         """
         raise NotImplementedError
 
     @property
-    def dof(self):
-        # type: () -> int
+    def dof(self) -> int:
         """Return the degrees-of-freedom of the path."""
         raise NotImplementedError
 

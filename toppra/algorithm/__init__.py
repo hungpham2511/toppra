@@ -1,4 +1,5 @@
-"""Algorithms overview.
+"""Algorithms overview
+------------------------
 
 
 High-level interfaces

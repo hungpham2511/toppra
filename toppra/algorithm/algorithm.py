@@ -29,7 +29,7 @@ class ParameterizationData(dict):
 class ParameterizationReturnCode(enum.Enum):
     """Return codes from a parametrization attempt."""
     #:
-    Ok = "Terminate ok"
+    Ok = "Ok: Successful parametrization"
     #:
     ErrUnknown = "Error: Unknown issue"
     #:
@@ -43,18 +43,29 @@ class ParameterizationReturnCode(enum.Enum):
 
 
 class ParameterizationAlgorithm(object):
-    """The base class of parameterization algorithms.
+    """Abstract base class of parameterization algorithms.
 
-    This class serves as the specifications for all derived algorithms.  There are multiple
-    variants of parametrization algorithms. The reachability-based solvers are
-    :class:`toppra.algorithm.TOPPRA` and :class:`toppra.algorithm.TOPPRAsd`. Further, users can
-    also select different solvers for each algorithm as well.
+    This class specifies the generic behavior for parametrization algorithms.  For details on how
+    to *construct* a :class:`ParameterizationAlgorithm` instance, as well as configure it, refer
+    to the specific class.
 
-    For details on how to *construct* a :class:`ParameterizationAlgorithm` instance, refer to the
-    specific class. It should be noted that all derived algorithms must follow the specifications
-    documented in this abstract class.
+    Example usage:
 
-    .. seealso:: :class:`~ParameterizationReturnCode`, :class:`~ParameterizationData`
+    .. code-block:: python
+
+      # usage
+      instance.compute_parametrization(0, 0)
+      output = instance.problem_data
+
+      # do this if you only want the final trajectory
+      traj, _ = instance.compute_trajectory(0, 0)
+
+    .. seealso::
+
+        :class:`toppra.algorithm.TOPPRA`,
+        :class:`toppra.algorithm.TOPPRAsd`,
+        :class:`~ParameterizationReturnCode`,
+        :class:`~ParameterizationData`
 
     """
 
