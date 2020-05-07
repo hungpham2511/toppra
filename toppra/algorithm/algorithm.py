@@ -1,9 +1,12 @@
+"""Abstract types for parametrization algorithm.
 """
-"""
+from typing import Dict, Any, List, Tuple
 import numpy as np
+import abc
 
 from ..constants import TINY
 from toppra.interpolator import SplineInterpolator, AbstractGeometricPath
+from toppra.constraint import Constraint
 import toppra.interpolator as interpolator
 
 import logging
@@ -11,24 +14,27 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+class ParameterizationData(dict):
+    """Parametrization output."""
+    pass
+
+
 class ParameterizationAlgorithm(object):
-    """Base class for all parameterization algorithms.
+    """The base class of parameterization algorithms.
 
-    All algorithms should have three attributes: `constraints`, `path`
-    and `gridpoints` and also implement the method
-    `compute_parameterization`.
+    This class serves as the specifications for all derived algorithms.  There are multiple
+    variants of parametrization algorithms. The reachability-based solvers are
+    :class:`toppra.algorithm.TOPPRA` and :class:`toppra.algorithm.TOPPRAsd`. Further, users can
+    also select different solvers for each algorithm as well.
 
-    Parameters
-    ----------
-    constraint_list: list of `Constraint`
-    path: `AbstractGeometricPath`
-        The geometric path, or the trajectory to parameterize.
-    gridpoints: array, optional
-        If not given, automatically generate a grid with 100 steps.
+    For details on how to *construct* a :class:`ParameterizationAlgorithm` instance, refer to the
+    specific class. It should be noted that all derived algorithms must follow the specifications
+    documented in this abstract class.
+
     """
 
     def __init__(self, constraint_list, path, gridpoints=None):
-        self.constraints = constraint_list  # Attr
+        self.constraints = constraint_list
         self.path = path  # Attr
         self._problem_data = {}
         # Handle gridpoints
@@ -51,64 +57,60 @@ class ParameterizationAlgorithm(object):
                 raise ValueError("Bad input gridpoints.")
 
     @property
-    def problem_data(self):
-        """Dict[str, Any]: Intermediate data obtained while solving the problem."""
+    def constraints(self) -> List[Constraint]:
+        """Constraints of interests."""
+        return self._constraints
+
+    @constraints.setter
+    def constraints(self, value: List[Constraint]) -> None:
+        # TODO: Validate constraints.
+        self._constraints = value
+
+    @property
+    def problem_data(self) -> ParameterizationData:
+        """Intermediate data obtained while solving the path parametrization.. """
         return self._problem_data
 
-    def compute_parameterization(self, sd_start, sd_end):
-        """Compute a path parameterization.
+    @abc.abstractmethod
+    def compute_parameterization(self, sd_start: float, sd_end: float):
+        """Compute the path parameterization subject to starting and ending conditions.
 
-        If fail, whether because there is no valid parameterization or
-        because of numerical error, the arrays returns should contain
-        np.nan.
+        After this method terminates, the attribute :attr:`~problem_data` will contain algorithm
+        output, as well as the result. This is the preferred way of retrieving problem output.
 
 
         Parameters
         ----------
-        sd_start: float
+        sd_start:
             Starting path velocity. Must be positive.
-        sd_end: float
+        sd_end:
             Goal path velocity. Must be positive.
-        return_data: bool, optional
-            If is True, also return matrix K which contains the controllable sets.
-
-        Returns
-        -------
-        sdd_vec: (_N,) array or None
-            Path accelerations.
-        sd_vec: (_N+1,) array None
-            Path velocities.
-        v_vec: (_N,) array or None
-            Auxiliary variables.
-        K: (N+1, 2) array
-            Return the controllable set if `return_data` is True.
 
         """
         raise NotImplementedError
 
-    def compute_trajectory(self, sd_start=0, sd_end=0, return_data=False):
+    def compute_trajectory(self, sd_start: float = 0, sd_end: float = 0, return_data: bool =
+                           False) -> Tuple[AbstractGeometricPath, AbstractGeometricPath]:
         """Compute the resulting joint trajectory and auxilliary trajectory.
 
-        If parameterization fails, return a tuple of None(s).
+        This is a convenient method if only the final output is wanted.
 
         Parameters
         ----------
-        sd_start: float
+        sd_start:
             Starting path velocity.
-        sd_end: float
+        sd_end:
             Goal path velocity.
-        return_data: bool, optional
+        return_data:
             If true, return a dict containing the internal data.
 
         Returns
         -------
-        :class:`.AbstractGeometricPath`
-            Time-parameterized joint position trajectory. If unable to
-            parameterize, return None.
-        :class:`.AbstractGeometricPath`
-            Time-parameterized auxiliary variable trajectory. If
-            unable to parameterize or if there is no auxiliary
-            variable, return None.
+        :
+            A 2-tuple. The first element is the time-parameterized joint position trajectory or
+            None If unable to parameterize. The second element is the
+            time-parameterized auxiliary variable trajectory. Is None if
+            unable to parameterize
 
         """
         sdd_grid, sd_grid, v_grid, K = self.compute_parameterization(

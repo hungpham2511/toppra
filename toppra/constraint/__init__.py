@@ -2,13 +2,13 @@
 
 Base abstractions and enum
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: toppra.constraint.Constraint
+.. autoclass:: toppra.constraint.constraint.Constraint
    :members: compute_constraint_params, set_discretization_type, __repr__
 
-.. autoclass:: toppra.constraint.ConstraintType
+.. autoclass:: toppra.constraint.constraint.ConstraintType
    :members:
 
-.. autoclass:: toppra.constraint.LinearConstraint
+.. autoclass:: toppra.constraint.linear_constraint.LinearConstraint
    :members:
    :special-members:
    :show-inheritance:
