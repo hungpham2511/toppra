@@ -139,15 +139,15 @@ class SecondOrderConstraint(LinearConstraint):
         return SecondOrderConstraint(inv_dyn, constraint_F, constraint_g, dof, custom_term,
                                      **kwargs)
 
-    def compute_constraint_params(self, path, gridpoints, scaling=1):
+    def compute_constraint_params(self, path, gridpoints):
         if path.dof != self.dof:
             raise ValueError(
                 "Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})"
                 .format(self.dof, path.dof))
         v_zero = np.zeros(path.dof)
-        p_vec = path(gridpoints / scaling)
-        ps_vec = path(gridpoints / scaling, 1) / scaling
-        pss_vec = path(gridpoints / scaling, 2) / scaling**2
+        p_vec = path(gridpoints)
+        ps_vec = path(gridpoints, 1)
+        pss_vec = path(gridpoints, 2)
 
         F_vec = np.array(list(map(self.constraint_F, p_vec)))
         g_vec = np.array(list(map(self.constraint_g, p_vec)))
@@ -162,7 +162,7 @@ class SecondOrderConstraint(LinearConstraint):
         ]) - c_vec
         if self.custom_term is not None:
             for i, _ in enumerate(gridpoints):
-                c_vec[i] = c_vec[i] + self.custom_term(path, gridpoints[i] / scaling)
+                c_vec[i] = c_vec[i] + self.custom_term(path, gridpoints[i])
 
         if self.discretization_type == DiscretizationType.Collocation:
             return a_vec, b_vec, c_vec, F_vec, g_vec, None, None

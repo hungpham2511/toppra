@@ -42,7 +42,7 @@ def test_wrong_dimension(coefficients_functions):
     constraint = toppra.constraint.SecondOrderConstraint(inv_dyn, cnst_F, cnst_g, dof=2)
     path_wrongdim = toppra.SplineInterpolator(np.linspace(0, 1, 5), np.random.randn(5, 10))
     with pytest.raises(ValueError) as e_info:
-        constraint.compute_constraint_params(path_wrongdim, np.r_[0, 0.5, 1], 1.0)
+        constraint.compute_constraint_params(path_wrongdim, np.r_[0, 0.5, 1])
     assert e_info.value.args[0] == "Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
         constraint.dof, 10)
 
@@ -56,7 +56,7 @@ def test_correctness(coefficients_functions):
         inv_dyn, cnst_F, cnst_g, dof=2,
         discretization_scheme=toppra.constraint.DiscretizationType.Collocation)
     a, b, c, F, g, _, _ = constraint.compute_constraint_params(
-        path, np.linspace(0, path.duration, 10), 1.0)
+        path, np.linspace(0, path.duration, 10))
 
     # Correct params
     q_vec = path(np.linspace(0, path.duration, 10))
@@ -96,7 +96,7 @@ def test_joint_torque(coefficients_functions, friction):
         inv_dyn, taulim, friction)
     constraint.set_discretization_type(0)
     a, b, c, F, g, _, _ = constraint.compute_constraint_params(
-        path, np.linspace(0, path.duration, 10), 1.0)
+        path, np.linspace(0, path.duration, 10))
 
     # Correct params
     p_vec = path(np.linspace(0, path.duration, 10))

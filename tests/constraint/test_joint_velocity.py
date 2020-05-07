@@ -53,7 +53,7 @@ class TestClass_JointVelocityConstraint(object):
         data, pc = velocity_pc_data
         path, ss, vlim = data
 
-        constraint_param = pc.compute_constraint_params(path, ss, 1.0)
+        constraint_param = pc.compute_constraint_params(path, ss)
         _, _, _, _, _, _, xlimit = constraint_param
 
         qs = path(ss, 1)
@@ -87,7 +87,7 @@ class TestClass_JointVelocityConstraint(object):
         data, pc = velocity_pc_data
         path_wrongdim = ta.SplineInterpolator(np.linspace(0, 1, 5), np.random.randn(5, 10))
         with pytest.raises(ValueError) as e_info:
-            pc.compute_constraint_params(path_wrongdim, [0, 0.5, 1], 1.0)
+            pc.compute_constraint_params(path_wrongdim, [0, 0.5, 1])
         assert e_info.value.args[0] == "Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
             pc.dof, 10
         )
@@ -105,7 +105,7 @@ def test_jnt_vel_varying_basic():
     coeff = [[1., 2, 3], [-2., -3., 4., 5.]]
     path = ta.PolynomialPath(coeff)
     gridpoints = np.linspace(0, 2, 10)
-    _, _, _, _, _, _, xlimit = constraint.compute_constraint_params(path, gridpoints, 1.0)
+    _, _, _, _, _, _, xlimit = constraint.compute_constraint_params(path, gridpoints)
     # constraint splines
     qs = path(gridpoints, 1)
     # test
