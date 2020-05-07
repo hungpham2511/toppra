@@ -18,12 +18,20 @@ logger = logging.getLogger(__name__)
 class ParameterizationData(dict):
     """Parametrization output."""
 
-    def __init__(self, *arg, **kwargs):
+    def __init__(self, *arg, **kwargs) -> None:
         super().__init__(*arg, **kwargs)
         self.return_code: ParameterizationReturnCode = ParameterizationReturnCode.ErrUnknown
         "ParameterizationReturnCode: Return code of the last parametrization attempt."
-        self.gridpoints: np.ndarray
+        self.gridpoints: np.ndarray = None
         "np.ndarray: Shape (N+1, 1). Gridpoints"
+        self.sd_vec: np.ndarray = None
+        "np.ndarray: Shape (N+1, 1). Path velocities"
+        self.sdd_vec: np.ndarray = None
+        "np.ndarray: Shape (N+1, 1). Path acceleration"
+        self.K: np.ndarray = None
+        "np.ndarray: Shape (N+1, 2). Controllable sets."
+        self.X: np.ndarray = None
+        "np.ndarray: Shape (N+1, 2). Feasible sets."
 
 
 class ParameterizationReturnCode(enum.Enum):
@@ -34,6 +42,8 @@ class ParameterizationReturnCode(enum.Enum):
     ErrUnknown = "Error: Unknown issue"
     #:
     ErrShortPath = "Error: Input path is very short"
+    #:
+    FailUncontrollable = "Error: Instance is not controllable"
 
     def __repr__(self):
         return super().__repr__()
@@ -72,7 +82,7 @@ class ParameterizationAlgorithm(object):
     def __init__(self, constraint_list, path, gridpoints=None):
         self.constraints = constraint_list
         self.path = path  # Attr
-        self._problem_data = {}
+        self._problem_data = ParameterizationData()
         # Handle gridpoints
         if gridpoints is None:
             gridpoints = interpolator.propose_gridpoints(path, max_err_threshold=1e-3)
@@ -86,6 +96,7 @@ class ParameterizationAlgorithm(object):
         ):
             raise ValueError("Invalid manually supplied gridpoints.")
         self.gridpoints = np.array(gridpoints)
+        self._problem_data.gridpoints = np.array(gridpoints)
         self._N = len(gridpoints) - 1  # Number of stages. Number of point is _N + 1
         for i in range(self._N):
             if gridpoints[i + 1] <= gridpoints[i]:

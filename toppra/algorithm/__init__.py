@@ -28,7 +28,7 @@ TOPPRAsd (specific-duration)
    :members: problem_data, set_desired_duration, compute_parameterization, compute_trajectory, compute_feasible_sets, compute_controllable_sets
 
 """
-from .algorithm import ParameterizationAlgorithm, ParameterizationData
+from .algorithm import ParameterizationAlgorithm, ParameterizationData, ParameterizationReturnCode
 from .reachabilitybased import TOPPRA, TOPPRAsd
 
 __all__ = ["ParameterizationData", "ParameterizationAlgorithm", "TOPPRA", "TOPPRAsd"]
