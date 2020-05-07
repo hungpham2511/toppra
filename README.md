@@ -28,7 +28,7 @@ given constraints can be found.
 (https://toppra.readthedocs.io/en/latest/index.html).
 
 
-## Installation (Python)
+## Installation (Python API)
 
 To install the latest development version, simply clone the repo and install with pip
 
@@ -42,23 +42,12 @@ To install depencidencies for development, replace the second command with:
 cd toppra && pip install -e .[dev]
 ```
 
-## C++ API
+## New C++ API
 
 `toppra` is also implemented as a stand-alone C++ library with minimal
 dependency. See `cpp/README.md` for installation instruction and the
 test cases for example usage. Be warned that this implementation is
 relatively new and is not yet stable enough for production use.
-
-# Development roadmap
-
-The following is a non-exhautive list of features that we are
-considering to include in the library.
-
-- Improve the trajectory / geometric path interface [#81](https://github.com/hungpham2511/toppra/issues/81)
-- Implement a C++ interface [#43](https://github.com/hungpham2511/toppra/issues/43)
-- Implement a C++ interface to popular motion planning libraries.
-- Improve the numerical stability of the solvers for degenerate cases.
-- Post-processing of output trajectories: [#56](https://github.com/hungpham2511/toppra/issues/56), [#80](https://github.com/hungpham2511/toppra/issues/80)
 
 # Supports
 
@@ -66,20 +55,25 @@ considering to include in the library.
 Please report any issues, questions or feature request via 
 [Github issues tracker](https://github.com/hungpham2511/toppra/issues).
 
-Please provide more details on the errors/bugs that you encounter. The
-best way is to provide a Minimal Working Example that produces the
-reported bug and attach it with the issue report.
-
 ## Contributions
-Pull Requests are welcomed!
-- Go ahead and create a Pull Request and we will review your proposal!
-- For new features, or bug fixes, preferably the request should
-  contain unit tests. Note that `toppra` uses
-  [pytest](https://docs.pytest.org/en/latest/contents.html) for all
-  tests. Check out the test folder for more details.
+Pull Requests are welcomed! Go ahead to create a Pull Request and we
+will review your proposal!
+
+# Credits
+
+`toppra` was originally developed by [Hung
+PHam](https://hungpham2511.github.com/) (Eureka Robotics, former CRI
+Group) and [Pham Quang-Cuong](https://www.ntu.edu.sg/home/cuong/) with
+major contributions from many contributors.  If you have taken part in
+developing and supporting the library, feel free to add your name to
+the list.
+- [Joseph Mirabel](https://github.com/jmirabel) (C+ API)
+- @EdsterG: (Python3 support).
 
 
-# Citing `toppra`
+The library is supported by [Eureka Robotics](https://eurekarobotics.com/).
+
+# Citing
 If you use this library for your research, we encourage you to 
 
 1. reference the accompanying paper [«A new approach to Time-Optimal Path Parameterization based on Reachability Analysis»](https://www.researchgate.net/publication/318671280_A_New_Approach_to_Time-Optimal_Path_Parameterization_Based_on_Reachability_Analysis),
