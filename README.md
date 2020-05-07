@@ -63,9 +63,9 @@ your proposal!
 `toppra` was originally developed by [Hung
 Pham](https://hungpham2511.github.com/) (Eureka Robotics, former CRI
 Group) and [Pham Quang-Cuong](https://www.ntu.edu.sg/home/cuong/)
-((Eureka Robotics, CRI Group)) with major contributions from talented
+(Eureka Robotics, CRI Group) with major contributions from talented
 contributors:
-- [Joseph Mirabel](https://github.com/jmirabel) (C+ API)
+- [Joseph Mirabel](https://github.com/jmirabel) (C++ API)
 - EdsterG (Python3 support).
 
 If you have taken part in developing and supporting the library, feel
