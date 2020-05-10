@@ -72,17 +72,25 @@ class ParametrizeConstAccel(AbstractGeometricPath):
         # small decrement to make sure all indices are valid
         ts = np.linspace(self.path_interval[0], self.path_interval[1], n_sample)
         ss, vs, us = self._eval_params(ts)
-        plt.subplot(1, 2, 1)
+        qs = self.__call__(ts, 0)
+        plt.subplot(2, 2, 1)
         plt.plot(ts, ss, label='s(t)')
         plt.plot(self._ts, self._ss, 'o', label='input')
         plt.title('path(time)')
         plt.legend()
-        plt.subplot(1, 2, 2)
+        plt.subplot(2, 2, 2)
         plt.plot(ss, vs, label='v(s)')
         plt.plot(self._ss, self._velocities, 'o', label='input')
         plt.title('velocity(path)')
         plt.legend()
+        plt.subplot(2, 2, 3)
+        plt.plot(ts, qs)
+        plt.title('retimed path')
+        plt.subplot(2, 2, 4)
+        ss_dense = np.linspace(self._ss[0], self._ss[-1], n_sample)
+        plt.plot(ss_dense, self._path(ss_dense))
+        plt.title('original path')
+        plt.tight_layout()
         if show:
             plt.show()
 
-            
