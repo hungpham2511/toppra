@@ -1,6 +1,7 @@
 from typing import Tuple
 import numpy as np
 from toppra.interpolator import AbstractGeometricPath
+from toppra.exceptions import ToppraError
 import matplotlib.pyplot as plt
 
 
@@ -33,6 +34,25 @@ class ParametrizeConstAccel(AbstractGeometricPath):
     def path_interval(self):
         return np.array([self._ts[0], self._ts[-1]])
 
+    def __call__(self, ts, order=0):
+        scalar = False
+        if isinstance(ts, (int, float)):
+            ts = np.array([ts], dtype=float)
+            scalar = True
+        ss, vs, us = self._eval_params(ts)
+        if order == 0:
+            out = self._path(ss)
+        elif order == 1:
+            out = self._path(ss, 1) * vs
+        elif order == 2:
+            out = self._path(ss, 2) * vs ** 2 + self._path(ss, 1) * us
+        else:
+            raise ToppraError("Order %d is not supported." % order)
+        if scalar:
+            return out[0]
+        else:
+            return out
+
     def _eval_params(self, ts: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         """Return the array of path positions, velocities and accels."""
         indices = np.searchsorted(self._ts, ts, side='right') - 1
@@ -40,15 +60,17 @@ class ParametrizeConstAccel(AbstractGeometricPath):
         vs = []
         us = []
         for idx, t in zip(indices, ts):
+            if idx == len(self._us):
+                idx -= 1
             dt = t - self._ts[idx]
             us.append(self._us[idx])
             vs.append(self._velocities[idx] + dt * self._us[idx])
             ss.append(self._ss[idx] + dt * self._velocities[idx] + 0.5 * dt ** 2 * self._us[idx])
         return np.array(ss), np.array(vs), np.array(us)
 
-    def plot_parametrization(self, show=False, n_sample=500):
+    def plot_parametrization(self, show: bool=False, n_sample: int=500) -> None:
         # small decrement to make sure all indices are valid
-        ts = np.linspace(self.path_interval[0], self.path_interval[1]-1e-6, n_sample)
+        ts = np.linspace(self.path_interval[0], self.path_interval[1], n_sample)
         ss, vs, us = self._eval_params(ts)
         plt.subplot(1, 2, 1)
         plt.plot(ts, ss, label='s(t)')

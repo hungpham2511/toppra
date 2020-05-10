@@ -14,6 +14,7 @@ def test_initialzie(path):
     path_new = toppra.ParametrizeConstAccel(path, gridpoints, velocities)
     path_new.plot_parametrization(show=True)
     
-    assert path_new(0).shape() == (2,)
+    assert path_new(0).shape == (2,)
+    assert path_new([0]).shape == (1, 2)
     assert path_new.path_interval[1] > 0
 

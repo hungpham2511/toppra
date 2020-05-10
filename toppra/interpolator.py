@@ -2,7 +2,7 @@
 that implements the abstract class
 
 """
-from typing import List
+from typing import List, Union
 import logging
 import numpy as np
 from scipy.interpolate import UnivariateSpline, CubicSpline, PPoly
@@ -88,7 +88,7 @@ class AbstractGeometricPath:
 
     """
 
-    def __call__(self, path_positions: np.ndarray, order: int = 0) -> np.ndarray:
+    def __call__(self, path_positions: Union[float, np.ndarray], order: int = 0) -> np.ndarray:
         """Evaluate the path at given positions.
 
         Parameters
