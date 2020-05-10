@@ -110,7 +110,7 @@ The parametrization can be inspected
 
 >>> path_new.plot_parametrization(show=True)
 
-.. figure:: _static/velocity.png
+.. figure:: _static/interpolate_param.png
 	    
    Parametrization.
 
