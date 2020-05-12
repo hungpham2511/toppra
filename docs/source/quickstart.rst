@@ -25,24 +25,24 @@ over `scipy`'s :class:`~scipy.interpolate.CubicSpline`. Therefore, it
 requires `scipy` to work
 properly. :class:`~toppra.SplineInterpolator`'s usage is simple.
 
-
-.. code-block:: python
-
-   import toppra
-   s_array = [0, 1, 2]
-   wp_array = [(0, 0), (1, 2), (2, 0)]
-   path = toppra.SplineInterpolator(s_array, wp_array)
+>>> import toppra
+>>> s_array = [0, 1, 2]
+>>> wp_array = [(0, 0), (1, 2), (2, 0)]
+>>> path = toppra.SplineInterpolator(s_array, wp_array)
 
 That's it. To verify that is works correctly, let's try plotting. 
 
-.. code-block:: python
 
-   import numpy as np
-   import matplotlib.pyplot as plt
-   s_sampled = np.linspace(0, 2, 100)
-   q_sampled = path(s_sampled)
-   plt.plot(s_sampled, q_sampled)
-   plt.show()
+>>> import numpy as np
+>>> import matplotlib.pyplot as plt
+>>> s_sampled = np.linspace(0, 2, 100)
+>>> q_sampled = path(s_sampled)
+>>> q_sampled[:2]
+array([[0.        , 0.        ],
+       [0.02020202, 0.07999184]])
+>>> plt.plot(s_sampled, q_sampled); plt.show()  #doctest: +ELLIPSIS
+[<matplotlib.lines.Line2D object at 0x...>, <matplotlib.lines.Line2D object at 0x...>]
+
 
 You will see the following plot show up.
 
@@ -55,8 +55,8 @@ The derivatives can be inspected by calling `path(positions, order)`
 using `order=1` for the first derivative and `order=2` for the second
 derivative respectively.
 
->>> q_dot = path(s_sample, 1)
->>> q_ddot = path(s_sample, 2)
+>>> q_dot = path(s_sampled, 1)
+>>> q_ddot = path(s_sampled, 2)
 
 Implement your own Interpolator
 -------------------------------
@@ -114,12 +114,77 @@ The parametrization can be inspected
 	    
    Parametrization.
 
-Let's play around to see that the parametrization make sense:
+>>> path_new(0)
+array([0., 0.])
+>>> path_new.path_interval
+array([0.        , 1.91666667])
 
->>> path(0, 0) == path_new(0, 0)
+
+Trapezoidal Reparametrization
+------------------------------
+
+It's common in automation and robotics to use trapezoidal velocity
+profile, or S-curve to make a movement more *graceful*. This can be
+easily implemented using the constant acceleration reparametrizer
+:class:`~ParametrizeConstAccel`.
+
+See this code snippet below.
+
+>>> path = toppra.SplineInterpolator([0, 2], [(0, 0), (1, 2)])
+>>> gridpoints, velocities = (0, 0.25, 0.75, 1.0), (0, 1, 1, 0)
+>>> path_new = toppra.ParametrizeConstAccel(path, gridpoints, velocities)
+>>> path_new.plot_parametrization(show=True)
+
+.. figure:: _static/trapezoidal.png
+	    
+   Parametrization.
+
+
+TODO: It will be useful to have a collection of generators that
+generate these velocity profiles, based on the desired maximum
+velocity, duration, et cetera.
+
+Time-optimal retime with kinematics constraints
+======================================================
+
+The `toppra` algorithm returns the velocity profile, or the
+time-parametrization profile that is optimal. The resulting trajectory
+is also guaranteed to satisfy given constraints. Consider a simple
+path as below for a 2-dof robot.
+
+>>> s_array = [0, 1, 2]
+>>> wp_array = [(0, 0), (1, 2), (2, 0)]
+>>> path = toppra.SplineInterpolator(s_array, wp_array)
+
+Suppose the 2 dofs are constrained by velocity and acceleration limits.
+
+>>> pc_vel = toppra.constraint.JointVelocityConstraint([[-1, 1], [-0.5, 0.5]])
+>>> pc_acc = toppra.constraint.JointAccelerationConstraint([[-0.05, 0.2], [-0.1, 0.3]])
+
+The time-optimal velocity profile can be found easily using :class:`~TOPPRA`
+
+>>> instance = toppra.algorithm.TOPPRA([pc_vel, pc_acc], path)
+>>> data = instance.compute_parameterization(0, 0)
+
+Algorithm outputs are stored in the `problem_data` attribute:
+
+>>> instance.problem_data.return_code
+<ParameterizationReturnCode.Ok: 'Ok: Successful parametrization'>
+>>> instance.problem_data.gridpoints  #doctest: +ELLIPSIS
+array([0.      , 0.015625, 0.03125 , 0.046875, 0.0625  , 0.078125,...])
+>>> instance.problem_data.sd_vec  #doctest: +ELLIPSIS
+array([...])
+
+>>> path_new = toppra.ParametrizeConstAccel(path, instance.problem_data.gridpoints, instance.problem_data.sd_vec)
+>>> path_new.plot_parametrization(show=True)
+
+.. figure:: _static/retime.png
+	    
+   Parametrization.
 
 
 
 
->>> import toppra
+
+
 
