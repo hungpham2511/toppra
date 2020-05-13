@@ -16,7 +16,10 @@ logger = logging.getLogger(__name__)
 
 
 class ParameterizationData(dict):
-    """Parametrization output."""
+    """Parametrization output.
+
+    TODO: Remove inheritance from dict. It's not necessary now.
+    """
 
     def __init__(self, *arg, **kwargs) -> None:
         super().__init__(*arg, **kwargs)
@@ -32,6 +35,9 @@ class ParameterizationData(dict):
         "np.ndarray: Shape (N+1, 2). Controllable sets."
         self.X: np.ndarray = None
         "np.ndarray: Shape (N+1, 2). Feasible sets."
+
+    def __repr__(self):
+        return "ParameterizationData(return_code:={}, N={:d})".format(self.return_code, self.gridpoints.shape[0])
 
 
 class ParameterizationReturnCode(enum.Enum):
