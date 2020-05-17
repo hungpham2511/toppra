@@ -1,11 +1,20 @@
 if(${PYTHON_BINDINGS})
-  message(STATUS "Build Python bindings")
-  # find_package(Python3.7 COMPONENTS Interpreter Development NumPy)
-  # find_package(PythonInterp 3.7 REQUIRED)
-  # find_package(PythonLibs 3.7 REQUIRED)
+
+  # Look for python source directory #################################
+  get_filename_component(TOPPRA_PYTHON_SOURCE_DIR
+    ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
+  get_filename_component(TOPPRA_PYTHON_SOURCE_DIR
+    ${TOPPRA_PYTHON_SOURCE_DIR} DIRECTORY)
+  set(TOPPRA_PYTHON_SOURCE_DIR ${TOPPRA_PYTHON_SOURCE_DIR}/toppra/bindings)
+  message(STATUS "Installing Python bindings to ${TOPPRA_PYTHON_SOURCE_DIR}")
+
+  # Build bindings ###################################################
   find_package(pybind11 REQUIRED)
   message(STATUS "Found ${PYTHON_INCLUDE_DIR} ${PYTHON_EXECUTABLE}")
   pybind11_add_module(toppra_int toppra_int.cpp)
   target_link_libraries(toppra_int PUBLIC toppra)
+  set_target_properties(toppra_int PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY ${TOPPRA_PYTHON_SOURCE_DIR}
+    )
 
 endif()

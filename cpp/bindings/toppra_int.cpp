@@ -8,8 +8,7 @@
 namespace py = pybind11;
 
 PYBIND11_MODULE(toppra_int, m) {
-  m.doc() = "pybind11 example plugin"; // optional module docstring
-  m.def("add", &add, "A function which adds two numbers");
+  m.doc() = "toppra C++ bindings (internal)";
   py::class_<toppra::PiecewisePolyPath>(m, "PiecewisePolyPath")
       .def(py::init<>())
       .def(py::init<const toppra::Matrices&, std::vector<toppra::value_type>>())

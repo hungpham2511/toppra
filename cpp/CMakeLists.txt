@@ -16,6 +16,9 @@ option(BUILD_WITH_GLPK "Compile the wrapper for GLPK (GPL license)" OFF)
 option(TOPPRA_DEBUG_ON "Set logging mode to on." OFF)
 option(PYTHON_BINDINGS "Build bindings for Python" OFF)
 
+
+include(CMakePrintHelpers)
+
 find_package (Threads)
 
 find_package (Eigen3 REQUIRED)
