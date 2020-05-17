@@ -14,6 +14,7 @@ option(BUILD_WITH_qpOASES "Compile the wrapper for qpOASES" OFF)
 option(BUILD_WITH_GLPK "Compile the wrapper for GLPK (GPL license)" OFF)
 # General options
 option(TOPPRA_DEBUG_ON "Set logging mode to on." OFF)
+option(PYTHON_BINDINGS "Build bindings for Python" OFF)
 
 find_package (Threads)
 
@@ -36,6 +37,7 @@ endif(BUILD_WITH_GLPK)
 
 add_subdirectory(src)
 add_subdirectory(doc)
+add_subdirectory(bindings)
 
 # Download and unpack googletest at configure time
 # source: https://github.com/google/googletest/tree/master/googletest

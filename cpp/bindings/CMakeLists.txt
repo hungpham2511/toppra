@@ -1,0 +1,11 @@
+if(${PYTHON_BINDINGS})
+  message(STATUS "Build Python bindings")
+  # find_package(Python3.7 COMPONENTS Interpreter Development NumPy)
+  # find_package(PythonInterp 3.7 REQUIRED)
+  # find_package(PythonLibs 3.7 REQUIRED)
+  find_package(pybind11 REQUIRED)
+  message(STATUS "Found ${PYTHON_INCLUDE_DIR} ${PYTHON_EXECUTABLE}")
+  pybind11_add_module(toppra_int toppra_int.cpp)
+  target_link_libraries(toppra_int PUBLIC toppra)
+
+endif()
