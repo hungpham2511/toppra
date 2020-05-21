@@ -35,7 +35,7 @@ jobs:
           path: test-reports
           destination: test-reports
 
-  build-python-3:
+  cpp-python37:
     docker:
       - image: hungpham2511/toppra-dep:0.0.3
 
@@ -43,6 +43,36 @@ jobs:
 
     steps:
       - checkout
+
+      - run:
+          name: dependencies
+          command: |
+            sudo apt install -y curl
+            echo "deb [arch=amd64] http://robotpkg.openrobots.org/packages/debian/pub $(lsb_release -sc) robotpkg" \
+              | sudo tee /etc/apt/sources.list.d/robotpkg.list
+            curl http://robotpkg.openrobots.org/packages/debian/robotpkg.key \
+              | sudo apt-key add -
+            sudo apt update
+            sudo apt install -y clang-tidy libeigen3-dev robotpkg-pinocchio robotpkg-qpoases libglpk-dev
+            git clone https://github.com/pybind/pybind11
+            cd pybind11 && git checkout v2.5.0
+            mkdir build && cd build && cmake -DPYBIND11_TEST=false .. && sudo make install
+          working_directory: ~/
+
+      - run:
+          name: build
+          command: |
+            export LD_LIBRARY_PATH=/opt/openrobots/lib:${LD_LIBRARY_PATH}
+            export CMAKE_PREFIX_PATH=/opt/openrobots
+            mkdir build && cd build && cmake -DBUILD_WITH_PINOCCHIO=ON -DBUILD_WITH_qpOASES=ON -DBUILD_WITH_GLPK=ON -DPYTHON_BINDINGS=ON -DPYBIND11_PYTHON_VERSION=3.7 ..
+            make -j4
+          working_directory: ~/repo/cpp
+
+      - run:
+          name: test
+          command: |
+            ./tests/all_tests
+          working_directory: ~/repo/cpp/build
 
       # Download and cache dependencies
       - restore_cache:
@@ -72,40 +102,6 @@ jobs:
 
       - store_test_results:
           path: test-reports
-
-  build-cpp:
-    docker:
-      - image: hungpham2511/toppra-dep:0.0.3
-
-    working_directory: ~/repo
-
-    steps:
-      - checkout
-      - run:
-          name: dependencies
-          command: |
-            sudo apt install -y curl
-            echo "deb [arch=amd64] http://robotpkg.openrobots.org/packages/debian/pub $(lsb_release -sc) robotpkg" \
-              | sudo tee /etc/apt/sources.list.d/robotpkg.list
-            curl http://robotpkg.openrobots.org/packages/debian/robotpkg.key \
-              | sudo apt-key add -
-            sudo apt update
-            sudo apt install -y clang-tidy libeigen3-dev robotpkg-pinocchio robotpkg-qpoases libglpk-dev
-
-      - run:
-          name: build
-          command: |
-            export LD_LIBRARY_PATH=/opt/openrobots/lib:${LD_LIBRARY_PATH}
-            export CMAKE_PREFIX_PATH=/opt/openrobots
-            mkdir build && cd build && cmake -DBUILD_WITH_PINOCCHIO=ON -DBUILD_WITH_qpOASES=ON -DBUILD_WITH_GLPK=ON ..
-            make -j4
-          working_directory: ~/repo/cpp
-
-      - run:
-          name: test
-          command: |
-            ./tests/all_tests
-          working_directory: ~/repo/cpp/build
 
   pre-release:
     docker:
@@ -142,9 +138,8 @@ workflows:
   version: 2
   integrate:
     jobs:
-      - build-cpp
       - check-codestyle
-      - build-python-3:
+      - cpp-python37:
           requires:
             - check-codestyle
 

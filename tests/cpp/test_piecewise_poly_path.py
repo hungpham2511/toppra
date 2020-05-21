@@ -2,6 +2,7 @@ import pytest
 import toppra.cpp as tac
 import numpy as np
 
+pytestmark = pytest.mark.skipif(not tac.bindings_loaded(), reason="c++ bindings not built")
 
 def test_load_cpp_bindings_ok():
     assert tac.bindings_loaded()
