@@ -1,4 +1,4 @@
-#include <toppra/geometric_path.hpp>
+#include <toppra/geometric_path/piecewise_poly_path.hpp>
 
 #include <cstddef>
 #include <stdexcept>

@@ -11,7 +11,7 @@
 #include <bindings.hpp>
 #include <string>
 #include <toppra/constraint.hpp>
-#include <toppra/geometric_path.hpp>
+#include <toppra/geometric_path/piecewise_poly_path.hpp>
 #include <toppra/toppra.hpp>
 
 namespace py = pybind11;

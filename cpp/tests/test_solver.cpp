@@ -7,7 +7,7 @@
 
 #include <toppra/constraint/linear_joint_velocity.hpp>
 #include <toppra/constraint/linear_joint_acceleration.hpp>
-
+#include <toppra/geometric_path/piecewise_poly_path.hpp>
 #include <toppra/geometric_path.hpp>
 
 #include "gtest/gtest.h"

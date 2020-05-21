@@ -6,8 +6,8 @@
 
 #include <chrono>
 
-#include "toppra/geometric_path.hpp"
-#include "toppra/toppra.hpp"
+#include <toppra/geometric_path/piecewise_poly_path.hpp>
+#include <toppra/toppra.hpp>
 
 class ConstructPiecewisePoly : public testing::Test {
 public:
