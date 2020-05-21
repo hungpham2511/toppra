@@ -31,7 +31,8 @@ PYBIND11_MODULE(toppra_int, m) {
       .def("__call__", &PyPiecewisePolyPath::eval, py::arg("xs"), py::arg("order") = 0)
       .def("__str__", &PyPiecewisePolyPath::__str__)
       .def("__repr__", &PyPiecewisePolyPath::__repr__)
-      .def_property_readonly("dof", &PyPiecewisePolyPath::dof);
+      .def_property_readonly("dof", &PyPiecewisePolyPath::dof)
+      .def_property_readonly("path_interval", &PyPiecewisePolyPath::pathInterval);
 }
 }  // namespace python
 }  // namespace toppra

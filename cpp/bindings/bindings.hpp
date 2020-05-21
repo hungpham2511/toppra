@@ -21,8 +21,10 @@ namespace python {
 
 using nparr = py::array_t<value_type>;
 
-// convert internal types to numpy array
+// convert internal types to numpy array, assume all eigen matrices
+// have the same shape.
 nparr toNumpyArray(const toppra::Vectors& ret);
+nparr toNumpyArray(const toppra::Matrices& ret);
 
 // wrapper
 class PyPiecewisePolyPath {
