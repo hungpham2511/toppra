@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <toppra/toppra.hpp>
 #include <vector>
+#include "toppra/algorithm.hpp"
 
 namespace toppra {
 
@@ -99,13 +100,9 @@ public:
   /**
    * Return the starting and ending path positions.
    */
-  Bound pathInterval() const {
-    Bound v;
-    v << m_breakpoints.front(), m_breakpoints.back();
-    return v;
-  };
+  Bound pathInterval() const;
 
-private:
+ private:
   size_t findSegmentIndex(value_type pos) const;
   void checkInputArgs();
   void computeDerivativesCoefficients();

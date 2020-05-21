@@ -26,6 +26,12 @@ PiecewisePolyPath::PiecewisePolyPath(const Matrices & coefficients,
   computeDerivativesCoefficients();
 }
 
+Bound PiecewisePolyPath::pathInterval() const {
+  Bound v;
+  v << m_breakpoints.front(), m_breakpoints.back();
+  return v;
+};
+
 Vector PiecewisePolyPath::eval_single(value_type pos, int order) const {
   Vector v(m_dof);
   v.setZero();

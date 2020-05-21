@@ -39,7 +39,7 @@ target_link_library(foo PUBLIC toppra::toppra)
 - Install pybind11 2.5.0
 - Build toppra-cpp with bindings on
 ``` sh
-cmake -DPYTHON_BINDINGS=ON -DPYBIND11_PYTHON_VERSION=3.7 ..
+cmake -GNinja -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DBUILD_WITH_PINOCCHIO=ON -DBUILD_WITH_qpOASES=ON -DBUILD_WITH_GLPK=ON -DPYTHON_BINDINGS=ON -DPYBIND11_PYTHON_VERSION=3.7 ..
 # change to 3.8 or other version as needed.
 ```
 - Install toppra python normally.

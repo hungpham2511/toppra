@@ -1,46 +1,37 @@
-#include "toppra/constraint.hpp"
+#include <pybind11/eigen.h>
+#include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/pytypes.h>
 #include <pybind11/stl.h>
-#include <pybind11/eigen.h>
+#include <iostream>
 
+#include <bindings.hpp>
 #include <string>
-#include <toppra/toppra.hpp>
+#include <toppra/constraint.hpp>
 #include <toppra/geometric_path.hpp>
+#include <toppra/toppra.hpp>
 
 namespace py = pybind11;
 
-class PyPiecewisePolyPath: public toppra::PiecewisePolyPath {
- public:
-  std::string __str__(){
-    return "PyPiecewisePolyPath(...)";
-  }
-  std::string __repr__(){
-    return "PyPiecewisePolyPath(...)";
-  }
-};
-
+namespace toppra {
+namespace python {
 
 PYBIND11_MODULE(toppra_int, m) {
   m.doc() = "toppra C++ bindings (internal)";
-  py::class_<toppra::PiecewisePolyPath>(m, "PiecewisePolyPath")
-      .def(py::init<>())
-      .def(py::init<const toppra::Matrices&, std::vector<toppra::value_type>>())
-      .def("eval_single", &toppra::PiecewisePolyPath::eval_single)
-      .def("eval", &toppra::PiecewisePolyPath::eval)
-      .def("pathInterval", &toppra::PiecewisePolyPath::pathInterval)
-      ;
-
   py::enum_<toppra::DiscretizationType>(m, "DiscretizationType")
       .value("Collocation", toppra::DiscretizationType::Collocation)
-      .value("Interpolation", toppra::DiscretizationType::Interpolation).export_values();
+      .value("Interpolation", toppra::DiscretizationType::Interpolation)
+      .export_values();
 
-
-  // experimental /////////////////////////////////////////////////////////////
-  py::class_<PyPiecewisePolyPath>(m, "PyPiecewisePolyPath")
+  py::class_<PyPiecewisePolyPath>(m, "PiecewisePolyPath")
       .def(py::init<>())
+      .def(py::init<const toppra::Matrices&, std::vector<toppra::value_type>>())
+      .def("eval_single", &PyPiecewisePolyPath::eval_single)
+      .def("eval", &PyPiecewisePolyPath::eval)
+      .def("__call__", &PyPiecewisePolyPath::eval, py::arg("xs"), py::arg("order") = 0)
       .def("__str__", &PyPiecewisePolyPath::__str__)
       .def("__repr__", &PyPiecewisePolyPath::__repr__)
-      ;
-  
+      .def_property_readonly("dof", &PyPiecewisePolyPath::dof);
 }
+}  // namespace python
+}  // namespace toppra
