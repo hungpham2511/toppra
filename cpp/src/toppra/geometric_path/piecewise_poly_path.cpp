@@ -33,10 +33,11 @@ Bound PiecewisePolyPath::pathInterval() const {
 };
 
 Vector PiecewisePolyPath::eval_single(value_type pos, int order) const {
+  assert(order < 3 && order >= 0);
   Vector v(m_dof);
   v.setZero();
   size_t seg_index = findSegmentIndex(pos);
-  Matrix coeff = getCoefficient(seg_index, order);
+  auto coeff = getCoefficient(seg_index, order);
   for (int power = 0; power < m_degree + 1; power++) {
     v += coeff.row(power) *
          pow(pos - m_breakpoints[seg_index], m_degree - power);
@@ -47,6 +48,7 @@ Vector PiecewisePolyPath::eval_single(value_type pos, int order) const {
 // Not the most efficient implementation. Coefficients are
 // recompoted. Should be refactorred.
 Vectors PiecewisePolyPath::eval(const Vector &positions, int order) const {
+  assert(order < 3 && order >= 0);
   Vectors outputs;
   outputs.resize(positions.size());
   for (size_t i = 0; i < positions.size(); i++) {
@@ -95,16 +97,16 @@ void PiecewisePolyPath::computeDerivativesCoefficients() {
   }
 }
 
-Matrix PiecewisePolyPath::getCoefficient(int seg_index, int order) const {
-  Matrix coeff;
+const Matrix& PiecewisePolyPath::getCoefficient(int seg_index, int order) const {
   if (order == 0) {
-    coeff = m_coefficients[seg_index];
+    return m_coefficients.at(seg_index);
   } else if (order == 1) {
-    coeff = m_coefficients_1[seg_index];
+    return m_coefficients_1.at(seg_index);
   } else if (order == 2) {
-    coeff = m_coefficients_2[seg_index];
+    return m_coefficients_2.at(seg_index);
+  } else {
+    return m_coefficients_2.at(seg_index);
   }
-  return coeff;
 }
 
 } // namespace toppra
