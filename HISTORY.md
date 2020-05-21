@@ -2,7 +2,12 @@
 
 ## [unrelease]
 
+### Added
+- [cpp] Provide Python bindings for PiecewisePolyPath class.
+- [cpp] Implement a class for computing hermite spline.
+
 ### Changed
+- [cpp] Minor improvement to PiecewisePolyPath.
 - [python] Implement `ParametrizeConstAccel` to allow reparametrize path.
 - [python] Parametrization output accessible via ParameterizationData class.
 - [python] Remove useless `scaling` in parameter computation.
