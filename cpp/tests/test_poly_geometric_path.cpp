@@ -88,6 +88,8 @@ TEST_F(ConstructPiecewisePoly, CorrectPathInterval) {
   ASSERT_DOUBLE_EQ(b[1], 2);
 }
 
+#ifdef TOPPRA_OPT_MSGPACK
+
 TEST_F(ConstructPiecewisePoly, serializeInvariant) {
   std::stringstream buffer;
   path.serialize(buffer);
@@ -96,7 +98,12 @@ TEST_F(ConstructPiecewisePoly, serializeInvariant) {
   pathNew.deserialize(buffer);
 
   ASSERT_EQ(pathNew.dof(), 2);
+  toppra::Vector v(3);
+  v << 0.1, 0.2, 0.3;
+  pathNew.eval(v);
 }
+
+#endif
 
 // Current profile result (Release build)
 // Took ~ 400 usec to evaluate 1000 points.

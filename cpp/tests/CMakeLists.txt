@@ -21,5 +21,8 @@ endif()
 if(BUILD_WITH_GLPK)
   target_compile_definitions(all_tests PRIVATE -DBUILD_WITH_GLPK)
 endif()
+if (OPT_MSGPACK)
+  target_compile_definitions(all_tests PRIVATE -DTOPPRA_OPT_MSGPACK)
+endif()
 
 add_test(NAME all_tests COMMAND all_tests)
