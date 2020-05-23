@@ -57,6 +57,11 @@ void PyPiecewisePolyPath::deserialize(const py::bytes& b) {
 std::string PyPiecewisePolyPath::__str__() { return "PiecewisePolyPath(...)"; }
 std::string PyPiecewisePolyPath::__repr__() { return "PiecewisePolyPath(...)"; }
 
+void PyPiecewisePolyPath::constructHermite(const Vectors& positions, const Vectors& velocities,
+                                           const std::vector<value_type> times){
+  m_path.constructHermite(positions, velocities, times);
+}
+
 }  // namespace python
 
 }  // namespace toppra

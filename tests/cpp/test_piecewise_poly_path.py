@@ -38,3 +38,14 @@ def test_serialize(path):
     ss = path.serialize()
     path2 = tac.PiecewisePolyPath()
     path2.deserialize(ss)
+
+
+def test_hermite():
+    path = tac.PiecewisePolyPath()
+    path.constructHermite(
+        [[0, 0], [1, 1], [0, 0]],
+        [[0, 0], [0, 0], [0, 0]],
+        [1, 2, 3]
+    )
+    assert(path.dof == 2)
+    np.testing.assert_allclose(path([1, 2, 3]), [[0, 0], [1, 1], [0, 0]])
