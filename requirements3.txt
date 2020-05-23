@@ -5,6 +5,7 @@ scipy>0.18
 coloredlogs
 matplotlib
 enum34
+msgpack
 
 # dev
 cvxopt

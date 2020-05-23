@@ -61,7 +61,7 @@ public:
   /**
    * Serialize path to stream.
    */
-  virtual void serialize(std::ostream &O){};
+  virtual void serialize(std::ostream &O) const {};
 
   /**
    * Deserialize stream to construct path.

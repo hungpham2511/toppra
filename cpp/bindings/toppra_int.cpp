@@ -28,6 +28,8 @@ PYBIND11_MODULE(toppra_int, m) {
       .def(py::init<const toppra::Matrices&, std::vector<toppra::value_type>>())
       .def("eval_single", &PyPiecewisePolyPath::eval_single)
       .def("eval", &PyPiecewisePolyPath::eval)
+      .def("serialize", &PyPiecewisePolyPath::serialize)
+      .def("deserialize", &PyPiecewisePolyPath::deserialize)
       .def("__call__", &PyPiecewisePolyPath::eval, py::arg("xs"), py::arg("order") = 0)
       .def("__str__", &PyPiecewisePolyPath::__str__)
       .def("__repr__", &PyPiecewisePolyPath::__repr__)

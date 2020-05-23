@@ -113,7 +113,7 @@ const Matrix &PiecewisePolyPath::getCoefficient(int seg_index, int order) const 
   }
 }
 
-void PiecewisePolyPath::serialize(std::ostream &O) {
+void PiecewisePolyPath::serialize(std::ostream &O) const {
 #ifdef TOPPRA_OPT_MSGPACK
   MatricesData allraw;
   allraw.reserve(m_coefficients.size());

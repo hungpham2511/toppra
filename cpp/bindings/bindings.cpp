@@ -1,5 +1,8 @@
 #include <bindings.hpp>
 #include <cstddef>
+#include <pybind11/pybind11.h>
+#include <pybind11/pytypes.h>
+#include <sstream>
 #include "toppra/toppra.hpp"
 
 namespace toppra {
@@ -38,6 +41,18 @@ nparr PyPiecewisePolyPath::eval(const Vector& xs, int order) const {
 Bound PyPiecewisePolyPath::pathInterval() const { return m_path.pathInterval(); }
 
 int PyPiecewisePolyPath::dof() const { return m_path.dof(); }
+
+py::bytes PyPiecewisePolyPath::serialize() const {
+  std::ostringstream ss;
+  m_path.serialize(ss);
+  return ss.str();
+};
+
+void PyPiecewisePolyPath::deserialize(const py::bytes & b){
+  std::stringstream ss;
+  ss << b.cast<std::string>();
+  m_path.deserialize(ss);
+}
 
 std::string PyPiecewisePolyPath::__str__() { return "PiecewisePolyPath(...)"; }
 std::string PyPiecewisePolyPath::__repr__() { return "PiecewisePolyPath(...)"; }

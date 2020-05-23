@@ -42,6 +42,10 @@ class PyPiecewisePolyPath {
   Bound pathInterval() const;
 
   int dof() const;
+  // Serialize into a bytes stream.
+  py::bytes serialize() const;
+  // Deserialize  frm a bytes stream.
+  void deserialize(const py::bytes &);
 
   std::string __str__();
   std::string __repr__();

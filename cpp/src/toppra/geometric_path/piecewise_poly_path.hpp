@@ -48,7 +48,7 @@ class PiecewisePolyPath : public GeometricPath {
    * Return the starting and ending path positions.
    */
   Bound pathInterval() const;
-  void serialize(std::ostream &O) override;
+  void serialize(std::ostream &O) const override;
   void deserialize(std::istream &I) override;
 
  private:
