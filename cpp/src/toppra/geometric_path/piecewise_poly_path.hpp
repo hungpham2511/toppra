@@ -51,8 +51,8 @@ class PiecewisePolyPath : public GeometricPath {
   void serialize(std::ostream &O) const override;
   void deserialize(std::istream &I) override;
 
-  void constructHermite(const Vectors& positions, const Vectors& velocities,
-                        const std::vector<value_type> times) ;
+  void constructHermite(const Vectors &positions, const Vectors &velocities,
+                        const std::vector<value_type> times);
 
  protected:
   void reset();
