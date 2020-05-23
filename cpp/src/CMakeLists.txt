@@ -79,6 +79,10 @@ install(FILES
   toppra/constraint/joint_torque.hpp
   DESTINATION include/toppra/constraint)
 install(FILES
+  toppra/geometric_path/piecewise_poly_path.hpp
+  DESTINATION include/toppra/geometric_path)
+
+install(FILES
   toppra/constraint/joint_torque/pinocchio.hpp
   DESTINATION include/toppra/constraint/joint_torque)
 install(FILES

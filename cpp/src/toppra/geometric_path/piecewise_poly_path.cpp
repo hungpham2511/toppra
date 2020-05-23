@@ -148,6 +148,7 @@ void PiecewisePolyPath::deserialize(std::istream &I) {
     new_coefficients.push_back(m);
   }
 
+  reset();
   m_coefficients = new_coefficients;
   oh = msgpack::unpack(buffer.str().data(), buffer.str().size(), offset);
   obj = oh.get();
@@ -163,4 +164,36 @@ void PiecewisePolyPath::deserialize(std::istream &I) {
 #endif
 };
 
+void PiecewisePolyPath::reset(){
+  m_breakpoints.clear();
+  m_coefficients.clear();
+  m_coefficients_1.clear();
+  m_coefficients_2.clear();
+}
+
+void  PiecewisePolyPath::constructHermite(const Vectors& positions, const Vectors& velocities,
+                                          const std::vector<value_type> times){
+  reset();
+  assert(positions.size() == times.size());
+  assert(velocities.size() == times.size());
+  TOPPRA_LOG_DEBUG("Constructing new Hermite polynomial");
+  m_dof = positions[0].size();
+  m_degree = 3; // cublic spline
+  m_breakpoints = times;
+  for(std::size_t i=0; i < times.size() - 1; i++){
+    TOPPRA_LOG_DEBUG("Processing segment index: " << i << "/" << times.size() - 1);
+    Matrix c(4, m_dof);
+    auto dt = times[i + 1] - times[i];
+    assert(dt > 0);
+    // ... after some derivations
+    c.row(3) = positions.at(i);
+    c.row(2) = velocities.at(i);
+    c.row(0) = (velocities.at(i + 1).transpose() * dt - 2 * positions.at(i + 1).transpose() + c.row(2) * dt + 2 * c.row(3))
+        / pow(dt, 3);
+    c.row(1) = (velocities.at(i + 1).transpose() - c.row(2) - 3 * c.row(0) * dt * dt) / (2 * dt);
+    m_coefficients.push_back(c);
+  }
+  checkInputArgs();
+  computeDerivativesCoefficients();
+}
 } // namespace toppra

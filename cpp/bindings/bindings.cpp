@@ -1,7 +1,7 @@
-#include <bindings.hpp>
-#include <cstddef>
 #include <pybind11/pybind11.h>
 #include <pybind11/pytypes.h>
+#include <bindings.hpp>
+#include <cstddef>
 #include <sstream>
 #include "toppra/toppra.hpp"
 
@@ -48,7 +48,7 @@ py::bytes PyPiecewisePolyPath::serialize() const {
   return ss.str();
 };
 
-void PyPiecewisePolyPath::deserialize(const py::bytes & b){
+void PyPiecewisePolyPath::deserialize(const py::bytes& b) {
   std::stringstream ss;
   ss << b.cast<std::string>();
   m_path.deserialize(ss);
