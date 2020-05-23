@@ -3,10 +3,11 @@
 
 #include <cstddef>
 #include <iostream>
+#include <ostream>
 #include <stdexcept>
+#include <toppra/algorithm.hpp>
 #include <toppra/toppra.hpp>
 #include <vector>
-#include <toppra/algorithm.hpp>
 
 namespace toppra {
 
@@ -58,13 +59,23 @@ public:
   }
 
   /**
+   * Serialize path to stream.
+   */
+  virtual void serialize(std::ostream &O){};
+
+  /**
+   * Deserialize stream to construct path.
+   */
+  virtual void deserialize(std::istream &I){};
+
+  /**
    * \return the starting and ending path positions.
    */
   virtual Bound pathInterval() const = 0;
 
-  virtual ~GeometricPath () {}
+  virtual ~GeometricPath() {}
 
-protected:
+ protected:
   int m_configSize, m_dof;
 };
 

@@ -1,8 +1,8 @@
-#include "gtest/gtest.h"
-#include <Eigen/Dense>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include <vector>
+#include "gtest/gtest.h"
 
 #include <chrono>
 
@@ -88,7 +88,15 @@ TEST_F(ConstructPiecewisePoly, CorrectPathInterval) {
   ASSERT_DOUBLE_EQ(b[1], 2);
 }
 
+TEST_F(ConstructPiecewisePoly, serializeInvariant) {
+  std::stringstream buffer;
+  path.serialize(buffer);
 
+  toppra::PiecewisePolyPath pathNew;
+  pathNew.deserialize(buffer);
+
+  ASSERT_EQ(pathNew.dof(), 2);
+}
 
 // Current profile result (Release build)
 // Took ~ 400 usec to evaluate 1000 points.

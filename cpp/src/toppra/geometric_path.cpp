@@ -1,5 +1,5 @@
-
 #include "toppra/geometric_path.hpp"
+#include "toppra/toppra.hpp"
 namespace toppra {
 
 Vectors GeometricPath::eval(const Vector &positions, int order) const {

@@ -1,9 +1,12 @@
-#include <toppra/geometric_path/piecewise_poly_path.hpp>
-
-#include <cstddef>
-#include <stdexcept>
+#include <iostream>
 #include <ostream>
-#include "toppra/toppra.hpp"
+#include <toppra/geometric_path/piecewise_poly_path.hpp>
+#include <toppra/toppra.hpp>
+
+#define TOPPRA_OPT_MSGPACK
+#ifdef TOPPRA_OPT_MSGPACK
+#include <msgpack.hpp>
+#endif
 
 namespace toppra {
 
@@ -75,6 +78,8 @@ size_t PiecewisePolyPath::findSegmentIndex(value_type pos) const {
 }
 
 void PiecewisePolyPath::checkInputArgs() {
+  assert(m_coefficients[0].cols() == m_dof);
+  assert(m_coefficients[0].rows() == (m_degree + 1));
   if ((1 + m_coefficients.size()) != m_breakpoints.size()) {
     throw std::runtime_error(
         "Number of breakpoints must equals number of segments plus 1.");
@@ -97,7 +102,7 @@ void PiecewisePolyPath::computeDerivativesCoefficients() {
   }
 }
 
-const Matrix& PiecewisePolyPath::getCoefficient(int seg_index, int order) const {
+const Matrix &PiecewisePolyPath::getCoefficient(int seg_index, int order) const {
   if (order == 0) {
     return m_coefficients.at(seg_index);
   } else if (order == 1) {
@@ -108,5 +113,55 @@ const Matrix& PiecewisePolyPath::getCoefficient(int seg_index, int order) const 
     return m_coefficients_2.at(seg_index);
   }
 }
+
+using eigendata_t = std::tuple<Eigen::Index, Eigen::Index, std::vector<value_type>>;
+using eigendatas_t = std::vector<eigendata_t>;
+
+void PiecewisePolyPath::serialize(std::ostream &O) {
+#ifdef TOPPRA_OPT_MSGPACK
+  eigendatas_t allraw;
+  allraw.reserve(m_coefficients.size());
+  for (const auto &c: m_coefficients) {
+    allraw.push_back({c.rows(), c.cols(), {c.data(), c.data() + c.size()}});
+  }
+  msgpack::pack(O, allraw);
+  msgpack::pack(O, m_breakpoints);
+#endif
+};
+
+void PiecewisePolyPath::deserialize(std::istream &I) {
+#ifdef TOPPRA_OPT_MSGPACK
+  std::stringstream buffer;
+  buffer << I.rdbuf();
+  std::size_t offset=0;
+  auto oh = msgpack::unpack(buffer.str().data(), buffer.str().size(), offset);
+  auto obj = oh.get();
+  TOPPRA_LOG_DEBUG(obj << "at offset:=" << offset << "/" << buffer.str().size());
+  eigendatas_t x;
+  toppra::Matrices new_coefficients;
+  obj.convert(x);
+  for (auto const & y: x){
+      int nrow, ncol;
+      nrow = std::get<0>(y);
+      ncol = std::get<1>(y);
+      std::vector<value_type> mdata = std::get<2>(y);
+      toppra::Matrix m(nrow, ncol);
+      for (size_t i=0; i < mdata.size(); i ++) m(i) = mdata[i];
+      TOPPRA_LOG_DEBUG(nrow << ncol << mdata.size() << m);
+      new_coefficients.push_back(m);
+  }
+  m_coefficients = new_coefficients;
+  oh = msgpack::unpack(buffer.str().data(), buffer.str().size(), offset);
+  obj = oh.get();
+  TOPPRA_LOG_DEBUG(obj << "at offset:=" << offset << "/" << buffer.str().size());
+  
+  obj.convert(m_breakpoints);
+  m_dof = new_coefficients[0].cols();
+  m_degree = new_coefficients[0].rows() - 1;
+  TOPPRA_LOG_DEBUG("degree: " << m_degree);
+  checkInputArgs();
+  computeDerivativesCoefficients();
+#endif
+};
 
 } // namespace toppra
