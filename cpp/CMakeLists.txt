@@ -15,7 +15,7 @@ option(BUILD_WITH_GLPK "Compile the wrapper for GLPK (GPL license)" OFF)
 # General options
 option(TOPPRA_DEBUG_ON "Set logging mode to on." OFF)
 option(PYTHON_BINDINGS "Build bindings for Python" ON)
-option(OPT_MSGPACK "Serialization using msgpack " ON)
+option(OPT_MSGPACK "Serialization using msgpack " OFF)
 
 include(CMakePrintHelpers)
 

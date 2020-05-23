@@ -57,6 +57,11 @@ jobs:
             git clone https://github.com/pybind/pybind11
             cd pybind11 && git checkout v2.5.0
             mkdir build && cd build && cmake -DPYBIND11_TEST=false .. && sudo make install
+
+            git clone https://github.com/msgpack/msgpack-c.git
+            cd msgpack-c && git checkout cpp-3.2.1 && cmake -DMSGPACK_CXX11=ON -DMSGPACK_BUILD_EXAMPLES=OFF -DMSGPACK_CXX_ONLY=ON .
+            sudo make install
+            
           working_directory: ~/
 
       - run:
@@ -64,7 +69,7 @@ jobs:
           command: |
             export LD_LIBRARY_PATH=/opt/openrobots/lib:${LD_LIBRARY_PATH}
             export CMAKE_PREFIX_PATH=/opt/openrobots
-            mkdir build && cd build && cmake -DBUILD_WITH_PINOCCHIO=ON -DBUILD_WITH_qpOASES=ON -DBUILD_WITH_GLPK=ON -DPYTHON_BINDINGS=ON -DPYBIND11_PYTHON_VERSION=3.7 ..
+            mkdir build && cd build && cmake -DBUILD_WITH_PINOCCHIO=ON -DBUILD_WITH_qpOASES=ON -DBUILD_WITH_GLPK=ON -DPYTHON_BINDINGS=ON -DPYBIND11_PYTHON_VERSION=3.7 -DOPT_MSGPACK=ON ..
             make -j4
           working_directory: ~/repo/cpp
 
