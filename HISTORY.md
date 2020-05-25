@@ -2,7 +2,13 @@
 
 ## [unrelease]
 
+### Added
+- [cpp] Implement serialization/deserialization for piecewise poly trajectory.
+- [cpp] Provide Python bindings for PiecewisePolyPath class.
+- [cpp] Construct piecewise poly as a hermite spline.
+
 ### Changed
+- [cpp] Minor improvement to PiecewisePolyPath.
 - [python] Implement `ParametrizeConstAccel` to allow reparametrize path.
 - [python] Parametrization output accessible via ParameterizationData class.
 - [python] Remove useless `scaling` in parameter computation.

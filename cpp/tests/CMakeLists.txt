@@ -5,6 +5,7 @@ set(TEST_SOURCES
   test_constraints.cpp
   test_solver.cpp
   test_poly_geometric_path.cpp
+  test_hermite_spline.cpp
   test_algorithm.cpp
   )
 
@@ -20,6 +21,9 @@ if(BUILD_WITH_qpOASES)
 endif()
 if(BUILD_WITH_GLPK)
   target_compile_definitions(all_tests PRIVATE -DBUILD_WITH_GLPK)
+endif()
+if (OPT_MSGPACK)
+  target_compile_definitions(all_tests PRIVATE -DTOPPRA_OPT_MSGPACK)
 endif()
 
 add_test(NAME all_tests COMMAND all_tests)

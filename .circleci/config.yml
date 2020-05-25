@@ -1,50 +1,40 @@
-version: 2
+version: 2.1
 
-jobs:
-  check-codestyle:
-    docker:
-      - image: hungpham2511/toppra-dep:0.0.3
-
-    working_directory: ~/repo
-
+commands:
+  build_cpp:
+    description: "Install dependencies (C++) and build toppra C++ API"
     steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - v1-dependencies3-{{ checksum "requirements3.txt" }}
       - run:
-          name: install dependencies
+          name: dependencies
           command: |
-            python3 -m virtualenv --python python3 venv3 && . venv3/bin/activate
-            pip install invoke pathlib2 numpy cython
-            invoke install-solvers
-            pip install -e .[dev]
+            sudo apt install -y curl
+            echo "deb [arch=amd64] http://robotpkg.openrobots.org/packages/debian/pub $(lsb_release -sc) robotpkg" \
+              | sudo tee /etc/apt/sources.list.d/robotpkg.list
+            curl http://robotpkg.openrobots.org/packages/debian/robotpkg.key \
+              | sudo apt-key add -
+            sudo apt update
+            sudo apt install -y clang-tidy libeigen3-dev robotpkg-pinocchio robotpkg-qpoases libglpk-dev
+            git clone https://github.com/pybind/pybind11
+            cd pybind11 && git checkout v2.5.0
+            mkdir build && cd build && cmake -DPYBIND11_TEST=false .. && sudo make install
 
-      - save_cache:
-          paths:
-            - ./venv3
-          key: v1-dependencies3-{{ checksum "requirements3.txt" }}
-
+            git clone https://github.com/msgpack/msgpack-c.git
+            cd msgpack-c && git checkout cpp-3.2.1 && cmake -DMSGPACK_CXX11=ON -DMSGPACK_BUILD_EXAMPLES=OFF -DMSGPACK_CXX_ONLY=ON .
+            sudo make install
+            
+          working_directory: ~/
       - run:
-          name: check codestyle
+          name: build
           command: |
-            . venv3/bin/activate
-            invoke lint || echo "allow failure"
+            export LD_LIBRARY_PATH=/opt/openrobots/lib:${LD_LIBRARY_PATH}
+            export CMAKE_PREFIX_PATH=/opt/openrobots
+            mkdir build && cd build && cmake -DBUILD_WITH_PINOCCHIO=ON -DBUILD_WITH_qpOASES=ON -DBUILD_WITH_GLPK=ON -DPYTHON_BINDINGS=ON -DPYBIND11_PYTHON_VERSION=3.7 -DOPT_MSGPACK=ON ..
+            make -j4
+          working_directory: ~/repo/cpp
 
-      - store_artifacts:
-          path: test-reports
-          destination: test-reports
-
-  build-python-3:
-    docker:
-      - image: hungpham2511/toppra-dep:0.0.3
-
-    working_directory: ~/repo
-
+  install_python:
+    description: "Install Python dependencies and toppra Python API"
     steps:
-      - checkout
-
-      # Download and cache dependencies
       - restore_cache:
           keys:
             - v1-dependencies3-{{ checksum "requirements3.txt" }}
@@ -62,8 +52,49 @@ jobs:
             - ./venv3
           key: v1-dependencies3-{{ checksum "requirements3.txt" }}
 
+jobs:
+  check-codestyle:
+    docker:
+      - image: hungpham2511/toppra-dep:0.0.3
+
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - install_python
       - run:
-          name: test
+          name: check codestyle
+          command: |
+            . venv3/bin/activate
+            invoke lint || echo "allow failure"
+
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports
+
+  cpp-python37:
+    docker:
+      - image: hungpham2511/toppra-dep:0.0.3
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - build_cpp
+      - run:
+          name: test (C++)
+          command: |
+            ./tests/all_tests
+          working_directory: ~/repo/cpp/build
+      - run:
+          name: codestyle (C++)
+          command: |
+            clang-tidy  src/**/*.cpp \
+            -checks=clang-analyzer-*,clang-analyzer-cplusplus*,cppcoreguidelines-*,performance-*,modernize-*,readability-,-cppcoreguidelines-pro-bounds-array-to-pointer-decay\
+            -warnings-as-errors=clang-analyzer-*,clang-analyzer-cplusplus*,cppcoreguidelines-*,modernize-*
+          working_directory: ~/repo/cpp
+      - install_python
+      - run:
+          name: test (Python)
           command: |
             . venv3/bin/activate
             mkdir test-reports
@@ -72,40 +103,6 @@ jobs:
 
       - store_test_results:
           path: test-reports
-
-  build-cpp:
-    docker:
-      - image: hungpham2511/toppra-dep:0.0.3
-
-    working_directory: ~/repo
-
-    steps:
-      - checkout
-      - run:
-          name: dependencies
-          command: |
-            sudo apt install -y curl
-            echo "deb [arch=amd64] http://robotpkg.openrobots.org/packages/debian/pub $(lsb_release -sc) robotpkg" \
-              | sudo tee /etc/apt/sources.list.d/robotpkg.list
-            curl http://robotpkg.openrobots.org/packages/debian/robotpkg.key \
-              | sudo apt-key add -
-            sudo apt update
-            sudo apt install -y clang-tidy libeigen3-dev robotpkg-pinocchio robotpkg-qpoases libglpk-dev
-
-      - run:
-          name: build
-          command: |
-            export LD_LIBRARY_PATH=/opt/openrobots/lib:${LD_LIBRARY_PATH}
-            export CMAKE_PREFIX_PATH=/opt/openrobots
-            mkdir build && cd build && cmake -DBUILD_WITH_PINOCCHIO=ON -DBUILD_WITH_qpOASES=ON -DBUILD_WITH_GLPK=ON ..
-            make -j4
-          working_directory: ~/repo/cpp
-
-      - run:
-          name: test
-          command: |
-            ./tests/all_tests
-          working_directory: ~/repo/cpp/build
 
   pre-release:
     docker:
@@ -142,9 +139,8 @@ workflows:
   version: 2
   integrate:
     jobs:
-      - build-cpp
       - check-codestyle
-      - build-python-3:
+      - cpp-python37:
           requires:
             - check-codestyle
 

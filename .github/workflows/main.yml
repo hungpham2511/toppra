@@ -22,7 +22,14 @@ jobs:
         curl http://robotpkg.openrobots.org/packages/debian/robotpkg.key \
           | sudo apt-key add -
         sudo apt update
-        sudo apt install -y clang-tidy libeigen3-dev robotpkg-pinocchio robotpkg-qpoases
+        sudo apt install -y clang-tidy libeigen3-dev robotpkg-pinocchio robotpkg-qpoases libglpk-dev
+        git clone https://github.com/pybind/pybind11
+        cd pybind11 && git checkout v2.5.0
+        mkdir build && cd build && cmake -DPYBIND11_TEST=false .. && sudo make install
+
+        git clone https://github.com/msgpack/msgpack-c.git
+        cd msgpack-c && git checkout cpp-3.2.1 && cmake -DMSGPACK_CXX11=ON -DMSGPACK_BUILD_EXAMPLES=OFF -DMSGPACK_CXX_ONLY=ON .
+        sudo make install
 
     - name: Lint
       run: |

@@ -1,13 +1,13 @@
-#include "gtest/gtest.h"
-#include <Eigen/Dense>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include <vector>
+#include "gtest/gtest.h"
 
 #include <chrono>
 
-#include "toppra/geometric_path.hpp"
-#include "toppra/toppra.hpp"
+#include <toppra/geometric_path/piecewise_poly_path.hpp>
+#include <toppra/toppra.hpp>
 
 class ConstructPiecewisePoly : public testing::Test {
 public:
@@ -88,7 +88,22 @@ TEST_F(ConstructPiecewisePoly, CorrectPathInterval) {
   ASSERT_DOUBLE_EQ(b[1], 2);
 }
 
+#ifdef TOPPRA_OPT_MSGPACK
 
+TEST_F(ConstructPiecewisePoly, serializeInvariant) {
+  std::stringstream buffer;
+  path.serialize(buffer);
+
+  toppra::PiecewisePolyPath pathNew;
+  pathNew.deserialize(buffer);
+
+  ASSERT_EQ(pathNew.dof(), 2);
+  toppra::Vector v(3);
+  v << 0.1, 0.2, 0.3;
+  pathNew.eval(v);
+}
+
+#endif
 
 // Current profile result (Release build)
 // Took ~ 400 usec to evaluate 1000 points.
