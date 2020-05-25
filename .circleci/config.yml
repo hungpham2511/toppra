@@ -1,49 +1,9 @@
-version: 2
+version: 2.1
 
-jobs:
-  check-codestyle:
-    docker:
-      - image: hungpham2511/toppra-dep:0.0.3
-
-    working_directory: ~/repo
-
+commands:
+  build_cpp:
+    description: "Install dependencies (C++) and build toppra C++ API"
     steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - v1-dependencies3-{{ checksum "requirements3.txt" }}
-      - run:
-          name: install dependencies
-          command: |
-            python3 -m virtualenv --python python3 venv3 && . venv3/bin/activate
-            pip install invoke pathlib2 numpy cython
-            invoke install-solvers
-            pip install -e .[dev]
-
-      - save_cache:
-          paths:
-            - ./venv3
-          key: v1-dependencies3-{{ checksum "requirements3.txt" }}
-
-      - run:
-          name: check codestyle
-          command: |
-            . venv3/bin/activate
-            invoke lint || echo "allow failure"
-
-      - store_artifacts:
-          path: test-reports
-          destination: test-reports
-
-  cpp-python37:
-    docker:
-      - image: hungpham2511/toppra-dep:0.0.3
-
-    working_directory: ~/repo
-
-    steps:
-      - checkout
-
       - run:
           name: dependencies
           command: |
@@ -63,7 +23,6 @@ jobs:
             sudo make install
             
           working_directory: ~/
-
       - run:
           name: build
           command: |
@@ -73,13 +32,9 @@ jobs:
             make -j4
           working_directory: ~/repo/cpp
 
-      - run:
-          name: test
-          command: |
-            ./tests/all_tests
-          working_directory: ~/repo/cpp/build
-
-      # Download and cache dependencies
+  install_python:
+    description: "Install Python dependencies and toppra Python API"
+    steps:
       - restore_cache:
           keys:
             - v1-dependencies3-{{ checksum "requirements3.txt" }}
@@ -97,8 +52,49 @@ jobs:
             - ./venv3
           key: v1-dependencies3-{{ checksum "requirements3.txt" }}
 
+jobs:
+  check-codestyle:
+    docker:
+      - image: hungpham2511/toppra-dep:0.0.3
+
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - install_python
       - run:
-          name: test
+          name: check codestyle
+          command: |
+            . venv3/bin/activate
+            invoke lint || echo "allow failure"
+
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports
+
+  cpp-python37:
+    docker:
+      - image: hungpham2511/toppra-dep:0.0.3
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+      - build_cpp
+      - run:
+          name: test (C++)
+          command: |
+            ./tests/all_tests
+          working_directory: ~/repo/cpp/build
+      - run:
+          name: codestyle (C++)
+          command: |
+            clang-tidy  src/**/*.cpp \
+            -checks=clang-analyzer-*,clang-analyzer-cplusplus*,cppcoreguidelines-*,performance-*,modernize-*,readability-,-cppcoreguidelines-pro-bounds-array-to-pointer-decay\
+            -warnings-as-errors=clang-analyzer-*,clang-analyzer-cplusplus*,cppcoreguidelines-*,modernize-*
+          working_directory: ~/repo/cpp
+      - install_python
+      - run:
+          name: test (Python)
           command: |
             . venv3/bin/activate
             mkdir test-reports
