@@ -35,7 +35,7 @@ class PyPiecewisePolyPath {
   PyPiecewisePolyPath() = default;
   PyPiecewisePolyPath(const Matrices& coefficients,
                       std::vector<value_type> breakpoints);
-
+  PyPiecewisePolyPath(const PiecewisePolyPath& path);
   Vector eval_single(value_type x, int order = 0) const;
 
   nparr eval(const Vector& xs, int order = 0) const;
@@ -46,9 +46,9 @@ class PyPiecewisePolyPath {
   py::bytes serialize() const;
   // Deserialize  frm a bytes stream.
   void deserialize(const py::bytes&);
-  void constructHermite(const Vectors& positions, const Vectors& velocities,
-                        const std::vector<value_type> times);
-
+  static PyPiecewisePolyPath constructHermite(const Vectors& positions,
+                                              const Vectors& velocities,
+                                              const std::vector<value_type> times);
   std::string __str__();
   std::string __repr__();
 };

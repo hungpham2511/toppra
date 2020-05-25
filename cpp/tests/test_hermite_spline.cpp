@@ -18,8 +18,8 @@ Vectors makeVectors(vvvectors v) {
 TEST(SplineHermite, BasicUsage) {
   toppra::Vectors pos = makeVectors({{0, 0}, {1, 1}, {0, 2}});
   toppra::Vectors vec = makeVectors({{1, 1}, {0, 0}, {1, 2}});
-  toppra::PiecewisePolyPath path;
-  path.constructHermite(pos, vec, {0, 0.5, 1});
+  toppra::PiecewisePolyPath path =
+      toppra::PiecewisePolyPath::constructHermite(pos, vec, {0, 0.5, 1});
   auto resPos = path.eval_single(0.5);
   EXPECT_DOUBLE_EQ(resPos(0), 1);
   EXPECT_DOUBLE_EQ(resPos(1), 1);

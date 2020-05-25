@@ -118,7 +118,7 @@ void PiecewisePolyPath::serialize(std::ostream &O) const {
   MatricesData allraw;
   allraw.reserve(m_coefficients.size());
   for (const auto &c : m_coefficients) {
-    MatrixData raw {c.rows(), c.cols(), {c.data(), c.data() + c.size()}};
+    MatrixData raw{c.rows(), c.cols(), {c.data(), c.data() + c.size()}};
     allraw.push_back(raw);
   }
   msgpack::pack(O, allraw);
@@ -172,9 +172,9 @@ void PiecewisePolyPath::reset() {
   m_coefficients_2.clear();
 }
 
-void PiecewisePolyPath::constructHermite(const Vectors &positions,
-                                         const Vectors &velocities,
-                                         const std::vector<value_type> times) {
+void PiecewisePolyPath::initAsHermite(const Vectors &positions,
+                                      const Vectors &velocities,
+                                      const std::vector<value_type> times) {
   reset();
   assert(positions.size() == times.size());
   assert(velocities.size() == times.size());
@@ -200,4 +200,13 @@ void PiecewisePolyPath::constructHermite(const Vectors &positions,
   checkInputArgs();
   computeDerivativesCoefficients();
 }
+
+PiecewisePolyPath PiecewisePolyPath::constructHermite(
+    const Vectors &positions, const Vectors &velocities,
+    const std::vector<value_type> times) {
+  PiecewisePolyPath path;
+  path.initAsHermite(positions, velocities, times);
+  return path;
+}
+
 } // namespace toppra

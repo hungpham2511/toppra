@@ -29,6 +29,9 @@ PyPiecewisePolyPath::PyPiecewisePolyPath(const Matrices& coefficients,
                                          std::vector<value_type> breakpoints)
     : m_path{coefficients, breakpoints} {};
 
+PyPiecewisePolyPath::PyPiecewisePolyPath(const PiecewisePolyPath& path)
+    : m_path(path){};
+
 Vector PyPiecewisePolyPath::eval_single(value_type x, int order) const {
   return m_path.eval_single(x, order);
 };
@@ -53,16 +56,14 @@ void PyPiecewisePolyPath::deserialize(const py::bytes& b) {
   ss << b.cast<std::string>();
   m_path.deserialize(ss);
 }
-
+PyPiecewisePolyPath PyPiecewisePolyPath::constructHermite(
+    const Vectors& positions, const Vectors& velocities,
+    const std::vector<value_type> times) {
+  auto path_c = PiecewisePolyPath::constructHermite(positions, velocities, times);
+  return PyPiecewisePolyPath{path_c};
+};
 std::string PyPiecewisePolyPath::__str__() { return "PiecewisePolyPath(...)"; }
 std::string PyPiecewisePolyPath::__repr__() { return "PiecewisePolyPath(...)"; }
 
-void PyPiecewisePolyPath::constructHermite(const Vectors& positions,
-                                           const Vectors& velocities,
-                                           const std::vector<value_type> times) {
-  m_path.constructHermite(positions, velocities, times);
-}
-
 }  // namespace python
-
 }  // namespace toppra

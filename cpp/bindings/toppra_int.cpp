@@ -30,12 +30,12 @@ PYBIND11_MODULE(toppra_int, m) {
       .def("eval", &PyPiecewisePolyPath::eval)
       .def("serialize", &PyPiecewisePolyPath::serialize)
       .def("deserialize", &PyPiecewisePolyPath::deserialize)
-      .def("constructHermite", &PyPiecewisePolyPath::constructHermite)
       .def("__call__", &PyPiecewisePolyPath::eval, py::arg("xs"), py::arg("order") = 0)
       .def("__str__", &PyPiecewisePolyPath::__str__)
       .def("__repr__", &PyPiecewisePolyPath::__repr__)
       .def_property_readonly("dof", &PyPiecewisePolyPath::dof)
-      .def_property_readonly("path_interval", &PyPiecewisePolyPath::pathInterval);
+      .def_property_readonly("path_interval", &PyPiecewisePolyPath::pathInterval)
+      .def_static("constructHermite", &PyPiecewisePolyPath::constructHermite);
 }
 }  // namespace python
 }  // namespace toppra

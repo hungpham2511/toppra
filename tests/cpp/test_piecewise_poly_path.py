@@ -41,8 +41,7 @@ def test_serialize(path):
 
 
 def test_hermite():
-    path = tac.PiecewisePolyPath()
-    path.constructHermite(
+    path = tac.PiecewisePolyPath.constructHermite(
         [[0, 0], [1, 1], [0, 0]],
         [[0, 0], [0, 0], [0, 0]],
         [1, 2, 3]
