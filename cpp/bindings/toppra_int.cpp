@@ -7,6 +7,7 @@
 
 #include <bindings.hpp>
 #include <string>
+#include <toppra/algorithm.hpp>
 #include <toppra/constraint.hpp>
 #include <toppra/constraint/linear_joint_acceleration.hpp>
 #include <toppra/constraint/linear_joint_velocity.hpp>
@@ -69,6 +70,25 @@ PYBIND11_MODULE(toppra_int, m) {
                         LinearConstraint::discretizationType,
                     (void (LinearConstraint::*)(DiscretizationType)) &
                         LinearConstraint::discretizationType);
+
+  // algorithm
+  py::enum_<toppra::ReturnCode>(m, "ReturnCode")
+      .value("OK", toppra::ReturnCode::OK)
+      .value("ERR_UNKNOWN", toppra::ReturnCode::ERR_UNKNOWN)
+      .value("ERR_UNINITIALIZED", toppra::ReturnCode::ERR_UNINITIALIZED)
+      .value("ERR_FAIL_FEASIBLE", toppra::ReturnCode::ERR_FAIL_FEASIBLE)
+      .value("ERR_FAIL_CONTROLLABLE", toppra::ReturnCode::ERR_FAIL_CONTROLLABLE)
+      .value("ERR_FAIL_FORWARD_PASS", toppra::ReturnCode::ERR_FAIL_FORWARD_PASS)
+      .export_values();
+
+  py::class_<toppra::ParametrizationData>(m, "ParametrizationData")
+      .def(py::init<>())
+      .def_readwrite("gridpoints", &toppra::ParametrizationData::gridpoints)
+      .def_readwrite("parametrization", &toppra::ParametrizationData::parametrization)
+      .def_readwrite("controllable_sets",
+                     &toppra::ParametrizationData::controllable_sets)
+      .def_readwrite("feasible_sets", &toppra::ParametrizationData::feasible_sets)
+      .def_readwrite("ret_code", &toppra::ParametrizationData::ret_code);
 }
 }  // namespace python
 }  // namespace toppra
