@@ -145,6 +145,8 @@ bool qpOASESWrapper::solveStagewiseOptim(std::size_t i,
     assert((solution.transpose().array() >= l.array()).all());
     return true;
   }
+  TOPPRA_LOG_DEBUG("qpOASES failed. Error code: " <<
+      qpOASES::MessageHandling::getErrorCodeMessage(res) << " (" << res << ')');
   return false;
 }
 
