@@ -15,6 +15,6 @@ def test_linear_accel():
     c = tac.LinearJointAcceleration([-1, -1], [1, 1])
     c.discretizationType = tac.DiscretizationType.Interpolation
 
-    assert not c.hasUbounds()
-    assert not c.hasXbounds()
-    assert c.hasLinearInequalities()
+    assert not c.hasUbounds
+    assert not c.hasXbounds
+    assert c.hasLinearInequalities
