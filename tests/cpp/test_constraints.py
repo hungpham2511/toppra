@@ -6,9 +6,9 @@ def test_linear_vel():
     c = tac.LinearJointVelocity([-1, -1], [1, 1])
     c.discretizationType = tac.DiscretizationType.Interpolation
 
-    assert c.hasUbounds()
-    assert c.hasXbounds()
-    assert not c.hasLinearInequalities()
+    assert not c.hasUbounds
+    assert c.hasXbounds
+    assert not c.hasLinearInequalities
 
 
 def test_linear_accel():

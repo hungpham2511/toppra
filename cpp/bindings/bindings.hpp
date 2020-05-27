@@ -28,10 +28,9 @@ nparr toNumpyArray(const toppra::Matrices& ret);
 
 // wrapper
 class PyPiecewisePolyPath {
- protected:
+ public:
   toppra::PiecewisePolyPath m_path;
 
- public:
   PyPiecewisePolyPath() = default;
   PyPiecewisePolyPath(const Matrices& coefficients,
                       std::vector<value_type> breakpoints);
