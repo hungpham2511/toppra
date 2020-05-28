@@ -19,6 +19,13 @@ int bnd_type(const value_type& l, const value_type& u)
     if (u == infty) return GLP_FR;
     else return GLP_UP;
   } else {
+    if (u < l) {
+      TOPPRA_LOG_DEBUG("GLPK: invalid bounds:"
+          "\nlower: " << l <<
+          "\nupper: " << u);
+      // Do not stop here so that all the inequalities are checked.
+      // GLPK will report failure.
+    }
     if (l == u) return GLP_FX;
     else if (u == infty) return GLP_LO;
     else return GLP_DB;
