@@ -44,6 +44,33 @@ class JointTorque : public LinearConstraint {
     virtual void computeInverseDynamics (const Vector& q, const Vector& v, const Vector& a,
         Vector& tau) = 0;
 
+    const Vector& lowerBounds () const
+    { return m_lower; }
+
+    void lowerBounds (const Vector& lb)
+    {
+      assert(lb.size() == m_lower.size());
+      m_lower = lb;
+    }
+
+    const Vector& upperBounds () const
+    { return m_upper; }
+
+    void upperBounds (const Vector& ub)
+    {
+      assert(ub.size() == m_upper.size());
+      m_upper = ub;
+    }
+
+    const Vector& frictionCoeffs () const
+    { return m_frictionCoeffs; }
+
+    void frictionCoeffs (const Vector& fc)
+    {
+      assert(fc.size() == m_frictionCoeffs.size());
+      m_frictionCoeffs = fc;
+    }
+
   protected:
     /**
      * \param lowerTlimit lower torque limit
