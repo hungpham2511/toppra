@@ -44,7 +44,7 @@ PYBIND11_MODULE(toppra_int, m) {
   py::class_<LinearConstraint>(m, "_LinearConstraint");
   py::class_<constraint::LinearJointVelocity, LinearConstraint>(m,
                                                                 "LinearJointVelocity")
-      .def(py::init<const Vector&, const Vector&>())
+      .def(py::init<const Vector &, const Vector &>())
       .def_property_readonly("nbConstraints", &LinearConstraint::nbConstraints)
       .def_property_readonly("nbVariables", &LinearConstraint::nbVariables)
       .def_property_readonly("hasLinearInequalities",
@@ -58,7 +58,7 @@ PYBIND11_MODULE(toppra_int, m) {
                         LinearConstraint::discretizationType);
   py::class_<constraint::LinearJointAcceleration, LinearConstraint>(
       m, "LinearJointAcceleration")
-      .def(py::init<const Vector&, const Vector&>())
+      .def(py::init<const Vector &, const Vector &>())
       .def_property_readonly("nbConstraints", &LinearConstraint::nbConstraints)
       .def_property_readonly("nbVariables", &LinearConstraint::nbVariables)
       .def_property_readonly("hasLinearInequalities",
@@ -89,6 +89,14 @@ PYBIND11_MODULE(toppra_int, m) {
                      &toppra::ParametrizationData::controllable_sets)
       .def_readwrite("feasible_sets", &toppra::ParametrizationData::feasible_sets)
       .def_readwrite("ret_code", &toppra::ParametrizationData::ret_code);
+
+  py::class_<PyTOPPRA>(m, "TOPPRA")
+      // .def(py::init<LinearConstraintPtrs, PyPiecewisePolyPath &>())
+      .def(py::init<py::list, PyPiecewisePolyPath &>())
+      .def("computePathParametrization", &PyTOPPRA::computePathParametrization,
+           py::arg("vel_start") = 0, py::arg("vel_end") = 0)
+      .def("setN", &PyTOPPRA::setN)
+      .def_property_readonly("parametrizationData", &PyTOPPRA::getParameterizationData);
 }
 }  // namespace python
 }  // namespace toppra

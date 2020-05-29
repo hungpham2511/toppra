@@ -2,7 +2,10 @@
 #include <pybind11/pytypes.h>
 #include <bindings.hpp>
 #include <cstddef>
+#include <memory>
 #include <sstream>
+#include "toppra/algorithm/toppra.hpp"
+#include "toppra/geometric_path/piecewise_poly_path.hpp"
 #include "toppra/toppra.hpp"
 
 namespace toppra {
@@ -64,6 +67,46 @@ PyPiecewisePolyPath PyPiecewisePolyPath::constructHermite(
 };
 std::string PyPiecewisePolyPath::__str__() { return "PiecewisePolyPath(...)"; }
 std::string PyPiecewisePolyPath::__repr__() { return "PiecewisePolyPath(...)"; }
+
+PyTOPPRA::PyTOPPRA(LinearConstraintPtrs constraints, PyPiecewisePolyPath& path) {
+  // m_problem(constraints, path.m_path);
+}
+
+PyTOPPRA::PyTOPPRA(const py::list& constraints, PyPiecewisePolyPath& path) {
+  // Copy the constraints and path using smart pointers
+  LinearConstraintPtrs constraints_copy;
+  for (const auto& c : constraints) {
+    LinearConstraint* rawptr = c.cast<LinearConstraint*>();
+    if (auto cptr = dynamic_cast<constraint::LinearJointAcceleration*>(rawptr)) {
+      py::print("accel");
+      constraint::LinearJointAcceleration v(*cptr);
+      constraints_copy.push_back(
+          std::make_shared<constraint::LinearJointAcceleration>(*cptr));
+    } else if (auto cptr = dynamic_cast<constraint::LinearJointVelocity*>(rawptr)) {
+      py::print("velocity");
+      constraint::LinearJointVelocity v(*cptr);
+      constraints_copy.push_back(
+          std::make_shared<constraint::LinearJointVelocity>(*cptr));
+    } else {
+      py::print("unknown");
+    }
+  }
+  GeometricPathPtr path_copy = std::make_shared<PiecewisePolyPath>(path.m_path);
+  // construct internally held problem
+  m_problem = std::unique_ptr<algorithm::TOPPRA>(
+      new algorithm::TOPPRA(constraints_copy, path_copy));
+}
+
+ReturnCode PyTOPPRA::computePathParametrization(value_type vel_start,
+                                                value_type vel_end) {
+  return m_problem->computePathParametrization(vel_start, vel_end);
+}
+
+ParametrizationData PyTOPPRA::getParameterizationData() const {
+  return m_problem->getParameterizationData();
+}
+
+void PyTOPPRA::setN(int N) { m_problem->setN(N); };
 
 }  // namespace python
 }  // namespace toppra

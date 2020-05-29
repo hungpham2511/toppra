@@ -7,10 +7,14 @@
 #include <pybind11/pytypes.h>
 #include <pybind11/stl.h>
 #include <iostream>
+#include <memory>
+#include "toppra/algorithm/toppra.hpp"
 
 #include <bindings.hpp>
 #include <string>
 #include <toppra/constraint.hpp>
+#include <toppra/constraint/linear_joint_acceleration.hpp>
+#include <toppra/constraint/linear_joint_velocity.hpp>
 #include <toppra/geometric_path/piecewise_poly_path.hpp>
 #include <toppra/toppra.hpp>
 
@@ -50,6 +54,23 @@ class PyPiecewisePolyPath {
                                               const std::vector<value_type> times);
   std::string __str__();
   std::string __repr__();
+};
+
+/**
+   Wrapper for TOPPRA Algorithm.
+ */
+class PyTOPPRA {
+ public:
+  PyTOPPRA(LinearConstraintPtrs constraints, PyPiecewisePolyPath& path);
+  PyTOPPRA(const py::list& constraints, PyPiecewisePolyPath& path);
+  ReturnCode computePathParametrization(value_type vel_start = 0,
+                                        value_type vel_end = 0);
+  ParametrizationData getParameterizationData() const;
+  void setN(int N);
+
+ private:
+  std::unique_ptr<toppra::algorithm::TOPPRA> m_problem;
+  LinearConstraintPtr m_tmp;
 };
 
 }  // namespace python
