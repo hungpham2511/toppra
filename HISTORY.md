@@ -6,6 +6,7 @@
 - [cpp] Implement serialization/deserialization for piecewise poly trajectory.
 - [cpp] Provide Python bindings for PiecewisePolyPath class.
 - [cpp] Construct piecewise poly as a hermite spline.
+- [python] Provide an option to allow Python 2.7 usage
 
 ### Changed
 - [cpp] Minor improvement to PiecewisePolyPath.
