@@ -14,13 +14,16 @@ option(BUILD_WITH_qpOASES "Compile the wrapper for qpOASES" OFF)
 option(BUILD_WITH_GLPK "Compile the wrapper for GLPK (GPL license)" OFF)
 # General options
 option(TOPPRA_DEBUG_ON "Set logging mode to on." OFF)
-option(PYTHON_BINDINGS "Build bindings for Python" ON)
 option(OPT_MSGPACK "Serialization using msgpack " OFF)
+# Bindings
+option(PYTHON_BINDINGS "Build bindings for Python" ON)
+option(PYTHON_VERSION "Build bindings for Python version" 3.7)
+# End of options
 
+set(PYBIND11_PYTHON_VERSION ${PYTHON_VERSION})
 include(CMakePrintHelpers)
 
 find_package (Threads)
-
 find_package (Eigen3 REQUIRED)
 message(STATUS "Found Eigen version ${EIGEN3_VERSION_STRING}")
 
