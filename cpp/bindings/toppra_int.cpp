@@ -59,7 +59,7 @@ PYBIND11_MODULE(toppra_int, m) {
       .def_static("constructHermite", &PyPiecewisePolyPath::constructHermite);
 
   // Abstract class must be binded for derived classes to work
-  py::class_<LinearConstraint>(m, "_LinearConstraint")
+  py::class_<LinearConstraint, LinearConstraintPtr>(m, "_LinearConstraint")
       .def_property_readonly("nbConstraints", &LinearConstraint::nbConstraints)
       .def_property_readonly("nbVariables", &LinearConstraint::nbVariables)
       .def_property_readonly("hasLinearInequalities",
@@ -72,23 +72,31 @@ PYBIND11_MODULE(toppra_int, m) {
                     (void (LinearConstraint::*)(DiscretizationType)) &
                         LinearConstraint::discretizationType)
     ;
-  py::class_<constraint::LinearJointVelocity, LinearConstraint>(
+  py::class_<constraint::LinearJointVelocity,
+    std::shared_ptr<constraint::LinearJointVelocity>,
+    LinearConstraint>(
       m, "LinearJointVelocity")
       .def(py::init<const Vector &, const Vector &>())
       ;
-  py::class_<constraint::LinearJointAcceleration, LinearConstraint>(
+  py::class_<constraint::LinearJointAcceleration,
+    std::shared_ptr<constraint::LinearJointAcceleration>,
+    LinearConstraint>(
       m, "LinearJointAcceleration")
       .def(py::init<const Vector &, const Vector &>())
       ;
 
-  py::class_<constraint::JointTorque, LinearConstraint>(
+  py::class_<constraint::JointTorque,
+    std::shared_ptr<constraint::JointTorque>,
+    LinearConstraint>(
       m, "JointTorque");
 
   {
     auto mod_jointTorque = m.def_submodule("jointTorque");
 #ifdef BUILD_WITH_PINOCCHIO
     py::module::import("pinocchio");
-    py::class_<constraint::jointTorque::Pinocchio<>, constraint::JointTorque>(
+    py::class_<constraint::jointTorque::Pinocchio<>,
+      std::shared_ptr<constraint::jointTorque::Pinocchio<> >,
+      constraint::JointTorque>(
         mod_jointTorque, "Pinocchio")
         .def(py::init(&createJointTorque))
       ;
