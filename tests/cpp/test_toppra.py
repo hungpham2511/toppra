@@ -2,6 +2,10 @@ import pytest
 import numpy as np
 import toppra.cpp as tac
 
+pytestmark = pytest.mark.skipif(
+    not tac.bindings_loaded(), reason="c++ bindings not built"
+)
+
 @pytest.fixture
 def path():
     c = np.array([
