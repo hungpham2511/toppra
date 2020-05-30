@@ -4,6 +4,8 @@ from typing import Dict, Any, List, Tuple
 import abc
 import enum
 import numpy as np
+import time
+import matplotlib.pyplot as plt
 
 from ..constants import TINY
 from toppra.interpolator import SplineInterpolator, AbstractGeometricPath
@@ -81,7 +83,7 @@ class ParameterizationAlgorithm(object):
 
     """
 
-    def __init__(self, constraint_list, path, gridpoints=None):
+    def __init__(self, constraint_list, path, gridpoints=None, parametrizer=None):
         self.constraints = constraint_list
         self.path = path  # Attr
         self._problem_data = ParameterizationData()
@@ -89,7 +91,8 @@ class ParameterizationAlgorithm(object):
         if gridpoints is None:
             gridpoints = interpolator.propose_gridpoints(path, max_err_threshold=1e-3)
             logger.info(
-                "No gridpoint specified. Automatically choose a gridpoint. See `propose_gridpoints`."
+                "No gridpoint specified. Automatically choose a gridpoint with %d points",
+                len(gridpoints)
             )
 
         if (
@@ -104,6 +107,10 @@ class ParameterizationAlgorithm(object):
             if gridpoints[i + 1] <= gridpoints[i]:
                 logger.fatal("Input gridpoints are not monotonically increasing.")
                 raise ValueError("Bad input gridpoints.")
+        if parametrizer is None or parametrizer == "ParametrizeSpline":
+            self.parametrizer = tparam.ParametrizeSpline
+        elif parametrizer == "ParametrizeConstAccel":
+            self.parametrizer = tparam.ParametrizeConstAccel
 
     @property
     def constraints(self) -> List[Constraint]:
@@ -165,11 +172,35 @@ class ParameterizationAlgorithm(object):
             unable to parameterize
 
         """
-        sdd_grid, sd_grid, v_grid, K = self.compute_parameterization(
-            sd_start, sd_end, return_data=True
-        )
+        t0 = time.time()
+        self.compute_parameterization(sd_start, sd_end)
         if self.problem_data.return_code != ParameterizationReturnCode.Ok:
             logger.warn("Fail to parametrize path. Return code: %s", self.problem_data.return_code)
             return None
 
-        return tparam.ParametrizeSpline(self.path, self.problem_data.gridpoints, self.problem_data.sd_vec)
+        outputtraj = self.parametrizer(self.path, self.problem_data.gridpoints, self.problem_data.sd_vec)
+        logger.info("Successfully parametrize path. Duration: %.3f, previously %.3f)",
+                    outputtraj.path_interval[1], self.path.path_interval[1])
+        logger.info("Finish parametrization in %.3f secs", time.time() - t0)
+        return outputtraj
+
+    def inspect(self, compute=True):
+        """Inspect the problem."""
+        K = self.problem_data.K
+        X = self.problem_data.X
+        if X is not None:
+            plt.plot(X[:, 0], c="green", label="Feasible sets")
+            plt.plot(X[:, 1], c="green")
+        if K is not None:
+            plt.plot(K[:, 0], "--", c="red", label="Controllable sets")
+            plt.plot(K[:, 1], "--", c="red")
+        if self.problem_data.sd_vec is not None:
+            plt.plot(self.problem_data.sd_vec ** 2, label="Velocity profile")
+        plt.title("Path-position path-velocity plot")
+        plt.xlabel("Path position")
+        plt.ylabel("Path velocity square")
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
+
+

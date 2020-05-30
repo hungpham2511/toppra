@@ -47,6 +47,7 @@ def test_specific_duration_parametrization(velacc_fixture, path_fixture):
         t0 += dti
     np.testing.assert_allclose(t0, t_desired, atol=1e-3)
 
+
 def test_compute_trajectory(velacc_fixture, path_fixture):
     t_desired = 50
     cvlim, calim = velacc_fixture
