@@ -1,8 +1,9 @@
 from typing import Tuple
 import numpy as np
-from toppra.interpolator import AbstractGeometricPath
+from toppra.interpolator import AbstractGeometricPath, SplineInterpolator
 from toppra.exceptions import ToppraError
 import matplotlib.pyplot as plt
+from toppra.constants import TINY
 
 
 class ParametrizeConstAccel(AbstractGeometricPath):
@@ -94,3 +95,32 @@ class ParametrizeConstAccel(AbstractGeometricPath):
         if show:
             plt.show()
 
+
+class ParametrizeSpline(SplineInterpolator):
+    def __init__(self, path, gridpoints, velocities):
+        # Gridpoint time instances
+        t_grid = np.zeros_like(gridpoints)
+        skip_ent = []
+        for i in range(1, len(t_grid)):
+            sd_average = (velocities[i - 1] + velocities[i]) / 2
+            delta_s = gridpoints[i] - gridpoints[i - 1]
+            if sd_average > TINY:
+                delta_t = delta_s / sd_average
+            else:
+                delta_t = 5  # If average speed is too slow.
+            t_grid[i] = t_grid[i - 1] + delta_t
+            if delta_t < TINY:  # if a time increment is too small, skip.
+                skip_ent.append(i)
+        t_grid = np.delete(t_grid, skip_ent)
+        gridpoints = np.delete(gridpoints, skip_ent)
+        q_grid = path(gridpoints)
+        
+
+        super(ParametrizeSpline, self).__init__(
+            t_grid,
+            q_grid,
+            (
+                (1, path(path.path_interval[0], 1) * velocities[0]),
+                (1, path(path.path_interval[1], 1) * velocities[-1]),
+            ),
+        )

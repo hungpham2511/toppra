@@ -48,23 +48,19 @@ def main():
     for i in range(path.dof):
         # plot the i-th joint trajectory
         plt.plot(ts_sample, qs_sample[:, i], c="C{:d}".format(i))
-        # plot the i-th joint waypoints
-        plt.plot(
-            instance.problem_data["t_waypts"], way_pts[:, i], "x", c="C{:d}".format(i)
-        )
     plt.xlabel("Time (s)")
     plt.ylabel("Joint position (rad/s^2)")
     plt.show()
 
 
-    K = instance.problem_data['K']
-    X = instance.problem_data['X']
+    K = instance.problem_data.K
+    X = instance.problem_data.X
 
     plt.plot(X[:, 0], c="green", label="Feasible sets")
     plt.plot(X[:, 1], c="green")
     plt.plot(K[:, 0], "--", c="red", label="Controllable sets")
     plt.plot(K[:, 1], "--", c="red")
-    plt.plot(instance.problem_data['sd'] ** 2, label="Velocity profile")
+    plt.plot(instance.problem_data.sd_vec ** 2, label="Velocity profile")
     plt.title("Path-position path-velocity plot")
     plt.xlabel("Path position")
     plt.ylabel("Path velocity square")

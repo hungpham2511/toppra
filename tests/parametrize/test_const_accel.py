@@ -1,9 +1,11 @@
 import toppra
 import pytest
 
+
 @pytest.fixture(name='path')
 def setup_geometric_path():
     yield toppra.SplineInterpolator([0, 1, 2], [(0, 0), (1, 2), (2, 0)])
+
 
 def test_initialzie(path):
     gridpoints = [0, 0.5, 1, 1.5, 2]
@@ -12,8 +14,8 @@ def test_initialzie(path):
     # ud = [6.0, 0, -6.0, -2.0]
 
     path_new = toppra.ParametrizeConstAccel(path, gridpoints, velocities)
-    path_new.plot_parametrization(show=True)
-    
+    path_new.plot_parametrization(show=False)
+
     assert path_new(0).shape == (2,)
     assert path_new([0]).shape == (1, 2)
     assert path_new.path_interval[1] > 0
