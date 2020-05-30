@@ -4,6 +4,7 @@
 #include <pinocchio/multibody/model.hpp>
 #include <pinocchio/multibody/data.hpp>
 #include <pinocchio/algorithm/rnea.hpp>
+#include <pinocchio/parsers/urdf.hpp>
 
 #include <toppra/constraint/joint_torque.hpp>
 
@@ -21,6 +22,15 @@ class Pinocchio : public JointTorque {
   public:
     typedef _Model Model;
     typedef typename _Model::Data Data;
+
+    /// Build a JointTorque constraint with no friction
+    /// \param urdfFilename path to a URDF file.
+    static Pinocchio fromURDF (const std::string& urdfFilename)
+    {
+      Model model;
+      pinocchio::urdf::buildModel(urdfFilename, model);
+      return Pinocchio(model, Vector::Zero(model.nv));
+    }
 
     std::ostream& print(std::ostream& os) const
     {
