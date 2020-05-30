@@ -17,5 +17,10 @@ if(${PYTHON_BINDINGS})
   set_target_properties(toppra_int PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${TOPPRA_PYTHON_SOURCE_DIR}
     )
+  if(BUILD_WITH_PINOCCHIO)
+    find_package(Boost REQUIRED COMPONENTS python3)
+    target_compile_options(toppra_int PRIVATE -DBUILD_WITH_PINOCCHIO)
+    target_link_libraries(toppra_int PUBLIC pinocchio::pinocchio Boost::python3)
+  endif()
 
 endif()

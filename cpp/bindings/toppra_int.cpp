@@ -9,12 +9,26 @@
 #include <string>
 #include <toppra/algorithm.hpp>
 #include <toppra/constraint.hpp>
+#include <toppra/constraint/joint_torque.hpp>
 #include <toppra/constraint/linear_joint_acceleration.hpp>
 #include <toppra/constraint/linear_joint_velocity.hpp>
 #include <toppra/geometric_path.hpp>
 #include <toppra/toppra.hpp>
 
 namespace py = pybind11;
+
+#ifdef BUILD_WITH_PINOCCHIO
+// Mind that pinocchio headers **must** be included before boost headers.
+#include <toppra/constraint/joint_torque/pinocchio.hpp>
+#include <boost/python.hpp>
+
+toppra::constraint::jointTorque::Pinocchio<> createJointTorque(py::object model,
+    const toppra::Vector& fc)
+{
+  return toppra::constraint::jointTorque::Pinocchio<>(
+      boost::python::extract<const pinocchio::Model&>(model.ptr()), fc);
+}
+#endif
 
 namespace toppra {
 namespace python {
@@ -66,6 +80,20 @@ PYBIND11_MODULE(toppra_int, m) {
       m, "LinearJointAcceleration")
       .def(py::init<const Vector &, const Vector &>())
       ;
+
+  py::class_<constraint::JointTorque, LinearConstraint>(
+      m, "JointTorque");
+
+  {
+    auto mod_jointTorque = m.def_submodule("jointTorque");
+#ifdef BUILD_WITH_PINOCCHIO
+    py::module::import("pinocchio");
+    py::class_<constraint::jointTorque::Pinocchio<>, constraint::JointTorque>(
+        mod_jointTorque, "Pinocchio")
+        .def(py::init(&createJointTorque))
+      ;
+#endif
+  }
 
   // algorithm
   py::enum_<toppra::ReturnCode>(m, "ReturnCode")
