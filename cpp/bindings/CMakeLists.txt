@@ -12,7 +12,7 @@ if(${PYTHON_BINDINGS})
   find_package(pybind11 REQUIRED)
   message(STATUS "Found ${PYTHON_INCLUDE_DIR} ${PYTHON_EXECUTABLE}")
   pybind11_add_module(toppra_int toppra_int.cpp bindings.cpp
-    constraints.cpp)
+    constraints.cpp paths.cpp)
   target_link_libraries(toppra_int PUBLIC toppra)
   target_include_directories(toppra_int PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
   set_target_properties(toppra_int PROPERTIES
