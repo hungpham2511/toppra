@@ -21,6 +21,16 @@ def type_check(c):
 
 
 @task
+def strip_types(c):
+    """Strip type hints from source code."""
+    from strip_hints import strip_file_to_string
+    import glob
+    for f in glob.glob("toppra/**.py"):
+        out = strip_file_to_string(f)
+        with open(f, 'w') as fh:
+            fh.write(out)
+
+@task
 def build_docs(c):
     """Build documentation"""
     c.run("cd docs && make html")
