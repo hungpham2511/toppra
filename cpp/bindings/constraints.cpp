@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include <string>
+#include <toppra/geometric_path.hpp>
 #include <toppra/constraint.hpp>
 #include <toppra/constraint/joint_torque.hpp>
 #include <toppra/constraint/linear_joint_acceleration.hpp>
@@ -44,6 +45,28 @@ void exposeConstraints(py::module m)
                         LinearConstraint::discretizationType,
                     (void (LinearConstraint::*)(DiscretizationType)) &
                         LinearConstraint::discretizationType)
+
+      .def ("computeParams", [](LinearConstraint& constraint, const GeometricPath& path, const Vector& gridpoints) -> py::tuple {
+            Vectors a, b, c, g;
+            Matrices F;
+            Bounds ub, xb;
+            constraint.computeParams(path, gridpoints, a, b, c, F, g, ub, xb);
+            py::list list;
+            if (constraint.hasLinearInequalities()) {
+              list.append(a);
+              list.append(b);
+              list.append(c);
+              list.append(F);
+              list.append(g);
+            } else
+              for (int i = 0; i < 5; ++i) list.append(NULL);
+            if (constraint.hasUbounds()) list.append(ub);
+            else list.append(NULL);
+            if (constraint.hasXbounds()) list.append(xb);
+            else list.append(NULL);
+            return list;
+          }
+        );
     ;
   py::class_<constraint::LinearJointVelocity,
     std::shared_ptr<constraint::LinearJointVelocity>,
