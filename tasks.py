@@ -25,11 +25,16 @@ def strip_types(c):
     """Strip type hints from source code."""
     from strip_hints import strip_file_to_string
     import glob
-    for f in glob.glob("toppra/**.py"):
+    def process_file(f):
+        print(f)
         out = strip_file_to_string(f)
         with open(f, 'w') as fh:
             fh.write(out)
-
+    for f in glob.glob("toppra/*/*.py"):
+        process_file(f)
+    for f in glob.glob("toppra/*.py"):
+        process_file(f)
+        
 @task
 def build_docs(c):
     """Build documentation"""
