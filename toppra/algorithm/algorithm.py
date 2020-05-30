@@ -22,7 +22,7 @@ class ParameterizationData(dict):
     """
 
     def __init__(self, *arg, **kwargs) -> None:
-        super().__init__(*arg, **kwargs)
+        super(ParameterizationData, self).__init__(*arg, **kwargs)
         self.return_code: ParameterizationReturnCode = ParameterizationReturnCode.ErrUnknown
         "ParameterizationReturnCode: Return code of the last parametrization attempt."
         self.gridpoints: np.ndarray = None
