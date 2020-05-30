@@ -30,21 +30,22 @@ PYBIND11_MODULE(toppra_int, m) {
       .def(py::init<>())
       .def(py::init<const toppra::Matrices&, std::vector<toppra::value_type>>())
       .def("eval_single", &PyPiecewisePolyPath::eval_single)
-      .def("eval", &PyPiecewisePolyPath::eval)
+      .def("eval", &PyPiecewisePolyPath::eval, py::arg("xs"), py::arg("order") = 0)
+      .def("evald", &PyPiecewisePolyPath::evald, py::arg("xs"))
+      .def("evaldd", &PyPiecewisePolyPath::evaldd, py::arg("xs"))
       .def("serialize", &PyPiecewisePolyPath::serialize)
       .def("deserialize", &PyPiecewisePolyPath::deserialize)
       .def("__call__", &PyPiecewisePolyPath::eval, py::arg("xs"), py::arg("order") = 0)
+      .def("__call__", &PyPiecewisePolyPath::eval_single, py::arg("x"), py::arg("order") = 0)
       .def("__str__", &PyPiecewisePolyPath::__str__)
       .def("__repr__", &PyPiecewisePolyPath::__repr__)
       .def_property_readonly("dof", &PyPiecewisePolyPath::dof)
       .def_property_readonly("path_interval", &PyPiecewisePolyPath::pathInterval)
+      .def_property_readonly("duration", &PyPiecewisePolyPath::duration)
       .def_static("constructHermite", &PyPiecewisePolyPath::constructHermite);
 
   // Abstract class must be binded for derived classes to work
-  py::class_<LinearConstraint>(m, "_LinearConstraint");
-  py::class_<constraint::LinearJointVelocity, LinearConstraint>(m,
-                                                                "LinearJointVelocity")
-      .def(py::init<const Vector &, const Vector &>())
+  py::class_<LinearConstraint>(m, "_LinearConstraint")
       .def_property_readonly("nbConstraints", &LinearConstraint::nbConstraints)
       .def_property_readonly("nbVariables", &LinearConstraint::nbVariables)
       .def_property_readonly("hasLinearInequalities",
@@ -55,21 +56,16 @@ PYBIND11_MODULE(toppra_int, m) {
                     (DiscretizationType(LinearConstraint::*)() const) &
                         LinearConstraint::discretizationType,
                     (void (LinearConstraint::*)(DiscretizationType)) &
-                        LinearConstraint::discretizationType);
+                        LinearConstraint::discretizationType)
+    ;
+  py::class_<constraint::LinearJointVelocity, LinearConstraint>(
+      m, "LinearJointVelocity")
+      .def(py::init<const Vector &, const Vector &>())
+      ;
   py::class_<constraint::LinearJointAcceleration, LinearConstraint>(
       m, "LinearJointAcceleration")
       .def(py::init<const Vector &, const Vector &>())
-      .def_property_readonly("nbConstraints", &LinearConstraint::nbConstraints)
-      .def_property_readonly("nbVariables", &LinearConstraint::nbVariables)
-      .def_property_readonly("hasLinearInequalities",
-                             &LinearConstraint::hasLinearInequalities)
-      .def_property_readonly("hasUbounds", &LinearConstraint::hasUbounds)
-      .def_property_readonly("hasXbounds", &LinearConstraint::hasXbounds)
-      .def_property("discretizationType",
-                    (DiscretizationType(LinearConstraint::*)() const) &
-                        LinearConstraint::discretizationType,
-                    (void (LinearConstraint::*)(DiscretizationType)) &
-                        LinearConstraint::discretizationType);
+      ;
 
   // algorithm
   py::enum_<toppra::ReturnCode>(m, "ReturnCode")

@@ -42,7 +42,14 @@ class PyPiecewisePolyPath {
   Vector eval_single(value_type x, int order = 0) const;
 
   nparr eval(const Vector& xs, int order = 0) const;
+  nparr evald(const Vector& xs) const { return eval(xs, 1); }
+  nparr evaldd(const Vector& xs) const { return eval(xs, 2); }
   Bound pathInterval() const;
+  double duration() const
+  {
+    Bound bd (pathInterval());
+    return bd[1] - bd[0];
+  }
 
   int dof() const;
   // Serialize into a bytes stream.
