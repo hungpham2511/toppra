@@ -47,4 +47,11 @@ def test_specific_duration_parametrization(velacc_fixture, path_fixture):
         t0 += dti
     np.testing.assert_allclose(t0, t_desired, atol=1e-3)
 
-
+def test_compute_trajectory(velacc_fixture, path_fixture):
+    t_desired = 50
+    cvlim, calim = velacc_fixture
+    instance = toppra.algorithm.TOPPRAsd([cvlim, calim], path_fixture)
+    instance.set_desired_duration(t_desired)
+    outtraj = instance.compute_trajectory()
+    assert outtraj is not None
+    np.testing.assert_allclose(outtraj.path_interval[1], 50, atol=1e-2)

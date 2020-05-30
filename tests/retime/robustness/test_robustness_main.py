@@ -79,13 +79,13 @@ def test_robustness_main(request):
         jnt_traj = instance.compute_trajectory(0, 0)
         data = instance.problem_data
         t3 = time.time()
-        
+
         if visualize:
             _t = np.linspace(0, jnt_traj.duration, 100)
             fig, axs = plt.subplots(2, 2)
-            axs[0, 0].plot(data["K"][:, 0], c="C0")
-            axs[0, 0].plot(data["K"][:, 1], c="C0")
-            axs[0, 0].plot(data["sd"] ** 2, c="C1")
+            axs[0, 0].plot(data.K[:, 0], c="C0")
+            axs[0, 0].plot(data.K[:, 1], c="C0")
+            axs[0, 0].plot(data.sd_vec ** 2, c="C1")
             axs[0, 1].plot(_t, jnt_traj(_t))
             axs[1, 0].plot(_t, jnt_traj(_t, 1))
             axs[1, 1].plot(_t, jnt_traj(_t, 2))

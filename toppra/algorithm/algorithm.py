@@ -169,6 +169,7 @@ class ParameterizationAlgorithm(object):
             sd_start, sd_end, return_data=True
         )
         if self.problem_data.return_code != ParameterizationReturnCode.Ok:
+            logger.warn("Fail to parametrize path. Return code: %s", self.problem_data.return_code)
             return None
 
         return tparam.ParametrizeSpline(self.path, self.problem_data.gridpoints, self.problem_data.sd_vec)

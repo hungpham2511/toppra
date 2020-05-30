@@ -1,5 +1,6 @@
 from .reachability_algorithm import ReachabilityAlgorithm
 from ...constants import LARGE, SMALL
+import toppra.algorithm as algo
 import logging
 import numpy as np
 
@@ -72,16 +73,19 @@ class TOPPRAsd(ReachabilityAlgorithm):
         K = self.compute_controllable_sets(sd_end, sd_end)
         if np.isnan(K).any():
             logger.warn("The set of controllable velocities at the beginning is empty!")
+            self._problem_data.return_code = algo.ParameterizationReturnCode.FailUncontrollable
             if return_data:
                 return None, None, None, K
             else:
                 return None, None, None
+        self.problem_data.K = K
 
         x_start = sd_start ** 2
         if x_start + SMALL < K[0, 0] or K[0, 1] + SMALL < x_start:
             logger.warn("The initial velocity is not controllable. {:f} not in ({:f}, {:f})".format(
                 x_start, K[0, 0], K[0, 1]
             ))
+            self._problem_data.return_code = algo.ParameterizationReturnCode.FailUncontrollable
             if return_data:
                 return None, None, None, K
             else:
@@ -175,6 +179,12 @@ class TOPPRAsd(ReachabilityAlgorithm):
 
         sd_vec = np.sqrt(xs_alpha)
         sdd_vec = np.copy(us_alpha)
+        self.problem_data.sd_vec = sd_vec
+        self.problem_data.sdd_vec = sdd_vec
+        if np.isnan(sd_vec).any():
+            self.problem_data.return_code = algo.ParameterizationReturnCode.ErrUnknown
+        else:
+            self.problem_data.return_code = algo.ParameterizationReturnCode.Ok
         if return_data:
             return sdd_vec, sd_vec, v_vec_alpha, K
         else:
