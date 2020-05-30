@@ -8,27 +8,10 @@
 #include <bindings.hpp>
 #include <string>
 #include <toppra/algorithm.hpp>
-#include <toppra/constraint.hpp>
-#include <toppra/constraint/joint_torque.hpp>
-#include <toppra/constraint/linear_joint_acceleration.hpp>
-#include <toppra/constraint/linear_joint_velocity.hpp>
 #include <toppra/geometric_path.hpp>
 #include <toppra/toppra.hpp>
 
 namespace py = pybind11;
-
-#ifdef BUILD_WITH_PINOCCHIO
-// Mind that pinocchio headers **must** be included before boost headers.
-#include <toppra/constraint/joint_torque/pinocchio.hpp>
-#include <boost/python.hpp>
-
-toppra::constraint::jointTorque::Pinocchio<> createJointTorque(py::object model,
-    const toppra::Vector& fc)
-{
-  return toppra::constraint::jointTorque::Pinocchio<>(
-      boost::python::extract<const pinocchio::Model&>(model.ptr()), fc);
-}
-#endif
 
 namespace toppra {
 namespace python {
@@ -44,12 +27,10 @@ nparr path_eval_tpl (const PiecewisePolyPath& p, const Vector& xs)
   return toNumpyArray(p.eval(xs,order));
 }
 
+void exposeConstraints(py::module m);
+
 PYBIND11_MODULE(toppra_int, m) {
   m.doc() = "toppra C++ bindings (internal)";
-  py::enum_<toppra::DiscretizationType>(m, "DiscretizationType")
-      .value("Collocation", toppra::DiscretizationType::Collocation)
-      .value("Interpolation", toppra::DiscretizationType::Interpolation)
-      .export_values();
 
   py::class_<PiecewisePolyPath, std::shared_ptr<PiecewisePolyPath> >(m, "PiecewisePolyPath")
       .def(py::init<>())
@@ -81,50 +62,7 @@ PYBIND11_MODULE(toppra_int, m) {
           })
       .def_static("constructHermite", &PiecewisePolyPath::constructHermite);
 
-  // Abstract class must be binded for derived classes to work
-  py::class_<LinearConstraint, LinearConstraintPtr>(m, "_LinearConstraint")
-      .def_property_readonly("nbConstraints", &LinearConstraint::nbConstraints)
-      .def_property_readonly("nbVariables", &LinearConstraint::nbVariables)
-      .def_property_readonly("hasLinearInequalities",
-                             &LinearConstraint::hasLinearInequalities)
-      .def_property_readonly("hasUbounds", &LinearConstraint::hasUbounds)
-      .def_property_readonly("hasXbounds", &LinearConstraint::hasXbounds)
-      .def_property("discretizationType",
-                    (DiscretizationType(LinearConstraint::*)() const) &
-                        LinearConstraint::discretizationType,
-                    (void (LinearConstraint::*)(DiscretizationType)) &
-                        LinearConstraint::discretizationType)
-    ;
-  py::class_<constraint::LinearJointVelocity,
-    std::shared_ptr<constraint::LinearJointVelocity>,
-    LinearConstraint>(
-      m, "LinearJointVelocity")
-      .def(py::init<const Vector &, const Vector &>())
-      ;
-  py::class_<constraint::LinearJointAcceleration,
-    std::shared_ptr<constraint::LinearJointAcceleration>,
-    LinearConstraint>(
-      m, "LinearJointAcceleration")
-      .def(py::init<const Vector &, const Vector &>())
-      ;
-
-  py::class_<constraint::JointTorque,
-    std::shared_ptr<constraint::JointTorque>,
-    LinearConstraint>(
-      m, "JointTorque");
-
-  {
-    auto mod_jointTorque = m.def_submodule("jointTorque");
-#ifdef BUILD_WITH_PINOCCHIO
-    py::module::import("pinocchio");
-    py::class_<constraint::jointTorque::Pinocchio<>,
-      std::shared_ptr<constraint::jointTorque::Pinocchio<> >,
-      constraint::JointTorque>(
-        mod_jointTorque, "Pinocchio")
-        .def(py::init(&createJointTorque))
-      ;
-#endif
-  }
+  exposeConstraints(m);
 
   // algorithm
   py::enum_<toppra::ReturnCode>(m, "ReturnCode")
