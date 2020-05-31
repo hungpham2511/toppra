@@ -10,8 +10,8 @@ namespace toppra {
  *  \ref Interpolation if possible.
  * */
 enum DiscretizationType {
-    Collocation,   /// smaller problem size, but lower accuracy.
-    Interpolation, /// larger problem size, but higher accuracy.
+    Collocation,   ///< smaller problem size, but lower accuracy.
+    Interpolation, ///< larger problem size, but higher accuracy.
 };
 
 /** \brief Abstract interface for the constraints.
