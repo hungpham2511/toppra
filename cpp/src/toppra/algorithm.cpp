@@ -1,5 +1,6 @@
 #include <toppra/algorithm.hpp>
 
+#include <algorithm>
 #include <cstddef>
 #include <iostream>
 #include "toppra/toppra.hpp"
@@ -55,14 +56,16 @@ ReturnCode PathParametrizationAlgorithm::computeControllableSets(
     solver_ret = m_solver->solveStagewiseOptim(i, H, g_lower, x, x_next, solution);
 
     TOPPRA_LOG_DEBUG("down: " << solution);
-
     if (!solver_ret) {
       ret = ReturnCode::ERR_FAIL_CONTROLLABLE;
       TOPPRA_LOG_DEBUG("Fail: controllable, lower problem, idx: " << i);
       break;
     }
 
-    m_data.controllable_sets(i, 0) = solution[1];
+    // For whatever reason, sometimes the solver return negative
+    // solution despite having a set of positve bounds. This readjust
+    // if the solution is negative.
+    m_data.controllable_sets(i, 0) = std::max(0.0, solution[1]);
   }
   return ret;
 }
