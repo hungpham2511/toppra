@@ -12,8 +12,7 @@ import logging
 from .interpolator import RaveTrajectoryWrapper, SplineInterpolator,\
     UnivariateSplineInterpolator, PolynomialPath
 from .simplepath import SimplePath
-from toppra.parametrizer import ParametrizeConstAccel, ParametrizeSpline
-
+from .parametrizer import ParametrizeConstAccel, ParametrizeSpline
 from . import constraint
 from . import algorithm
 from . import solverwrapper

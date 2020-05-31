@@ -1,5 +1,9 @@
-"""Algorithms implemented in :mod:`toppra` requires geometric paths
-that implements the abstract class
+"""
+toppra.interpolator
+^^^^^^^^^^^^^^^^^^^^^^^
+
+This module implements clases to represent geometric paths and
+trajectories.
 
 """
 from typing import List, Union

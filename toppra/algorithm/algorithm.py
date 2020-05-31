@@ -1,4 +1,9 @@
-"""Abstract types for parametrization algorithm.
+"""
+toppra.algorithm.algorithm
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This module defines the abstract data types that define TOPP algorithms.
+
 """
 from typing import Dict, Any, List, Tuple
 import abc
@@ -7,7 +12,7 @@ import numpy as np
 import time
 import matplotlib.pyplot as plt
 
-from ..constants import TINY
+from toppra.constants import TINY
 from toppra.interpolator import SplineInterpolator, AbstractGeometricPath
 from toppra.constraint import Constraint
 import toppra.interpolator as interpolator
@@ -124,7 +129,7 @@ class ParameterizationAlgorithm(object):
 
     @property
     def problem_data(self) -> ParameterizationData:
-        """Intermediate data obtained while solving the path parametrization.. """
+        """Data obtained when solving the path parametrization."""
         return self._problem_data
 
     @abc.abstractmethod
@@ -185,7 +190,7 @@ class ParameterizationAlgorithm(object):
         return outputtraj
 
     def inspect(self, compute=True):
-        """Inspect the problem."""
+        """Inspect the problem internal data."""
         K = self.problem_data.K
         X = self.problem_data.X
         if X is not None:
