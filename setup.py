@@ -50,7 +50,10 @@ EXTENSIONS = [ext_1, ext_2]
 
 if __name__ == "__main__":
     setup(install_requires=REQUIRES,
+          # Dependencies installed when running `pip install .`
           setup_requires=["numpy", "cython"],
+
+          # Dependencies installed when running `pip install -e .[dev]`
           extras_require={
               'dev': DEV_REQUIRES
           },
@@ -64,6 +67,13 @@ if __name__ == "__main__":
           author_email=EMAIL,
           url=URL,
           license=LICENSE,
+
+          # This is used to build the Cython modules. Will be run
+          # automatically if not found by pip. Otherwise run
+          #
+          #      python setup.py build
+          #
+          # to trigger manually.
           cmdclass={"build_ext": build_ext},
           ext_modules=cythonize(EXTENSIONS)
           )

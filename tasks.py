@@ -102,7 +102,6 @@ def lint(c, pycodestyle=False, pydocstyle=False):
     """Run linting on selected source files."""
     c.run(
         "python -m pylint --rcfile=.pylintrc \
-                tasks.py \
                 toppra/__init__.py \
                 toppra/utils.py \
                 toppra/interpolator.py \

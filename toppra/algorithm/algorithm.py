@@ -5,7 +5,7 @@ toppra.algorithm.algorithm
 This module defines the abstract data types that define TOPP algorithms.
 
 """
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any, List, Tuple, Optional
 import abc
 import enum
 import numpy as np
@@ -29,15 +29,15 @@ class ParameterizationData(object):
     def __init__(self, *arg, **kwargs) -> None:
         self.return_code: ParameterizationReturnCode = ParameterizationReturnCode.ErrUnknown
         "ParameterizationReturnCode: Return code of the last parametrization attempt."
-        self.gridpoints: np.ndarray = None
+        self.gridpoints: Optional[np.ndarray] = None
         "np.ndarray: Shape (N+1, 1). Gridpoints"
-        self.sd_vec: np.ndarray = None
+        self.sd_vec: Optional[np.ndarray] = None
         "np.ndarray: Shape (N+1, 1). Path velocities"
-        self.sdd_vec: np.ndarray = None
+        self.sdd_vec: Optional[np.ndarray] = None
         "np.ndarray: Shape (N+1, 1). Path acceleration"
-        self.K: np.ndarray = None
+        self.K: Optional[np.ndarray] = None
         "np.ndarray: Shape (N+1, 2). Controllable sets."
-        self.X: np.ndarray = None
+        self.X: Optional[np.ndarray] = None
         "np.ndarray: Shape (N+1, 2). Feasible sets."
 
     def __repr__(self):
@@ -153,7 +153,7 @@ class ParameterizationAlgorithm(object):
         """
         raise NotImplementedError
 
-    def compute_trajectory(self, sd_start: float = 0, sd_end: float = 0) -> AbstractGeometricPath:
+    def compute_trajectory(self, sd_start: float = 0, sd_end: float = 0) -> Optional[AbstractGeometricPath]:
         """Compute the resulting joint trajectory and auxilliary trajectory.
 
         This is a convenient method if only the final output is wanted.

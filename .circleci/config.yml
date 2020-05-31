@@ -43,7 +43,7 @@ commands:
           name: install dependencies
           command: |
             virtualenv --python python3.7 venv3 && . venv3/bin/activate
-            pip install invoke pathlib2 numpy cython
+            pip install numpy cython
             invoke install-solvers
             pip install -e .[dev]
 
@@ -65,7 +65,8 @@ jobs:
           name: check codestyle
           command: |
             . venv3/bin/activate
-            invoke lint || echo "allow failure"
+            invoke lint
+            invoke type-check
 
       - store_artifacts:
           path: test-reports
