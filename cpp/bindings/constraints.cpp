@@ -25,11 +25,13 @@ namespace py = pybind11;
 namespace toppra {
 namespace python {
 
+using namespace constraint;
+
 void exposeConstraints(py::module m)
 {
-  py::enum_<toppra::DiscretizationType>(m, "DiscretizationType")
-      .value("Collocation", toppra::DiscretizationType::Collocation)
-      .value("Interpolation", toppra::DiscretizationType::Interpolation)
+  py::enum_<DiscretizationType>(m, "DiscretizationType")
+      .value("Collocation", DiscretizationType::Collocation)
+      .value("Interpolation", DiscretizationType::Interpolation)
       .export_values();
 
   // Abstract class must be binded for derived classes to work
@@ -68,39 +70,39 @@ void exposeConstraints(py::module m)
           }
         );
     ;
-  py::class_<constraint::LinearJointVelocity,
-    std::shared_ptr<constraint::LinearJointVelocity>,
+  py::class_<LinearJointVelocity,
+    std::shared_ptr<LinearJointVelocity>,
     LinearConstraint>(
       m, "LinearJointVelocity")
       .def(py::init<const Vector &, const Vector &>())
       ;
-  py::class_<constraint::LinearJointAcceleration,
-    std::shared_ptr<constraint::LinearJointAcceleration>,
+  py::class_<LinearJointAcceleration,
+    std::shared_ptr<LinearJointAcceleration>,
     LinearConstraint>(
       m, "LinearJointAcceleration")
       .def(py::init<const Vector &, const Vector &>())
       ;
 
-  py::class_<constraint::JointTorque,
-    std::shared_ptr<constraint::JointTorque>,
+  py::class_<JointTorque,
+    std::shared_ptr<JointTorque>,
     LinearConstraint>(
       m, "JointTorque");
 
   {
     auto mod_jointTorque = m.def_submodule("jointTorque");
 #ifdef BUILD_WITH_PINOCCHIO
+    using jointTorque::Pinocchio;
     py::module::import("pinocchio");
-    py::class_<constraint::jointTorque::Pinocchio<>,
-      std::shared_ptr<constraint::jointTorque::Pinocchio<> >,
-      constraint::JointTorque>(
+    py::class_<Pinocchio<>, std::shared_ptr<Pinocchio<> >, JointTorque>(
         mod_jointTorque, "Pinocchio")
+        .def(py::init<const std::string&, const Vector&>(),
+            py::arg("urdfFilename"), py::arg("frictionCoeffs") = Vector())
 #ifdef PINOCCHIO_WITH_PYTHON_INTERFACE
-        .def(py::init([](py::object model, const toppra::Vector& fc) {
-              return toppra::constraint::jointTorque::Pinocchio<>(
+        .def(py::init([](py::object model, const Vector& fc) -> Pinocchio<>* {
+              return new Pinocchio<>(
                   boost::python::extract<const pinocchio::Model&>(model.ptr()), fc);
-            }))
+            }), py::keep_alive<1, 2>(), py::arg("model"), py::arg("frictionCoeffs") = Vector())
 #endif
-        .def(py::init(&constraint::jointTorque::Pinocchio<>::fromURDF))
       ;
 #endif
   }
