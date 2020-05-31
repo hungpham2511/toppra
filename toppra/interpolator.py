@@ -401,26 +401,6 @@ class SplineInterpolator(AbstractGeometricPath):
             return 1
         return self._q_waypoints[0].shape[0]
 
-    @deprecated
-    def get_dof(self):  # type: () -> int
-        """Return the path's dof."""
-        return self.dof
-
-    @deprecated
-    def eval(self, ss_sam):
-        """Return the path position."""
-        return self.cspl(ss_sam)
-
-    @deprecated
-    def evald(self, ss_sam):
-        """Return the path velocity."""
-        return self.cspld(ss_sam)
-
-    @deprecated
-    def evaldd(self, ss_sam):
-        """Return the path acceleration."""
-        return self.cspldd(ss_sam)
-
     def compute_rave_trajectory(self, robot):
         """Compute an OpenRAVE trajectory equivalent to this trajectory.
 
