@@ -8,9 +8,6 @@
 #include <bindings.hpp>
 #include <string>
 #include <toppra/algorithm.hpp>
-#include <toppra/constraint.hpp>
-#include <toppra/constraint/linear_joint_acceleration.hpp>
-#include <toppra/constraint/linear_joint_velocity.hpp>
 #include <toppra/geometric_path.hpp>
 #include <toppra/toppra.hpp>
 
@@ -19,57 +16,14 @@ namespace py = pybind11;
 namespace toppra {
 namespace python {
 
+void exposePaths(py::module m);
+void exposeConstraints(py::module m);
+
 PYBIND11_MODULE(toppra_int, m) {
   m.doc() = "toppra C++ bindings (internal)";
-  py::enum_<toppra::DiscretizationType>(m, "DiscretizationType")
-      .value("Collocation", toppra::DiscretizationType::Collocation)
-      .value("Interpolation", toppra::DiscretizationType::Interpolation)
-      .export_values();
 
-  py::class_<PyPiecewisePolyPath>(m, "PiecewisePolyPath")
-      .def(py::init<>())
-      .def(py::init<const toppra::Matrices&, std::vector<toppra::value_type>>())
-      .def("eval_single", &PyPiecewisePolyPath::eval_single)
-      .def("eval", &PyPiecewisePolyPath::eval)
-      .def("serialize", &PyPiecewisePolyPath::serialize)
-      .def("deserialize", &PyPiecewisePolyPath::deserialize)
-      .def("__call__", &PyPiecewisePolyPath::eval, py::arg("xs"), py::arg("order") = 0)
-      .def("__str__", &PyPiecewisePolyPath::__str__)
-      .def("__repr__", &PyPiecewisePolyPath::__repr__)
-      .def_property_readonly("dof", &PyPiecewisePolyPath::dof)
-      .def_property_readonly("path_interval", &PyPiecewisePolyPath::pathInterval)
-      .def_static("constructHermite", &PyPiecewisePolyPath::constructHermite);
-
-  // Abstract class must be binded for derived classes to work
-  py::class_<LinearConstraint>(m, "_LinearConstraint");
-  py::class_<constraint::LinearJointVelocity, LinearConstraint>(m,
-                                                                "LinearJointVelocity")
-      .def(py::init<const Vector &, const Vector &>())
-      .def_property_readonly("nbConstraints", &LinearConstraint::nbConstraints)
-      .def_property_readonly("nbVariables", &LinearConstraint::nbVariables)
-      .def_property_readonly("hasLinearInequalities",
-                             &LinearConstraint::hasLinearInequalities)
-      .def_property_readonly("hasUbounds", &LinearConstraint::hasUbounds)
-      .def_property_readonly("hasXbounds", &LinearConstraint::hasXbounds)
-      .def_property("discretizationType",
-                    (DiscretizationType(LinearConstraint::*)() const) &
-                        LinearConstraint::discretizationType,
-                    (void (LinearConstraint::*)(DiscretizationType)) &
-                        LinearConstraint::discretizationType);
-  py::class_<constraint::LinearJointAcceleration, LinearConstraint>(
-      m, "LinearJointAcceleration")
-      .def(py::init<const Vector &, const Vector &>())
-      .def_property_readonly("nbConstraints", &LinearConstraint::nbConstraints)
-      .def_property_readonly("nbVariables", &LinearConstraint::nbVariables)
-      .def_property_readonly("hasLinearInequalities",
-                             &LinearConstraint::hasLinearInequalities)
-      .def_property_readonly("hasUbounds", &LinearConstraint::hasUbounds)
-      .def_property_readonly("hasXbounds", &LinearConstraint::hasXbounds)
-      .def_property("discretizationType",
-                    (DiscretizationType(LinearConstraint::*)() const) &
-                        LinearConstraint::discretizationType,
-                    (void (LinearConstraint::*)(DiscretizationType)) &
-                        LinearConstraint::discretizationType);
+  exposePaths(m);
+  exposeConstraints(m);
 
   // algorithm
   py::enum_<toppra::ReturnCode>(m, "ReturnCode")
@@ -90,13 +44,12 @@ PYBIND11_MODULE(toppra_int, m) {
       .def_readwrite("feasible_sets", &toppra::ParametrizationData::feasible_sets)
       .def_readwrite("ret_code", &toppra::ParametrizationData::ret_code);
 
-  py::class_<PyTOPPRA>(m, "TOPPRA")
-      // .def(py::init<LinearConstraintPtrs, PyPiecewisePolyPath &>())
-      .def(py::init<py::list, PyPiecewisePolyPath &>())
-      .def("computePathParametrization", &PyTOPPRA::computePathParametrization,
+  py::class_<algorithm::TOPPRA>(m, "TOPPRA")
+      .def(py::init<LinearConstraintPtrs, const GeometricPathPtr &>())
+      .def("computePathParametrization", &algorithm::TOPPRA::computePathParametrization,
            py::arg("vel_start") = 0, py::arg("vel_end") = 0)
-      .def("setN", &PyTOPPRA::setN)
-      .def_property_readonly("parametrizationData", &PyTOPPRA::getParameterizationData);
+      .def("setN", &algorithm::TOPPRA::setN)
+      .def_property_readonly("parametrizationData", &algorithm::TOPPRA::getParameterizationData);
 }
 }  // namespace python
 }  // namespace toppra
