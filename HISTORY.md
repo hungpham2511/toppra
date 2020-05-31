@@ -4,7 +4,7 @@
 
 ### Added
 - [cpp] Implement serialization/deserialization for piecewise poly trajectory.
-- [cpp] Provide Python bindings for PiecewisePolyPath class.
+- [cpp] Provide Python bindings for PiecewisePolyPath, TOPPRA and constraint classes.
 - [cpp] Construct piecewise poly as a hermite spline.
 
 ### Changed

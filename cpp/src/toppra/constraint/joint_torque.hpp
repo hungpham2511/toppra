@@ -49,6 +49,7 @@ class JointTorque : public LinearConstraint {
      * \param lowerTlimit lower torque limit
      * \param upperTlimit upper torque limit
      * \param frictionCoeffs dry friction coefficients of each joint.
+     *        size 0 when not considering friction.
      * */
     JointTorque (const Vector& lowerTlimit, const Vector& upperTlimit,
         const Vector& frictionCoeffs)
@@ -59,6 +60,14 @@ class JointTorque : public LinearConstraint {
     {
       check();
     }
+
+    /// Move-assignment constructor
+    JointTorque (JointTorque&& other)
+      : LinearConstraint (other)
+      , m_lower(std::move(other.m_lower))
+      , m_upper(std::move(other.m_upper))
+      , m_frictionCoeffs(std::move(other.m_frictionCoeffs))
+    {}
 
   private:
     void check();

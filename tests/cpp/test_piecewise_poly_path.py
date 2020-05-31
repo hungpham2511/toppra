@@ -4,18 +4,22 @@ import numpy as np
 import msgpack
 
 
-pytestmark = pytest.mark.skipif(not tac.bindings_loaded(), reason="c++ bindings not built")
+pytestmark = pytest.mark.skipif(
+    not tac.bindings_loaded(), reason="c++ bindings not built"
+)
+
 
 def test_load_cpp_bindings_ok():
     assert tac.bindings_loaded()
 
+
 @pytest.fixture
 def path():
-    c = np.array([
-        [-0.500000, -0.500000, 1.500000, 0.500000, 0.000000, 3.000000, 0.000000, 0.000000],
-        [-0.500000, -0.500000, 0.000000, -1.000000, 1.500000, 2.500000, 1.000000, 3.000000],
-        [-0.500000, -0.500000, -1.500000, -2.500000, 0.000000, -1.000000, 2.000000, 4.000000]
-    ])
+    c = np.array(
+        [[-0.500000, -0.500000, 1.500000, 0.500000, 0.000000, 3.000000, 0.000000, 0.000000,],
+         [-0.500000, -0.500000, 0.000000, -1.000000, 1.500000, 2.500000, 1.000000, 3.000000,],
+         [-0.500000, -0.500000, -1.500000, -2.500000, 0.000000, -1.000000, 2.000000, 4.000000,],]
+    )
     c = c.reshape((3, 4, 2))
     p = tac.PiecewisePolyPath(c, [0, 1, 2, 3])
     yield p
@@ -27,7 +31,7 @@ def test_check_piecewise_poly_path(path):
 
 
 def test_dof(path):
-    assert (path.dof == 2)
+    assert path.dof == 2
 
 
 def test_interval(path):
@@ -42,9 +46,7 @@ def test_serialize(path):
 
 def test_hermite():
     path = tac.PiecewisePolyPath.constructHermite(
-        [[0, 0], [1, 1], [0, 0]],
-        [[0, 0], [0, 0], [0, 0]],
-        [1, 2, 3]
+        [[0, 0], [1, 1], [0, 0]], [[0, 0], [0, 0], [0, 0]], [1, 2, 3]
     )
-    assert(path.dof == 2)
+    assert path.dof == 2
     np.testing.assert_allclose(path([1, 2, 3]), [[0, 0], [1, 1], [0, 0]])

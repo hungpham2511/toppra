@@ -115,7 +115,7 @@ void collocationToInterpolate (const Vector& gridpoints,
   for (std::size_t i = 0; i <= N; ++i) {
     a_intp[i].head(m) = a_col[i];
     if (i < N)
-      a_intp[i].tail(m) = a_col[i+1] + 2 * deltas.cwiseProduct(b_col[i+1].tail(N));
+      a_intp[i].tail(m) = a_col[i+1] + 2 * deltas[i] * b_col[i+1];
     else
       a_intp[N].tail(m) = a_col[N];
   }
@@ -136,7 +136,7 @@ void collocationToInterpolate (const Vector& gridpoints,
     c_intp[i].tail(m) = c_col[std::min(i+1, N)];
   }
 
-  const auto zero (Matrix::Zero (2 * k, 2 * m));
+  const auto zero (Matrix::Zero (k, m));
   if (constantF) {
     g_intp[0] << g_col[0], g_col[0];
 
@@ -193,7 +193,7 @@ void LinearConstraint::computeParams(const GeometricPath& path, const Vector& gr
   if (m_discretizationType == Interpolation && hasLinearInequalities()) {
     Vectors a_col, b_col, c_col, g_col;
     Matrices F_col;
-    allocateLinearPart (N, m_k, m_m, constantF(), a, b, c, F, g);
+    allocateLinearPart (N, m_k, m_m, constantF(), a_col, b_col, c_col, F_col, g_col);
     computeParams_impl(path, gridpoints, a_col, b_col, c_col, F_col, g_col, ubound, xbound);
     collocationToInterpolate(gridpoints, constantF(),
         a_col, b_col, c_col, F_col, g_col,

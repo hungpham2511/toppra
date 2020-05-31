@@ -33,7 +33,7 @@ ReturnCode TOPPRA::computeForwardPass(value_type vel_start) {
     }
     /// \todo This can be optimized further by solving a 1D problem instead of 2D
     m_data.parametrization(i + 1) =
-        m_data.parametrization(i) + 2 * deltas(i) * solution(0);
+      std::max(0., m_data.parametrization(i) + 2 * deltas(i) * solution(0));
   }
 
   return ret;
