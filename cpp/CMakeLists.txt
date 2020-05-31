@@ -17,10 +17,10 @@ option(TOPPRA_DEBUG_ON "Set logging mode to on." OFF)
 option(OPT_MSGPACK "Serialization using msgpack " OFF)
 # Bindings
 option(PYTHON_BINDINGS "Build bindings for Python" ON)
-option(PYTHON_VERSION "Build bindings for Python version" 3.7)
+set(PYTHON_VERSION 3.7 CACHE STRING "Build bindings for Python version")
 # End of options
 
-set(PYBIND11_PYTHON_VERSION ${PYTHON_VERSION})
+set(PYBIND11_PYTHON_VERSION "${PYTHON_VERSION}")
 include(CMakePrintHelpers)
 
 find_package (Threads)
