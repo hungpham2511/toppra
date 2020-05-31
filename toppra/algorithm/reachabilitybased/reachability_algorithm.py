@@ -19,11 +19,12 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
     constraint_list: List[:class:`~toppra.constraint.Constraint`]
         List of constraints on the robot dynamics.
     path: Interpolator
-
     gridpoints: np.ndarray, optional
         Shape (N+1,). Gridpoints for discretization of the path position.
     solver_wrapper: str, optional
         Name of solver to use. If is None, select the most suitable wrapper.
+    parametrizer: str, optional
+        Name of the output parametrizer to use.
 
     Notes
     -----

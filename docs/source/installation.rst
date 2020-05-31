@@ -3,47 +3,53 @@
 Installation instructions
 ==========================
 
-Basic functionality
+Basic installation
 --------------------------
 
-To install the core functionality of TOPP-RA, simply do:
+To install toppra, ensure that numpy and cython are installed, then:
 
 .. code-block:: shell
 
+   pip install numpy cython
    git clone https://github.com/hungpham2511/toppra && cd toppra/
-   pip install -r requirements.txt --user
-   python setup.py install --user
+   python setup.py install
 
-You can now use TOPP-RA to parametrize trajectories/paths subject to
-the robot kinematic limits as well as tool tip Cartesian limits. Try a
-basic example here: :doc:`tutorials`.
+You can now use toppra. Try a basic example here:
 
-.. note:: Generally, Python packages should be installed in a `virtual
-	  environment
-	  <https://docs.python-guide.org/dev/virtualenvs/>`_. See the
-	  hyperlink for more details. To install TOPP-RA in a virtual
-	  environment, simply activate the environment and do the
-	  above steps omitting the :code:`--user` flag.
+.. code-block:: shell
+
+   python examples/kinematics.py
+
+Generally, Python packages should be installed in a `virtual
+environment <https://docs.python-guide.org/dev/virtualenvs/>`_. See
+the hyperlink for more details. To install TOPP-RA in a virtual
+environment, simply activate the environment and do the above steps
+omitting the :code:`--user` flag.
 
 
-(Optional) Install qpOASES
+Advanced: Other solver backends
 --------------------------------
 
-It is possible to use `qpOASES
-<https://projects.coin-or.org/qpOASES/wiki/QpoasesInstallation>`_
-instead of the default LP solver ``seidel`` as a back-end solver
-wrapper running in background. To install run following commands in
-a terminal:
+The default installation comes with an implementation of the seidel LP
+solver, specialized for parametrization problem. Other backends are
+also available.
+
+To install `qpoases` run following commands in a terminal:
 
 .. code-block:: shell
 
    git clone https://github.com/hungpham2511/qpOASES
    cd qpOASES/ && mkdir bin && make
    cd interfaces/python/
-   pip install cython
    python setup.py install --user
+
+To install other backends (cvxpy, cvxopt, ecos):
+
+.. code-block:: shell
+
+   pip install -r requirements.txt
    
-Advanced functionality
+Advanced: OpenRAVE and Pymanoid
 --------------------------------------
 
 In order to run some of the examples, it is necessary to install
@@ -55,25 +61,30 @@ for installing this library on Ubuntu 16.04 can be found `here
           yet included in the current library. See tag ``v0.1`` if you
           want to run these examples.
 
-..
-   Multi-contact and torque bounds.  To use these functionality, the
-   following libraries are needed:
+Multi-contact and torque bounds.  To use these functionality, the
+following libraries are needed:
 
-   1. [openRAVE](https://github.com/rdiankov/openrave)
-   2. [pymanoid](https://github.com/stephane-caron/pymanoid)
+1. [openRAVE](https://github.com/rdiankov/openrave)
+2. [pymanoid](https://github.com/stephane-caron/pymanoid)
 
-   `openRAVE` can be tricky to install, a good instruction for installing
-   `openRAVE` on Ubuntu 16.04 can be
-   found
-   [here](https://scaron.info/teaching/installing-openrave-on-ubuntu-16.04.html).
+`openRAVE` can be tricky to install, a good instruction for installing
+`openRAVE` on Ubuntu 16.04 can be
+found
+[here](https://scaron.info/teaching/installing-openrave-on-ubuntu-16.04.html).
 
-   To install `pymanoid` locally, do the following
-   ``` sh
-   mkdir git && cd git
-   git clone <pymanoid-git-url>
-   git checkout 54299cf
-   export PYTHONPATH=$PYTHONPATH:$HOME/git/pymanoid
-   ```
+To install `pymanoid` locally, do the following
+``` sh
+mkdir git && cd git
+git clone <pymanoid-git-url>
+git checkout 54299cf
+export PYTHONPATH=$PYTHONPATH:$HOME/git/pymanoid
+```
+
+Advanced: toppra C++ and bindings
+-----------------------------------
+
+A C++ toppra API with python bindings is being developed. For
+instruction see `toppra/cpp/README.md`.
 
 Building docs
 ------------------------------

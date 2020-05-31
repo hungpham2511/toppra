@@ -1,31 +1,45 @@
-"""Algorithms overview
+"""toppra.algorithm
 ------------------------
 
 
-High-level interfaces
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ParameterizationAlgorithm
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. autoclass:: toppra.algorithm.algorithm.ParameterizationAlgorithm
+.. autoclass:: toppra.algorithm.ParameterizationAlgorithm
+   :members:
+
+ParameterizationReturnCode
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: toppra.algorithm.ParameterizationReturnCode
+   :members:
+
+   .. autoattribute:: Ok
+   .. autoattribute:: ErrUnknown
+   .. autoattribute:: ErrShortPath
+   .. autoattribute:: FailUncontrollable
+   .. autoattribute:: ErrForwardPassFail
+
+
+ParameterizationData
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: toppra.algorithm.ParameterizationData
    :members:
 
 
-.. autoclass:: toppra.algorithm.algorithm.ParameterizationReturnCode
-   :members:
-
-.. autoclass:: toppra.algorithm.algorithm.ParameterizationData
-   :members:
-
-
-
-TOPPRA (time-optimal)
+TOPPRA
 ^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: toppra.algorithm.TOPPRA
-   :members: problem_data, compute_parameterization, compute_trajectory, compute_feasible_sets, compute_controllable_sets
+   :show-inheritance:
+   :members: compute_trajectory
 
-TOPPRAsd (specific-duration)
+TOPPRAsd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: toppra.algorithm.TOPPRAsd
-   :members: problem_data, set_desired_duration, compute_parameterization, compute_trajectory, compute_feasible_sets, compute_controllable_sets
+   :members: compute_trajectory
+   :show-inheritance:
+
 
 """
 from .algorithm import ParameterizationAlgorithm, ParameterizationData, ParameterizationReturnCode

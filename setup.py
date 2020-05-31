@@ -17,11 +17,11 @@ URL = "https://github.com/hungpham2511/toppra"
 # requirements
 if sys.version[0] == '2':
     with open("requirements.txt", "r") as f:
-        REQUIRES = ["scipy==0.18.0", "numpy", "enum34", "coloredlogs"]
+        REQUIRES = ["scipy==0.18.0", "numpy", "enum34", "coloredlogs", "matplotlib"]
         DEV_REQUIRES = [line.strip() for line in f if line.strip()]
 else:
     with open("requirements3.txt", "r") as f:
-        REQUIRES = ["scipy>0.18", "numpy", "enum34", "coloredlogs"]
+        REQUIRES = ["scipy>0.18", "numpy", "enum34", "coloredlogs", "matplotlib"]
         DEV_REQUIRES = [line.strip() for line in f if line.strip()]
 
 AUTHOR = "Hung Pham"

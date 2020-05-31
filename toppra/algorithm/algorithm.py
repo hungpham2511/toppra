@@ -153,8 +153,7 @@ class ParameterizationAlgorithm(object):
         """
         raise NotImplementedError
 
-    def compute_trajectory(self, sd_start: float = 0, sd_end: float = 0, return_data: bool =
-                           False) -> Tuple[AbstractGeometricPath, AbstractGeometricPath]:
+    def compute_trajectory(self, sd_start: float = 0, sd_end: float = 0) -> AbstractGeometricPath:
         """Compute the resulting joint trajectory and auxilliary trajectory.
 
         This is a convenient method if only the final output is wanted.
@@ -171,10 +170,8 @@ class ParameterizationAlgorithm(object):
         Returns
         -------
         :
-            A 2-tuple. The first element is the time-parameterized joint position trajectory or
-            None If unable to parameterize. The second element is the
-            time-parameterized auxiliary variable trajectory. Is None if
-            unable to parameterize
+            Time-parameterized joint position trajectory or
+            None If unable to parameterize. 
 
         """
         t0 = time.time()

@@ -1,9 +1,36 @@
 """
 toppra.interpolator
-^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------
 
 This module implements clases to represent geometric paths and
 trajectories.
+
+AbstractGeometricPath
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: toppra.interpolator.AbstractGeometricPath
+   :members: __call__, dof, path_interval, waypoints
+
+SplineInterplator
+^^^^^^^^^^^^^^^^^^^
+.. autoclass:: toppra.SplineInterpolator
+   :members: __call__, dof, path_interval, waypoints
+
+RaveTrajectoryWrapper
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: toppra.RaveTrajectoryWrapper
+   :members: __call__, dof, path_interval, waypoints
+
+simplepath.SimplePath
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: toppra.simplepath.SimplePath
+   :members: __call__, dof, path_interval
+
+[internal]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autofunction:: toppra.interpolator.propose_gridpoints
+
 
 """
 from typing import List, Union

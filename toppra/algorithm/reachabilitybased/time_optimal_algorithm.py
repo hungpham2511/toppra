@@ -34,6 +34,8 @@ class TOPPRA(ReachabilityAlgorithm):
 
         For more details see the solverwrappers documentation.
 
+    parametrizer: str, optional
+        Name of the output parametrizer to use.
 
     Notes
     -----

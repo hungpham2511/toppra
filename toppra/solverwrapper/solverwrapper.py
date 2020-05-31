@@ -38,6 +38,13 @@ def available_solvers(output_msg=True):
         print(solver_availability)
     return solver_availability
 
+def check_solver_availability(solver):
+    check = available_solvers(False)
+    for sname, avail in check:
+        if sname == solver and avail:
+            return True
+    return False
+
 
 class SolverWrapper(object):
     """The base class for all solver wrappers.
