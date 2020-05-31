@@ -21,16 +21,7 @@ template<typename _Model>
 class Pinocchio : public JointTorque {
   public:
     typedef _Model Model;
-    typedef typename _Model::Data Data;
-
-    /// Build a JointTorque constraint with no friction
-    /// \param urdfFilename path to a URDF file.
-    static Pinocchio fromURDF (const std::string& urdfFilename)
-    {
-      Model model;
-      pinocchio::urdf::buildModel(urdfFilename, model);
-      return Pinocchio(model, Vector::Zero(model.nv));
-    }
+    typedef typename Model::Data Data;
 
     std::ostream& print(std::ostream& os) const
     {
@@ -43,14 +34,47 @@ class Pinocchio : public JointTorque {
       tau = pinocchio::rnea(m_model, m_data, q, v, a);
     }
 
-    Pinocchio (const Model& model, const Vector& frictionCoeffs)
+    Pinocchio (const Model& model, const Vector& frictionCoeffs = Vector())
       : JointTorque (-model.effortLimit, model.effortLimit, frictionCoeffs)
       , m_model (model)
       , m_data (model)
     {
     }
 
+    /// Move-assignment operator
+    Pinocchio (Pinocchio&& other)
+      : JointTorque(other)
+      , m_storage (std::move(other.m_storage))
+      , m_model (other.m_model)
+      , m_data (std::move(other.m_data))
+    {}
+
+    Pinocchio (const std::string& urdfFilename, const Vector& friction = Vector())
+      : Pinocchio (makeModel(urdfFilename), friction) {}
+
+    const Model& model() const { return m_model; }
+
   private:
+    /// Build a pinocchio::Model
+    /// \param urdfFilename path to a URDF file.
+    static Model* makeModel (const std::string& urdfFilename)
+    {
+      Model* model (new Model);
+      pinocchio::urdf::buildModel(urdfFilename, *model);
+      return model;
+    }
+
+    /// Constructor that takes ownership of the model
+    Pinocchio (Model* model, const Vector& friction)
+      : JointTorque (-model->effortLimit, model->effortLimit, friction)
+      , m_storage (model)
+      , m_model (*model)
+      , m_data (m_model)
+    {
+    }
+
+    /// Store the pinocchio::Model object, in case this object owns it.
+    std::unique_ptr<Model> m_storage;
     const Model& m_model;
     Data m_data;
 }; // class Pinocchio
