@@ -14,7 +14,11 @@ def test_initialzie(path):
     # ud = [6.0, 0, -6.0, -2.0]
 
     path_new = toppra.ParametrizeConstAccel(path, gridpoints, velocities)
-    path_new.plot_parametrization(show=False)
+    try:
+        path_new.plot_parametrization(show=False)
+    except Exception:
+        # when run on CI, this fails because of some tkinter error
+        pass
 
     assert path_new(0).shape == (2,)
     assert path_new([0]).shape == (1, 2)

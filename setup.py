@@ -55,11 +55,11 @@ EXTENSIONS = [ext_1, ext_2]
 
 
 # custom install command: strip type-hints before installing toppra
-# for python2
+# for python2.7 and pthon3.5
 class install2(install):
     def run(self, *args, **kwargs):
         # stripping
-        if sys.version[0] == '2':
+        if sys.version[0] == '2' or sys.version[:3] == '3.5':
             from strip_hints import strip_file_to_string
             import glob
             import os.path

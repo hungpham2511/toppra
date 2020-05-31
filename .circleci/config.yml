@@ -53,7 +53,8 @@ commands:
           key: v1-dependencies3-{{ checksum "requirements3.txt" }}
 
 jobs:
-  check-codestyle:
+  # Test the base python installation on multiple environment.
+  python-all:
     docker:
       - image: hungpham2511/toppra-dep:0.0.3
 
@@ -65,13 +66,14 @@ jobs:
           name: check codestyle
           command: |
             virtualenv --python python3.7 venv3 && . venv3/bin/activate
-            pip install tox
+            pip install tox numpy cython  # need numpy and cython to create the sdist
             tox
 
       - store_artifacts:
           path: test-reports
           destination: test-reports
 
+  # Test the cpp api and bindings on python3.7
   cpp-python37:
     docker:
       - image: hungpham2511/toppra-dep:0.0.3
@@ -140,10 +142,8 @@ workflows:
   version: 2
   integrate:
     jobs:
-      - check-codestyle
-      - cpp-python37:
-          requires:
-            - check-codestyle
+      - python-all
+      - cpp-python37
 
   release:
     jobs:

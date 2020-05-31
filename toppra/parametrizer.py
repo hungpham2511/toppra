@@ -10,7 +10,6 @@ from typing import Tuple
 import numpy as np
 from toppra.interpolator import AbstractGeometricPath, SplineInterpolator
 from toppra.exceptions import ToppraError
-import matplotlib.pyplot as plt
 from toppra.constants import TINY
 
 
@@ -80,10 +79,12 @@ class ParametrizeConstAccel(AbstractGeometricPath):
         return np.array(ss), np.array(vs), np.array(us)
 
     def plot_parametrization(self, show: bool=False, n_sample: int=500) -> None:
+        import matplotlib.pyplot as plt
         # small decrement to make sure all indices are valid
         ts = np.linspace(self.path_interval[0], self.path_interval[1], n_sample)
         ss, vs, us = self._eval_params(ts)
         qs = self.__call__(ts, 0)
+        
         plt.subplot(2, 2, 1)
         plt.plot(ts, ss, label='s(t)')
         plt.plot(self._ts, self._ss, 'o', label='input')
