@@ -60,13 +60,13 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
-      - install_python
+      # - install_python
       - run:
           name: check codestyle
           command: |
-            . venv3/bin/activate
-            invoke lint
-            invoke type-check
+            virtualenv --python python3.7 venv3 && . venv3/bin/activate
+            pip install tox
+            tox
 
       - store_artifacts:
           path: test-reports

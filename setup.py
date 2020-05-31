@@ -1,4 +1,5 @@
 from setuptools import setup, Extension
+from distutils.command.install import install
 from Cython.Distutils import build_ext
 from Cython.Build import cythonize
 import numpy as np
@@ -37,7 +38,8 @@ PACKAGES = ["toppra",
             "toppra.constraint",
             "toppra.algorithm",
             "toppra.algorithm.reachabilitybased",
-            "toppra.solverwrapper"]
+            "toppra.solverwrapper",
+            "toppra.cpp"]
 
 ext_1 = Extension(SRC_DIR + "._CythonUtils",
                   [SRC_DIR + "/_CythonUtils.pyx"],
@@ -50,6 +52,32 @@ ext_2 = Extension(SRC_DIR + ".solverwrapper.cy_seidel_solverwrapper",
                   include_dirs=[np.get_include()])
 
 EXTENSIONS = [ext_1, ext_2]
+
+
+# custom install command: strip type-hints before installing toppra
+# for python2
+class install2(install):
+    def run(self, *args, **kwargs):
+        # stripping
+        if sys.version[0] == '2':
+            from strip_hints import strip_file_to_string
+            import glob
+            import os.path
+            def process_file(f):
+                print(os.path.abspath(f))
+                out = strip_file_to_string(f)
+                with open(f, 'w') as fh:
+                    fh.write(out)
+            for f in glob.glob("%s/*/toppra/*/*.py" % self.build_base):
+                process_file(f)
+            for f in glob.glob("%s/*/toppra/*.py" % self.build_base):
+                process_file(f)
+
+            print(os.path.abspath("."))
+            print(os.path.abspath(self.build_base))
+        # install new files
+        install.run(self, *args, **kwargs)
+
 
 if __name__ == "__main__":
     setup(install_requires=REQUIRES,
@@ -77,6 +105,6 @@ if __name__ == "__main__":
           #      python setup.py build
           #
           # to trigger manually.
-          cmdclass={"build_ext": build_ext},
+          cmdclass={"build_ext": build_ext, "install": install2},
           ext_modules=cythonize(EXTENSIONS)
           )
