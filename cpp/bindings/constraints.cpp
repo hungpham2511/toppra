@@ -93,7 +93,9 @@ void exposeConstraints(py::module m)
     auto mod_jointTorque = m.def_submodule("jointTorque");
 #ifdef BUILD_WITH_PINOCCHIO
     using jointTorque::Pinocchio;
+#ifdef PINOCCHIO_WITH_PYTHON_INTERFACE
     py::module::import("pinocchio");
+#endif
     py::class_<Pinocchio<>, std::shared_ptr<Pinocchio<> >, JointTorque>(
         mod_jointTorque, "Pinocchio")
         .def(py::init<const std::string&, const Vector&>(),
