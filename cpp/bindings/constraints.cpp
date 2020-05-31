@@ -54,6 +54,7 @@ void exposeConstraints(py::module m)
             Bounds ub, xb;
             constraint.computeParams(path, gridpoints, a, b, c, F, g, ub, xb);
             py::list list;
+            py::none none;
             if (constraint.hasLinearInequalities()) {
               list.append(a);
               list.append(b);
@@ -61,11 +62,11 @@ void exposeConstraints(py::module m)
               list.append(F);
               list.append(g);
             } else
-              for (int i = 0; i < 5; ++i) list.append(NULL);
+              for (int i = 0; i < 5; ++i) list.append(none);
             if (constraint.hasUbounds()) list.append(ub);
-            else list.append(NULL);
+            else list.append(none);
             if (constraint.hasXbounds()) list.append(xb);
-            else list.append(NULL);
+            else list.append(none);
             return list;
           }
         );
