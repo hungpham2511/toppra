@@ -1,3 +1,11 @@
+"""
+toppra.parametrizer
+^^^^^^^^^^^^^^^^^^^^^
+
+This module contains classes that produce the output trajectories,
+given the input path and the time parametrization.
+
+"""
 from typing import Tuple
 import numpy as np
 from toppra.interpolator import AbstractGeometricPath, SplineInterpolator
@@ -7,6 +15,8 @@ from toppra.constants import TINY
 
 
 class ParametrizeConstAccel(AbstractGeometricPath):
+    """Compute output traj under constant acceleration assumption.
+    """
     def __init__(self, path, gridpoints, velocities):
         self._path = path
         self._ss: np.ndarray = np.array(gridpoints)
@@ -97,6 +107,14 @@ class ParametrizeConstAccel(AbstractGeometricPath):
 
 
 class ParametrizeSpline(SplineInterpolator):
+    """Return output trajetory via sphine interpolation.
+
+    This class computes the time and position at each gridpoint, then
+    fit and return a CubicSpline (continuous first and second
+    derivatives). Note that the boundary conditions are: first
+    derivatives at the start and end of the path equal q(s)' * s'.
+
+    """
     def __init__(self, path, gridpoints, velocities):
         # Gridpoint time instances
         t_grid = np.zeros_like(gridpoints)

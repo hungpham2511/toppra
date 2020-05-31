@@ -7,6 +7,7 @@
 - [cpp] Provide Python bindings for PiecewisePolyPath class.
 - [cpp] Construct piecewise poly as a hermite spline.
 - [python] Provide an option to allow Python 2.7 usage
+- [python] Post-processing is now done via parametrizer classes.
 
 ### Changed
 - [cpp] Minor improvement to PiecewisePolyPath.

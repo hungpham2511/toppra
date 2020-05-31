@@ -11,7 +11,7 @@ from ..constants import TINY
 from toppra.interpolator import SplineInterpolator, AbstractGeometricPath
 from toppra.constraint import Constraint
 import toppra.interpolator as interpolator
-import toppra.parametrize_const_accel as tparam
+import toppra.parametrizer as tparam
 
 import logging
 
