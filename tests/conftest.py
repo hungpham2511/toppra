@@ -8,7 +8,6 @@ except ImportError as err:
     IMPORT_OPENRAVE = False
 except SyntaxError as err:
     IMPORT_OPENRAVE = False
-
 logger = logging.getLogger('toppra.bug')
 
 @pytest.fixture(autouse=True, scope="session")

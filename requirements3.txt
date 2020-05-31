@@ -1,6 +1,7 @@
 PyYAML
-enum34
 msgpack
+ipython
+ipdb
 
 # dev
 cvxopt

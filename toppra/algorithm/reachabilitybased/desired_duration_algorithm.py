@@ -1,6 +1,6 @@
 from .reachability_algorithm import ReachabilityAlgorithm
 from ...constants import LARGE, SMALL
-import toppra.algorithm as algo
+from .. import algorithm as algo
 import logging
 import numpy as np
 

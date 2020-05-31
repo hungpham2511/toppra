@@ -14,14 +14,17 @@ LONG_DESCRIPTION = "An implementation of TOPP-RA (TOPP via Reachability Analysis
 
 URL = "https://github.com/hungpham2511/toppra"
 
-# requirements
+
+# setup requirements
 if sys.version[0] == '2':
     with open("requirements.txt", "r") as f:
-        REQUIRES = ["scipy==0.18.0", "numpy", "enum34", "coloredlogs", "matplotlib"]
+        REQUIRES = ["scipy==0.18.0", "numpy", "coloredlogs", "matplotlib",
+                    # only required on python2.7
+                    "pathlib2", "enum34", "strip_hints", "typing"]
         DEV_REQUIRES = [line.strip() for line in f if line.strip()]
 else:
     with open("requirements3.txt", "r") as f:
-        REQUIRES = ["scipy>0.18", "numpy", "enum34", "coloredlogs", "matplotlib"]
+        REQUIRES = ["scipy>0.18", "numpy", "coloredlogs", "matplotlib"]
         DEV_REQUIRES = [line.strip() for line in f if line.strip()]
 
 AUTHOR = "Hung Pham"
