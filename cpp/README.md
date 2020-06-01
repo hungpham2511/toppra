@@ -17,6 +17,18 @@ make -j4
 ./tests/all_tests
 ```
 
+## Running test with pinocchio
+
+Install pinocchio bindings and exmaple from robotpkg, then setup
+environment variables:
+
+``` sh
+export ROS_PACKAGE_PATH=/opt/openrobots/share
+export PYTHONPATH=/opt/openrobots/lib/python3.6/site-packages:$PYTHONPATH
+# or any python version that you install
+```
+
+
 # Using TOPPRA in CMake-based project
 
 In your CMakeLists.txt,
@@ -43,3 +55,5 @@ cmake -GNinja -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DBUILD_WITH_PINOCCHIO=ON -DBUIL
 # change to 3.8 or other version as needed.
 ```
 - Install toppra python normally.
+
+
