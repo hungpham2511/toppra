@@ -1,6 +1,7 @@
 import pinocchio
 import numpy as np
 from toppra.cpp import Interpolation
+import pytest
 
 
 def torque_constraint(robot, scale=1.0):
@@ -68,7 +69,12 @@ def joint_acceleration_constraint_cpp(robot, limit):
     return lja
 
 
-def generate_random_trajectory(robot, npts, maxd):
+def generate_random_trajectory(robot, npts, maxd, randskip=0):
+    # Use to skip configuration. Have no idea how to set random seed
+    # in pinocchio.
+    for i in range(randskip):
+        pinocchio.randomConfiguration(robot.model)
+
     ts = [
         0.0,
     ]
@@ -116,7 +122,9 @@ def generate_random_trajectory(robot, npts, maxd):
     return PiecewisePolyPath.constructHermite(qs, vs, ts)
 
 
-def test_evaluate_consistency():
+# Run 10 times with different seeds
+@pytest.mark.parametrize('seed', np.arange(0, 50, 5))
+def test_evaluate_consistency(seed):
     from example_robot_data.robots_loader import loadUR
 
     robot = loadUR(limited=True)
