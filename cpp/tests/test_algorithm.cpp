@@ -127,6 +127,10 @@ TEST_F(ProblemInstance, OutputParmetrization) {
     EXPECT_NEAR(data.parametrization(i), expected_parametrization(i), TEST_PRECISION)
         << "idx: " << i
         << ", abs diff=" << data.parametrization(i) - expected_parametrization(i);
+
+  // First and last must be zero.
+  EXPECT_DOUBLE_EQ(data.parametrization(0), 0);
+  EXPECT_DOUBLE_EQ(data.parametrization(50), 0);
 }
 
 TEST_F(ProblemInstance, FeasibleSets) {
