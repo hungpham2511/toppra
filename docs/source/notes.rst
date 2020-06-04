@@ -25,10 +25,14 @@ that is if it takes 5ms to solve an instance with 100 gridpoints, then
 most likely `toppra` will take 10ms to solve another instance which
 has 200 gridpoints.
 
-By default, `toppra` select 100 gridpoints.
-
 As a general rule of thumb, the number of gridpoints should be at
-least twice the number of waypoints in the given path.
+least a few times the number of waypoints in the given path. This is
+not a hard rule, depending on whether the waypoints naturally form a
+smooth curve or whether they vary wildly.
+
+By default, `toppra` (python) will try to determine the best set of
+gridpoints by doing a bisection search until a threshold level is
+reached.
 
 
 2. Minimum requirement on path smoothness
