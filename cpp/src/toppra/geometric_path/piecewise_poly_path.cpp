@@ -179,7 +179,7 @@ void PiecewisePolyPath::initAsHermite(const Vectors &positions,
   assert(positions.size() == times.size());
   assert(velocities.size() == times.size());
   TOPPRA_LOG_DEBUG("Constructing new Hermite polynomial");
-  m_dof = positions[0].size();
+  m_configSize = m_dof = positions[0].size();
   m_degree = 3;  // cublic spline
   m_breakpoints = times;
   for (std::size_t i = 0; i < times.size() - 1; i++) {
