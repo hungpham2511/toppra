@@ -1,7 +1,12 @@
-import pinocchio
 import numpy as np
 from toppra.cpp import Interpolation
 import pytest
+
+
+try:
+    import pinocchio
+except ImportError:
+    pinocchio = None
 
 
 def torque_constraint(robot, scale=1.0):
@@ -123,6 +128,7 @@ def generate_random_trajectory(robot, npts, maxd, randskip=0):
 
 
 # Run 10 times with different seeds
+@pytest.mark.skipif(pinocchio is None, reason="pinocchio bindings not found")
 @pytest.mark.parametrize('seed', np.arange(0, 50, 5))
 def test_evaluate_consistency(seed):
     from example_robot_data.robots_loader import loadUR
