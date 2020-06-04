@@ -36,8 +36,9 @@ ReturnCode TOPPRA::computeForwardPass(value_type vel_start) {
     m_data.parametrization(i + 1) =
         std::min(m_data.controllable_sets(i + 1, 1),
                  std::max(m_data.controllable_sets(i + 1, 0),
-                          m_data.parametrization(i) + 2 * deltas(i) * solution(0)))
-        ;
+                          m_data.parametrization(i) + 2 * deltas(i) * solution(0)));
+    TOPPRA_LOG_DEBUG("Ok: u[" << i << "]= " << solution(0) << "x[" << i + 1
+                              << "]=" << m_data.parametrization(i + 1));
   }
 
   return ret;

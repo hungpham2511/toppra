@@ -59,6 +59,7 @@ bool qpOASESWrapper::solveStagewiseOptim(std::size_t i,
   TOPPRA_LOG_DEBUG("stage: i="<<i);
   Eigen::Index N (nbStages());
   assert (i <= N);
+  assert(x(0) <= x(1));
 
   Bound l (Bound::Constant(-m_boundary)),
         h (Bound::Constant( m_boundary));
@@ -137,6 +138,11 @@ bool qpOASESWrapper::solveStagewiseOptim(std::size_t i,
   if (res == qpOASES::SUCCESSFUL_RETURN) {
     solution.resize(nbVars());
     m_impl->qp.getPrimalSolution(solution.data());
+    TOPPRA_LOG_DEBUG("solution: " << solution);
+    solution = solution.cwiseMax(l.transpose());
+    solution = solution.cwiseMin(h.transpose());
+    assert((solution.transpose().array() <= h.array()).all());
+    assert((solution.transpose().array() >= l.array()).all());
     return true;
   }
   return false;
