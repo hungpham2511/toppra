@@ -53,21 +53,21 @@ dependency. See `cpp/README.md` for installation instruction and the
 test cases for example usage. Be noted that this implementation is
 relatively new and is not yet stable enough for production use.
 
-# Supports
+# Support
 
 ## Bug tracking
 Please report any issues, questions or feature request via 
 [Github issues tracker](https://github.com/hungpham2511/toppra/issues).
 
 ## Contributions
-Pull Requests are welcomed! Rreate a Pull Request and we will review
+Pull Requests are welcome! Create a Pull Request and we will review
 your proposal!
 
 # Credits
 
 `toppra` was originally developed by [Hung
 Pham](https://hungpham2511.github.com/) (Eureka Robotics, former CRI
-Group) and [Pham Quang-Cuong](https://www.ntu.edu.sg/home/cuong/)
+Group) and [Phạm Quang Cường](https://www.ntu.edu.sg/home/cuong/)
 (Eureka Robotics, CRI Group) with major contributions from talented
 contributors:
 - [Joseph Mirabel](https://github.com/jmirabel) (C++ API)
