@@ -55,7 +55,7 @@ ReturnCode PathParametrizationAlgorithm::computeControllableSets(
 
     solver_ret = m_solver->solveStagewiseOptim(i, H, g_lower, x, x_next, solution);
 
-    TOPPRA_LOG_DEBUG("down: " << solution);
+    TOPPRA_LOG_DEBUG("down: " << solution.transpose());
     if (!solver_ret) {
       ret = ReturnCode::ERR_FAIL_CONTROLLABLE;
       TOPPRA_LOG_DEBUG("Fail: controllable, lower problem, idx: " << i);

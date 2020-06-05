@@ -14,6 +14,7 @@
 - [python] Implement `ParametrizeConstAccel` to allow reparametrize path.
 - [python] Parametrization output accessible via ParameterizationData class.
 - [python] Remove useless `scaling` in parameter computation.
+- [cpp] Clamp velocities to be within controllable sets.
 
 
 ## 0.3.0 (May 3 2020)

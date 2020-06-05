@@ -1,4 +1,8 @@
 if(${PYTHON_BINDINGS})
+  
+  if(${BUILD_WITH_PINOCCHIO_PYTHON})
+    set(PINOCCHIO_WITH_PYTHON_INTERFACE true)
+  endif()
 
   # Look for python source directory #################################
   get_filename_component(TOPPRA_PYTHON_SOURCE_DIR

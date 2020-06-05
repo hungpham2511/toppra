@@ -43,6 +43,7 @@ void JointTorque::computeParams_impl(const GeometricPath& path,
     Vector cfg = path.eval_single(times[i], 0);
     Vector vel = path.eval_single(times[i], 1);
     Vector acc = path.eval_single(times[i], 2);
+    assert(cfg.size() == path.configSize());
     assert(vel.size() == ndofs);
     assert(acc.size() == ndofs);
 
