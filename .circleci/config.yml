@@ -54,7 +54,7 @@ commands:
 
 jobs:
   # Test the base python installation on multiple environment.
-  python-all:
+  python:
     docker:
       - image: hungpham2511/toppra-dep:0.0.3
 
@@ -63,7 +63,7 @@ jobs:
       - checkout
       # - install_python
       - run:
-          name: check codestyle
+          name: Run tests with tox
           command: |
             virtualenv --python python3.7 venv3 && . venv3/bin/activate
             pip install tox numpy cython  # need numpy and cython to create the sdist
@@ -142,7 +142,7 @@ workflows:
   version: 2
   integrate:
     jobs:
-      - python-all
+      - python
       - cpp-python37
 
   release:

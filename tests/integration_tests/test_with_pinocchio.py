@@ -1,5 +1,9 @@
 import numpy as np
-from toppra.cpp import Interpolation
+try:
+    from toppra.cpp import Interpolation
+except ImportError:
+    Interpolation = None
+import toppra.cpp
 import pytest
 
 
@@ -128,6 +132,7 @@ def generate_random_trajectory(robot, npts, maxd, randskip=0):
 
 
 # Run 10 times with different seeds
+@pytest.mark.skipif(not toppra.cpp.bindings_loaded(), reason="cpp bindings not loaded")
 @pytest.mark.skipif(pinocchio is None, reason="pinocchio bindings not found")
 @pytest.mark.parametrize('seed', np.arange(0, 50, 5))
 def test_evaluate_consistency(seed):
