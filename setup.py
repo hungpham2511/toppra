@@ -1,4 +1,5 @@
 from setuptools import setup, Extension
+from distutils.command.install import install
 from Cython.Distutils import build_ext
 from Cython.Build import cythonize
 import numpy as np
@@ -14,14 +15,17 @@ LONG_DESCRIPTION = "An implementation of TOPP-RA (TOPP via Reachability Analysis
 
 URL = "https://github.com/hungpham2511/toppra"
 
-# requirements
+
+# setup requirements
 if sys.version[0] == '2':
     with open("requirements.txt", "r") as f:
-        REQUIRES = ["scipy==0.18.0", "numpy", "enum34", "coloredlogs"]
+        REQUIRES = ["scipy==0.18.0", "numpy", "coloredlogs", "matplotlib",
+                    # only required on python2.7
+                    "pathlib2", "enum34", "strip_hints", "typing"]
         DEV_REQUIRES = [line.strip() for line in f if line.strip()]
 else:
     with open("requirements3.txt", "r") as f:
-        REQUIRES = ["scipy>0.18", "numpy", "enum34", "coloredlogs"]
+        REQUIRES = ["scipy>0.18", "numpy", "coloredlogs", "matplotlib"]
         DEV_REQUIRES = [line.strip() for line in f if line.strip()]
 
 AUTHOR = "Hung Pham"
@@ -34,7 +38,8 @@ PACKAGES = ["toppra",
             "toppra.constraint",
             "toppra.algorithm",
             "toppra.algorithm.reachabilitybased",
-            "toppra.solverwrapper"]
+            "toppra.solverwrapper",
+            "toppra.cpp"]
 
 ext_1 = Extension(SRC_DIR + "._CythonUtils",
                   [SRC_DIR + "/_CythonUtils.pyx"],
@@ -48,9 +53,38 @@ ext_2 = Extension(SRC_DIR + ".solverwrapper.cy_seidel_solverwrapper",
 
 EXTENSIONS = [ext_1, ext_2]
 
+
+# custom install command: strip type-hints before installing toppra
+# for python2.7 and pthon3.5
+class install2(install):
+    def run(self, *args, **kwargs):
+        # stripping
+        if sys.version[0] == '2' or sys.version[:3] == '3.5':
+            from strip_hints import strip_file_to_string
+            import glob
+            import os.path
+            def process_file(f):
+                print(os.path.abspath(f))
+                out = strip_file_to_string(f)
+                with open(f, 'w') as fh:
+                    fh.write(out)
+            for f in glob.glob("%s/*/toppra/*/*.py" % self.build_base):
+                process_file(f)
+            for f in glob.glob("%s/*/toppra/*.py" % self.build_base):
+                process_file(f)
+
+            print(os.path.abspath("."))
+            print(os.path.abspath(self.build_base))
+        # install new files
+        install.run(self, *args, **kwargs)
+
+
 if __name__ == "__main__":
     setup(install_requires=REQUIRES,
+          # Dependencies installed when running `pip install .`
           setup_requires=["numpy", "cython"],
+
+          # Dependencies installed when running `pip install -e .[dev]`
           extras_require={
               'dev': DEV_REQUIRES
           },
@@ -64,6 +98,13 @@ if __name__ == "__main__":
           author_email=EMAIL,
           url=URL,
           license=LICENSE,
-          cmdclass={"build_ext": build_ext},
+
+          # This is used to build the Cython modules. Will be run
+          # automatically if not found by pip. Otherwise run
+          #
+          #      python setup.py build
+          #
+          # to trigger manually.
+          cmdclass={"build_ext": build_ext, "install": install2},
           ext_modules=cythonize(EXTENSIONS)
           )

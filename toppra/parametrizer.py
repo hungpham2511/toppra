@@ -1,11 +1,21 @@
+"""
+toppra.parametrizer
+^^^^^^^^^^^^^^^^^^^^^
+
+This module contains classes that produce the output trajectories,
+given the input path and the time parametrization.
+
+"""
 from typing import Tuple
 import numpy as np
-from toppra.interpolator import AbstractGeometricPath
+from toppra.interpolator import AbstractGeometricPath, SplineInterpolator
 from toppra.exceptions import ToppraError
-import matplotlib.pyplot as plt
+from toppra.constants import TINY
 
 
 class ParametrizeConstAccel(AbstractGeometricPath):
+    """Compute output traj under constant acceleration assumption.
+    """
     def __init__(self, path, gridpoints, velocities):
         self._path = path
         self._ss: np.ndarray = np.array(gridpoints)
@@ -69,10 +79,12 @@ class ParametrizeConstAccel(AbstractGeometricPath):
         return np.array(ss), np.array(vs), np.array(us)
 
     def plot_parametrization(self, show: bool=False, n_sample: int=500) -> None:
+        import matplotlib.pyplot as plt
         # small decrement to make sure all indices are valid
         ts = np.linspace(self.path_interval[0], self.path_interval[1], n_sample)
         ss, vs, us = self._eval_params(ts)
         qs = self.__call__(ts, 0)
+        
         plt.subplot(2, 2, 1)
         plt.plot(ts, ss, label='s(t)')
         plt.plot(self._ts, self._ss, 'o', label='input')
@@ -94,3 +106,40 @@ class ParametrizeConstAccel(AbstractGeometricPath):
         if show:
             plt.show()
 
+
+class ParametrizeSpline(SplineInterpolator):
+    """Return output trajetory via sphine interpolation.
+
+    This class computes the time and position at each gridpoint, then
+    fit and return a CubicSpline (continuous first and second
+    derivatives). Note that the boundary conditions are: first
+    derivatives at the start and end of the path equal q(s)' * s'.
+
+    """
+    def __init__(self, path, gridpoints, velocities):
+        # Gridpoint time instances
+        t_grid = np.zeros_like(gridpoints)
+        skip_ent = []
+        for i in range(1, len(t_grid)):
+            sd_average = (velocities[i - 1] + velocities[i]) / 2
+            delta_s = gridpoints[i] - gridpoints[i - 1]
+            if sd_average > TINY:
+                delta_t = delta_s / sd_average
+            else:
+                delta_t = 5  # If average speed is too slow.
+            t_grid[i] = t_grid[i - 1] + delta_t
+            if delta_t < TINY:  # if a time increment is too small, skip.
+                skip_ent.append(i)
+        t_grid = np.delete(t_grid, skip_ent)
+        gridpoints = np.delete(gridpoints, skip_ent)
+        q_grid = path(gridpoints)
+        
+
+        super(ParametrizeSpline, self).__init__(
+            t_grid,
+            q_grid,
+            (
+                (1, path(path.path_interval[0], 1) * velocities[0]),
+                (1, path(path.path_interval[1], 1) * velocities[-1]),
+            ),
+        )

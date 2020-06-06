@@ -5,18 +5,25 @@ from .interpolator import AbstractGeometricPath
 
 
 class SimplePath(AbstractGeometricPath):
-    """A standard class for representing continuous multi-dimentional function.
+    """A class for representing continuous multi-dimentional function.
+
+    This geometric path is specified by positions, velocities
+    (optional) and acceleration (optional). Internally a scipy.PPoly
+    instance is used to store the path. The polynomial degree depends
+    on the input.
+
+    If velocity is not given, they will be computed automatically.
 
     Parameters
-    ---------
+    ------------
      x:
        "Time instances" of the waypoints.
      y:
        Function values at waypoints.
      yd:
-       First-derivative values.
-     ydd:
-       Second-derivative values.
+       First-derivatives. If not given (None) will be computed
+       automatically.
+
     """
 
     def __init__(
@@ -24,7 +31,6 @@ class SimplePath(AbstractGeometricPath):
         x: np.ndarray,
         y: np.ndarray,
         yd: np.ndarray = None,
-        ydd: np.ndarray = None,
     ):
         if len(y.shape) == 1:
             y = y.reshape(-1, 1)
@@ -33,7 +39,6 @@ class SimplePath(AbstractGeometricPath):
         self._x = x
         self._y = y.astype(float)
         self._yd = yd if yd is None else yd.astype(float)
-        self._ydd = ydd if ydd is None else ydd.astype(float)
         self._polys = self._construct_polynomials()
 
     def __call__(self, xi, order=0):

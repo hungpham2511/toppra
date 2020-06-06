@@ -43,7 +43,7 @@ commands:
           name: install dependencies
           command: |
             virtualenv --python python3.7 venv3 && . venv3/bin/activate
-            pip install invoke pathlib2 numpy cython
+            pip install numpy cython
             invoke install-solvers
             pip install -e .[dev]
 
@@ -53,24 +53,36 @@ commands:
           key: v1-dependencies3-{{ checksum "requirements3.txt" }}
 
 jobs:
-  check-codestyle:
+  # Test the base python installation on multiple environment.
+  python:
+    parameters:
+      python-version:
+        type: string
+        default: ""
+      tox-base:
+        type: string
+        default: "py"
     docker:
       - image: hungpham2511/toppra-dep:0.0.3
 
     working_directory: ~/repo
     steps:
       - checkout
-      - install_python
+      # - install_python
       - run:
-          name: check codestyle
+          name: Run tests for python << parameters.python-version >>
           command: |
-            . venv3/bin/activate
-            invoke lint || echo "allow failure"
+            virtualenv --python python3.7 venv3 && . venv3/bin/activate
+            pip install tox numpy cython  # need numpy and cython to create the sdist
+            tox -e << parameters.tox-base >><< parameters.python-version >>
+
+      - store_test_results:
+          path: test-results
 
       - store_artifacts:
-          path: test-reports
-          destination: test-reports
+          path: test-results  
 
+  # Test the cpp api and bindings on python3.7
   cpp-python37:
     docker:
       - image: hungpham2511/toppra-dep:0.0.3
@@ -139,10 +151,13 @@ workflows:
   version: 2
   integrate:
     jobs:
-      - check-codestyle
-      - cpp-python37:
-          requires:
-            - check-codestyle
+      - python:
+          tox-base: "lint"
+      - python:
+          matrix:
+            parameters:
+              python-version: ["27", "36", "37"]
+      - cpp-python37
 
   release:
     jobs:

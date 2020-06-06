@@ -19,11 +19,12 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
     constraint_list: List[:class:`~toppra.constraint.Constraint`]
         List of constraints on the robot dynamics.
     path: Interpolator
-
     gridpoints: np.ndarray, optional
         Shape (N+1,). Gridpoints for discretization of the path position.
     solver_wrapper: str, optional
         Name of solver to use. If is None, select the most suitable wrapper.
+    parametrizer: str, optional
+        Name of the output parametrizer to use.
 
     Notes
     -----
@@ -46,10 +47,10 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
     """
 
     def __init__(
-        self, constraint_list, path, gridpoints=None, solver_wrapper=None
+            self, constraint_list, path, gridpoints=None, solver_wrapper=None, parametrizer=None
     ):
         super(ReachabilityAlgorithm, self).__init__(
-            constraint_list, path, gridpoints=gridpoints
+            constraint_list, path, gridpoints=gridpoints, parametrizer=None
         )
 
         # Check for conic constraints
@@ -59,7 +60,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
                 has_conic = True
 
         # Select solver wrapper automatically
-        available_solvers = toppra.solverwrapper.available_solvers()
+        available_solvers = toppra.solverwrapper.available_solvers(output_msg=False)
         if solver_wrapper is None:
             logger.info(
                 "Solver wrapper not supplied. Choose solver wrapper automatically!"
@@ -230,7 +231,6 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         x_upper = self.solver_wrapper.solve_stagewise_optim(
             i, None, g_upper, np.nan, np.nan, K_next[0], K_next[1]
         )[1]
-        # import ipdb; ipdb.set_trace()
         x_lower = self.solver_wrapper.solve_stagewise_optim(
             i, None, -g_upper, np.nan, np.nan, K_next[0], K_next[1]
         )[1]

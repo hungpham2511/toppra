@@ -1,20 +1,16 @@
-from .solverwrapper import SolverWrapper
+from .solverwrapper import SolverWrapper, check_solver_availability
 from ..constraint import ConstraintType
 from ..constants import INFTY, ECOS_MAXX, ECOS_INFTY
 import logging
 import numpy as np
 import scipy.sparse
 
-
-logger = logging.getLogger(__name__)
-
 try:
     import ecos
+except ImportError:
+    pass
 
-    IMPORT_ECOS = True
-except ImportError as err:
-    logger.warn("Unable to import ecos")
-    IMPORT_ECOS = False
+logger = logging.getLogger(__name__)
 
 
 class ecosWrapper(SolverWrapper):
@@ -48,7 +44,7 @@ class ecosWrapper(SolverWrapper):
 
     def __init__(self, constraint_list, path, path_discretization):
         super(ecosWrapper, self).__init__(constraint_list, path, path_discretization)
-        if not IMPORT_ECOS:
+        if not check_solver_availability('ecos'):
             raise RuntimeError(
                 "Unable to start ecos wrapper because ECOS solver is not installed."
             )

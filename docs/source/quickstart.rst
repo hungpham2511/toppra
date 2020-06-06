@@ -164,7 +164,7 @@ Suppose the 2 dofs are constrained by velocity and acceleration limits.
 The time-optimal velocity profile can be found easily using :class:`~TOPPRA`
 
 >>> instance = toppra.algorithm.TOPPRA([pc_vel, pc_acc], path)
->>> data = instance.compute_parameterization(0, 0)
+>>> instance.compute_parameterization(0, 0)
 
 Algorithm outputs are stored in the `problem_data` attribute:
 

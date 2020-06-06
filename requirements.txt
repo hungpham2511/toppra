@@ -11,3 +11,6 @@ pandas
 tabulate
 cvxopt
 pytest
+msgpack
+ipython
+ipdb

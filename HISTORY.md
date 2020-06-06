@@ -6,6 +6,8 @@
 - [cpp] Implement serialization/deserialization for piecewise poly trajectory.
 - [cpp] Provide Python bindings for PiecewisePolyPath, TOPPRA and constraint classes.
 - [cpp] Construct piecewise poly as a hermite spline.
+- [python] [#117] Provide an option to allow Python 2.7 usage
+- [python] [#117] Post-processing is now done via parametrizer classes.
 
 ### Changed
 - [cpp] Minor improvement to PiecewisePolyPath.
@@ -13,6 +15,7 @@
 - [python] Parametrization output accessible via ParameterizationData class.
 - [python] Remove useless `scaling` in parameter computation.
 - [cpp] Clamp velocities to be within controllable sets.
+- [ci] [#117] Improve CI pipeline to test on several python versions
 
 
 ## 0.3.0 (May 3 2020)
@@ -49,4 +52,5 @@ Major release! Implement TOPPRA in C++ and several improvements to Python codeba
 
 [gh-78]: https://github.com/hungpham2511/toppra/pull/78
 [gh-79]: https://github.com/hungpham2511/toppra/pull/79
+[#117]: https://github.com/hungpham2511/toppra/pull/117
 [cm-0e022c]: https://github.com/hungpham2511/toppra/commit/0e022c53ab9db473485bd9fb6b8f34a7364efdf8

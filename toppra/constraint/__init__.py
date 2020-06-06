@@ -1,58 +1,79 @@
-"""Modules implementing different dynamics constraints.
+"""
+toppra.constraint
+----------------------
 
-Base abstractions and enum
+Modules implementing different dynamics constraints.
+
+Constraint
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: toppra.constraint.constraint.Constraint
+
+.. autoclass:: toppra.constraint.Constraint
    :members: compute_constraint_params, set_discretization_type, __repr__
 
-.. autoclass:: toppra.constraint.constraint.ConstraintType
+ConstraintType
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: toppra.constraint.ConstraintType
    :members:
 
-.. autoclass:: toppra.constraint.linear_constraint.LinearConstraint
-   :members:
-   :special-members:
-   :show-inheritance:
+DiscretizationType
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: toppra.constraint.DiscretizationType
    :members:
 
-Velocity Constraints
+LinearConstraint
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: toppra.constraint.LinearConstraint
+   :members:
+   :special-members:
+   :show-inheritance:
+
+
+JointVelocityConstraint
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: toppra.constraint.JointVelocityConstraint
    :members:
    :special-members:
    :show-inheritance:
 
+JointVelocityConstraintVarying
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: toppra.constraint.JointVelocityConstraintVarying
    :members:
    :special-members:
    :show-inheritance:
 
-Second Order Constraints
+SecondOrderConstraints
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: toppra.constraint.SecondOrderConstraint
    :members:
    :special-members:
    :show-inheritance:
 
+JointTorqueConstraint
+^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: toppra.constraint.JointTorqueConstraint
    :members:
    :special-members:
    :show-inheritance:
 
+JointAccelerationConstraint
+^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: toppra.constraint.JointAccelerationConstraint
    :members:
    :special-members:
    :show-inheritance:
 
-Robust Linear Constraint
+RobustLinearConstraint
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: toppra.constraint.RobustLinearConstraint
    :members:
    :show-inheritance:
 
-Misc
-^^^^^^^^^^
+[internal]
+^^^^^^^^^^^^^
 .. autofunction:: toppra.constraint.canlinear_colloc_to_interpolate
 
 """

@@ -8,8 +8,10 @@ except ImportError as err:
     IMPORT_OPENRAVE = False
 except SyntaxError as err:
     IMPORT_OPENRAVE = False
-
 logger = logging.getLogger('toppra.bug')
+
+import sys
+print(sys.path)
 
 @pytest.fixture(autouse=True, scope="session")
 def rave_env():

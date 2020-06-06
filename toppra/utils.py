@@ -38,7 +38,7 @@ def setup_logging(level="WARN"):
     coloredlogs.install(
         logger=logging.getLogger("toppra"),
         level=level,
-        fmt="%(levelname)5s [%(filename)s : %(lineno)d] [%(funcName)s] %(message)s",
+        fmt="%(levelname)5s [%(filename)s : %(lineno)d] %(message)s",
         datefmt="%H:%M:%S",
         milliseconds=True,
     )

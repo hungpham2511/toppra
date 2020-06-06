@@ -1,5 +1,36 @@
-"""Algorithms implemented in :mod:`toppra` requires geometric paths
-that implements the abstract class
+"""
+toppra.interpolator
+-----------------------
+
+This module implements clases to represent geometric paths and
+trajectories.
+
+AbstractGeometricPath
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: toppra.interpolator.AbstractGeometricPath
+   :members: __call__, dof, path_interval, waypoints
+
+SplineInterplator
+^^^^^^^^^^^^^^^^^^^
+.. autoclass:: toppra.SplineInterpolator
+   :members: __call__, dof, path_interval, waypoints
+
+RaveTrajectoryWrapper
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: toppra.RaveTrajectoryWrapper
+   :members: __call__, dof, path_interval, waypoints
+
+simplepath.SimplePath
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: toppra.simplepath.SimplePath
+   :members: __call__, dof, path_interval
+
+[internal]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autofunction:: toppra.interpolator.propose_gridpoints
+
 
 """
 from typing import List, Union
@@ -79,7 +110,7 @@ def propose_gridpoints(
     return gridpoints_ept
 
 
-class AbstractGeometricPath:
+class AbstractGeometricPath(object):
     """Abstract base class that represents geometric paths.
 
     Derive geometric paths classes should implement the below abstract
@@ -400,26 +431,6 @@ class SplineInterpolator(AbstractGeometricPath):
         if np.isscalar(self._q_waypoints[0]):
             return 1
         return self._q_waypoints[0].shape[0]
-
-    @deprecated
-    def get_dof(self):  # type: () -> int
-        """Return the path's dof."""
-        return self.dof
-
-    @deprecated
-    def eval(self, ss_sam):
-        """Return the path position."""
-        return self.cspl(ss_sam)
-
-    @deprecated
-    def evald(self, ss_sam):
-        """Return the path velocity."""
-        return self.cspld(ss_sam)
-
-    @deprecated
-    def evaldd(self, ss_sam):
-        """Return the path acceleration."""
-        return self.cspldd(ss_sam)
 
     def compute_rave_trajectory(self, robot):
         """Compute an OpenRAVE trajectory equivalent to this trajectory.
