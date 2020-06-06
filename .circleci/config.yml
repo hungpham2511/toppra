@@ -58,6 +58,10 @@ jobs:
     parameters:
       python-version:
         type: string
+        default: ""
+      tox-base:
+        type: string
+        default: "py"
     docker:
       - image: hungpham2511/toppra-dep:0.0.3
 
@@ -70,11 +74,13 @@ jobs:
           command: |
             virtualenv --python python3.7 venv3 && . venv3/bin/activate
             pip install tox numpy cython  # need numpy and cython to create the sdist
-            tox -e py<< parameters.python-version >>
+            tox -e << parameters.tox-base >><< parameters.python-version >>
+
+      - store_test_results:
+          path: test-results
 
       - store_artifacts:
-          path: test-reports
-          destination: test-reports
+          path: test-results  
 
   # Test the cpp api and bindings on python3.7
   cpp-python37:
@@ -145,6 +151,8 @@ workflows:
   version: 2
   integrate:
     jobs:
+      - python:
+          tox-base: "lint"
       - python:
           matrix:
             parameters:
