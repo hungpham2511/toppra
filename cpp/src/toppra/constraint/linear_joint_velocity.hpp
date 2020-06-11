@@ -6,7 +6,24 @@
 namespace toppra {
 namespace constraint {
 
-/// A Joint Velocity Constraint class.
+/**
+\brief A Joint Velocity Constraint class.
+
+This class implements the case of constant velocity limits but can be derived to
+achieve varying velocity limits. E.g.
+\code
+class LinearJointVelocityVarying : public LinearJointVelocity {
+public:
+  LinearJointVelocityVarying(...) : LinearJointVelocity (nDof) {}
+protected:
+  void computeVelocityLimits(value_type time)
+  {
+    m_lower = ...;
+    m_upper = ...;
+  }
+};
+\endcode
+*/
 class LinearJointVelocity : public LinearConstraint {
   public:
     LinearJointVelocity (const Vector& lowerVlimit, const Vector& upperVlimit)
@@ -29,6 +46,29 @@ class LinearJointVelocity : public LinearConstraint {
 
     virtual std::ostream& print(std::ostream& os) const;
 
+  protected:
+    LinearJointVelocity (const int nDof)
+      : LinearConstraint (0, 0, true, false, true)
+      , m_lower (nDof)
+      , m_upper (nDof)
+      , m_maxsd (1e8)
+    {
+      check();
+    }
+
+    /**
+      \brief Computes the velocity limit at time \c time.
+
+      The result must be stored into attributes
+      LinearJointVelocity::m_lower and LinearJointVelocity::m_upper.
+      */
+    virtual void computeVelocityLimits(value_type time) { (void)time; }
+
+    /// The lower velocity limits
+    Vector m_lower;
+    /// The upper velocity limits
+    Vector m_upper;
+
   private:
     void check();
 
@@ -38,7 +78,6 @@ class LinearJointVelocity : public LinearConstraint {
         Matrices& F, Vectors& g,
         Bounds& ubound, Bounds& xbound);
 
-    Vector m_lower, m_upper;
     value_type m_maxsd;
 }; // class LinearJointVelocity
 } // namespace constraint

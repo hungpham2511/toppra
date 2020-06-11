@@ -6,6 +6,7 @@
 - [cpp] Implement serialization/deserialization for piecewise poly trajectory.
 - [cpp] Provide Python bindings for PiecewisePolyPath, TOPPRA and constraint classes.
 - [cpp] Construct piecewise poly as a hermite spline.
+- [cpp] Add varying joint velocity limits.
 - [python] [#117] Provide an option to allow Python 2.7 usage
 - [python] [#117] Post-processing is now done via parametrizer classes.
 
