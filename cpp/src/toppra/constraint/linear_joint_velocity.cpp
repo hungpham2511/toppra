@@ -32,6 +32,8 @@ void LinearJointVelocity::computeParams_impl(const GeometricPath& path,
 
   Vector v, v_inv(ndofs), lb_v(ndofs);
   for (std::size_t i = 0; i < N_1; ++i) {
+    computeVelocityLimits(gridpoints[i]);
+
     v = path.eval_single (gridpoints[i], 1);
     assert(ndofs == v.size());
 
