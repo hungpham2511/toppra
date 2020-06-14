@@ -1,30 +1,24 @@
 .. _installation:
 
-Installation instructions
-==========================
+Installation instructions for Python API
+=========================================
 
 Basic installation
 --------------------------
 
-To install toppra, ensure that numpy and cython are installed, then:
+To install `toppra`, ensure that `numpy` and `cython` are installed, then run
 
 .. code-block:: shell
 
    pip install numpy cython
    git clone https://github.com/hungpham2511/toppra && cd toppra/
-   python setup.py install
+   pip install .
 
-You can now use toppra. Try a basic example here:
+You can now try a basic example:
 
 .. code-block:: shell
 
    python examples/kinematics.py
-
-Generally, Python packages should be installed in a `virtual
-environment <https://docs.python-guide.org/dev/virtualenvs/>`_. See
-the hyperlink for more details. To install TOPP-RA in a virtual
-environment, simply activate the environment and do the above steps
-omitting the :code:`--user` flag.
 
 
 Advanced: Other solver backends
@@ -34,21 +28,21 @@ The default installation comes with an implementation of the seidel LP
 solver, specialized for parametrization problem. Other backends are
 also available.
 
-To install `qpoases` run following commands in a terminal:
+To install `qpoases` run following command after installing `pyinvoke`
 
 .. code-block:: shell
 
-   git clone https://github.com/hungpham2511/qpOASES
-   cd qpOASES/ && mkdir bin && make
-   cd interfaces/python/
-   python setup.py install --user
+   invoke install-solvers
 
-To install other backends (cvxpy, cvxopt, ecos):
+
+To install other backends (cvxpy, cvxopt, ecos), install the `dev`
+extra requirements:
 
 .. code-block:: shell
 
-   pip install -r requirements.txt
-   
+   pip install .[dev]
+
+
 Advanced: OpenRAVE and Pymanoid
 --------------------------------------
 
@@ -86,32 +80,41 @@ Advanced: toppra C++ and bindings
 A C++ toppra API with python bindings is being developed. For
 instruction see `toppra/cpp/README.md`.
 
+Installation instructions for C++ API
+=========================================
+
+See `cpp/README.md` for more details.
+
 Building docs
-------------------------------
+==============================
 
 The latest documentation is available at
-`<https://hungpham2511.github.io/toppra/>`_.
+`<https://toppra.readthedocs.io/en/latest/>`_.
 
-To build and view the documentation, install `sphinx
+To build and view the documentation locally, install `sphinx
 <http://www.sphinx-doc.org/en/stable/index.html>`_ then run the
-following commands in the terminal
+following command in the terminal
 
 .. code-block:: shell
 
-   cd <toppra-dir>/docs/
-   make clean && make html
-   <browser> build/index.html
+   invoke build-docs
+
+The C++ API has its own doxygen-based API.
 
 Testing
--------------------------------
+===============================
 
-TOPP-RA test suites use :code:`pytest` for running unittests and
-:code:`cvxpy` to verify computational results. Both libraries can be
-installed from :code:`pip`.  To run all the tests, do:
+The Python API test suites use :code:`pytest` for running unittests,
+you will need to install the `dev` extra (See above) and run `pytest`
+to run the full suite.
 
 .. code-block:: sh
 
    cd <toppra-dir>/
    pytest -v
 
+The C++ API has a set of unit tests as well, from the build folder run:
 
+.. code-block:: sh
+
+   ./tests/all_tests
