@@ -1,65 +1,67 @@
 version: 2.1
 
+# Use this orb install python dependences.
+orbs:
+  python: circleci/python@0.3.0
+
 commands:
+  # For installing dep and building toppra C++ API
   build_cpp:
     description: "Install dependencies (C++) and build toppra C++ API"
+    parameters:
+      python-version:
+        type: string
+        default: "3.6"
+      python-version-short:
+        type: string
+        default: "36"
     steps:
       - run:
-          name: dependencies
+          name: Install dependencies
           command: |
-            sudo apt install -y curl
             echo "deb [arch=amd64] http://robotpkg.openrobots.org/packages/debian/pub $(lsb_release -sc) robotpkg" \
               | sudo tee /etc/apt/sources.list.d/robotpkg.list
             curl http://robotpkg.openrobots.org/packages/debian/robotpkg.key \
               | sudo apt-key add -
             sudo apt update
-            sudo apt install -y clang-tidy libeigen3-dev robotpkg-pinocchio robotpkg-qpoases libglpk-dev
-            git clone https://github.com/pybind/pybind11
+            sudo apt install -y cmake clang-tidy libeigen3-dev robotpkg-pinocchio robotpkg-qpoases libglpk-dev \
+              robotpkg-py<< parameters.python-version-short >>-pinocchio \
+              robotpkg-py<< parameters.python-version-short >>-example-robot-data
+
+            cd ~/ && git clone https://github.com/pybind/pybind11
             cd pybind11 && git checkout v2.5.0
             mkdir build && cd build && cmake -DPYBIND11_TEST=false .. && sudo make install
 
-            git clone https://github.com/msgpack/msgpack-c.git
+            cd ~/ && git clone https://github.com/msgpack/msgpack-c.git
             cd msgpack-c && git checkout cpp-3.2.1 && cmake -DMSGPACK_CXX11=ON -DMSGPACK_BUILD_EXAMPLES=OFF -DMSGPACK_CXX_ONLY=ON .
             sudo make install
             
           working_directory: ~/
       - run:
-          name: build
+          name: Build toppra C++ API
           command: |
             export LD_LIBRARY_PATH=/opt/openrobots/lib:${LD_LIBRARY_PATH}
             export CMAKE_PREFIX_PATH=/opt/openrobots
-            mkdir build && cd build && cmake -DBUILD_WITH_PINOCCHIO=ON -DBUILD_WITH_qpOASES=ON -DBUILD_WITH_GLPK=ON -DPYTHON_BINDINGS=ON -DPYBIND11_PYTHON_VERSION=3.7 -DOPT_MSGPACK=ON ..
+            mkdir build && cd build && cmake \
+              -DBUILD_WITH_PINOCCHIO=ON \
+              -DBUILD_WITH_qpOASES=ON \
+              -DBUILD_WITH_GLPK=ON \
+              -DPYTHON_BINDINGS=ON \
+              -DPYTHON_VERSION=<< parameters.python-version >> \
+              -DBUILD_WITH_PINOCCHIO_PYTHON=true \
+              -DOPT_MSGPACK=ON ..
             make -j4
           working_directory: ~/repo/cpp
 
-  install_python:
-    description: "Install Python dependencies and toppra Python API"
-    steps:
-      - restore_cache:
-          keys:
-            - v1-dependencies3-{{ checksum "requirements3.txt" }}
-
-      - run:
-          name: install dependencies
-          command: |
-            virtualenv --python python3.7 venv3 && . venv3/bin/activate
-            pip install numpy cython
-            invoke install-solvers
-            pip install -e .[dev]
-
-      - save_cache:
-          paths:
-            - ./venv3
-          key: v1-dependencies3-{{ checksum "requirements3.txt" }}
-
 jobs:
-  # Test the base python installation on multiple environment.
+  # Test the base python installation on multiple environments. In
+  # addition, run lint task.
   python:
     parameters:
       python-version:
         type: string
         default: ""
-      tox-base:
+      tox-base-cmd:
         type: string
         default: "py"
     docker:
@@ -68,13 +70,12 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
-      # - install_python
       - run:
           name: Run tests for python << parameters.python-version >>
           command: |
             virtualenv --python python3.7 venv3 && . venv3/bin/activate
             pip install tox numpy cython  # need numpy and cython to create the sdist
-            tox -e << parameters.tox-base >><< parameters.python-version >>
+            tox -e << parameters.tox-base-cmd >><< parameters.python-version >>
 
       - store_test_results:
           path: test-results
@@ -82,36 +83,47 @@ jobs:
       - store_artifacts:
           path: test-results  
 
-  # Test the cpp api and bindings on python3.7
-  cpp-python37:
+  # Test the cpp api and bindings on python3.6 The base image of this
+  # job is Ubuntu 18.04, which is required to install pinocchio and
+  # other deps.
+  cpp-python36:
     docker:
-      - image: hungpham2511/toppra-dep:0.0.3
-
+      - image: cimg/python:3.6
     working_directory: ~/repo
-
     steps:
       - checkout
       - build_cpp
       - run:
-          name: test (C++)
+          name: Unit tests (C++)
           command: |
             ./tests/all_tests
           working_directory: ~/repo/cpp/build
       - run:
-          name: codestyle (C++)
+          name: Check codestyle (C++)
           command: |
             clang-tidy  src/**/*.cpp \
             -checks=clang-analyzer-*,clang-analyzer-cplusplus*,cppcoreguidelines-*,performance-*,modernize-*,readability-,-cppcoreguidelines-pro-bounds-array-to-pointer-decay\
             -warnings-as-errors=clang-analyzer-*,clang-analyzer-cplusplus*,cppcoreguidelines-*,modernize-*
           working_directory: ~/repo/cpp
-      - install_python
+      - python/load-cache:
+          dependency-file: requirements3.txt
+      - python/install-deps:
+          dependency-file: requirements3.txt
+      - python/save-cache:
+          dependency-file: requirements3.txt
       - run:
-          name: test (Python)
+          name: Install Python API with bindings
           command: |
-            . venv3/bin/activate
-            mkdir test-reports
-            python --version
-            python -m pytest -q tests --durations=3 --junitxml=test-reports/junit.xml
+            pip install numpy cython invoke  # absolute minimum to run setup.py
+            invoke install-solvers
+            pip install -e .[dev]
+
+      - run:
+          name: Test Python API with bindings
+          command: |
+            export ROS_PACKAGE_PATH=/opt/openrobots/share
+            export PYTHONPATH=/opt/openrobots/lib/python3.6/site-packages:$PYTHONPATH
+            pytest tests --durations=3 --junitxml=test-reports/junit.xml
 
       - store_test_results:
           path: test-reports
@@ -152,12 +164,13 @@ workflows:
   integrate:
     jobs:
       - python:
-          tox-base: "lint"
+          tox-base-cmd: "lint"
       - python:
           matrix:
             parameters:
               python-version: ["27", "36", "37"]
-      - cpp-python37
+
+      - cpp-python36
 
   release:
     jobs:
@@ -165,7 +178,6 @@ workflows:
           filters:
             branches:
               only:
-              - fix-ci
               - /release-.*/
 
   publish:

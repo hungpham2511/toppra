@@ -2,6 +2,7 @@ PyYAML
 msgpack
 ipython
 ipdb
+coloredlogs
 
 # dev
 cvxopt
