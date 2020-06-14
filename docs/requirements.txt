@@ -3,3 +3,6 @@ ipykernel
 nbsphinx
 recommonmark
 sphinx-autodoc-typehints
+cython
+numpy
+matplotlib
