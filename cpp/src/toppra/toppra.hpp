@@ -17,6 +17,8 @@
 #define TOPPRA_LOG_DEBUG(X) ((void)0)
 #endif
 
+#define TOPPRA_NEARLY_ZERO 1e-8
+
 
 /// The TOPP-RA namespace
 namespace toppra {

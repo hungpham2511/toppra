@@ -12,6 +12,9 @@ namespace toppra {
  * geometric path object.
  */
 class Parametrizer: public GeometricPath {
+public:
+  virtual ~Parametrizer() {}
+
 };
 };
 

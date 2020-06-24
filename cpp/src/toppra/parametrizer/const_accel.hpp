@@ -13,6 +13,7 @@ namespace parametrizer {
  */
 class ConstAccel: public Parametrizer {
  public:
+  ConstAccel() = default;
   ConstAccel (GeometricPathPtr path, const Vector & gridpoints, const Vector & vsquared);
 
   /**
@@ -29,10 +30,19 @@ class ConstAccel: public Parametrizer {
    * Return the starting and ending path positions.
    */
   Bound pathInterval() const override;
-  void serialize(std::ostream &O) const override;
-  void deserialize(std::istream &I) override;
-
-
+ private:
+  // Compute times and acclerations from given data (path, velocities)
+  void process_parametrization();
+  
+  GeometricPathPtr m_path;
+  // User given gridpoints
+  Vector m_gridpoints;
+  // Vector of path velocities (not squared)
+  Vector m_vs;
+  // Vector of time instances (corresponded to gridpoints)
+  Vector m_ts;
+  // Vector of accelerations (corresponded to gridpoints). Should be shorter than others by 1.
+  Vector m_us;
 };
 }
 
