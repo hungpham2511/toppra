@@ -7,15 +7,14 @@ namespace toppra {
 
 /**
  * \brief Abstract interface for output trajectory parametrizers.
- * 
+ *
  * A parametrizer provides exactly the same functionality as a
  * geometric path object.
  */
-class Parametrizer: public GeometricPath {
-public:
+class Parametrizer : public GeometricPath {
+ public:
   virtual ~Parametrizer() {}
-
 };
-};
+};  // namespace toppra
 
 #endif

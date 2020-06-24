@@ -19,7 +19,6 @@
 
 #define TOPPRA_NEARLY_ZERO 1e-8
 
-
 /// The TOPP-RA namespace
 namespace toppra {
   /// The scalar type

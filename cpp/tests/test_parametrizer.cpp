@@ -1,12 +1,11 @@
 #include <toppra/geometric_path.hpp>
 #include <toppra/geometric_path/piecewise_poly_path.hpp>
-#include <toppra/toppra.hpp>
 #include <toppra/parametrizer/const_accel.hpp>
+#include <toppra/toppra.hpp>
 
 #include "gtest/gtest.h"
 
 #define TEST_PRECISION 1e-6
-
 
 class ParamtrizeConstAccel : public testing::Test {
  public:
@@ -19,11 +18,11 @@ class ParamtrizeConstAccel : public testing::Test {
     coeff2 << -0.500000, -0.500000, -1.500000, -2.500000, 0.000000, -1.000000, 2.000000,
         4.000000;
     toppra::Matrices coefficents = {coeff0, coeff1, coeff2};
-    path = std::make_shared<toppra::PiecewisePolyPath>(coefficents, std::vector<double>{0, 1, 2, 3});
+    path = std::make_shared<toppra::PiecewisePolyPath>(coefficents,
+                                                       std::vector<double>{0, 1, 2, 3});
   };
   std::shared_ptr<toppra::PiecewisePolyPath> path;
 };
-
 
 TEST_F(ParamtrizeConstAccel, Basic) {
   toppra::Vector gridpoints = toppra::Vector::LinSpaced(10, 0, 3);
