@@ -7,6 +7,7 @@ set(TEST_SOURCES
   test_poly_geometric_path.cpp
   test_hermite_spline.cpp
   test_algorithm.cpp
+  test_parametrizer.cpp
   )
 
 add_executable(all_tests ${TEST_SOURCES})
