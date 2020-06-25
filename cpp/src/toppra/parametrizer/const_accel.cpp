@@ -1,6 +1,7 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdlib>
+#include <toppra/parametrizer.hpp>
 #include <toppra/parametrizer/const_accel.hpp>
 #include <toppra/toppra.hpp>
 
@@ -9,24 +10,11 @@ namespace parametrizer {
 
 ConstAccel::ConstAccel(GeometricPathPtr path, const Vector& gridpoints,
                        const Vector& vsquared)
-    : m_path(path), m_gridpoints(gridpoints) {
-  assert(gridpoints.size() == vsquared.size());
-  m_vs.resize(vsquared.size());
-  for (std::size_t i = 0; i < gridpoints.size(); i++) {
-    assert(vsquared[i] >= 0);
-    m_vs[i] = std::sqrt(vsquared[i]);
-    if (i == 0) continue;
-    assert(gridpoints[i + 1] > gridpoints[i]);
-  }
-
-  assert(std::abs(path->pathInterval()[0] - gridpoints[0]) < TOPPRA_NEARLY_ZERO);
-  assert(std::abs(path->pathInterval()[1] - gridpoints[gridpoints.size() - 1]) <
-         TOPPRA_NEARLY_ZERO);
-
-  process_parametrization();
+    : Parametrizer(path, gridpoints, vsquared) {
+  process_internals();
 }
 
-void ConstAccel::process_parametrization() {
+void ConstAccel::process_internals() {
   m_ts.resize(m_gridpoints.size());
   m_us.resize(m_gridpoints.size() - 1);
   m_ts[0] = 0;
@@ -38,17 +26,13 @@ void ConstAccel::process_parametrization() {
   }
 }
 
-// wrong impl
-Vector ConstAccel::eval_single(value_type val, int order) const {
-  return m_path->eval_single(val, order);
-}
-
-// wrong impl
-Vectors ConstAccel::eval(const Vector& positions, int order) const {
-  return m_path->eval(positions, order);
+Vectors ConstAccel::eval_impl(const Vector& times, int order) const {
+  return m_path->eval(times, order);
 };
 
-Bound ConstAccel::pathInterval() const {
+bool ConstAccel::validate_impl() const { return true; }
+
+Bound ConstAccel::pathInterval_impl() const {
   Bound b;
   b << m_gridpoints[0], m_gridpoints[m_gridpoints.size() - 1];
   return b;

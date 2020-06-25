@@ -11,6 +11,7 @@ set(SOURCE_FILES
   toppra/geometric_path.cpp
   toppra/geometric_path/piecewise_poly_path.cpp
   toppra/parametrizer/const_accel.cpp
+  toppra/parametrizer.cpp
 
   toppra/algorithm.cpp
   toppra/algorithm/toppra.cpp
