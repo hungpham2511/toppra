@@ -8,8 +8,9 @@ namespace toppra {
 
 namespace parametrizer {
 
-/**
- * \brief A path parametrizer with constant acceleration assumption.
+/** \brief A path parametrizer with constant acceleration assumption.
+ *
+ * We assume that in each segment, the path acceleration is constant.
  */
 class ConstAccel : public Parametrizer {
  public:
@@ -19,7 +20,7 @@ class ConstAccel : public Parametrizer {
   Vectors eval_impl(const Vector &, int order = 0) const override;
   bool validate_impl() const override;
   Bound pathInterval_impl() const override;
-
+  bool evalParams(const Vector &ts, Vector &ss, Vector &vs, Vector &us) const;
   // Compute times and acclerations from given data (path, velocities)
   void process_internals();
   // Vector of time instances (corresponded to gridpoints)

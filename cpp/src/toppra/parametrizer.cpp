@@ -1,10 +1,10 @@
-#include "toppra/toppra.hpp"
 #include <toppra/parametrizer.hpp>
+#include "toppra/toppra.hpp"
 
 namespace toppra {
 
 Parametrizer::Parametrizer(GeometricPathPtr path, const Vector& gridpoints,
-                       const Vector& vsquared)
+                           const Vector& vsquared)
     : m_path(path), m_gridpoints(gridpoints) {
   assert(gridpoints.size() == vsquared.size());
   m_vs.resize(vsquared.size());
@@ -27,14 +27,9 @@ Vector Parametrizer::eval_single(value_type val, int order) const {
   return results[0];
 }
 
-Vectors Parametrizer::eval(const Vector & positions, int order) const {
+Vectors Parametrizer::eval(const Vector& positions, int order) const {
   return eval_impl(positions, order);
 }
 
-Bound Parametrizer::pathInterval() const {
-  return pathInterval_impl();
-}
-
-
-
-}
+Bound Parametrizer::pathInterval() const { return pathInterval_impl(); }
+}  // namespace toppra

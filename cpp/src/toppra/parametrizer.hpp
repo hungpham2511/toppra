@@ -12,9 +12,18 @@ namespace toppra {
  * A parametrizer provides exactly the same functionality as a
  * geometric path object. In addition, a parametrizer can validate the
  * input data. If not validated, evaluation results are not defined.
+ *
+ * Requirements: https://github.com/hungpham2511/toppra/issues/102
  */
 class Parametrizer : public GeometricPath {
  public:
+  /** Construct the parametrizer.
+   *
+   * \param path Input geometric path.
+   * \param gridpoints Gridpoints of the parametrization, should be compatible with the
+   * path domain. \param vsquared Path velocity squared, should have same shape as
+   * gridpoints.
+   */
   Parametrizer(GeometricPathPtr path, const Vector &gridpoints, const Vector &vsquared);
 
   /** \brief Evaluate the path at given position.
@@ -30,6 +39,9 @@ class Parametrizer : public GeometricPath {
   Bound pathInterval() const override;
 
   /** \brief Validate input data.
+   *
+   * Return false if something is wrong with the output
+   * trajectory. Only use the trajectory if validation successes.
    */
   bool validate() const;
 
