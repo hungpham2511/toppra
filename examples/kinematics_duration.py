@@ -40,7 +40,7 @@ def main():
     jnt_traj = instance.compute_trajectory(0, 0)
     print("Parameterization took {:} secs".format(time.time() - t0))
     ts_sample = np.linspace(0, jnt_traj.get_duration(), 100)
-    qs_sample = jnt_traj.evaldd(ts_sample)
+    qs_sample = jnt_traj(ts_sample, 2)
 
     plt.plot(ts_sample, qs_sample)
     plt.xlabel("Time (s)")
