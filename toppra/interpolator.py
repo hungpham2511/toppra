@@ -165,6 +165,15 @@ class AbstractGeometricPath(object):
         """Tuple[ndarray, ndarray] or None: The path's waypoints if applicable. None otherwise."""
         return None
 
+    def eval(self, path_positions: Union[float, np.ndarray]):
+        return self.__call__(path_positions, 0)
+
+    def evald(self, path_positions: Union[float, np.ndarray]):
+        return self.__call__(path_positions, 1)
+
+    def evaldd(self, path_positions: Union[float, np.ndarray]):
+        return self.__call__(path_positions, 2)
+
 
 class RaveTrajectoryWrapper(AbstractGeometricPath):
     """An interpolator that wraps OpenRAVE's :class:`GenericTrajectory`.
