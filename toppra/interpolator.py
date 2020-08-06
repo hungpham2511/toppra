@@ -166,12 +166,15 @@ class AbstractGeometricPath(object):
         return None
 
     def eval(self, path_positions: Union[float, np.ndarray]):
+        """Evaluate the path values."""
         return self.__call__(path_positions, 0)
 
     def evald(self, path_positions: Union[float, np.ndarray]):
+        """Evaluate the path first-derivatives."""
         return self.__call__(path_positions, 1)
 
     def evaldd(self, path_positions: Union[float, np.ndarray]):
+        """Evaluate the path second-derivatives."""
         return self.__call__(path_positions, 2)
 
 
