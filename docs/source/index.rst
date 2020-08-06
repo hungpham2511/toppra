@@ -62,9 +62,11 @@ User Guide
    :maxdepth: 2
 
    installation
-   quickstart
-   tutorials
+   auto_examples/index
    notes
+   ..
+      quickstart
+      tutorials
 
    
 API Reference
