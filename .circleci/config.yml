@@ -87,6 +87,7 @@ jobs:
   # job is Ubuntu 18.04, which is required to install pinocchio and
   # other deps.
   cpp-python36:
+    description: Build and test the full Python API
     docker:
       - image: cimg/python:3.6
     working_directory: ~/repo
@@ -127,6 +128,32 @@ jobs:
 
       - store_test_results:
           path: test-reports
+
+      - run:
+          name: Build docs
+          command: |
+            export ROS_PACKAGE_PATH=/opt/openrobots/share
+            export PYTHONPATH=/opt/openrobots/lib/python3.6/site-packages:$PYTHONPATH
+            pip install -r docs/requirements.txt
+            invoke build-docs
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - docs/build
+
+  publish-docs:
+    docker:
+      - image: cimg/python:3.6
+    working_directory: ~/repo
+    steps:
+      - attach_workspace:
+          # Must be absolute path or relative path from working_directory
+          at: ./docs/build
+      - run:
+          name: Publish docs to github page
+          command: |
+            ls docs/build
 
   pre-release:
     docker:
@@ -171,6 +198,14 @@ workflows:
               python-version: ["27", "36", "37"]
 
       - cpp-python36
+      - publish-docs:
+          requires:
+            - cpp-python36
+          filters:
+            branches:
+              only:
+                - fix-doc
+                - develop
 
   release:
     jobs:

@@ -59,7 +59,7 @@ User Guide
 ----------------------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    installation
    auto_examples/index
