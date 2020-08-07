@@ -32,7 +32,7 @@ Examples gallery
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Retime a path subject to kinematic constraints">
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we will see how can we retime a generic spline-based path subject to kinematic...">
 
 .. only:: html
 
