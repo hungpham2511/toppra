@@ -349,7 +349,7 @@ good-names=i,
 	   x, y, z, s, dt, F, g, a, b, c,
 	   N, ds, q, qd, qdd, qddd, qs, qss, qsss,
 	   us, xs, vs,  # special toppra-specific variables
-	   constraint_F, F_vec
+	   constraint_F, F_vec, ts, us, ss, t
 
 
 # Include a hint for the correct naming format with invalid-name
