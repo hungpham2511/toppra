@@ -3,6 +3,7 @@
 ## [unrelease]
 
 ### Added
+- [docs] Use example gallery to show examples.
 - [cpp] Implement serialization/deserialization for piecewise poly trajectory.
 - [cpp] Provide Python bindings for PiecewisePolyPath, TOPPRA and constraint classes.
 - [cpp] Construct piecewise poly as a hermite spline.
@@ -11,6 +12,7 @@
 - [python] [#117] Post-processing is now done via parametrizer classes.
 
 ### Changed
+- [python]Support older interpolation method.
 - [cpp] Minor improvement to PiecewisePolyPath.
 - [python] Implement `ParametrizeConstAccel` to allow reparametrize path.
 - [python] Parametrization output accessible via ParameterizationData class.
