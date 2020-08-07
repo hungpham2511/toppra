@@ -24,34 +24,8 @@ constraints.  In general, given the inputs:
 (s)`, from which the fastest trajectory `q(t)` that satisfies the
 given constraints can be found.
 
-**Documentation and tutorials** are available [here](https://toppra.readthedocs.io/en/latest/index.html).
-
-
-## Installation (Python API)
-
-To install the latest development version, simply clone the repo and install with pip
-
-``` shell
-git clone https://github.com/hungpham2511/toppra
-cd toppra && pip install .
-```
-
-To install depencidencies for development, replace the second command with:
-``` shell
-cd toppra && pip install -e .[dev]
-```
-
-You can also build documentation locally
-``` shell
-invoke build-docs
-```
-
-## New C++ API
-
-`toppra` is also implemented as a stand-alone C++ library with minimal
-dependency. See `cpp/README.md` for installation instruction and the
-test cases for example usage. Be noted that this implementation is
-relatively new and is not yet stable enough for production use.
+**Documentation and tutorials** are available
+[here](https://hungpham2511.github.io/toppra/index.html).
 
 # Support
 

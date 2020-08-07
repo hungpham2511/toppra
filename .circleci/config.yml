@@ -144,6 +144,7 @@ jobs:
           paths:
             - docs/build
 
+  # Publishthe built doc from the last build step
   publish-docs:
     docker:
       - image: cimg/python:3.6
@@ -151,7 +152,6 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          # Must be absolute path or relative path from working_directory
           at: .
       - add_ssh_keys
       - gh-pages/deploy:
