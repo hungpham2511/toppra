@@ -1,0 +1,284 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>toppra.solverwrapper.solverwrapper &#8212; toppra  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">toppra</a></h1>
+
+
+
+<p class="blurb">A robotic motion planning library for path-parametrization</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=hungpham2511&repo=toppra&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/hungpham2511/toppra">
+    <img
+        alt="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
+        src="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for toppra.solverwrapper.solverwrapper</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This module provides different solverwrapper implementations.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="c1"># pylint: disable=unused-import</span>
+<span class="k">def</span> <span class="nf">available_solvers</span><span class="p">(</span><span class="n">output_msg</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check for available solvers.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">ecos</span>
+
+        <span class="n">IMPORT_ECOS</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="n">IMPORT_ECOS</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">qpoases</span>
+
+        <span class="n">IMPORT_QPOASES</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="n">IMPORT_QPOASES</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">cvxpy</span>
+
+        <span class="n">IMPORT_CVXPY</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="n">IMPORT_CVXPY</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">solver_availability</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="s2">&quot;seidel&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;hotqpoases&quot;</span><span class="p">,</span> <span class="n">IMPORT_QPOASES</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;qpoases&quot;</span><span class="p">,</span> <span class="n">IMPORT_QPOASES</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;ecos&quot;</span><span class="p">,</span> <span class="n">IMPORT_ECOS</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;cvxpy&quot;</span><span class="p">,</span> <span class="n">IMPORT_CVXPY</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">output_msg</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">solver_availability</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">solver_availability</span>
+
+<span class="k">def</span> <span class="nf">check_solver_availability</span><span class="p">(</span><span class="n">solver</span><span class="p">):</span>
+    <span class="n">check</span> <span class="o">=</span> <span class="n">available_solvers</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">sname</span><span class="p">,</span> <span class="n">avail</span> <span class="ow">in</span> <span class="n">check</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">sname</span> <span class="o">==</span> <span class="n">solver</span> <span class="ow">and</span> <span class="n">avail</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span>
+
+
+<div class="viewcode-block" id="SolverWrapper"><a class="viewcode-back" href="../../../python_api.html#toppra.solverwrapper.SolverWrapper">[docs]</a><span class="k">class</span> <span class="nc">SolverWrapper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The base class for all solver wrappers.</span>
+
+<span class="sd">    All SolverWrapper have to implement a core method needed by all</span>
+<span class="sd">    Reachability Analysis-based algorithms:</span>
+<span class="sd">    `solve_stagewise_optim`. This methods solves a Linear/Quadratic</span>
+<span class="sd">    Program subject to linear constraints at the given stage, and</span>
+<span class="sd">    possibly with additional auxiliary constraints.</span>
+
+<span class="sd">    Note that some SolverWrappers only handle Linear Program while</span>
+<span class="sd">    some handle both.</span>
+
+<span class="sd">    Certain solver wrappers need to be setup and close down before and</span>
+<span class="sd">    after usage. For instance, the wrappers for mosek and qpOASES with</span>
+<span class="sd">    warmstart capability. To provide this functionality, this class</span>
+<span class="sd">    contains two abstract methods `setup_solver` and `close_solver`,</span>
+<span class="sd">    which should be called before and after any call to</span>
+<span class="sd">    `solve_stagewise_optim`, so that necessary setups can be made.</span>
+
+<span class="sd">    Each solver wrapper should provide solver-specific constraint,</span>
+<span class="sd">    such as ultimate bound the variable u, x. For some solvers such as</span>
+<span class="sd">    ECOS, this is very important.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    constraints : :class:`toppra.Constraint` []</span>
+<span class="sd">        Constraints on the robot system.</span>
+<span class="sd">    path : Interpolator</span>
+<span class="sd">        The geometric path to be time-parametrized.</span>
+<span class="sd">    path_discretization: array</span>
+<span class="sd">        The discretization grid use to discretize the geometric path.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraint_list</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">path_discretization</span><span class="p">):</span>
+        <span class="c1"># Main attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span> <span class="o">=</span> <span class="n">constraint_list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path_discretization</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">path_discretization</span><span class="p">)</span>
+        <span class="c1"># End main attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">path_discretization</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="p">)</span>  <span class="c1"># Number of stages. Number of point is _N + 1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deltas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_discretization</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_discretization</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">):</span>
+            <span class="k">assert</span> <span class="n">path_discretization</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">path_discretization</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">c</span><span class="o">.</span><span class="n">compute_constraint_params</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_discretization</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nV</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">([</span><span class="n">c</span><span class="o">.</span><span class="n">get_no_extra_vars</span><span class="p">()</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">])</span>
+
+<div class="viewcode-block" id="SolverWrapper.get_no_stages"><a class="viewcode-back" href="../../../python_api.html#toppra.solverwrapper.SolverWrapper.get_no_stages">[docs]</a>    <span class="k">def</span> <span class="nf">get_no_stages</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the number of stages.</span>
+
+<span class="sd">        The number of gridpoints equals N + 1, where N is the number</span>
+<span class="sd">        of stages.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span></div>
+
+<div class="viewcode-block" id="SolverWrapper.get_no_vars"><a class="viewcode-back" href="../../../python_api.html#toppra.solverwrapper.SolverWrapper.get_no_vars">[docs]</a>    <span class="k">def</span> <span class="nf">get_no_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Return total number of variables, including u, x.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nV</span></div>
+
+    <span class="k">def</span> <span class="nf">get_deltas</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">deltas</span>
+
+<div class="viewcode-block" id="SolverWrapper.solve_stagewise_optim"><a class="viewcode-back" href="../../../python_api.html#toppra.solverwrapper.SolverWrapper.solve_stagewise_optim">[docs]</a>    <span class="k">def</span> <span class="nf">solve_stagewise_optim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">x_next_min</span><span class="p">,</span> <span class="n">x_next_max</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Solve a stage-wise quadratic (or linear) optimization problem.</span>
+
+<span class="sd">        The quadratic optimization problem is described below:</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            \\text{min  }  &amp; 0.5 [u, x, v] H [u, x, v]^\\top + [u, x, v] g    \\\\</span>
+<span class="sd">            \\text{s.t.  } &amp; [u, x] \\text{ is feasible at stage } i \\\\</span>
+<span class="sd">                           &amp; x_{min} \leq x \leq x_{max}             \\\\</span>
+<span class="sd">                           &amp; x_{next, min} \leq x + 2 \Delta_i u \leq x_{next, max},</span>
+
+<span class="sd">        where `v` is an auxiliary variable, only exist if there are</span>
+<span class="sd">        non-canonical constraints.  The linear program is the</span>
+<span class="sd">        quadratic problem without the quadratic term.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        i: int</span>
+<span class="sd">            The stage index.</span>
+<span class="sd">        H: :class:`~numpy:numpy.ndarray` or None</span>
+<span class="sd">            Shape (d, d). The coefficient of the quadratic objective</span>
+<span class="sd">            function. If is None, set the quadratic term to zero.</span>
+<span class="sd">        g: :class:`~numpy:numpy.ndarray`</span>
+<span class="sd">            Shape (d,). The linear term.</span>
+<span class="sd">        x_min: float</span>
+<span class="sd">            If not specified, set to NaN.</span>
+<span class="sd">        x_max: float</span>
+<span class="sd">            If not specified, set to NaN.</span>
+<span class="sd">        x_next_min: float</span>
+<span class="sd">            If not specified, set to NaN.</span>
+<span class="sd">        x_next_max: float</span>
+<span class="sd">            If not specified, set to NaN.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        double :class:`~numpy:numpy.ndarray`</span>
+<span class="sd">             If successes, return a double array containing the optimal</span>
+<span class="sd">             variable.  Otherwise return a array that contains `numpy.nan`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+    <span class="k">def</span> <span class="nf">setup_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">close_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2020, Hung Pham.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+    <a href="https://github.com/hungpham2511/toppra" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

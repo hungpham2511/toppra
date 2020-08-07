@@ -1,7 +1,0 @@
-Kinematics
-==================================================
-
-Time-Parametrize paths with kinematics constraints
-
-TODO
-

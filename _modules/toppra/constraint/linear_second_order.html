@@ -1,0 +1,291 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>toppra.constraint.linear_second_order &#8212; toppra  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">toppra</a></h1>
+
+
+
+<p class="blurb">A robotic motion planning library for path-parametrization</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=hungpham2511&repo=toppra&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/hungpham2511/toppra">
+    <img
+        alt="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
+        src="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for toppra.constraint.linear_second_order</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This module implements the general Second-Order constraints.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">.linear_constraint</span> <span class="kn">import</span> <span class="n">LinearConstraint</span><span class="p">,</span> <span class="n">canlinear_colloc_to_interpolate</span>
+<span class="kn">from</span> <span class="nn">.constraint</span> <span class="kn">import</span> <span class="n">DiscretizationType</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="SecondOrderConstraint"><a class="viewcode-back" href="../../../python_api.html#toppra.constraint.SecondOrderConstraint">[docs]</a><span class="k">class</span> <span class="nc">SecondOrderConstraint</span><span class="p">(</span><span class="n">LinearConstraint</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This class implements the linear Second-Order constraint.</span>
+
+<span class="sd">    Conventionally, a :class:`SecondOrderConstraint` is given by the</span>
+<span class="sd">    following formula:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        A(\mathbf{q}) \ddot {\mathbf{q}} + \dot</span>
+<span class="sd">        {\mathbf{q}}^\\top B(\mathbf{q}) \dot {\mathbf{q}} + C(\mathbf{q}) = w,</span>
+
+<span class="sd">    where w is a vector that satisfies the polyhedral constraint:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        F(\mathbf{q}) w \\leq g(\mathbf{q}).</span>
+
+<span class="sd">    Take the example of a robot torque bound, the functions :math:`A,</span>
+<span class="sd">    B, C` represent respectively the inertial, Corriolis and</span>
+<span class="sd">    gravitational terms of the robot&#39;s rigid body dynamics.</span>
+
+<span class="sd">    We can evaluate a constraint on a given geometric path</span>
+<span class="sd">    :math:`\mathbf{p}(s)` using the following equations, which are</span>
+<span class="sd">    obtained by direct substitution:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        A(\mathbf{q}) \mathbf{p}&#39;(s) \ddot s + [A(\mathbf{q}) \mathbf{p}&#39;&#39;(s) + \mathbf{p}&#39;(s)^\\top B(\mathbf{q})</span>
+<span class="sd">        \mathbf{p}&#39;(s)] \dot s^2 + C(\mathbf{q}) = w, \\\\</span>
+<span class="sd">        \mathbf{a}(s) \ddot s + \mathbf{b}(s) \dot s ^2 + \mathbf{c}(s) = w.</span>
+
+<span class="sd">    where :math:`\mathbf{p}&#39;, \mathbf{p}&#39;&#39;` denote respectively the</span>
+<span class="sd">    first and second derivatives of the path. It is important to</span>
+<span class="sd">    understand that the vector functions :math:`\mathbf a, \mathbf b,</span>
+<span class="sd">    \mathbf c` are what `toppra` needs to solve for path</span>
+<span class="sd">    parametrizations.</span>
+
+<span class="sd">    To evaluate these coefficients :math:`\mathbf a(s), \mathbf b(s),</span>
+<span class="sd">    \mathbf c(s)`, fortunately, it is not necessary to have the</span>
+<span class="sd">    functions :math:`A, B, C` explicitly. Rather, it is only required</span>
+<span class="sd">    to have the sum of the these 3 functions--the so-called inverse</span>
+<span class="sd">    dynamic function:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \mathrm{inverse\_dyn}(\mathbf q, \dot{\mathbf q}, \ddot{\mathbf q}) :=</span>
+<span class="sd">        A(\mathbf{q}) \ddot {\mathbf{q}} + \dot {\mathbf{q}}^\\top B(\mathbf{q}) \dot {\mathbf{q}} + C(\mathbf{q})</span>
+
+<span class="sd">    In some cases, one might have terms that depends purely on the</span>
+<span class="sd">    path:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \mathbf{a}(s) \ddot s + \mathbf{b}(s) \dot s ^2 + \mathbf{c}(s) + \mathcal{C}(\mathbf p, s)= w.</span>
+
+<span class="sd">    an example is the joint friction. This term is referred to as</span>
+<span class="sd">    `custom_term` in the initializing arguments of</span>
+<span class="sd">    :class:`SecondOrderConstraint`.</span>
+
+<span class="sd">    It is interesting to note that we can actually use a more general</span>
+<span class="sd">    form of the above equations, hence covering a wider class of</span>
+<span class="sd">    constraints. In particular, one can replace :math:`A(\mathbf{q}),</span>
+<span class="sd">    B(\mathbf{q}), C(\mathbf{q}), F(\mathbf{q}), g(\mathbf{q})` with</span>
+<span class="sd">    :math:`A(\mathbf{q}, s), B(\mathbf{q}, s), C(\mathbf{q}, s),</span>
+<span class="sd">    F(\mathbf{q}, s), g(\mathbf{q}, s)`. This form, however, is not</span>
+<span class="sd">    implemented in `toppra`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SecondOrderConstraint.__init__"><a class="viewcode-back" href="../../../python_api.html#toppra.constraint.SecondOrderConstraint.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inv_dyn</span><span class="p">,</span> <span class="n">constraint_F</span><span class="p">,</span> <span class="n">constraint_g</span><span class="p">,</span> <span class="n">dof</span><span class="p">,</span> <span class="n">custom_term</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">discretization_scheme</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the constraint.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        inv_dyn: (np.ndarray, np.ndarray, np.ndarray) -&gt; np.ndarray</span>
+<span class="sd">            The &quot;inverse dynamics&quot; function that receives joint</span>
+<span class="sd">            position, velocity, acceleration and path position as inputs and ouputs</span>
+<span class="sd">            the constrained vector :math:`\mathbf w`. See above for more details.</span>
+<span class="sd">        constraint_F: (np.ndarray) -&gt; np.ndarray</span>
+<span class="sd">            The constraint coefficient function :math:`\mathbf</span>
+<span class="sd">            F(\mathbf q, s)`. See above for more details.</span>
+<span class="sd">        constraint_g: (np.ndarray) -&gt; np.ndarray</span>
+<span class="sd">            The constraint coefficient function :math:`\mathbf</span>
+<span class="sd">            g(\mathbf q, s)`. See above for more details.</span>
+<span class="sd">        dof: int</span>
+<span class="sd">            The dimension of the joint position.</span>
+<span class="sd">        custom_term: (:class:`Interpolator`, float) -&gt; np.ndarray</span>
+<span class="sd">            This function receives as input a geometric path and a</span>
+<span class="sd">            float path position, then returns an additive term. See</span>
+<span class="sd">            the above note for more details.</span>
+
+<span class="sd">        discretization_scheme: DiscretizationType</span>
+<span class="sd">            Type of discretization.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SecondOrderConstraint</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_discretization_type</span><span class="p">(</span><span class="n">discretization_scheme</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inv_dyn</span> <span class="o">=</span> <span class="n">inv_dyn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constraint_F</span> <span class="o">=</span> <span class="n">constraint_F</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constraint_g</span> <span class="o">=</span> <span class="n">constraint_g</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dof</span> <span class="o">=</span> <span class="n">dof</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">custom_term</span> <span class="o">=</span> <span class="n">custom_term</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_format_string</span> <span class="o">=</span> <span class="s2">&quot;    Kind: Generalized Second-order constraint</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_format_string</span> <span class="o">=</span> <span class="s2">&quot;    Dimension:</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_format_string</span> <span class="o">+=</span> <span class="s2">&quot;        F in R^(</span><span class="si">{:d}</span><span class="s2">, </span><span class="si">{:d}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="o">*</span><span class="n">constraint_F</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">dof</span><span class="p">))</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SecondOrderConstraint.joint_torque_constraint"><a class="viewcode-back" href="../../../python_api.html#toppra.constraint.SecondOrderConstraint.joint_torque_constraint">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">joint_torque_constraint</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">inv_dyn</span><span class="p">,</span> <span class="n">taulim</span><span class="p">,</span> <span class="n">joint_friction</span><span class="p">,</span>
+                                <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize a Joint Torque constraint.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        inv_dyn: (np.ndarray, np.ndarray, np.ndarray) -&gt; np.ndarray</span>
+<span class="sd">            Inverse dynamic function of the robot.</span>
+<span class="sd">        taulim: np.ndarray</span>
+<span class="sd">            Shape (N, 2). The i-th element contains the minimum and</span>
+<span class="sd">            maximum joint torque limits respectively.</span>
+<span class="sd">        joint_friction: np.ndarray</span>
+<span class="sd">            Shape (N,). The i-th element contains the dry friction (torque)</span>
+<span class="sd">            in the i-th joint.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dof</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">taulim</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">stacked_eyes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">dof</span><span class="p">),</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">dof</span><span class="p">)))</span>
+        <span class="n">g_aug</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">dof</span><span class="p">)</span>
+        <span class="n">g_aug</span><span class="p">[:</span><span class="n">dof</span><span class="p">]</span> <span class="o">=</span> <span class="n">taulim</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">g_aug</span><span class="p">[</span><span class="n">dof</span><span class="p">:]</span> <span class="o">=</span> <span class="o">-</span><span class="n">taulim</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">constraint_F</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="n">stacked_eyes</span>
+        <span class="n">constraint_g</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="n">g_aug</span>
+        <span class="n">custom_term</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">path</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">path</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="n">joint_friction</span>
+        <span class="k">return</span> <span class="n">SecondOrderConstraint</span><span class="p">(</span><span class="n">inv_dyn</span><span class="p">,</span> <span class="n">constraint_F</span><span class="p">,</span> <span class="n">constraint_g</span><span class="p">,</span> <span class="n">dof</span><span class="p">,</span> <span class="n">custom_term</span><span class="p">,</span>
+                                     <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SecondOrderConstraint.compute_constraint_params"><a class="viewcode-back" href="../../../python_api.html#toppra.constraint.SecondOrderConstraint.compute_constraint_params">[docs]</a>    <span class="k">def</span> <span class="nf">compute_constraint_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">gridpoints</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">dof</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dof</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Wrong dimension: constraint dof (</span><span class="si">{:d}</span><span class="s2">) not equal to path dof (</span><span class="si">{:d}</span><span class="s2">)&quot;</span>
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dof</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">dof</span><span class="p">))</span>
+        <span class="n">v_zero</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">dof</span><span class="p">)</span>
+        <span class="n">p_vec</span> <span class="o">=</span> <span class="n">path</span><span class="p">(</span><span class="n">gridpoints</span><span class="p">)</span>
+        <span class="n">ps_vec</span> <span class="o">=</span> <span class="n">path</span><span class="p">(</span><span class="n">gridpoints</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">pss_vec</span> <span class="o">=</span> <span class="n">path</span><span class="p">(</span><span class="n">gridpoints</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">F_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">constraint_F</span><span class="p">,</span> <span class="n">p_vec</span><span class="p">)))</span>
+        <span class="n">g_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">constraint_g</span><span class="p">,</span> <span class="n">p_vec</span><span class="p">)))</span>
+        <span class="n">c_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">inv_dyn</span><span class="p">(</span><span class="n">_p</span><span class="p">,</span> <span class="n">v_zero</span><span class="p">,</span> <span class="n">v_zero</span><span class="p">)</span> <span class="k">for</span> <span class="n">_p</span> <span class="ow">in</span> <span class="n">p_vec</span><span class="p">])</span>
+
+        <span class="n">a_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">inv_dyn</span><span class="p">(</span><span class="n">_p</span><span class="p">,</span> <span class="n">v_zero</span><span class="p">,</span> <span class="n">_ps</span><span class="p">)</span>
+             <span class="k">for</span> <span class="n">_p</span><span class="p">,</span> <span class="n">_ps</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">p_vec</span><span class="p">,</span> <span class="n">ps_vec</span><span class="p">)])</span> <span class="o">-</span> <span class="n">c_vec</span>
+        <span class="n">b_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inv_dyn</span><span class="p">(</span><span class="n">_p</span><span class="p">,</span> <span class="n">_ps</span><span class="p">,</span> <span class="n">pss_</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">_p</span><span class="p">,</span> <span class="n">_ps</span><span class="p">,</span> <span class="n">pss_</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">p_vec</span><span class="p">,</span> <span class="n">ps_vec</span><span class="p">,</span> <span class="n">pss_vec</span><span class="p">)</span>
+        <span class="p">])</span> <span class="o">-</span> <span class="n">c_vec</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_term</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">gridpoints</span><span class="p">):</span>
+                <span class="n">c_vec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">c_vec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_term</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">gridpoints</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">discretization_type</span> <span class="o">==</span> <span class="n">DiscretizationType</span><span class="o">.</span><span class="n">Collocation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">a_vec</span><span class="p">,</span> <span class="n">b_vec</span><span class="p">,</span> <span class="n">c_vec</span><span class="p">,</span> <span class="n">F_vec</span><span class="p">,</span> <span class="n">g_vec</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">discretization_type</span> <span class="o">==</span> <span class="n">DiscretizationType</span><span class="o">.</span><span class="n">Interpolation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">canlinear_colloc_to_interpolate</span><span class="p">(</span><span class="n">a_vec</span><span class="p">,</span> <span class="n">b_vec</span><span class="p">,</span> <span class="n">c_vec</span><span class="p">,</span> <span class="n">F_vec</span><span class="p">,</span>
+                                                   <span class="n">g_vec</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span>
+                                                   <span class="n">gridpoints</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Other form of discretization not supported!&quot;</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2020, Hung Pham.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+    <a href="https://github.com/hungpham2511/toppra" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

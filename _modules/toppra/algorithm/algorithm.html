@@ -1,19 +1,24 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>toppra.algorithm.algorithm &#8212; TOPP-RA 0.1 documentation</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>toppra.algorithm.algorithm &#8212; toppra  documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
    
@@ -27,7 +32,7 @@
     
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../../index.html">TOPP-RA</a></h1>
+<h1 class="logo"><a href="../../../index.html">toppra</a></h1>
 
 
 
@@ -48,7 +53,7 @@
     
 
 <p>
-<a href="https://travis-ci.org/hungpham2511/toppra">
+<a class="badge" href="https://travis-ci.org/hungpham2511/toppra">
     <img
         alt="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
         src="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
@@ -56,14 +61,6 @@
 </a>
 </p>
 
-
-<h3>Navigation</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation instructions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../notes.html">Notes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Module references</a></li>
-</ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
@@ -75,195 +72,246 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <h1>Source code for toppra.algorithm.algorithm</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">toppra.algorithm.algorithm</span>
+<span class="sd">^^^^^^^^^^^^^^^^^^^^^^^^^^</span>
+
+<span class="sd">This module defines the abstract data types that define TOPP algorithms.</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">import</span> <span class="nn">enum</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">openravepy</span> <span class="k">as</span> <span class="nn">orpy</span>
-    <span class="n">OPENRAVEPY_AVAILABLE</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="n">OPENRAVEPY_AVAILABLE</span> <span class="o">=</span> <span class="kc">False</span>
-
-<span class="kn">from</span> <span class="nn">..constants</span> <span class="k">import</span> <span class="n">TINY</span>
-<span class="kn">from</span> <span class="nn">..interpolator</span> <span class="k">import</span> <span class="n">SplineInterpolator</span><span class="p">,</span> <span class="n">Interpolator</span>
+<span class="kn">from</span> <span class="nn">toppra.constants</span> <span class="kn">import</span> <span class="n">TINY</span>
+<span class="kn">from</span> <span class="nn">toppra.interpolator</span> <span class="kn">import</span> <span class="n">SplineInterpolator</span><span class="p">,</span> <span class="n">AbstractGeometricPath</span>
+<span class="kn">from</span> <span class="nn">toppra.constraint</span> <span class="kn">import</span> <span class="n">Constraint</span>
+<span class="kn">import</span> <span class="nn">toppra.interpolator</span> <span class="k">as</span> <span class="nn">interpolator</span>
+<span class="kn">import</span> <span class="nn">toppra.parametrizer</span> <span class="k">as</span> <span class="nn">tparam</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
+
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">ParameterizationAlgorithm</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base class for all parameterization algorithms.</span>
-
-<span class="sd">    All algorithms should have three attributes: `constraints`, `path`</span>
-<span class="sd">    and `gridpoints` and also implement the method</span>
-<span class="sd">    `compute_parameterization`.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    constraint_list: list of `Constraint`</span>
-<span class="sd">    path: `Interpolator`</span>
-<span class="sd">        The geometric path, or the trajectory to parameterize.</span>
-<span class="sd">    gridpoints: array, optional</span>
-<span class="sd">        If not given, automatically generate a grid with 100 steps.</span>
+<div class="viewcode-block" id="ParameterizationData"><a class="viewcode-back" href="../../../python_api.html#toppra.algorithm.ParameterizationData">[docs]</a><span class="k">class</span> <span class="nc">ParameterizationData</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Internal data and output.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraint_list</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">gridpoints</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span> <span class="o">=</span> <span class="n">constraint_list</span>  <span class="c1"># Attr</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">arg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">return_code</span><span class="p">:</span> <span class="n">ParameterizationReturnCode</span> <span class="o">=</span> <span class="n">ParameterizationReturnCode</span><span class="o">.</span><span class="n">ErrUnknown</span>
+        <span class="s2">&quot;ParameterizationReturnCode: Return code of the last parametrization attempt.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gridpoints</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="s2">&quot;np.ndarray: Shape (N+1, 1). Gridpoints&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sd_vec</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="s2">&quot;np.ndarray: Shape (N+1, 1). Path velocities&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sdd_vec</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="s2">&quot;np.ndarray: Shape (N+1, 1). Path acceleration&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="s2">&quot;np.ndarray: Shape (N+1, 2). Controllable sets.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="s2">&quot;np.ndarray: Shape (N+1, 2). Feasible sets.&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;ParameterizationData(return_code:=</span><span class="si">{}</span><span class="s2">, N=</span><span class="si">{:d}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">return_code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gridpoints</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="ParameterizationReturnCode"><a class="viewcode-back" href="../../../python_api.html#toppra.algorithm.ParameterizationReturnCode">[docs]</a><span class="k">class</span> <span class="nc">ParameterizationReturnCode</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return codes from a parametrization attempt.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Ok</span> <span class="o">=</span> <span class="s2">&quot;Ok: Successful parametrization&quot;</span>
+    <span class="n">ErrUnknown</span> <span class="o">=</span> <span class="s2">&quot;Error: Unknown issue&quot;</span>
+    <span class="n">ErrShortPath</span> <span class="o">=</span> <span class="s2">&quot;Error: Input path is very short&quot;</span>
+    <span class="n">FailUncontrollable</span> <span class="o">=</span> <span class="s2">&quot;Error: Instance is not controllable&quot;</span>
+    <span class="n">ErrForwardPassFail</span> <span class="o">=</span> <span class="s2">&quot;Error: Forward pass fail. Numerical errors occured&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">ParameterizationReturnCode</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">ParameterizationReturnCode</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ParameterizationAlgorithm"><a class="viewcode-back" href="../../../python_api.html#toppra.algorithm.ParameterizationAlgorithm">[docs]</a><span class="k">class</span> <span class="nc">ParameterizationAlgorithm</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base parametrization algorithm class.</span>
+
+<span class="sd">    This class specifies the generic behavior for parametrization algorithms.  For details on how</span>
+<span class="sd">    to *construct* a :class:`ParameterizationAlgorithm` instance, as well as configure it, refer</span>
+<span class="sd">    to the specific class.</span>
+
+<span class="sd">    Example usage:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">      # usage</span>
+<span class="sd">      instance.compute_parametrization(0, 0)</span>
+<span class="sd">      output = instance.problem_data</span>
+
+<span class="sd">      # do this if you only want the final trajectory</span>
+<span class="sd">      traj = instance.compute_trajectory(0, 0)</span>
+
+<span class="sd">    .. seealso::</span>
+
+<span class="sd">        :class:`toppra.algorithm.TOPPRA`,</span>
+<span class="sd">        :class:`toppra.algorithm.TOPPRAsd`,</span>
+<span class="sd">        :class:`~ParameterizationReturnCode`,</span>
+<span class="sd">        :class:`~ParameterizationData`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraint_list</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">gridpoints</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parametrizer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span> <span class="o">=</span> <span class="n">constraint_list</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>  <span class="c1"># Attr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_problem_data</span> <span class="o">=</span> <span class="n">ParameterizationData</span><span class="p">()</span>
+        <span class="c1"># Handle gridpoints</span>
+        <span class="k">if</span> <span class="n">gridpoints</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">gridpoints</span> <span class="o">=</span> <span class="n">interpolator</span><span class="o">.</span><span class="n">propose_gridpoints</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">max_err_threshold</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;No gridpoint specified. Automatically choose a gridpoint with </span><span class="si">%d</span><span class="s2"> points&quot;</span><span class="p">,</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">gridpoints</span><span class="p">)</span>
+            <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">compute_parameterization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sd_start</span><span class="p">,</span> <span class="n">sd_end</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compute a path parameterization.</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">path</span><span class="o">.</span><span class="n">path_interval</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">gridpoints</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="ow">or</span> <span class="n">path</span><span class="o">.</span><span class="n">path_interval</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">gridpoints</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid manually supplied gridpoints.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gridpoints</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">gridpoints</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_problem_data</span><span class="o">.</span><span class="n">gridpoints</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">gridpoints</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">gridpoints</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># Number of stages. Number of point is _N + 1</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_N</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">gridpoints</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">gridpoints</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">fatal</span><span class="p">(</span><span class="s2">&quot;Input gridpoints are not monotonically increasing.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Bad input gridpoints.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parametrizer</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">parametrizer</span> <span class="o">==</span> <span class="s2">&quot;ParametrizeSpline&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parametrizer</span> <span class="o">=</span> <span class="n">tparam</span><span class="o">.</span><span class="n">ParametrizeSpline</span>
+        <span class="k">elif</span> <span class="n">parametrizer</span> <span class="o">==</span> <span class="s2">&quot;ParametrizeConstAccel&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parametrizer</span> <span class="o">=</span> <span class="n">tparam</span><span class="o">.</span><span class="n">ParametrizeConstAccel</span>
 
-<span class="sd">        If fail, whether because there is no valid parameterization or</span>
-<span class="sd">        because of numerical error, the arrays returns should contain</span>
-<span class="sd">        np.nan.</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Constraint</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Constraints of interests.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_constraints</span>
 
+    <span class="nd">@constraints</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Constraint</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># TODO: Validate constraints.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_constraints</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">problem_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ParameterizationData</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Data obtained when solving the path parametrization.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_problem_data</span>
+
+<div class="viewcode-block" id="ParameterizationAlgorithm.compute_parameterization"><a class="viewcode-back" href="../../../python_api.html#toppra.algorithm.ParameterizationAlgorithm.compute_parameterization">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">compute_parameterization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sd_start</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">sd_end</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">return_data</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute the path parameterization subject to starting and ending conditions.</span>
+
+<span class="sd">        After this method terminates, the attribute</span>
+<span class="sd">        :attr:`~problem_data` will contain algorithm output, as well</span>
+<span class="sd">        as the result. This is the preferred way of retrieving problem</span>
+<span class="sd">        output.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        sd_start: float</span>
+<span class="sd">        sd_start:</span>
 <span class="sd">            Starting path velocity. Must be positive.</span>
-<span class="sd">        sd_end: float</span>
+<span class="sd">        sd_end:</span>
 <span class="sd">            Goal path velocity. Must be positive.</span>
-<span class="sd">        return_data: bool, optional</span>
-<span class="sd">            If is True, also return matrix K which contains the controllable sets.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        sdd_vec: (_N,) array or None</span>
-<span class="sd">            Path accelerations.</span>
-<span class="sd">        sd_vec: (_N+1,) array None</span>
-<span class="sd">            Path velocities.</span>
-<span class="sd">        v_vec: (_N,) array or None</span>
-<span class="sd">            Auxiliary variables.</span>
-<span class="sd">        K: (N+1, 2) array</span>
-<span class="sd">            Return the controllable set if `return_data` is True.</span>
+<span class="sd">        return_data:</span>
+<span class="sd">            If true also return the problem data.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-    <span class="k">def</span> <span class="nf">compute_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sd_start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sd_end</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">return_profile</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">bc_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_data</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="ParameterizationAlgorithm.compute_trajectory"><a class="viewcode-back" href="../../../python_api.html#toppra.algorithm.ParameterizationAlgorithm.compute_trajectory">[docs]</a>    <span class="k">def</span> <span class="nf">compute_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sd_start</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">sd_end</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AbstractGeometricPath</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Compute the resulting joint trajectory and auxilliary trajectory.</span>
 
-<span class="sd">        If parameterization fails, return a tuple of None(s).</span>
+<span class="sd">        This is a convenient method if only the final output is wanted.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        sd_start: float</span>
+<span class="sd">        sd_start:</span>
 <span class="sd">            Starting path velocity.</span>
-<span class="sd">        sd_end: float</span>
+<span class="sd">        sd_end:</span>
 <span class="sd">            Goal path velocity.</span>
-<span class="sd">        return_profile: bool, optional</span>
-<span class="sd">            If true, return a tuple containing data. NOTE: This</span>
-<span class="sd">            function is obsolete, use return_data instead.</span>
-<span class="sd">        return_data: bool, optional</span>
+<span class="sd">        return_data:</span>
 <span class="sd">            If true, return a dict containing the internal data.</span>
-<span class="sd">        bc_type: str, optional</span>
-<span class="sd">            Boundary condition for the resulting trajectory. Can be</span>
-<span class="sd">            &#39;not-a-knot&#39;, &#39;clamped&#39;, &#39;natural&#39; or &#39;periodic&#39;.  See</span>
-<span class="sd">            scipy.CubicSpline documentation for more details.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        :class:`.Interpolator`</span>
-<span class="sd">            Time-parameterized joint position trajectory. If unable to</span>
-<span class="sd">            parameterize, return None.</span>
-<span class="sd">        :class:`.Interpolator`</span>
-<span class="sd">            Time-parameterized auxiliary variable trajectory. If</span>
-<span class="sd">            unable to parameterize or if there is no auxiliary</span>
-<span class="sd">            variable, return None.</span>
-<span class="sd">        profiles: tuple</span>
-<span class="sd">            Return if return_profile is True, results from</span>
-<span class="sd">            compute_parameterization.</span>
-<span class="sd">        data: dict</span>
-<span class="sd">            Return if return_data is True.</span>
+<span class="sd">        :</span>
+<span class="sd">            Time-parameterized joint position trajectory or</span>
+<span class="sd">            None If unable to parameterize. </span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">sdd_grid</span><span class="p">,</span> <span class="n">sd_grid</span><span class="p">,</span> <span class="n">v_grid</span><span class="p">,</span> <span class="n">K</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_parameterization</span><span class="p">(</span>
-            <span class="n">sd_start</span><span class="p">,</span> <span class="n">sd_end</span><span class="p">,</span> <span class="n">return_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_parameterization</span><span class="p">(</span><span class="n">sd_start</span><span class="p">,</span> <span class="n">sd_end</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem_data</span><span class="o">.</span><span class="n">return_code</span> <span class="o">!=</span> <span class="n">ParameterizationReturnCode</span><span class="o">.</span><span class="n">Ok</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Fail to parametrize path. Return code: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem_data</span><span class="o">.</span><span class="n">return_code</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
 
-        <span class="c1"># fail condition: sd_grid is None, or there is nan in sd_grid</span>
-        <span class="k">if</span> <span class="n">sd_grid</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">sd_grid</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">return_profile</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="p">(</span><span class="n">sdd_grid</span><span class="p">,</span> <span class="n">sd_grid</span><span class="p">,</span> <span class="n">v_grid</span><span class="p">,</span> <span class="n">K</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="n">outputtraj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parametrizer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem_data</span><span class="o">.</span><span class="n">gridpoints</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem_data</span><span class="o">.</span><span class="n">sd_vec</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Successfully parametrize path. Duration: </span><span class="si">%.3f</span><span class="s2">, previously </span><span class="si">%.3f</span><span class="s2">)&quot;</span><span class="p">,</span>
+                    <span class="n">outputtraj</span><span class="o">.</span><span class="n">path_interval</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">path_interval</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Finish parametrization in </span><span class="si">%.3f</span><span class="s2"> secs&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">outputtraj</span></div>
 
-        <span class="k">if</span> <span class="n">bc_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">sd_start</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">sd_end</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">bc_type</span> <span class="o">=</span> <span class="s2">&quot;clamped&quot;</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">bc_type</span> <span class="o">=</span> <span class="s2">&quot;not-a-knot&quot;</span>
+<div class="viewcode-block" id="ParameterizationAlgorithm.inspect"><a class="viewcode-back" href="../../../python_api.html#toppra.algorithm.ParameterizationAlgorithm.inspect">[docs]</a>    <span class="k">def</span> <span class="nf">inspect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compute</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Inspect the problem internal data.&quot;&quot;&quot;</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem_data</span><span class="o">.</span><span class="n">K</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem_data</span><span class="o">.</span><span class="n">X</span>
+        <span class="k">if</span> <span class="n">X</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Feasible sets&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">K</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">K</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Controllable sets&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">K</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;--&quot;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">problem_data</span><span class="o">.</span><span class="n">sd_vec</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">problem_data</span><span class="o">.</span><span class="n">sd_vec</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Velocity profile&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Path-position path-velocity plot&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Path position&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Path velocity square&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div></div>
 
-        <span class="c1"># Gridpoint time instances</span>
-        <span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">skip_ent</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="n">sd_average</span> <span class="o">=</span> <span class="p">(</span><span class="n">sd_grid</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">sd_grid</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>
-            <span class="n">delta_s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gridpoints</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">gridpoints</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">sd_average</span> <span class="o">&gt;</span> <span class="n">TINY</span><span class="p">:</span>
-                <span class="n">delta_t</span> <span class="o">=</span> <span class="n">delta_s</span> <span class="o">/</span> <span class="n">sd_average</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">delta_t</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1"># If average speed is too slow.</span>
-            <span class="n">t_grid</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">t_grid</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">delta_t</span>
-            <span class="k">if</span> <span class="n">delta_t</span> <span class="o">&lt;</span> <span class="n">TINY</span><span class="p">:</span>  <span class="c1"># if a time increment is too small, skip.</span>
-                <span class="n">skip_ent</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-        <span class="n">t_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">skip_ent</span><span class="p">)</span>
-        <span class="n">gridpoints</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gridpoints</span><span class="p">,</span> <span class="n">skip_ent</span><span class="p">)</span>
-        <span class="n">q_grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">gridpoints</span><span class="p">)</span>
 
-        <span class="n">traj_spline</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">q_grid</span><span class="p">,</span> <span class="n">bc_type</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">v_grid</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">v_spline</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">v_grid_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">v_grid</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">v_grid</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-            <span class="n">v_grid_</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_grid</span>
-            <span class="n">v_grid_</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_grid</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">v_grid_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">v_grid_</span><span class="p">,</span> <span class="n">skip_ent</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-            <span class="n">v_spline</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">t_grid</span><span class="p">,</span> <span class="n">v_grid_</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">return_profile</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">traj_spline</span><span class="p">,</span> <span class="n">v_spline</span><span class="p">,</span> <span class="p">(</span><span class="n">sdd_grid</span><span class="p">,</span> <span class="n">sd_grid</span><span class="p">,</span> <span class="n">v_grid</span><span class="p">,</span> <span class="n">K</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">return_data</span><span class="p">:</span>
-            <span class="c1"># NOTE: the time stamps for each (original) waypoint are</span>
-            <span class="c1">#  evaluated by interpolating the grid points.</span>
-            <span class="n">t_waypts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">get_waypoints</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gridpoints</span><span class="p">,</span> <span class="n">t_grid</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">traj_spline</span><span class="p">,</span> <span class="n">v_spline</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;sdd&#39;</span><span class="p">:</span> <span class="n">sdd_grid</span><span class="p">,</span> <span class="s1">&#39;sd&#39;</span><span class="p">:</span> <span class="n">sd_grid</span><span class="p">,</span>
-                                           <span class="s1">&#39;v&#39;</span><span class="p">:</span> <span class="n">v_grid</span><span class="p">,</span> <span class="s1">&#39;K&#39;</span><span class="p">:</span> <span class="n">K</span><span class="p">,</span> <span class="s1">&#39;t_waypts&#39;</span><span class="p">:</span> <span class="n">t_waypts</span><span class="p">}</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">traj_spline</span><span class="p">,</span> <span class="n">v_spline</span>
 </pre></div>
 
           </div>
+          
         </div>
       </div>
     <div class="clearer"></div>
   </div>
     <div class="footer">
-      &copy;2018, Hung Pham.
+      &copy;2020, Hung Pham.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.6</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
 

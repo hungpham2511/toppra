@@ -1,0 +1,250 @@
+.. only:: html
+
+    .. note::
+        :class: sphx-glr-download-link-note
+
+        Click :ref:`here <sphx_glr_download_auto_examples_plot_kinematics_duration.py>`     to download the full example code
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_auto_examples_plot_kinematics_duration.py:
+
+
+Retime a path to a specific duration
+========================================
+
+`toppra` allows user to parametrize a path to a specific duration
+while still satisfy constraints. We will see how to do this in this
+example. First, import necessary libraries.
+
+
+.. code-block:: default
+
+    import toppra as ta
+    import toppra.constraint as constraint
+    import toppra.algorithm as algo
+    import numpy as np
+    import matplotlib.pyplot as plt
+    import time
+
+    ta.setup_logging("INFO")
+
+
+
+
+
+
+
+
+Parameters
+
+
+.. code-block:: default
+
+    N_samples = 5
+    SEED = 9
+    dof = 7
+
+
+
+
+
+
+
+
+Random waypoints used to obtain a random geometric path. Here,
+we use spline interpolation.
+
+
+.. code-block:: default
+
+    np.random.seed(SEED)
+    way_pts = np.random.randn(N_samples, dof)
+    path = ta.SplineInterpolator(np.linspace(0, 1, 5), way_pts)
+
+
+
+
+
+
+
+
+Create velocity bounds, then velocity constraint object
+
+
+.. code-block:: default
+
+    vlim_ = np.random.rand(dof) * 20
+    vlim = np.vstack((-vlim_, vlim_)).T
+
+
+
+
+
+
+
+
+Create acceleration bounds, then acceleration constraint object
+
+
+.. code-block:: default
+
+    alim_ = np.random.rand(dof) * 2
+    alim = np.vstack((-alim_, alim_)).T
+    pc_vel = constraint.JointVelocityConstraint(vlim)
+    pc_acc = constraint.JointAccelerationConstraint(
+        alim, discretization_scheme=constraint.DiscretizationType.Interpolation)
+
+
+
+
+
+
+
+
+Setup a parametrization instance
+
+
+.. code-block:: default
+
+    instance = algo.TOPPRAsd([pc_vel, pc_acc], path)
+    instance.set_desired_duration(60)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+     INFO [algorithm.py : 100] No gridpoint specified. Automatically choose a gridpoint with 290 points
+     INFO [reachability_algorithm.py : 66] Solver wrapper not supplied. Choose solver wrapper automatically!
+     INFO [reachability_algorithm.py : 75] Select solver seidel
+
+
+
+
+Retime the trajectory, only this step is necessary.
+
+
+.. code-block:: default
+
+    jnt_traj = instance.compute_trajectory(0, 0)
+    ts_sample = np.linspace(0, jnt_traj.get_duration(), 100)
+    qs_sample = jnt_traj(ts_sample, 2)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+     INFO [desired_duration_algorithm.py : 158] Desired duration 60.000000 sec is achievable. Continue computing.
+     INFO [algorithm.py : 185] Successfully parametrize path. Duration: 60.000, previously 1.000)
+     INFO [algorithm.py : 186] Finish parametrization in 0.035 secs
+    /home/circleci/repo/toppra/utils.py:28: DeprecationWarning: Call to deprecated function get_duration in module toppra.interpolator.
+      category=DeprecationWarning,
+
+
+
+
+Output
+
+
+.. code-block:: default
+
+    plt.plot(ts_sample, qs_sample)
+    plt.xlabel("Time (s)")
+    plt.ylabel("Joint acceleration (rad/s^2)")
+    plt.show()
+
+
+
+
+.. image:: /auto_examples/images/sphx_glr_plot_kinematics_duration_001.png
+    :alt: plot kinematics duration
+    :class: sphx-glr-single-img
+
+
+
+
+
+Compute the feasible sets and the controllable sets for viewing.
+Note that these steps are not necessary.
+
+
+.. code-block:: default
+
+    X = instance.compute_feasible_sets()
+    K = instance.compute_controllable_sets(0, 0)
+    _, sd_vec, _ = instance.compute_parameterization(0, 0)
+    X = np.sqrt(X)
+    K = np.sqrt(K)
+    plt.plot(X[:, 0], c='green', label="Feasible sets")
+    plt.plot(X[:, 1], c='green')
+    plt.plot(K[:, 0], '--', c='red', label="Controllable sets")
+    plt.plot(K[:, 1], '--', c='red')
+    plt.plot(sd_vec, label="Velocity profile")
+    plt.title("Path-position path-velocity plot")
+    plt.xlabel("Path position")
+    plt.ylabel("Path velocity square")
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
+
+
+.. image:: /auto_examples/images/sphx_glr_plot_kinematics_duration_002.png
+    :alt: Path-position path-velocity plot
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+     INFO [desired_duration_algorithm.py : 158] Desired duration 60.000000 sec is achievable. Continue computing.
+
+
+
+
+
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  0.364 seconds)
+
+
+.. _sphx_glr_download_auto_examples_plot_kinematics_duration.py:
+
+
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-python
+
+     :download:`Download Python source code: plot_kinematics_duration.py <plot_kinematics_duration.py>`
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
+
+     :download:`Download Jupyter notebook: plot_kinematics_duration.ipynb <plot_kinematics_duration.ipynb>`
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_

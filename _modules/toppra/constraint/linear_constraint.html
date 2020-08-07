@@ -1,0 +1,311 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>toppra.constraint.linear_constraint &#8212; toppra  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">toppra</a></h1>
+
+
+
+<p class="blurb">A robotic motion planning library for path-parametrization</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=hungpham2511&repo=toppra&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/hungpham2511/toppra">
+    <img
+        alt="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
+        src="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for toppra.constraint.linear_constraint</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;This module defines the abstract linear constraint class.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">.constraint</span> <span class="kn">import</span> <span class="n">ConstraintType</span><span class="p">,</span> <span class="n">DiscretizationType</span><span class="p">,</span> <span class="n">Constraint</span>
+<span class="kn">from</span> <span class="nn">..interpolator</span> <span class="kn">import</span> <span class="n">AbstractGeometricPath</span>
+
+
+<div class="viewcode-block" id="LinearConstraint"><a class="viewcode-back" href="../../../python_api.html#toppra.constraint.LinearConstraint">[docs]</a><span class="k">class</span> <span class="nc">LinearConstraint</span><span class="p">(</span><span class="n">Constraint</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A core type of constraints.</span>
+
+<span class="sd">    Also known as Second-order Constraint.</span>
+
+<span class="sd">    A Canonical Linear Constraint has the following form:</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \mathbf a_i u + \mathbf b_i x + \mathbf c_i &amp;= v, \\\\</span>
+<span class="sd">        \mathbf F_i v &amp;\\leq \mathbf g_i, \\\\</span>
+<span class="sd">        x^{bound}_{i, 0} \\leq x &amp;\\leq x^{bound}_{i, 1}, \\\\</span>
+<span class="sd">        u^{bound}_{i, 0} \\leq u &amp;\\leq u^{bound}_{i, 1}.</span>
+
+<span class="sd">    Alternatively, if :math:`\mathbf F_i` is constant for all values</span>
+<span class="sd">    of :math:`i`, then we can consider the simpler constraint:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \mathbf F v &amp;\\leq \mathbf w, \\\\</span>
+
+<span class="sd">    In this case, the returned value of :math:`F` by</span>
+<span class="sd">    `compute_constraint_params` has shape (k, m) instead of (N, k, m),</span>
+<span class="sd">    :math:`w` shape (k) instead of (N, k) and the class attribute</span>
+<span class="sd">    `identical` will be True.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        Derived classes of :class:`LinearConstraint` should at</span>
+<span class="sd">        least implement the method :func:`compute_constraint_params`.</span>
+
+
+<span class="sd">    .. seealso::</span>
+
+<span class="sd">        :class:`JointAccelerationConstraint`</span>
+<span class="sd">        :class:`JointVelocityConstraint`</span>
+<span class="sd">        :class:`CanonicalLinearSecondOrderConstraint`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="LinearConstraint.__init__"><a class="viewcode-back" href="../../../python_api.html#toppra.constraint.LinearConstraint.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constraint_type</span> <span class="o">=</span> <span class="n">ConstraintType</span><span class="o">.</span><span class="n">CanonicalLinear</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">discretization_type</span> <span class="o">=</span> <span class="n">DiscretizationType</span><span class="o">.</span><span class="n">Collocation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_extra_vars</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">identical</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="LinearConstraint.compute_constraint_params"><a class="viewcode-back" href="../../../python_api.html#toppra.constraint.LinearConstraint.compute_constraint_params">[docs]</a>    <span class="k">def</span> <span class="nf">compute_constraint_params</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">AbstractGeometricPath</span><span class="p">,</span> <span class="n">gridpoints</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute numerical coefficients of the given constraint.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path: :class:`Interpolator`</span>
+<span class="sd">            The geometric path.</span>
+<span class="sd">        gridpoints: np.ndarray</span>
+<span class="sd">            Shape (N+1,). Gridpoint use for discretizing path.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        a: np.ndarray or None</span>
+<span class="sd">            Shape (N + 1, m). See notes.</span>
+<span class="sd">        b: np.ndarray, or None</span>
+<span class="sd">            Shape (N + 1, m). See notes.</span>
+<span class="sd">        c: np.ndarray or None</span>
+<span class="sd">            Shape (N + 1, m). See notes.</span>
+<span class="sd">        F: np.ndarray or None</span>
+<span class="sd">            Shape (N + 1, k, m). See notes.</span>
+<span class="sd">        g: np.ndarray or None</span>
+<span class="sd">            Shape (N + 1, k,). See notes</span>
+<span class="sd">        ubound: np.ndarray, or None</span>
+<span class="sd">            Shape (N + 1, 2). See notes.</span>
+<span class="sd">        xbound: np.ndarray or None</span>
+<span class="sd">            Shape (N + 1, 2). See notes.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+
+
+<div class="viewcode-block" id="canlinear_colloc_to_interpolate"><a class="viewcode-back" href="../../../python_api.html#toppra.constraint.canlinear_colloc_to_interpolate">[docs]</a><span class="k">def</span> <span class="nf">canlinear_colloc_to_interpolate</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">xbound</span><span class="p">,</span> <span class="n">ubound</span><span class="p">,</span> <span class="n">gridpoints</span><span class="p">,</span> <span class="n">identical</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Convert a set of parameters to the interpolation discretization scheme.</span>
+
+<span class="sd">    If a set of parameters is None, the resulting set is also None.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a: np.ndarray or None</span>
+<span class="sd">        Shape (N + 1, m). See notes.</span>
+<span class="sd">    b: np.ndarray or None</span>
+<span class="sd">        Shape (N + 1, m). See notes.</span>
+<span class="sd">    c: np.ndarray or None</span>
+<span class="sd">        Shape (N + 1, m). See notes.</span>
+<span class="sd">    F: np.ndarray or None</span>
+<span class="sd">        Shape (N + 1, k, m). See notes.</span>
+<span class="sd">    g: np.ndarray or None</span>
+<span class="sd">        Shape (N + 1, k,). See notes</span>
+<span class="sd">    ubound: np.ndarray, or None</span>
+<span class="sd">        Shape (N + 1, 2). See notes.</span>
+<span class="sd">    xbound: np.ndarray or None</span>
+<span class="sd">        Shape (N + 1, 2). See notes.</span>
+<span class="sd">    gridpoints: np.ndarray</span>
+<span class="sd">        Shape (N+1,). The path discretization.</span>
+<span class="sd">    identical: bool, optional</span>
+<span class="sd">        If True, matrices F and g are identical at all gridpoint.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    a_intp: np.ndarray, or None</span>
+<span class="sd">        Shape (N + 1, m). See notes.</span>
+<span class="sd">    b_intp: np.ndarray, or None</span>
+<span class="sd">        Shape (N + 1, m). See notes.</span>
+<span class="sd">    c_intp: np.ndarray, or None</span>
+<span class="sd">        Shape (N + 1, m). See notes.</span>
+<span class="sd">    F_intp: np.ndarray, or None</span>
+<span class="sd">        Shape (N + 1, k, m). See notes.</span>
+<span class="sd">    g_intp: np.ndarray, or None</span>
+<span class="sd">        Shape (N + 1, k,). See notes</span>
+<span class="sd">    ubound: np.ndarray, or None</span>
+<span class="sd">        Shape (N + 1, 2). See notes.</span>
+<span class="sd">    xbound: np.ndarray, or None</span>
+<span class="sd">        Shape (N + 1, 2). See notes.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">a_intp</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">b_intp</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">c_intp</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">F_intp</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">g_intp</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">identical</span><span class="p">:</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">deltas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">gridpoints</span><span class="p">)</span>
+
+        <span class="n">a_intp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">d</span><span class="p">))</span>
+        <span class="n">a_intp</span><span class="p">[:,</span> <span class="p">:</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span>
+        <span class="n">a_intp</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">d</span><span class="p">:]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">deltas</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">a_intp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">d</span><span class="p">:]</span> <span class="o">=</span> <span class="n">a_intp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:</span><span class="n">d</span><span class="p">]</span>
+
+        <span class="n">b_intp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">d</span><span class="p">))</span>
+        <span class="n">b_intp</span><span class="p">[:,</span> <span class="p">:</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">b</span>
+        <span class="n">b_intp</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">d</span><span class="p">:]</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">b_intp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">d</span><span class="p">:]</span> <span class="o">=</span> <span class="n">b_intp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:</span><span class="n">d</span><span class="p">]</span>
+
+        <span class="n">c_intp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">d</span><span class="p">))</span>
+        <span class="n">c_intp</span><span class="p">[:,</span> <span class="p">:</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
+        <span class="n">c_intp</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">d</span><span class="p">:]</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">c_intp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">d</span><span class="p">:]</span> <span class="o">=</span> <span class="n">c_intp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:</span><span class="n">d</span><span class="p">]</span>
+
+        <span class="n">g_intp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">m</span><span class="p">))</span>
+        <span class="n">g_intp</span><span class="p">[:,</span> <span class="p">:</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span>
+        <span class="n">g_intp</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">:]</span> <span class="o">=</span> <span class="n">g</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">g_intp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">:]</span> <span class="o">=</span> <span class="n">g_intp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:</span><span class="n">m</span><span class="p">]</span>
+
+        <span class="n">F_intp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">m</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">d</span><span class="p">))</span>
+        <span class="n">F_intp</span><span class="p">[:,</span> <span class="p">:</span><span class="n">m</span><span class="p">,</span> <span class="p">:</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span>
+        <span class="n">F_intp</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">:,</span> <span class="n">d</span><span class="p">:]</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">F_intp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="p">:,</span> <span class="n">d</span><span class="p">:]</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">identical</span><span class="p">:</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">m</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">deltas</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">gridpoints</span><span class="p">)</span>
+
+        <span class="n">a_intp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">d</span><span class="p">))</span>
+        <span class="n">a_intp</span><span class="p">[:,</span> <span class="p">:</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span>
+        <span class="n">a_intp</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">d</span><span class="p">:]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">deltas</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">a_intp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">d</span><span class="p">:]</span> <span class="o">=</span> <span class="n">a_intp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:</span><span class="n">d</span><span class="p">]</span>
+
+        <span class="n">b_intp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">d</span><span class="p">))</span>
+        <span class="n">b_intp</span><span class="p">[:,</span> <span class="p">:</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">b</span>
+        <span class="n">b_intp</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">d</span><span class="p">:]</span> <span class="o">=</span> <span class="n">b</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">b_intp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">d</span><span class="p">:]</span> <span class="o">=</span> <span class="n">b_intp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:</span><span class="n">d</span><span class="p">]</span>
+
+        <span class="n">c_intp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">d</span><span class="p">))</span>
+        <span class="n">c_intp</span><span class="p">[:,</span> <span class="p">:</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
+        <span class="n">c_intp</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">d</span><span class="p">:]</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">c_intp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">d</span><span class="p">:]</span> <span class="o">=</span> <span class="n">c_intp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:</span><span class="n">d</span><span class="p">]</span>
+
+        <span class="n">g_intp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">m</span><span class="p">)</span>
+        <span class="n">g_intp</span><span class="p">[:</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span>
+        <span class="n">g_intp</span><span class="p">[</span><span class="n">m</span><span class="p">:]</span> <span class="o">=</span> <span class="n">g</span>
+
+        <span class="n">F_intp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">m</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">d</span><span class="p">))</span>
+        <span class="n">F_intp</span><span class="p">[:</span><span class="n">m</span><span class="p">,</span> <span class="p">:</span><span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span>
+        <span class="n">F_intp</span><span class="p">[</span><span class="n">m</span><span class="p">:,</span> <span class="n">d</span><span class="p">:]</span> <span class="o">=</span> <span class="n">F</span>
+
+    <span class="k">return</span> <span class="n">a_intp</span><span class="p">,</span> <span class="n">b_intp</span><span class="p">,</span> <span class="n">c_intp</span><span class="p">,</span> <span class="n">F_intp</span><span class="p">,</span> <span class="n">g_intp</span><span class="p">,</span> <span class="n">xbound</span><span class="p">,</span> <span class="n">ubound</span></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2020, Hung Pham.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+    <a href="https://github.com/hungpham2511/toppra" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

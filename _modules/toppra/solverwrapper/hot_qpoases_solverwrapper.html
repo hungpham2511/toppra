@@ -1,19 +1,24 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>toppra.solverwrapper.hot_qpoases_solverwrapper &#8212; TOPP-RA 0.1 documentation</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>toppra.solverwrapper.hot_qpoases_solverwrapper &#8212; toppra  documentation</title>
     <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
    
@@ -27,7 +32,7 @@
     
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../../index.html">TOPP-RA</a></h1>
+<h1 class="logo"><a href="../../../index.html">toppra</a></h1>
 
 
 
@@ -48,7 +53,7 @@
     
 
 <p>
-<a href="https://travis-ci.org/hungpham2511/toppra">
+<a class="badge" href="https://travis-ci.org/hungpham2511/toppra">
     <img
         alt="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
         src="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
@@ -56,14 +61,6 @@
 </a>
 </p>
 
-
-<h3>Navigation</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation instructions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../tutorials.html">Tutorials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../notes.html">Notes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Module references</a></li>
-</ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
@@ -75,57 +72,67 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <h1>Source code for toppra.solverwrapper.hot_qpoases_solverwrapper</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">.solverwrapper</span> <span class="k">import</span> <span class="n">SolverWrapper</span>
+<span></span><span class="kn">from</span> <span class="nn">.solverwrapper</span> <span class="kn">import</span> <span class="n">SolverWrapper</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">..constraint</span> <span class="k">import</span> <span class="n">ConstraintType</span>
-<span class="kn">from</span> <span class="nn">..constants</span> <span class="k">import</span> <span class="n">INFTY</span>
+<span class="kn">from</span> <span class="nn">..constraint</span> <span class="kn">import</span> <span class="n">ConstraintType</span>
+<span class="kn">from</span> <span class="nn">..constants</span> <span class="kn">import</span> <span class="n">QPOASES_INFTY</span><span class="p">,</span> <span class="n">TINY</span><span class="p">,</span> <span class="n">SMALL</span>
+<span class="kn">from</span> <span class="nn">..exceptions</span> <span class="kn">import</span> <span class="n">SolverNotFound</span>
+
+
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">qpoases</span> <span class="k">import</span> <span class="p">(</span><span class="n">PyOptions</span> <span class="k">as</span> <span class="n">Options</span><span class="p">,</span> <span class="n">PyPrintLevel</span> <span class="k">as</span> <span class="n">PrintLevel</span><span class="p">,</span>
-                         <span class="n">PyReturnValue</span> <span class="k">as</span> <span class="n">ReturnValue</span><span class="p">,</span> <span class="n">PySQProblem</span> <span class="k">as</span> <span class="n">SQProblem</span><span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">qpoases</span> <span class="kn">import</span> <span class="p">(</span>
+        <span class="n">PyOptions</span> <span class="k">as</span> <span class="n">Options</span><span class="p">,</span>
+        <span class="n">PyPrintLevel</span> <span class="k">as</span> <span class="n">PrintLevel</span><span class="p">,</span>
+        <span class="n">PyReturnValue</span> <span class="k">as</span> <span class="n">ReturnValue</span><span class="p">,</span>
+        <span class="n">PySQProblem</span> <span class="k">as</span> <span class="n">SQProblem</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="n">qpoases_FOUND</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="n">qpoases_FOUND</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-8</span>  <span class="c1"># Coefficient to check for qpoases tolerances TODO: shift this to constants.py</span>
-<span class="n">INF</span> <span class="o">=</span> <span class="n">INFTY</span>
+<div class="viewcode-block" id="hotqpOASESSolverWrapper"><a class="viewcode-back" href="../../../python_api.html#toppra.solverwrapper.hotqpOASESSolverWrapper">[docs]</a><span class="k">class</span> <span class="nc">hotqpOASESSolverWrapper</span><span class="p">(</span><span class="n">SolverWrapper</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;`qpOASES` solver wrapper with hot-start.</span>
 
+<span class="sd">    This wrapper takes advantage of the warm-start capability of the</span>
+<span class="sd">    qpOASES quadratic programming solver. It uses two different</span>
+<span class="sd">    qp solvers. One to solve for maximized controllable sets and one to</span>
+<span class="sd">    solve for minimized controllable sets. The wrapper selects which solver</span>
+<span class="sd">    to use by looking at the optimization direction.</span>
 
-<div class="viewcode-block" id="hotqpOASESSolverWrapper"><a class="viewcode-back" href="../../../modules.html#toppra.solverwrapper.hot_qpoases_solverwrapper.hotqpOASESSolverWrapper">[docs]</a><span class="k">class</span> <span class="nc">hotqpOASESSolverWrapper</span><span class="p">(</span><span class="n">SolverWrapper</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A solver wrapper using `qpOASES`.</span>
-
-<span class="sd">    This wrapper takes advantage of the warm-start capability of</span>
-<span class="sd">    qpOASES quadratic programming solver by using two different</span>
-<span class="sd">    solvers. One to solve for maximized controllable sets and one to</span>
-<span class="sd">    solve for minimized controllable sets.</span>
+<span class="sd">    This solver wrapper also scale data before invoking `qpOASES`.</span>
 
 <span class="sd">    If the logger &quot;toppra&quot; is set to debug level, qpoases solvers are</span>
 <span class="sd">    initialized with PrintLevel.HIGH. Otherwise, these are initialized</span>
 <span class="sd">    with PrintLevel.NONE</span>
 
+<span class="sd">    Currently only support Canonical Linear Constraints.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    constraint_list: list of :class:`.Constraint`</span>
+<span class="sd">    constraint_list: :class:`.Constraint` []</span>
 <span class="sd">        The constraints the robot is subjected to.</span>
 <span class="sd">    path: :class:`.Interpolator`</span>
 <span class="sd">        The geometric path.</span>
@@ -135,14 +142,30 @@
 <span class="sd">        Disable check for solution validity. Improve speed by about</span>
 <span class="sd">        20% but entails the possibility that failure is not reported</span>
 <span class="sd">        correctly.</span>
+<span class="sd">    scaling_solverwrapper: bool, optional</span>
+<span class="sd">        If is True, try to scale the data of each optimization before</span>
+<span class="sd">        running.  Important: Currently scaling is always done</span>
+<span class="sd">        regardless of the value of this variable. To be fixed.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraint_list</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">path_discretization</span><span class="p">,</span> <span class="n">disable_check</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="k">assert</span> <span class="n">qpoases_FOUND</span><span class="p">,</span> <span class="s2">&quot;toppra is unable to find any installation of qpoases!&quot;</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">hotqpOASESSolverWrapper</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">constraint_list</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">path_discretization</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">constraint_list</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">,</span>
+        <span class="n">path_discretization</span><span class="p">,</span>
+        <span class="n">disable_check</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">scaling_solverwrapper</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">qpoases_FOUND</span><span class="p">:</span>
+            <span class="n">SolverNotFound</span><span class="p">(</span><span class="s2">&quot;toppra is unable to find any installation of qpoases!&quot;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">hotqpOASESSolverWrapper</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">constraint_list</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">path_discretization</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_disable_check</span> <span class="o">=</span> <span class="n">disable_check</span>
-        <span class="c1"># Currently only support Canonical Linear Constraint</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">nC</span> <span class="o">=</span> <span class="mi">2</span> <span class="c1"># First constraint is x + 2 D u &lt;= xnext_max, second is xnext_min &lt;= x + 2D u</span>
+
+        <span class="c1"># First constraint is x + 2 D u &lt;= xnext_max, second is xnext_min &lt;= x + 2D u</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nC</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># number of Constraints.</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">constraint</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">constraint_list</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">constraint</span><span class="o">.</span><span class="n">get_constraint_type</span><span class="p">()</span> <span class="o">!=</span> <span class="n">ConstraintType</span><span class="o">.</span><span class="n">CanonicalLinear</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">NotImplementedError</span>
@@ -153,40 +176,46 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">nC</span> <span class="o">+=</span> <span class="n">F</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
+        <span class="c1"># qpOASES coefficient arrays</span>
+        <span class="c1"># l &lt;= var &lt;= h</span>
+        <span class="c1"># lA &lt;= A var &lt;= hA</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nC</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nV</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_lA</span> <span class="o">=</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nC</span><span class="p">)</span> <span class="o">*</span> <span class="n">INF</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_hA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nC</span><span class="p">)</span> <span class="o">*</span> <span class="n">INF</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_l</span> <span class="o">=</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">INF</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">INF</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lA</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nC</span><span class="p">)</span> <span class="o">*</span> <span class="n">QPOASES_INFTY</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nC</span><span class="p">)</span> <span class="o">*</span> <span class="n">QPOASES_INFTY</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_l</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">QPOASES_INFTY</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">QPOASES_INFTY</span>
 
-    <span class="k">def</span> <span class="nf">setup_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="hotqpOASESSolverWrapper.setup_solver"><a class="viewcode-back" href="../../../python_api.html#toppra.solverwrapper.hotqpOASESSolverWrapper.setup_solver">[docs]</a>    <span class="k">def</span> <span class="nf">setup_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initiate two internal solvers for warm-start.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">option</span> <span class="o">=</span> <span class="n">Options</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">logger</span><span class="o">.</span><span class="n">getEffectiveLevel</span><span class="p">()</span> <span class="o">==</span> <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span>
             <span class="c1"># option.printLevel = PrintLevel.HIGH</span>
             <span class="n">option</span><span class="o">.</span><span class="n">printLevel</span> <span class="o">=</span> <span class="n">PrintLevel</span><span class="o">.</span><span class="n">NONE</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">option</span><span class="o">.</span><span class="n">printLevel</span> <span class="o">=</span> <span class="n">PrintLevel</span><span class="o">.</span><span class="n">NONE</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver_up</span> <span class="o">=</span> <span class="n">SQProblem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nV</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nC</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver_up</span><span class="o">.</span><span class="n">setOptions</span><span class="p">(</span><span class="n">option</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver_down</span> <span class="o">=</span> <span class="n">SQProblem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nV</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nC</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver_down</span><span class="o">.</span><span class="n">setOptions</span><span class="p">(</span><span class="n">option</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver_minimizing</span> <span class="o">=</span> <span class="n">SQProblem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nV</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nC</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver_minimizing</span><span class="o">.</span><span class="n">setOptions</span><span class="p">(</span><span class="n">option</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver_maximizing</span> <span class="o">=</span> <span class="n">SQProblem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nV</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nC</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver_maximizing</span><span class="o">.</span><span class="n">setOptions</span><span class="p">(</span><span class="n">option</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver_up_recent_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver_down_recent_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver_minimizing_recent_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver_maximizing_recent_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span></div>
 
     <span class="k">def</span> <span class="nf">close_solver</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver_up</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">solver_down</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver_minimizing</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">solver_maximizing</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="hotqpOASESSolverWrapper.solve_stagewise_optim"><a class="viewcode-back" href="../../../modules.html#toppra.solverwrapper.hot_qpoases_solverwrapper.hotqpOASESSolverWrapper.solve_stagewise_optim">[docs]</a>    <span class="k">def</span> <span class="nf">solve_stagewise_optim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">x_next_min</span><span class="p">,</span> <span class="n">x_next_max</span><span class="p">):</span>
-        <span class="c1"># NOTE: qpOASES solve QPs of the following form:</span>
-        <span class="c1">#  min    0.5 y^T H y + g^T y</span>
-        <span class="c1">#  s.t    lA &lt;= Ay &lt;= hA</span>
-        <span class="c1">#         l  &lt;=  y &lt;= h</span>
+<div class="viewcode-block" id="hotqpOASESSolverWrapper.solve_stagewise_optim"><a class="viewcode-back" href="../../../python_api.html#toppra.solverwrapper.hotqpOASESSolverWrapper.solve_stagewise_optim">[docs]</a>    <span class="k">def</span> <span class="nf">solve_stagewise_optim</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">,</span> <span class="n">x_next_min</span><span class="p">,</span> <span class="n">x_next_max</span><span class="p">):</span>
         <span class="k">assert</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="ow">and</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">i</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_l</span><span class="p">[:]</span> <span class="o">=</span> <span class="o">-</span><span class="n">INF</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_h</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">INF</span>
+        <span class="c1"># solve the scaled optimization problem</span>
+        <span class="c1">#  min    0.5 y^T scale H scale y + g^T scale y</span>
+        <span class="c1">#  s.t    lA &lt;= A scale y &lt;= hA</span>
+        <span class="c1">#         l  &lt;=  scale y &lt;= h</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_l</span><span class="p">[:]</span> <span class="o">=</span> <span class="o">-</span><span class="n">QPOASES_INFTY</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_h</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">QPOASES_INFTY</span>
 
         <span class="k">if</span> <span class="n">x_min</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_l</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_l</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">x_min</span><span class="p">)</span>
@@ -197,16 +226,18 @@
             <span class="n">delta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_deltas</span><span class="p">()[</span><span class="n">i</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">x_next_min</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">delta</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_hA</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">x_next_min</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_hA</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">x_next_min</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_hA</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">INF</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_hA</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">QPOASES_INFTY</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lA</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">QPOASES_INFTY</span>
             <span class="k">if</span> <span class="n">x_next_max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">delta</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_hA</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_next_max</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_hA</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">INF</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_hA</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">QPOASES_INFTY</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_lA</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">QPOASES_INFTY</span>
         <span class="n">cur_index</span> <span class="o">=</span> <span class="mi">2</span>
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">)):</span>
             <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">F</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">ubound</span><span class="p">,</span> <span class="n">xbound</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
@@ -214,16 +245,16 @@
             <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">identical</span><span class="p">:</span>
                     <span class="n">nC_</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">[</span><span class="n">cur_index</span><span class="p">:</span> <span class="n">cur_index</span> <span class="o">+</span> <span class="n">nC_</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">[</span><span class="n">cur_index</span><span class="p">:</span> <span class="n">cur_index</span> <span class="o">+</span> <span class="n">nC_</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_hA</span><span class="p">[</span><span class="n">cur_index</span><span class="p">:</span> <span class="n">cur_index</span> <span class="o">+</span> <span class="n">nC_</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span> <span class="o">-</span> <span class="n">F</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_lA</span><span class="p">[</span><span class="n">cur_index</span><span class="p">:</span> <span class="n">cur_index</span> <span class="o">+</span> <span class="n">nC_</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">INF</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">[</span><span class="n">cur_index</span> <span class="p">:</span> <span class="n">cur_index</span> <span class="o">+</span> <span class="n">nC_</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">[</span><span class="n">cur_index</span> <span class="p">:</span> <span class="n">cur_index</span> <span class="o">+</span> <span class="n">nC_</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_hA</span><span class="p">[</span><span class="n">cur_index</span> <span class="p">:</span> <span class="n">cur_index</span> <span class="o">+</span> <span class="n">nC_</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span> <span class="o">-</span> <span class="n">F</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_lA</span><span class="p">[</span><span class="n">cur_index</span> <span class="p">:</span> <span class="n">cur_index</span> <span class="o">+</span> <span class="n">nC_</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">QPOASES_INFTY</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">nC_</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">[</span><span class="n">cur_index</span><span class="p">:</span> <span class="n">cur_index</span> <span class="o">+</span> <span class="n">nC_</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">[</span><span class="n">cur_index</span><span class="p">:</span> <span class="n">cur_index</span> <span class="o">+</span> <span class="n">nC_</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_hA</span><span class="p">[</span><span class="n">cur_index</span><span class="p">:</span> <span class="n">cur_index</span> <span class="o">+</span> <span class="n">nC_</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_lA</span><span class="p">[</span><span class="n">cur_index</span><span class="p">:</span> <span class="n">cur_index</span> <span class="o">+</span> <span class="n">nC_</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">INF</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">[</span><span class="n">cur_index</span> <span class="p">:</span> <span class="n">cur_index</span> <span class="o">+</span> <span class="n">nC_</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">[</span><span class="n">cur_index</span> <span class="p">:</span> <span class="n">cur_index</span> <span class="o">+</span> <span class="n">nC_</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_hA</span><span class="p">[</span><span class="n">cur_index</span> <span class="p">:</span> <span class="n">cur_index</span> <span class="o">+</span> <span class="n">nC_</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">F</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_lA</span><span class="p">[</span><span class="n">cur_index</span> <span class="p">:</span> <span class="n">cur_index</span> <span class="o">+</span> <span class="n">nC_</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">QPOASES_INFTY</span>
                 <span class="n">cur_index</span> <span class="o">=</span> <span class="n">cur_index</span> <span class="o">+</span> <span class="n">nC_</span>
             <span class="k">if</span> <span class="n">ubound</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_l</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ubound</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
@@ -233,73 +264,190 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_l</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_l</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">xbound</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_h</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_h</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">xbound</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
 
+        <span class="c1"># if x_min == x_max, do not solve the 2D linear program, instead, do a line search</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x_min</span> <span class="o">-</span> <span class="n">x_max</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">TINY</span> <span class="ow">and</span> <span class="n">H</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_no_vars</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;x_min (</span><span class="si">{:f}</span><span class="s2">) equals x_max (</span><span class="si">{:f}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span><span class="p">))</span>
+            <span class="n">u_min</span> <span class="o">=</span> <span class="o">-</span><span class="n">QPOASES_INFTY</span>
+            <span class="n">u_max</span> <span class="o">=</span> <span class="n">QPOASES_INFTY</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">u_max</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
+                        <span class="n">u_max</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hA</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">x_min</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+                    <span class="p">)</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">u_min</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
+                        <span class="n">u_min</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_hA</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">x_min</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+                    <span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">u_min</span> <span class="o">-</span> <span class="n">u_max</span><span class="p">)</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="n">u_max</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">SMALL</span><span class="p">:</span>  <span class="c1"># problem infeasible</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s2">&quot;u_min &gt; u_max by </span><span class="si">{:f}</span><span class="s2">. Might not be critical. &quot;</span>
+                    <span class="s2">&quot;Returning failure.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">u_min</span> <span class="o">-</span> <span class="n">u_max</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="n">g</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">u_max</span><span class="p">,</span> <span class="n">x_min</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">u_max</span> <span class="o">*</span> <span class="n">delta</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">u_min</span><span class="p">,</span> <span class="n">x_min</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">u_min</span> <span class="o">*</span> <span class="n">delta</span><span class="p">])</span>
+
         <span class="k">if</span> <span class="n">H</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">H</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">get_no_vars</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_no_vars</span><span class="p">()))</span>
+            <span class="n">H</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">get_no_vars</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_no_vars</span><span class="p">()))</span> <span class="o">*</span> <span class="mf">1e-18</span>
+            <span class="p">)</span>  <span class="c1"># regularization,  very important</span>
 
-        <span class="c1"># Select what solver to use</span>
-        <span class="k">if</span> <span class="n">g</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Choose solver_up</span>
-            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solver_up_recent_index</span> <span class="o">-</span> <span class="n">i</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Choose solver [up] - init&quot;</span><span class="p">)</span>
-                <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_up</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_l</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lA</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hA</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1000</span><span class="p">]))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Choose solver [up] - hotstart&quot;</span><span class="p">)</span>
-                <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_up</span><span class="o">.</span><span class="n">hotstart</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_l</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lA</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hA</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1000</span><span class="p">]))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">solver_up_recent_index</span> <span class="o">=</span> <span class="n">i</span>
-        <span class="k">else</span><span class="p">:</span>  <span class="c1"># Choose solver_down</span>
-            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solver_down_recent_index</span> <span class="o">-</span> <span class="n">i</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Choose solver [down] - init&quot;</span><span class="p">)</span>
-                <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_down</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_l</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lA</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hA</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1000</span><span class="p">]))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Choose solver [down] - hotstart&quot;</span><span class="p">)</span>
-                <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_down</span><span class="o">.</span><span class="n">hotstart</span><span class="p">(</span><span class="n">H</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_l</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lA</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hA</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1000</span><span class="p">]))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">solver_down_recent_index</span> <span class="o">=</span> <span class="n">i</span>
+        <span class="n">ratio_col1</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">[</span><span class="mi">2</span><span class="p">:,</span> <span class="mi">0</span><span class="p">]))</span> <span class="o">+</span> <span class="mf">1e-5</span>
+        <span class="p">)</span>  <span class="c1"># the maximum possible value for both ratios is 100000</span>
+        <span class="n">ratio_col2</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">[</span><span class="mi">2</span><span class="p">:,</span> <span class="mi">1</span><span class="p">]))</span> <span class="o">+</span> <span class="mf">1e-5</span><span class="p">)</span>
+        <span class="n">variable_scales</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ratio_col1</span><span class="p">,</span> <span class="n">ratio_col2</span><span class="p">])</span>
+        <span class="c1"># variable_scales = np.array([5000.0, 2000.0])</span>
+        <span class="n">variable_scales_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">variable_scales</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">res</span> <span class="o">==</span> <span class="n">ReturnValue</span><span class="o">.</span><span class="n">SUCCESSFUL_RETURN</span><span class="p">:</span>
-            <span class="n">var</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nV</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">g</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">solver_up</span><span class="o">.</span><span class="n">getPrimalSolution</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">solver_down</span><span class="o">.</span><span class="n">getPrimalSolution</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s2">&quot;min ratio col 1 </span><span class="si">{:f}</span><span class="s2">, col 2 </span><span class="si">{:f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ratio_col1</span><span class="p">,</span> <span class="n">ratio_col2</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="c1"># ratio scaling</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_A</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">variable_scales_mat</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_l</span> <span class="o">/</span> <span class="n">variable_scales</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h</span> <span class="o">/</span> <span class="n">variable_scales</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_g</span> <span class="o">=</span> <span class="n">g</span> <span class="o">*</span> <span class="n">variable_scales</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_H</span> <span class="o">=</span> <span class="n">variable_scales_mat</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">H</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">variable_scales_mat</span><span class="p">)</span>
+
+        <span class="c1"># rows scaling</span>
+        <span class="n">row_magnitude</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">row_scaling_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">((</span><span class="n">row_magnitude</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">row_scaling_mat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">row_scaling_mat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lA</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">row_scaling_mat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hA</span><span class="p">)</span>
+
+        <span class="n">return_value</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve_optimization</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">return_value</span> <span class="o">==</span> <span class="n">ReturnValue</span><span class="o">.</span><span class="n">SUCCESSFUL_RETURN</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;optimal value: </span><span class="si">{:}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">var</span><span class="p">))</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_disable_check</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">var</span>
+                <span class="k">return</span> <span class="n">var</span> <span class="o">*</span> <span class="n">variable_scales</span>
 
             <span class="c1"># Check for constraint feasibility</span>
-            <span class="n">success</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_l</span> <span class="o">&lt;=</span> <span class="n">var</span> <span class="o">+</span> <span class="n">eps</span><span class="p">)</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">var</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h</span> <span class="o">+</span> <span class="n">eps</span><span class="p">)</span>
-                       <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">,</span> <span class="n">var</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hA</span> <span class="o">+</span> <span class="n">eps</span><span class="p">)</span>
-                       <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">,</span> <span class="n">var</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lA</span> <span class="o">-</span> <span class="n">eps</span><span class="p">))</span>
+            <span class="n">success</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_l</span> <span class="o">&lt;=</span> <span class="n">var</span> <span class="o">+</span> <span class="n">TINY</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">var</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h</span> <span class="o">+</span> <span class="n">TINY</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">,</span> <span class="n">var</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hA</span> <span class="o">+</span> <span class="n">TINY</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">,</span> <span class="n">var</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lA</span> <span class="o">-</span> <span class="n">TINY</span><span class="p">)</span>
+            <span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
                 <span class="c1"># import ipdb; ipdb.set_trace()</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">fatal</span><span class="p">(</span><span class="s2">&quot;Hotstart fails but qpOASES does not report correctly. </span><span class="se">\n</span><span class="s2"> &quot;</span>
-                             <span class="s2">&quot;var: </span><span class="si">{:}</span><span class="s2">, lower_bound: </span><span class="si">{:}</span><span class="s2">, higher_bound</span><span class="si">{:}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_l</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h</span><span class="p">))</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">fatal</span><span class="p">(</span>
+                    <span class="s2">&quot;Hotstart fails but qpOASES does not report correctly. </span><span class="se">\n</span><span class="s2"> &quot;</span>
+                    <span class="s2">&quot;var: </span><span class="si">{:}</span><span class="s2">, lower_bound: </span><span class="si">{:}</span><span class="s2">, higher_bound</span><span class="si">{:}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">var</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_l</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
                 <span class="c1"># TODO: Investigate why this happen and fix the</span>
                 <span class="c1"># relevant code (in qpOASES wrapper)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">var</span>
+                <span class="k">return</span> <span class="n">var</span> <span class="o">*</span> <span class="n">variable_scales</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;qpOASES error code: </span><span class="si">{:d}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Optimization fails. qpOASES error code: </span><span class="si">%d</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">return_value</span><span class="p">)</span>
 
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hA</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="mi">0</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lA</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_h</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="mi">0</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_l</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">fatal</span><span class="p">(</span>
+                    <span class="s2">&quot;(0, 0) satisfies all constraints =&gt; error due to numerical errors.&quot;</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_lA</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_hA</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_l</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_h</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;(0, 0) does not satisfy all constraints.&quot;</span><span class="p">)</span>
 
-        <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_no_vars</span><span class="p">())</span>
-        <span class="n">res</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
-        <span class="k">return</span> <span class="n">res</span></div></div>
+        <span class="n">return_value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_no_vars</span><span class="p">())</span>
+        <span class="n">return_value</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">return</span> <span class="n">return_value</span></div>
+
+    <span class="k">def</span> <span class="nf">_solve_optimization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+        <span class="n">var</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nV</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_g</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># Choose solver_minimizing</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solver_minimizing_recent_index</span> <span class="o">-</span> <span class="n">i</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;solver_minimizing [init]&quot;</span><span class="p">)</span>
+                <span class="n">return_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_minimizing</span><span class="o">.</span><span class="n">init</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_H</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_g</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_l</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_h</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_lA</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_hA</span><span class="p">,</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1000</span><span class="p">]),</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;solver_minimizing [hotstart]&quot;</span><span class="p">)</span>
+                <span class="n">return_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_minimizing</span><span class="o">.</span><span class="n">hotstart</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_H</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_g</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_l</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_h</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_lA</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_hA</span><span class="p">,</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1000</span><span class="p">]),</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solver_minimizing_recent_index</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solver_minimizing</span><span class="o">.</span><span class="n">getPrimalSolution</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># Choose solver_maximizing</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">solver_maximizing_recent_index</span> <span class="o">-</span> <span class="n">i</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;solver_maximizing [init]&quot;</span><span class="p">)</span>
+                <span class="n">return_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_maximizing</span><span class="o">.</span><span class="n">init</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_H</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_g</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_l</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_h</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_lA</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_hA</span><span class="p">,</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1000</span><span class="p">]),</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;solver_maximizing [hotstart]&quot;</span><span class="p">)</span>
+                <span class="n">return_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solver_maximizing</span><span class="o">.</span><span class="n">hotstart</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_H</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_g</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_A</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_l</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_h</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_lA</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_hA</span><span class="p">,</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1000</span><span class="p">]),</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solver_maximizing_recent_index</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solver_maximizing</span><span class="o">.</span><span class="n">getPrimalSolution</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">return_value</span><span class="p">,</span> <span class="n">var</span></div>
 </pre></div>
 
           </div>
+          
         </div>
       </div>
     <div class="clearer"></div>
   </div>
     <div class="footer">
-      &copy;2018, Hung Pham.
+      &copy;2020, Hung Pham.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.6</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
 

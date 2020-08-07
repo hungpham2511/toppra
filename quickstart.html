@@ -1,0 +1,300 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quickstart &#8212; toppra  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">toppra</a></h1>
+
+
+
+<p class="blurb">A robotic motion planning library for path-parametrization</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=hungpham2511&repo=toppra&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a class="badge" href="https://travis-ci.org/hungpham2511/toppra">
+    <img
+        alt="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
+        src="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
+    />
+</a>
+</p>
+
+
+
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Quickstart</a><ul>
+<li><a class="reference internal" href="#represent-geometric-path-and-trajectory">Represent geometric path and trajectory</a><ul>
+<li><a class="reference internal" href="#spline-interpolator">Spline Interpolator</a></li>
+<li><a class="reference internal" href="#implement-your-own-interpolator">Implement your own Interpolator</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#retime-geometric-paths-with-parametrization">Retime geometric paths with parametrization</a><ul>
+<li><a class="reference internal" href="#trapezoidal-reparametrization">Trapezoidal Reparametrization</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#time-optimal-retime-with-kinematics-constraints">Time-optimal retime with kinematics constraints</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="quickstart">
+<h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="represent-geometric-path-and-trajectory">
+<h2>Represent geometric path and trajectory<a class="headerlink" href="#represent-geometric-path-and-trajectory" title="Permalink to this headline">¶</a></h2>
+<p>In TOPP-RA, both geometric paths <span class="math notranslate nohighlight">\(\mathbf q(s)_{s \in [0, 1]}\)</span>
+and parametrized trajectories <span class="math notranslate nohighlight">\(\mathbf q(t)_{t \in [0, T]}\)</span> are
+represented by classes that implement the abstract interface
+<a class="reference internal" href="python_api.html#toppra.interpolator.AbstractGeometricPath" title="toppra.interpolator.AbstractGeometricPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractGeometricPath</span></code></a>. The most important function is
+<a class="reference internal" href="python_api.html#toppra.interpolator.AbstractGeometricPath.__call__" title="toppra.interpolator.AbstractGeometricPath.__call__"><code class="xref py py-func docutils literal notranslate"><span class="pre">__call__()</span></code></a> which can be used to evaluate
+the configuration, first-derivatives and second-derivatives
+respectively.</p>
+<div class="section" id="spline-interpolator">
+<h3>Spline Interpolator<a class="headerlink" href="#spline-interpolator" title="Permalink to this headline">¶</a></h3>
+<p>In the examples, the child class <a class="reference internal" href="python_api.html#toppra.SplineInterpolator" title="toppra.SplineInterpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">toppra.SplineInterpolator</span></code></a> is
+used extensively, due to the expressiveness and convenience offered by
+cubic spline. Note that this class is implemented as a thin wrapper
+over <cite>scipy</cite>’s <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.CubicSpline.html#scipy.interpolate.CubicSpline" title="(in SciPy v1.5.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">CubicSpline</span></code></a>. Therefore, it
+requires <cite>scipy</cite> to work
+properly. <a class="reference internal" href="python_api.html#toppra.SplineInterpolator" title="toppra.SplineInterpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">SplineInterpolator</span></code></a>’s usage is simple.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">toppra</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s_array</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wp_array</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">toppra</span><span class="o">.</span><span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">s_array</span><span class="p">,</span> <span class="n">wp_array</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>That’s it. To verify that is works correctly, let’s try plotting.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s_sampled</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q_sampled</span> <span class="o">=</span> <span class="n">path</span><span class="p">(</span><span class="n">s_sampled</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q_sampled</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+<span class="go">array([[0.        , 0.        ],</span>
+<span class="go">       [0.02020202, 0.07999184]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">s_sampled</span><span class="p">,</span> <span class="n">q_sampled</span><span class="p">);</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>  
+<span class="go">[&lt;matplotlib.lines.Line2D object at 0x...&gt;, &lt;matplotlib.lines.Line2D object at 0x...&gt;]</span>
+</pre></div>
+</div>
+<p>You will see the following plot show up.</p>
+<div class="figure align-default" id="id1">
+<img alt="_images/geometric_path.png" src="_images/geometric_path.png" />
+<p class="caption"><span class="caption-text">Geometric path plot.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>The derivatives can be inspected by calling <cite>path(positions, order)</cite>
+using <cite>order=1</cite> for the first derivative and <cite>order=2</cite> for the second
+derivative respectively.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">q_dot</span> <span class="o">=</span> <span class="n">path</span><span class="p">(</span><span class="n">s_sampled</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q_ddot</span> <span class="o">=</span> <span class="n">path</span><span class="p">(</span><span class="n">s_sampled</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="implement-your-own-interpolator">
+<h3>Implement your own Interpolator<a class="headerlink" href="#implement-your-own-interpolator" title="Permalink to this headline">¶</a></h3>
+<p>TOPP-RA can handle custom Interpolators easily, as long as it conforms
+to the abstract interface of
+<a class="reference internal" href="python_api.html#toppra.interpolator.AbstractGeometricPath" title="toppra.interpolator.AbstractGeometricPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">toppra.interpolator.AbstractGeometricPath</span></code></a>.</p>
+</div>
+</div>
+<div class="section" id="retime-geometric-paths-with-parametrization">
+<h2>Retime geometric paths with parametrization<a class="headerlink" href="#retime-geometric-paths-with-parametrization" title="Permalink to this headline">¶</a></h2>
+<p>The parametrization step, given a fixed time-parametrization
+<span class="math notranslate nohighlight">\(s(t)\)</span> and a geometric path <span class="math notranslate nohighlight">\(\mathbf{p}(s)\)</span>, is defined
+like so:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\mathbf q(t) &amp;= \mathbf p(s(t)) \\
+\dot{\mathbf p}(t) &amp;= \mathbf p'(s) \dot s(t) \\
+\ddot{\mathbf p}(t) &amp;= \mathbf p'(s) \ddot s(t) + \mathbf p''(s) \dot s(t)^2\end{split}\]</div>
+<p><cite>toppra</cite> provides way to realize this step programmatically. Consider
+a simple geometric path</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">toppra</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">toppra</span><span class="o">.</span><span class="n">SplineInterpolator</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)])</span>
+</pre></div>
+</div>
+<p>Let’s consider a simple parametrization</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gridpoints</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">velocities</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>We can quickly parametrize the geometric path with <cite>toppra</cite>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">path_new</span> <span class="o">=</span> <span class="n">toppra</span><span class="o">.</span><span class="n">ParametrizeConstAccel</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">gridpoints</span><span class="p">,</span> <span class="n">velocities</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Under the hood, <code class="xref py py-class docutils literal notranslate"><span class="pre">ParametrizeConstAccel</span></code> assumes that the path
+acceleration within each segment is constant. Combining with the
+function composition rule, the original is
+parametrized. <code class="xref py py-class docutils literal notranslate"><span class="pre">ParametrizeConstAccel</span></code> derives from
+<a class="reference internal" href="python_api.html#toppra.interpolator.AbstractGeometricPath" title="toppra.interpolator.AbstractGeometricPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractGeometricPath</span></code></a> and defines all specified methods such
+as computing the positions, derivatives and duration.</p>
+<p>Any geometric path implementing the abstract geometric path interface
+can be used with <code class="xref py py-class docutils literal notranslate"><span class="pre">ParametrizeConstAccel</span></code>.</p>
+<p>The parametrization can be inspected</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">path_new</span><span class="o">.</span><span class="n">plot_parametrization</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="figure align-default" id="id2">
+<img alt="_images/interpolate_param.png" src="_images/interpolate_param.png" />
+<p class="caption"><span class="caption-text">Parametrization.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">path_new</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">array([0., 0.])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">path_new</span><span class="o">.</span><span class="n">path_interval</span>
+<span class="go">array([0.        , 1.91666667])</span>
+</pre></div>
+</div>
+<div class="section" id="trapezoidal-reparametrization">
+<h3>Trapezoidal Reparametrization<a class="headerlink" href="#trapezoidal-reparametrization" title="Permalink to this headline">¶</a></h3>
+<p>It’s common in automation and robotics to use trapezoidal velocity
+profile, or S-curve to make a movement more <em>graceful</em>. This can be
+easily implemented using the constant acceleration reparametrizer
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ParametrizeConstAccel</span></code>.</p>
+<p>See this code snippet below.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">toppra</span><span class="o">.</span><span class="n">SplineInterpolator</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gridpoints</span><span class="p">,</span> <span class="n">velocities</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">path_new</span> <span class="o">=</span> <span class="n">toppra</span><span class="o">.</span><span class="n">ParametrizeConstAccel</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">gridpoints</span><span class="p">,</span> <span class="n">velocities</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">path_new</span><span class="o">.</span><span class="n">plot_parametrization</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="figure align-default" id="id3">
+<img alt="_images/trapezoidal.png" src="_images/trapezoidal.png" />
+<p class="caption"><span class="caption-text">Parametrization.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<p>TODO: It will be useful to have a collection of generators that
+generate these velocity profiles, based on the desired maximum
+velocity, duration, et cetera.</p>
+</div>
+</div>
+<div class="section" id="time-optimal-retime-with-kinematics-constraints">
+<h2>Time-optimal retime with kinematics constraints<a class="headerlink" href="#time-optimal-retime-with-kinematics-constraints" title="Permalink to this headline">¶</a></h2>
+<p>The <cite>toppra</cite> algorithm returns the velocity profile, or the
+time-parametrization profile that is optimal. The resulting trajectory
+is also guaranteed to satisfy given constraints. Consider a simple
+path as below for a 2-dof robot.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s_array</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wp_array</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">toppra</span><span class="o">.</span><span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">s_array</span><span class="p">,</span> <span class="n">wp_array</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Suppose the 2 dofs are constrained by velocity and acceleration limits.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pc_vel</span> <span class="o">=</span> <span class="n">toppra</span><span class="o">.</span><span class="n">constraint</span><span class="o">.</span><span class="n">JointVelocityConstraint</span><span class="p">([[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pc_acc</span> <span class="o">=</span> <span class="n">toppra</span><span class="o">.</span><span class="n">constraint</span><span class="o">.</span><span class="n">JointAccelerationConstraint</span><span class="p">([[</span><span class="o">-</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">]])</span>
+</pre></div>
+</div>
+<p>The time-optimal velocity profile can be found easily using <code class="xref py py-class docutils literal notranslate"><span class="pre">TOPPRA</span></code></p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">instance</span> <span class="o">=</span> <span class="n">toppra</span><span class="o">.</span><span class="n">algorithm</span><span class="o">.</span><span class="n">TOPPRA</span><span class="p">([</span><span class="n">pc_vel</span><span class="p">,</span> <span class="n">pc_acc</span><span class="p">],</span> <span class="n">path</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instance</span><span class="o">.</span><span class="n">compute_parameterization</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Algorithm outputs are stored in the <cite>problem_data</cite> attribute:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">instance</span><span class="o">.</span><span class="n">problem_data</span><span class="o">.</span><span class="n">return_code</span>
+<span class="go">&lt;ParameterizationReturnCode.Ok: &#39;Ok: Successful parametrization&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instance</span><span class="o">.</span><span class="n">problem_data</span><span class="o">.</span><span class="n">gridpoints</span>  
+<span class="go">array([0.      , 0.015625, 0.03125 , 0.046875, 0.0625  , 0.078125,...])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instance</span><span class="o">.</span><span class="n">problem_data</span><span class="o">.</span><span class="n">sd_vec</span>  
+<span class="go">array([...])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">path_new</span> <span class="o">=</span> <span class="n">toppra</span><span class="o">.</span><span class="n">ParametrizeConstAccel</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">problem_data</span><span class="o">.</span><span class="n">gridpoints</span><span class="p">,</span> <span class="n">instance</span><span class="o">.</span><span class="n">problem_data</span><span class="o">.</span><span class="n">sd_vec</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">path_new</span><span class="o">.</span><span class="n">plot_parametrization</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="figure align-default" id="id4">
+<img alt="_images/retime.png" src="_images/retime.png" />
+<p class="caption"><span class="caption-text">Parametrization.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2020, Hung Pham.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/quickstart.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/hungpham2511/toppra" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>
