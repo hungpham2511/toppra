@@ -36,7 +36,14 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.viewcode',
               'sphinx.ext.intersphinx',
               "recommonmark",
-              'nbsphinx']
+              'nbsphinx',
+              'sphinx_gallery.gen_gallery'
+]
+
+sphinx_gallery_conf = {
+     'examples_dirs': '../../examples',   # path to your example scripts
+     'gallery_dirs': 'auto_examples',  # path to where to save gallery generated output
+}
 
 intersphinx_mapping = {
     'urllib3': ('http://urllib3.readthedocs.org/en/latest', None),

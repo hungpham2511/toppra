@@ -59,12 +59,14 @@ User Guide
 ----------------------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    installation
-   quickstart
-   tutorials
+   auto_examples/index
    notes
+   ..
+      quickstart
+      tutorials
 
    
 API Reference
