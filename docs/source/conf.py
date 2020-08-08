@@ -23,7 +23,11 @@ try:
     import pathlib2 as pathlib
 except ImportError:
     import pathlib
-# sys.path.insert(0, os.path.abspath('../../toppra/'))
+
+# -- Pre-process ----------------------------------------------------------
+import shutil
+HISTORY_path = pathlib.Path(__file__).parent / "../../HISTORY.md"
+shutil.copyfile(HISTORY_path.as_posix(), "HISTORY.md")
 
 
 # -- General configuration ------------------------------------------------

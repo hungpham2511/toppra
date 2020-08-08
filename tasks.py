@@ -106,6 +106,7 @@ def lint(c, pycodestyle=False, pydocstyle=False):
                 toppra/utils.py \
                 toppra/interpolator.py \
                 toppra/exceptions.py \
+                toppra/parametrizer.py \
            "
     )
     # toppra/solverwrapper/solverwrapper.py
