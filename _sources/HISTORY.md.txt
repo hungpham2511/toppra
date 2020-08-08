@@ -12,6 +12,7 @@
 - [python] [#117] Post-processing is now done via parametrizer classes.
 
 ### Changed
+- [python]Add some type annotations to parameterizer.py
 - [python]Support older interpolation method.
 - [cpp] Minor improvement to PiecewisePolyPath.
 - [python] Implement `ParametrizeConstAccel` to allow reparametrize path.

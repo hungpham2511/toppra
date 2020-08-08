@@ -66,6 +66,7 @@ axs[1].set_ylabel("Velocity (rad/s)")
 axs[2].set_ylabel("Acceleration (rad/s2)")
 plt.show()
 
+
 ################################################################################
 # Optionally, we can inspect the output.
 instance.compute_feasible_sets()
