@@ -1,6 +1,6 @@
 # History
 
-## [unrelease]
+## 0.3.1 (Aug 23 2020)
 
 ### Added
 - [docs] Use example gallery to show examples.
