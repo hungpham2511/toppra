@@ -13,28 +13,43 @@ void intersection (const Bound& a, const Bound& b, Bound& c)
   c[1] = std::min(a[1], b[1]);
 }
 
+int bnd_type(const value_type& l, const value_type& u)
+{
+  if (l == -infty) {
+    if (u == infty) return GLP_FR;
+    else return GLP_UP;
+  } else {
+    if (u < l) {
+      TOPPRA_LOG_DEBUG("GLPK: invalid bounds:"
+          "\nlower: " << l <<
+          "\nupper: " << u);
+      // Do not stop here so that all the inequalities are checked.
+      // GLPK will report failure.
+    }
+    if (l == u) return GLP_FX;
+    else if (u == infty) return GLP_LO;
+    else return GLP_DB;
+  }
+}
+
 void set_col_bnds(glp_prob* lp, int i, const Bound& ub)
 {
-  glp_set_col_bnds(lp, i, (ub[0] == -infty
-        ? (ub[1] == infty ? GLP_FR : GLP_UP)
-        : (ub[1] == infty ? GLP_LO : GLP_DB)
-       ), ub[0], ub[1]);
+  glp_set_col_bnds(lp, i, bnd_type(ub[0], ub[1]), ub[0], ub[1]);
 }
 
 void set_row_bnds(glp_prob* lp, int i, const value_type& l, const value_type& u)
 {
-  glp_set_row_bnds(lp, i, (l == -infty
-        ? (u == infty ? GLP_FR : GLP_UP)
-        : (u == infty ? GLP_LO : GLP_DB)
-       ), l, u);
+  glp_set_row_bnds(lp, i, bnd_type(l,u), l, u);
 }
 void set_row_bnds(glp_prob* lp, int i, const Bound& b) { set_row_bnds(lp, i, b[0], b[1]); }
 
-GLPKWrapper::GLPKWrapper (const LinearConstraintPtrs& constraints, const GeometricPath& path,
+void GLPKWrapper::initialize (const LinearConstraintPtrs& constraints, const GeometricPathPtr& path,
         const Vector& times)
-  : Solver (constraints, path, times)
-  , m_lp (glp_create_prob())
 {
+  Solver::initialize (constraints, path, times);
+  if (m_lp != NULL) glp_delete_prob(m_lp);
+  m_lp = glp_create_prob();
+
   // Currently only support Canonical Linear Constraint
   assert(nbVars() == 2);
 
@@ -124,11 +139,31 @@ bool GLPKWrapper::solveStagewiseOptim(std::size_t i,
   parm.msg_lev = GLP_MSG_ERR;
   int ret = glp_simplex(m_lp, &parm);
   if (ret == 0) {
+    int status = glp_get_status(m_lp);
+    switch (status) {
+      case GLP_OPT:
+        break;
+      case GLP_FEAS:
+        TOPPRA_LOG_DEBUG("GLPK: solution is feasible");
+        break;
+      case GLP_INFEAS:
+        TOPPRA_LOG_DEBUG("GLPK: solution is infeasible");
+        break;
+      case GLP_NOFEAS:
+        TOPPRA_LOG_DEBUG("GLPK: problem has no feasible solution");
+        return false;
+      case GLP_UNBND:
+        TOPPRA_LOG_DEBUG("GLPK: problem has unbounded solution");
+        break;
+      case GLP_UNDEF:
+        TOPPRA_LOG_DEBUG("GLPK: solution is undefined");
+        return false;
+    }
     solution.resize(2);
     solution << glp_get_col_prim(m_lp, 1), glp_get_col_prim(m_lp, 2);
     return true;
   }
-  std::cout << ret << std::endl;
+  TOPPRA_LOG_DEBUG("GLPK failed. glp_simplex return value: " << ret);
   return false;
 }
 

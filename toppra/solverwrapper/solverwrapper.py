@@ -38,6 +38,13 @@ def available_solvers(output_msg=True):
         print(solver_availability)
     return solver_availability
 
+def check_solver_availability(solver):
+    check = available_solvers(False)
+    for sname, avail in check:
+        if sname == solver and avail:
+            return True
+    return False
+
 
 class SolverWrapper(object):
     """The base class for all solver wrappers.
@@ -78,9 +85,6 @@ class SolverWrapper(object):
         self.constraints = constraint_list
         self.path = path
         self.path_discretization = np.array(path_discretization)
-        # path scaling: intuitively, if this value is not 1, the TOPP
-        # problem will be solved as if the input path is scaled linearly.
-        self.scaling = self.path_discretization[-1] / self.path.duration
         # End main attributes
         self.N = (
             len(path_discretization) - 1
@@ -91,7 +95,7 @@ class SolverWrapper(object):
 
         self.params = [
             c.compute_constraint_params(
-                self.path, self.path_discretization, self.scaling
+                self.path, self.path_discretization
             )
             for c in self.constraints
         ]

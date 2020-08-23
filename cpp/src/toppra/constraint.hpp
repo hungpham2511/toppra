@@ -10,8 +10,8 @@ namespace toppra {
  *  \ref Interpolation if possible.
  * */
 enum DiscretizationType {
-    Collocation,   /// smaller problem size, but lower accuracy.
-    Interpolation, /// larger problem size, but higher accuracy.
+    Collocation,   ///< smaller problem size, but lower accuracy.
+    Interpolation, ///< larger problem size, but higher accuracy.
 };
 
 /** \brief Abstract interface for the constraints.
@@ -158,6 +158,7 @@ class LinearConstraint {
     bool m_constantF, m_hasUbounds, m_hasXbounds;
 }; // class LinearConstraint
 
+/// \brief write a LinearConstraint to an output stream
 inline std::ostream& operator<< (std::ostream& os, const LinearConstraint& lc)
 {
   return lc.print(os);

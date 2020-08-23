@@ -1,12 +1,39 @@
-"""Algorithms implemented in :mod:`toppra` requires geometric paths
-that implements the abstract class
+"""
+toppra.interpolator
+-----------------------
 
-:class:`toppra.interpolator.AbstractGeometricPath`. The interface is
-really simple, requiring only the evaluted values, as well as the
-first and second derivative.
+This module implements clases to represent geometric paths and
+trajectories.
+
+AbstractGeometricPath
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: toppra.interpolator.AbstractGeometricPath
+   :members: __call__, dof, path_interval, waypoints
+
+SplineInterplator
+^^^^^^^^^^^^^^^^^^^
+.. autoclass:: toppra.SplineInterpolator
+   :members: __call__, dof, path_interval, waypoints
+
+RaveTrajectoryWrapper
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: toppra.RaveTrajectoryWrapper
+   :members: __call__, dof, path_interval, waypoints
+
+simplepath.SimplePath
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: toppra.simplepath.SimplePath
+   :members: __call__, dof, path_interval
+
+[internal]
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autofunction:: toppra.interpolator.propose_gridpoints
+
 
 """
-from typing import List
+from typing import List, Union
 import logging
 import numpy as np
 from scipy.interpolate import UnivariateSpline, CubicSpline, PPoly
@@ -83,40 +110,41 @@ def propose_gridpoints(
     return gridpoints_ept
 
 
-class AbstractGeometricPath:
-    """The base class to represent geometric paths.
+class AbstractGeometricPath(object):
+    """Abstract base class that represents geometric paths.
 
-    Derive geometric paths classes should implement the below abstract methods.
+    Derive geometric paths classes should implement the below abstract
+    methods. These methods are expected in different steps of the
+    algorithm.
+
     """
 
-    def __call__(self, path_positions, order=0):
-        # type: (np.ndarray, int) -> np.ndarray
+    def __call__(self, path_positions: Union[float, np.ndarray], order: int = 0) -> np.ndarray:
         """Evaluate the path at given positions.
 
         Parameters
         ----------
-            path_positions: float or np.ndarray
-                Path positions to evaluate the interpolator.
-            order: int
-                Order of the evaluation call.
+        path_positions: float or np.ndarray
+            Path positions to evaluate the interpolator.
+        order: int
+            Order of the evaluation call.
 
-                - 0: position
-                - 1: first-order derivative
-                - 2: second-order derivative
+            - 0: position
+            - 1: first-order derivative
+            - 2: second-order derivative
 
         Returns
         -------
-            np.ndarray(N, dof)
-                The evaluated joint positions, velocity or
-                accelerations. The shape of the result depends on the
-                shape of the input.
+        :
+            The evaluated joint positions, velocity or
+            accelerations. The shape of the result depends on the
+            shape of the input.
 
         """
         raise NotImplementedError
 
     @property
-    def dof(self):
-        # type: () -> int
+    def dof(self) -> int:
         """Return the degrees-of-freedom of the path."""
         raise NotImplementedError
 
@@ -136,6 +164,18 @@ class AbstractGeometricPath:
     def waypoints(self):
         """Tuple[ndarray, ndarray] or None: The path's waypoints if applicable. None otherwise."""
         return None
+
+    def eval(self, path_positions: Union[float, np.ndarray]):
+        """Evaluate the path values."""
+        return self.__call__(path_positions, 0)
+
+    def evald(self, path_positions: Union[float, np.ndarray]):
+        """Evaluate the path first-derivatives."""
+        return self.__call__(path_positions, 1)
+
+    def evaldd(self, path_positions: Union[float, np.ndarray]):
+        """Evaluate the path second-derivatives."""
+        return self.__call__(path_positions, 2)
 
 
 class RaveTrajectoryWrapper(AbstractGeometricPath):
@@ -403,26 +443,6 @@ class SplineInterpolator(AbstractGeometricPath):
         if np.isscalar(self._q_waypoints[0]):
             return 1
         return self._q_waypoints[0].shape[0]
-
-    @deprecated
-    def get_dof(self):  # type: () -> int
-        """Return the path's dof."""
-        return self.dof
-
-    @deprecated
-    def eval(self, ss_sam):
-        """Return the path position."""
-        return self.cspl(ss_sam)
-
-    @deprecated
-    def evald(self, ss_sam):
-        """Return the path velocity."""
-        return self.cspld(ss_sam)
-
-    @deprecated
-    def evaldd(self, ss_sam):
-        """Return the path acceleration."""
-        return self.cspldd(ss_sam)
 
     def compute_rave_trajectory(self, robot):
         """Compute an OpenRAVE trajectory equivalent to this trajectory.

@@ -14,9 +14,21 @@ option(BUILD_WITH_qpOASES "Compile the wrapper for qpOASES" OFF)
 option(BUILD_WITH_GLPK "Compile the wrapper for GLPK (GPL license)" OFF)
 # General options
 option(TOPPRA_DEBUG_ON "Set logging mode to on." OFF)
+option(OPT_MSGPACK "Serialization using msgpack " OFF)
+# Bindings
+option(PYTHON_BINDINGS "Build bindings for Python" ON)
+set(PYTHON_VERSION 3.7 CACHE STRING "Build bindings for Python version")
+set(BUILD_WITH_PINOCCHIO_PYTHON false CACHE BOOL "Force compile with Pinocchio bindings")
+# This option is needed because sometime the flag
+# PINOCCHIO_WITH_PYTHON_INTERFACE is not properly set depsite a python
+# binding is installed.
+# End of options
+
+
+set(PYBIND11_PYTHON_VERSION "${PYTHON_VERSION}")
+include(CMakePrintHelpers)
 
 find_package (Threads)
-
 find_package (Eigen3 REQUIRED)
 message(STATUS "Found Eigen version ${EIGEN3_VERSION_STRING}")
 
@@ -36,6 +48,7 @@ endif(BUILD_WITH_GLPK)
 
 add_subdirectory(src)
 add_subdirectory(doc)
+add_subdirectory(bindings)
 
 # Download and unpack googletest at configure time
 # source: https://github.com/google/googletest/tree/master/googletest

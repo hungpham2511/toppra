@@ -1,14 +1,15 @@
+#include <toppra/algorithm.hpp>
+
+#include <algorithm>
 #include <cstddef>
 #include <iostream>
-#include <toppra/algorithm.hpp>
-#include <toppra/solver/qpOASES-wrapper.hpp>
 #include "toppra/toppra.hpp"
 
 namespace toppra {
 
 PathParametrizationAlgorithm::PathParametrizationAlgorithm(
-    LinearConstraintPtrs constraints, const GeometricPath &path)
-    : m_constraints(std::move(constraints)), m_path(path){};
+    LinearConstraintPtrs constraints, const GeometricPathPtr &path)
+    : m_constraints(std::move(constraints)), m_path(path) {};
 
 ReturnCode PathParametrizationAlgorithm::computePathParametrization(value_type vel_start,
                                                                     value_type vel_end) {
@@ -54,15 +55,17 @@ ReturnCode PathParametrizationAlgorithm::computeControllableSets(
 
     solver_ret = m_solver->solveStagewiseOptim(i, H, g_lower, x, x_next, solution);
 
-    TOPPRA_LOG_DEBUG("down: " << solution);
-
+    TOPPRA_LOG_DEBUG("down: " << solution.transpose());
     if (!solver_ret) {
       ret = ReturnCode::ERR_FAIL_CONTROLLABLE;
       TOPPRA_LOG_DEBUG("Fail: controllable, lower problem, idx: " << i);
       break;
     }
 
-    m_data.controllable_sets(i, 0) = solution[1];
+    // For whatever reason, sometimes the solver return negative
+    // solution despite having a set of positve bounds. This readjust
+    // if the solution is negative.
+    m_data.controllable_sets(i, 0) = std::max(0.0, solution[1]);
   }
   return ret;
 }
@@ -105,13 +108,14 @@ ReturnCode PathParametrizationAlgorithm::computeFeasibleSets() {
 
 void PathParametrizationAlgorithm::initialize() {
   if (m_initialized) return;
-  m_data.gridpoints =
-      Vector::LinSpaced(m_N + 1, m_path.pathInterval()(0), m_path.pathInterval()(1));
+  if (!m_solver)
+    throw std::logic_error("You must set a solver first.");
+  Bound I (m_path->pathInterval());
+  m_data.gridpoints = Vector::LinSpaced(m_N + 1, I(0), I(1));
   m_data.parametrization.resize(m_N + 1);
   m_data.controllable_sets.resize(m_N + 1, 2);
   m_data.feasible_sets.resize(m_N + 1, 2);
-  m_solver = std::make_shared<solver::qpOASESWrapper>(m_constraints, m_path,
-                                                      m_data.gridpoints);
+  m_solver->initialize(m_constraints, m_path, m_data.gridpoints);
   m_initialized = true;
 }
 

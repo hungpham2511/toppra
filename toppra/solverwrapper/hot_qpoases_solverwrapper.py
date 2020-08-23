@@ -51,7 +51,10 @@ class hotqpOASESSolverWrapper(SolverWrapper):
         20% but entails the possibility that failure is not reported
         correctly.
     scaling_solverwrapper: bool, optional
-        If is True, try to scale the data of each optimization before running.
+        If is True, try to scale the data of each optimization before
+        running.  Important: Currently scaling is always done
+        regardless of the value of this variable. To be fixed.
+
     """
 
     def __init__(
@@ -60,7 +63,7 @@ class hotqpOASESSolverWrapper(SolverWrapper):
         path,
         path_discretization,
         disable_check=False,
-        # scaling_solverwrapper=True,
+        scaling_solverwrapper=True,
     ):
         if not qpoases_FOUND:
             SolverNotFound("toppra is unable to find any installation of qpoases!")

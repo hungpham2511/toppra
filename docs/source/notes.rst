@@ -1,7 +1,56 @@
 .. _notes:
 
+Frequently Asked Questions
+================================
 
-Advanced usage
+
+1. How many gridpoints should I take?
+---------------------------------------
+
+A very important parameter in solving path parameterization instances
+with `toppra` is the number of the gridpoints. Below is how to create
+an instance with 1000 uniform gridpoints.
+
+
+.. code-block:: python
+  :linenos:
+
+  gridpoints = np.linspace(0, path.duration, 1000)  # 1000 points
+  instance = algo.TOPPRA([pc_vel, pc_acc], path, gridpoints=gridpoints)
+
+
+Generally, more gridpoints give you better solution quality, but also
+increase solution time. Often the increase in solution time is linear,
+that is if it takes 5ms to solve an instance with 100 gridpoints, then
+most likely `toppra` will take 10ms to solve another instance which
+has 200 gridpoints.
+
+As a general rule of thumb, the number of gridpoints should be at
+least a few times the number of waypoints in the given path. This is
+not a hard rule, depending on whether the waypoints naturally form a
+smooth curve or whether they vary wildly.
+
+By default, `toppra` (python) will try to determine the best set of
+gridpoints by doing a bisection search until a threshold level is
+reached.
+
+
+2. Minimum requirement on path smoothness
+-------------------------------------------------
+
+TOPPRA requires the input path to be sufficiently smooth to work
+properly. An example of a noisy path that will be very difficult to
+work with can be seen below:
+
+.. image:: medias/faq_figure.png
+
+All toppra interpolators try to match all given waypoints, and hence
+it can lead to large fluctuation if the waypoints change rapidly. In
+this case, it is recommended to smooth the waypoints prior to using
+toppra using for example `scipy.interpolation`.
+
+
+Usage Notes
 =====================
 
 .. _derivationKinematics:
@@ -24,68 +73,3 @@ Important expression relating kinematic quantities:
    \dot{\mathbf p}(t) &= \mathbf p'(s) \dot s(t) \\
    \ddot{\mathbf p}(t) &= \mathbf p'(s) \ddot s(t) + \mathbf p''(s) \dot s(t)^2
 
-.. _module_ref:
-
-Path-parametrization Algorithms
---------------------------------
-
-.. automodule:: toppra.algorithm
-
-TOPPRA (time-optimal)
-^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: toppra.algorithm.TOPPRA
-   :members: problem_data, compute_parameterization, compute_trajectory, compute_feasible_sets, compute_controllable_sets
-
-TOPPRAsd (specific-duration)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: toppra.algorithm.TOPPRAsd
-   :members: problem_data, set_desired_duration, compute_parameterization, compute_trajectory, compute_feasible_sets, compute_controllable_sets
-
-
-Geometric paths
---------------------------------
-
-.. automodule:: toppra.interpolator
-
-.. autoclass:: toppra.interpolator.AbstractGeometricPath
-   :members: __call__, dof, path_interval, waypoints
-
-
-Spline Interplator
-^^^^^^^^^^^^^^^^^^^
-.. autoclass:: toppra.SplineInterpolator
-   :members: __call__, dof, path_interval, waypoints
-
-Rave Trajectory Wrapper
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: toppra.RaveTrajectoryWrapper
-   :members: __call__, dof, path_interval, waypoints
-
-.. autofunction:: toppra.interpolator.propose_gridpoints
-
-Constraints
---------------
-
-.. automodule:: toppra.constraint
-
-Solver Wrapper
-----------------
-
-All computations in TOPP-RA algorithms are done by the linear and
-quadratic solvers, wrapped in solver wrappers.
-
-qpOASES (with hot-start)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: toppra.solverwrapper.hotqpOASESSolverWrapper
-   :members: close_solver, setup_solver, solve_stagewise_optim
-
-seidel
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: toppra.solverwrapper.seidelWrapper	       
-   :members: solve_stagewise_optim
-
-ecos
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: toppra.solverwrapper.ecosWrapper
-   :members: solve_stagewise_optim
-	       

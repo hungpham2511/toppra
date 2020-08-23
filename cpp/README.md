@@ -17,6 +17,18 @@ make -j4
 ./tests/all_tests
 ```
 
+## Running test with pinocchio
+
+Install pinocchio bindings and exmaple from robotpkg, then setup
+environment variables:
+
+``` sh
+export ROS_PACKAGE_PATH=/opt/openrobots/share
+export PYTHONPATH=/opt/openrobots/lib/python3.6/site-packages:$PYTHONPATH
+# or any python version that you install
+```
+
+
 # Using TOPPRA in CMake-based project
 
 In your CMakeLists.txt,
@@ -32,3 +44,16 @@ target_link_library(foo PUBLIC toppra::toppra)
 - GLPK: `sudo apt install libglpk-dev`
 - qpOASES: `sudo apt install robotpkg-qpoases` (follow http://robotpkg.openrobots.org/debian.html for robotpkg)
 - pinocchio: `sudo apt install robotpkg-pinocchio` (follow http://robotpkg.openrobots.org/debian.html for robotpkg)
+
+
+# Building bindings
+
+- Install pybind11 2.5.0
+- Build toppra-cpp with bindings on
+``` sh
+cmake -GNinja -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DBUILD_WITH_PINOCCHIO=ON -DBUILD_WITH_qpOASES=ON -DBUILD_WITH_GLPK=ON -DPYTHON_BINDINGS=ON -DPYBIND11_PYTHON_VERSION=3.7 ..
+# change to 3.8 or other version as needed.
+```
+- Install toppra python normally.
+
+

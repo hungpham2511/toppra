@@ -1,9 +1,10 @@
-"""Some constants used by TOPPRA solvers."""
+"""
+Some constants used by TOPPRA solvers.
+"""
 import logging
 
 try:
     import openravepy as orpy
-
     FOUND_OPENRAVE = True
 except (ImportError, SyntaxError) as err:
     FOUND_OPENRAVE = False

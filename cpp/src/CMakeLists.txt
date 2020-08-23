@@ -36,12 +36,18 @@ target_include_directories(toppra PUBLIC
   ${qpOASES_INCLUDE_DIRS}
   ${GLPK_INCLUDE_DIRS}
   )
-target_link_libraries(toppra PUBLIC
-  ${qpOASES_LIBRARIES}
-  ${GLPK_LIBRARIES}
-  )
+foreach(solver qpOASES GLPK)
+  if(BUILD_WITH_${solver})
+    target_compile_definitions(toppra PRIVATE -DBUILD_WITH_${solver})
+    target_link_libraries(toppra PUBLIC ${${solver}_LIBRARIES})
+    target_include_directories(toppra PUBLIC ${${solver}_INCLUDE_DIRS})
+  endif()
+endforeach()
 if (TOPPRA_DEBUG_ON)
   target_compile_definitions(toppra PRIVATE TOPPRA_DEBUG_ON)
+endif()
+if (OPT_MSGPACK)
+  target_compile_definitions(toppra PRIVATE TOPPRA_OPT_MSGPACK)
 endif()
 
 if (${EIGEN3_VERSION_STRING} VERSION_LESS 3.3) 
@@ -72,6 +78,10 @@ install(FILES
   toppra/constraint/linear_joint_acceleration.hpp
   toppra/constraint/joint_torque.hpp
   DESTINATION include/toppra/constraint)
+install(FILES
+  toppra/geometric_path/piecewise_poly_path.hpp
+  DESTINATION include/toppra/geometric_path)
+
 install(FILES
   toppra/constraint/joint_torque/pinocchio.hpp
   DESTINATION include/toppra/constraint/joint_torque)

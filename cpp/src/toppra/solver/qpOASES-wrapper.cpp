@@ -1,7 +1,7 @@
-#include <toppra/toppra.hpp>
 #include <toppra/solver/qpOASES-wrapper.hpp>
 
 #include <qpOASES.hpp>
+#include <toppra/toppra.hpp>
 
 namespace toppra {
 namespace solver {
@@ -25,11 +25,14 @@ void qpOASESWrapper::setDefaultBoundary (const value_type& v)
   m_defaultBoundary = v;
 }
 
-qpOASESWrapper::qpOASESWrapper (const LinearConstraintPtrs& constraints, const GeometricPath& path,
+qpOASESWrapper::qpOASESWrapper () {}
+
+void qpOASESWrapper::initialize (const LinearConstraintPtrs& constraints, const GeometricPathPtr& path,
         const Vector& times)
-  : Solver (constraints, path, times)
-  , m_boundary (m_defaultBoundary)
 {
+  Solver::initialize (constraints, path, times);
+  m_boundary = m_defaultBoundary;
+
   // Currently only support Canonical Linear Constraint
   Eigen::Index nC = 2; // First constraint is x + 2 D u <= xnext_max, second is xnext_min <= x + 2D u
   for (const Solver::LinearConstraintParams& linParam : m_constraintsParams.lin)
@@ -56,6 +59,7 @@ bool qpOASESWrapper::solveStagewiseOptim(std::size_t i,
   TOPPRA_LOG_DEBUG("stage: i="<<i);
   Eigen::Index N (nbStages());
   assert (i <= N);
+  assert(x(0) <= x(1));
 
   Bound l (Bound::Constant(-m_boundary)),
         h (Bound::Constant( m_boundary));
@@ -66,11 +70,11 @@ bool qpOASESWrapper::solveStagewiseOptim(std::size_t i,
   if (i < N) {
     value_type delta = deltas()[i];
     m_A.row(0) << -2 * delta, -1;
-    m_hA[0] = - xNext[0];
+    m_hA[0] = std::min(- xNext[0],m_boundary);
     m_lA[0] = - m_boundary;
 
     m_A.row(1) << 2 * delta, 1;
-    m_hA[1] = xNext[1];
+    m_hA[1] = std::min(xNext[1],m_boundary);
     m_lA[1] = -m_boundary;
   } else {
     m_A.topRows<2>().setZero();
@@ -87,7 +91,7 @@ bool qpOASESWrapper::solveStagewiseOptim(std::size_t i,
 
     m_A.block(cur_index, 0, nC, 1) = _F * lin.a[i];
     m_A.block(cur_index, 1, nC, 1) = _F * lin.b[i];
-    m_hA.segment(cur_index, nC) = _g - _F * lin.c[i];
+    m_hA.segment(cur_index, nC) = (_g - _F * lin.c[i]).cwiseMin(m_boundary);
     m_lA.segment(cur_index, nC).setConstant(-m_boundary);
     cur_index += nC;
   }
@@ -115,6 +119,19 @@ bool qpOASESWrapper::solveStagewiseOptim(std::size_t i,
   //    H, g, self._A, l, h, self._lA, self._hA, np.array([1000])
   //)
   int nWSR = 1000;
+  // Make sure bounds are correct
+  if ((h.array() < l.array()).any()) {
+    TOPPRA_LOG_DEBUG("qpOASES: invalid box boundaries:"
+        "\nlower: " << l <<
+        "\nupper: " << h);
+    return false;
+  }
+  if ((m_hA.array() < m_lA.array()).any()) {
+    TOPPRA_LOG_DEBUG("qpOASES: invalid linear inequality bounds:"
+        "\nlower: " << m_lA.transpose() <<
+        "\nupper: " << m_hA.transpose());
+    return false;
+  }
   if (H.size() == 0) {
     m_impl->qp.setHessianType(qpOASES::HST_ZERO);
     res = m_impl->qp.init (NULL, g.data(),
@@ -134,8 +151,15 @@ bool qpOASESWrapper::solveStagewiseOptim(std::size_t i,
   if (res == qpOASES::SUCCESSFUL_RETURN) {
     solution.resize(nbVars());
     m_impl->qp.getPrimalSolution(solution.data());
+    TOPPRA_LOG_DEBUG("solution: " << solution);
+    solution = solution.cwiseMax(l.transpose());
+    solution = solution.cwiseMin(h.transpose());
+    assert((solution.transpose().array() <= h.array()).all());
+    assert((solution.transpose().array() >= l.array()).all());
     return true;
   }
+  TOPPRA_LOG_DEBUG("qpOASES failed. Error code: " <<
+      qpOASES::MessageHandling::getErrorCodeMessage(res) << " (" << res << ')');
   return false;
 }
 

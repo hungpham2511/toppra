@@ -1,4 +1,4 @@
-from ..algorithm import ParameterizationAlgorithm
+from ..algorithm import ParameterizationAlgorithm, ParameterizationReturnCode
 from ...constants import LARGE, SMALL, TINY, INFTY, CVXPY_MAXX, MAX_TRIES
 from ...constraint import ConstraintType
 import toppra.solverwrapper
@@ -19,23 +19,12 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
     constraint_list: List[:class:`~toppra.constraint.Constraint`]
         List of constraints on the robot dynamics.
     path: Interpolator
-
     gridpoints: np.ndarray, optional
         Shape (N+1,). Gridpoints for discretization of the path position.
     solver_wrapper: str, optional
         Name of solver to use. If is None, select the most suitable wrapper.
-    scaling: float, optional
-        Scale input path such that its position changes from [0, s_end] to [0, s_end * scaling].
-
-        Note that the path is unchanged; only the numerical coefficients evaluated.
-        This is to make it easier on the user who wish to
-        implement an Interpolator class by herself (which she should
-        do).
-
-        The default value is 1.0, which means no scaling. Any positive
-        float is valid. However, one should attempt to
-        choose a scaling factor that leads to unit velocity
-        approximately. Choose -1 for automatic scaling.
+    parametrizer: str, optional
+        Name of the output parametrizer to use.
 
     Notes
     -----
@@ -58,30 +47,11 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
     """
 
     def __init__(
-        self, constraint_list, path, gridpoints=None, solver_wrapper=None, scaling=1
+            self, constraint_list, path, gridpoints=None, solver_wrapper=None, parametrizer=None
     ):
         super(ReachabilityAlgorithm, self).__init__(
-            constraint_list, path, gridpoints=gridpoints
+            constraint_list, path, gridpoints=gridpoints, parametrizer=None
         )
-
-        # path scaling (for numerical stability)
-        if scaling < 0:  # automatic scaling factor selection
-            # sample a few gradient and compute the average derivatives
-            qs_sam = path(np.linspace(0, 1, 5) * path.duration, 1)
-            qs_average = np.sum(np.abs(qs_sam)) / path.dof / 5
-            scaling = np.sqrt(qs_average)
-            logger.info(
-                "[auto-scaling] Average path derivative: {:}".format(qs_average)
-            )
-            logger.info("[auto-scaling] Selected scaling factor: {:}".format(scaling))
-        else:
-            logger.info("Scaling factor: {:f}".format(scaling))
-
-        # NOTE: Scaling `gridpoints` making the two endpoints different from the domain of the given path
-        # signal to the lower level solver wrapper that it has to scale the problem. The solver
-        # wrapper will simply use
-        # scaling = self.gridpoints[-1] / path.duration
-        self.gridpoints = self.gridpoints * scaling
 
         # Check for conic constraints
         has_conic = False
@@ -90,7 +60,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
                 has_conic = True
 
         # Select solver wrapper automatically
-        available_solvers = toppra.solverwrapper.available_solvers()
+        available_solvers = toppra.solverwrapper.available_solvers(output_msg=False)
         if solver_wrapper is None:
             logger.info(
                 "Solver wrapper not supplied. Choose solver wrapper automatically!"
@@ -190,7 +160,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         for i in range(self._N + 1):
             if X[i, 0] < 0:
                 X[i, 0] = 0
-        self._problem_data.update({'X': X})
+        self._problem_data.X = X
         return X
 
     def compute_controllable_sets(self, sdmin, sdmax):
@@ -261,7 +231,6 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
         x_upper = self.solver_wrapper.solve_stagewise_optim(
             i, None, g_upper, np.nan, np.nan, K_next[0], K_next[1]
         )[1]
-        # import ipdb; ipdb.set_trace()
         x_lower = self.solver_wrapper.solve_stagewise_optim(
             i, None, -g_upper, np.nan, np.nan, K_next[0], K_next[1]
         )[1]
@@ -311,10 +280,12 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
                 "An error occurred when computing controllable velocities. "
                 "The path is not controllable, or is badly conditioned."
             )
+            self._problem_data.return_code = ParameterizationReturnCode.FailUncontrollable
             if return_data:
                 return None, None, None, K
             else:
                 return None, None, None
+        self._problem_data.K = K
 
         x_start = sd_start ** 2
         if x_start + SMALL < K[0, 0] or K[0, 1] + SMALL < x_start:
@@ -323,6 +294,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
                     x_start, K[0, 0], K[0, 1]
                 )
             )
+            self._problem_data.return_code = ParameterizationReturnCode.FailUncontrollable
             if return_data:
                 return None, None, None, K
             else:
@@ -391,6 +363,12 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
 
         sd_vec = np.sqrt(xs)
         sdd_vec = np.copy(us)
+        self._problem_data.sd_vec = sd_vec
+        self._problem_data.sdd_vec = sdd_vec
+        if np.isnan(sd_vec).any():
+            self._problem_data.return_code = ParameterizationReturnCode.ErrUnknown
+        else:
+            self._problem_data.return_code = ParameterizationReturnCode.Ok
         if return_data:
             return sdd_vec, sd_vec, v_vec, K
         else:

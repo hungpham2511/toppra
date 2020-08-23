@@ -5,10 +5,10 @@
 #include <toppra/solver/glpk-wrapper.hpp>
 #endif
 
-#include <toppra/constraint/linear_joint_velocity.hpp>
 #include <toppra/constraint/linear_joint_acceleration.hpp>
-
+#include <toppra/constraint/linear_joint_velocity.hpp>
 #include <toppra/geometric_path.hpp>
+#include <toppra/geometric_path/piecewise_poly_path.hpp>
 
 #include "gtest/gtest.h"
 
@@ -19,22 +19,21 @@ public:
     // path has the equation: 0 * x ^ 3 + 1 * x ^ 2 + 2 x ^ 1 + 3
   }
 
-  toppra::PiecewisePolyPath constructPath() {
+  std::shared_ptr<toppra::PiecewisePolyPath> constructPath() {
     toppra::Matrix coeff{4, 2};
     coeff.colwise() = toppra::Vector::LinSpaced(4, 0, 3);
     toppra::Matrices coefficents = {coeff, coeff};
-    toppra::PiecewisePolyPath p =
-        toppra::PiecewisePolyPath(coefficents, std::vector<double>{0, 1, 2});
-    return p;
+    return std::make_shared<toppra::PiecewisePolyPath>(
+        coefficents, std::vector<double>{0, 1, 2});
   }
 
   toppra::Vector getTimes (int N)
   {
-    toppra::Bound I (path.pathInterval());
+    toppra::Bound I (path->pathInterval());
     return toppra::Vector::LinSpaced (N, I[0], I[1]);
   }
 
-  toppra::PiecewisePolyPath path;
+  std::shared_ptr<toppra::PiecewisePolyPath> path;
 };
 
 std::map<std::string, toppra::Vectors> solutions;
@@ -42,7 +41,7 @@ std::map<std::string, toppra::Vectors> solutions;
 #ifdef BUILD_WITH_qpOASES
 TEST_F(Solver, qpOASESWrapper) {
   using namespace toppra;
-  int nDof = path.dof();
+  int nDof = path->dof();
   Vector lb (-Vector::Ones(nDof)),
          ub ( Vector::Ones(nDof));
   LinearConstraintPtr ljv (new constraint::LinearJointVelocity (lb, ub));
@@ -50,7 +49,8 @@ TEST_F(Solver, qpOASESWrapper) {
 
   int N = 10;
   Vector times (getTimes(N));
-  solver::qpOASESWrapper solver ({ ljv, lja }, path, times);
+  solver::qpOASESWrapper solver;
+  solver.initialize ({ ljv, lja }, path, times);
 
   EXPECT_EQ(solver.nbStages(), N-1);
   EXPECT_EQ(solver.nbVars(), 2);
@@ -80,7 +80,7 @@ TEST_F(Solver, qpOASESWrapper) {
 #ifdef BUILD_WITH_GLPK
 TEST_F(Solver, GLPKWrapper) {
   using namespace toppra;
-  int nDof = path.dof();
+  int nDof = path->dof();
   Vector lb (-Vector::Ones(nDof)),
          ub ( Vector::Ones(nDof));
   LinearConstraintPtr ljv (new constraint::LinearJointVelocity (lb, ub));
@@ -88,7 +88,8 @@ TEST_F(Solver, GLPKWrapper) {
 
   int N = 10;
   Vector times (getTimes(N));
-  solver::GLPKWrapper solver ({ ljv, lja }, path, times);
+  solver::GLPKWrapper solver;
+  solver.initialize ({ ljv, lja }, path, times);
 
   EXPECT_EQ(solver.nbStages(), N-1);
   EXPECT_EQ(solver.nbVars(), 2);

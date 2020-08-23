@@ -21,6 +21,27 @@ def type_check(c):
 
 
 @task
+def strip_types(c):
+    """Strip type hints from source code."""
+    from strip_hints import strip_file_to_string
+    import glob
+    def process_file(f):
+        print(f)
+        out = strip_file_to_string(f)
+        with open(f, 'w') as fh:
+            fh.write(out)
+    for f in glob.glob("toppra/*/*.py"):
+        process_file(f)
+    for f in glob.glob("toppra/*.py"):
+        process_file(f)
+        
+@task
+def build_docs(c):
+    """Build documentation"""
+    c.run("cd docs && make html")
+
+
+@task
 def install_solvers(c, user=False):
     """Install backend solvers, e.g, qpoases."""
     install_dir = "/tmp/tox-qpoases"
@@ -81,11 +102,11 @@ def lint(c, pycodestyle=False, pydocstyle=False):
     """Run linting on selected source files."""
     c.run(
         "python -m pylint --rcfile=.pylintrc \
-                tasks.py \
                 toppra/__init__.py \
                 toppra/utils.py \
                 toppra/interpolator.py \
                 toppra/exceptions.py \
+                toppra/parametrizer.py \
            "
     )
     # toppra/solverwrapper/solverwrapper.py

@@ -1,10 +1,8 @@
-numpy
-cython>=0.22.0
 PyYAML
-scipy>0.18
+msgpack
+ipython
+ipdb
 coloredlogs
-matplotlib
-enum34
 
 # dev
 cvxopt
@@ -13,4 +11,6 @@ pandas
 tabulate
 cvxopt
 pytest
-
+pylint
+invoke
+mypy

@@ -1,41 +1,103 @@
 """
-"""
-import numpy as np
+toppra.algorithm.algorithm
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-from ..constants import TINY
+This module defines the abstract data types that define TOPP algorithms.
+
+"""
+from typing import Dict, Any, List, Tuple, Optional
+import abc
+import enum
+import numpy as np
+import time
+import matplotlib.pyplot as plt
+
+from toppra.constants import TINY
 from toppra.interpolator import SplineInterpolator, AbstractGeometricPath
+from toppra.constraint import Constraint
 import toppra.interpolator as interpolator
+import toppra.parametrizer as tparam
 
 import logging
 
 logger = logging.getLogger(__name__)
 
 
+class ParameterizationData(object):
+    """Internal data and output.
+    """
+    def __init__(self, *arg, **kwargs) -> None:
+        self.return_code: ParameterizationReturnCode = ParameterizationReturnCode.ErrUnknown
+        "ParameterizationReturnCode: Return code of the last parametrization attempt."
+        self.gridpoints: Optional[np.ndarray] = None
+        "np.ndarray: Shape (N+1, 1). Gridpoints"
+        self.sd_vec: Optional[np.ndarray] = None
+        "np.ndarray: Shape (N+1, 1). Path velocities"
+        self.sdd_vec: Optional[np.ndarray] = None
+        "np.ndarray: Shape (N+1, 1). Path acceleration"
+        self.K: Optional[np.ndarray] = None
+        "np.ndarray: Shape (N+1, 2). Controllable sets."
+        self.X: Optional[np.ndarray] = None
+        "np.ndarray: Shape (N+1, 2). Feasible sets."
+
+    def __repr__(self):
+        return "ParameterizationData(return_code:={}, N={:d})".format(
+            self.return_code, self.gridpoints.shape[0])
+
+
+class ParameterizationReturnCode(enum.Enum):
+    """Return codes from a parametrization attempt.
+    """
+    Ok = "Ok: Successful parametrization"
+    ErrUnknown = "Error: Unknown issue"
+    ErrShortPath = "Error: Input path is very short"
+    FailUncontrollable = "Error: Instance is not controllable"
+    ErrForwardPassFail = "Error: Forward pass fail. Numerical errors occured"
+
+    def __repr__(self):
+        return super(ParameterizationReturnCode, self).__repr__()
+
+    def __str__(self):
+        return super(ParameterizationReturnCode, self).__repr__()
+
+
 class ParameterizationAlgorithm(object):
-    """Base class for all parameterization algorithms.
+    """Base parametrization algorithm class.
 
-    All algorithms should have three attributes: `constraints`, `path`
-    and `gridpoints` and also implement the method
-    `compute_parameterization`.
+    This class specifies the generic behavior for parametrization algorithms.  For details on how
+    to *construct* a :class:`ParameterizationAlgorithm` instance, as well as configure it, refer
+    to the specific class.
 
-    Parameters
-    ----------
-    constraint_list: list of `Constraint`
-    path: `AbstractGeometricPath`
-        The geometric path, or the trajectory to parameterize.
-    gridpoints: array, optional
-        If not given, automatically generate a grid with 100 steps.
+    Example usage:
+
+    .. code-block:: python
+
+      # usage
+      instance.compute_parametrization(0, 0)
+      output = instance.problem_data
+
+      # do this if you only want the final trajectory
+      traj = instance.compute_trajectory(0, 0)
+
+    .. seealso::
+
+        :class:`toppra.algorithm.TOPPRA`,
+        :class:`toppra.algorithm.TOPPRAsd`,
+        :class:`~ParameterizationReturnCode`,
+        :class:`~ParameterizationData`
+
     """
 
-    def __init__(self, constraint_list, path, gridpoints=None):
-        self.constraints = constraint_list  # Attr
+    def __init__(self, constraint_list, path, gridpoints=None, parametrizer=None):
+        self.constraints = constraint_list
         self.path = path  # Attr
-        self._problem_data = {}
+        self._problem_data = ParameterizationData()
         # Handle gridpoints
         if gridpoints is None:
             gridpoints = interpolator.propose_gridpoints(path, max_err_threshold=1e-3)
             logger.info(
-                "No gridpoint specified. Automatically choose a gridpoint. See `propose_gridpoints`."
+                "No gridpoint specified. Automatically choose a gridpoint with %d points",
+                len(gridpoints)
             )
 
         if (
@@ -44,122 +106,103 @@ class ParameterizationAlgorithm(object):
         ):
             raise ValueError("Invalid manually supplied gridpoints.")
         self.gridpoints = np.array(gridpoints)
+        self._problem_data.gridpoints = np.array(gridpoints)
         self._N = len(gridpoints) - 1  # Number of stages. Number of point is _N + 1
         for i in range(self._N):
             if gridpoints[i + 1] <= gridpoints[i]:
                 logger.fatal("Input gridpoints are not monotonically increasing.")
                 raise ValueError("Bad input gridpoints.")
+        if parametrizer is None or parametrizer == "ParametrizeSpline":
+            self.parametrizer = tparam.ParametrizeSpline
+        elif parametrizer == "ParametrizeConstAccel":
+            self.parametrizer = tparam.ParametrizeConstAccel
 
     @property
-    def problem_data(self):
-        """Dict[str, Any]: Intermediate data obtained while solving the problem."""
+    def constraints(self) -> List[Constraint]:
+        """Constraints of interests."""
+        return self._constraints
+
+    @constraints.setter
+    def constraints(self, value: List[Constraint]) -> None:
+        # TODO: Validate constraints.
+        self._constraints = value
+
+    @property
+    def problem_data(self) -> ParameterizationData:
+        """Data obtained when solving the path parametrization."""
         return self._problem_data
 
-    def compute_parameterization(self, sd_start, sd_end):
-        """Compute a path parameterization.
+    @abc.abstractmethod
+    def compute_parameterization(self, sd_start: float, sd_end: float, return_data: bool=False):
+        """Compute the path parameterization subject to starting and ending conditions.
 
-        If fail, whether because there is no valid parameterization or
-        because of numerical error, the arrays returns should contain
-        np.nan.
-
+        After this method terminates, the attribute
+        :attr:`~problem_data` will contain algorithm output, as well
+        as the result. This is the preferred way of retrieving problem
+        output.
 
         Parameters
         ----------
-        sd_start: float
+        sd_start:
             Starting path velocity. Must be positive.
-        sd_end: float
+        sd_end:
             Goal path velocity. Must be positive.
-        return_data: bool, optional
-            If is True, also return matrix K which contains the controllable sets.
-
-        Returns
-        -------
-        sdd_vec: (_N,) array or None
-            Path accelerations.
-        sd_vec: (_N+1,) array None
-            Path velocities.
-        v_vec: (_N,) array or None
-            Auxiliary variables.
-        K: (N+1, 2) array
-            Return the controllable set if `return_data` is True.
+        return_data:
+            If true also return the problem data.
 
         """
         raise NotImplementedError
 
-    def compute_trajectory(self, sd_start=0, sd_end=0, return_data=False):
+    def compute_trajectory(self, sd_start: float = 0, sd_end: float = 0) -> Optional[AbstractGeometricPath]:
         """Compute the resulting joint trajectory and auxilliary trajectory.
 
-        If parameterization fails, return a tuple of None(s).
+        This is a convenient method if only the final output is wanted.
 
         Parameters
         ----------
-        sd_start: float
+        sd_start:
             Starting path velocity.
-        sd_end: float
+        sd_end:
             Goal path velocity.
-        return_data: bool, optional
+        return_data:
             If true, return a dict containing the internal data.
 
         Returns
         -------
-        :class:`.AbstractGeometricPath`
-            Time-parameterized joint position trajectory. If unable to
-            parameterize, return None.
-        :class:`.AbstractGeometricPath`
-            Time-parameterized auxiliary variable trajectory. If
-            unable to parameterize or if there is no auxiliary
-            variable, return None.
+        :
+            Time-parameterized joint position trajectory or
+            None If unable to parameterize. 
 
         """
-        sdd_grid, sd_grid, v_grid, K = self.compute_parameterization(
-            sd_start, sd_end, return_data=True
-        )
+        t0 = time.time()
+        self.compute_parameterization(sd_start, sd_end)
+        if self.problem_data.return_code != ParameterizationReturnCode.Ok:
+            logger.warn("Fail to parametrize path. Return code: %s", self.problem_data.return_code)
+            return None
 
-        # fail condition: sd_grid is None, or there is nan in sd_grid
-        if sd_grid is None or np.isnan(sd_grid).any():
-            return None, None
+        outputtraj = self.parametrizer(self.path, self.problem_data.gridpoints, self.problem_data.sd_vec)
+        logger.info("Successfully parametrize path. Duration: %.3f, previously %.3f)",
+                    outputtraj.path_interval[1], self.path.path_interval[1])
+        logger.info("Finish parametrization in %.3f secs", time.time() - t0)
+        return outputtraj
 
-        # Gridpoint time instances
-        t_grid = np.zeros(self._N + 1)
-        skip_ent = []
-        for i in range(1, self._N + 1):
-            sd_average = (sd_grid[i - 1] + sd_grid[i]) / 2
-            delta_s = self.gridpoints[i] - self.gridpoints[i - 1]
-            if sd_average > TINY:
-                delta_t = delta_s / sd_average
-            else:
-                delta_t = 5  # If average speed is too slow.
-            t_grid[i] = t_grid[i - 1] + delta_t
-            if delta_t < TINY:  # if a time increment is too small, skip.
-                skip_ent.append(i)
-        t_grid = np.delete(t_grid, skip_ent)
-        scaling = self.gridpoints[-1] / self.path.duration
-        gridpoints = np.delete(self.gridpoints, skip_ent) / scaling
-        q_grid = self.path(gridpoints)
+    def inspect(self, compute=True):
+        """Inspect the problem internal data."""
+        K = self.problem_data.K
+        X = self.problem_data.X
+        if X is not None:
+            plt.plot(X[:, 0], c="green", label="Feasible sets")
+            plt.plot(X[:, 1], c="green")
+        if K is not None:
+            plt.plot(K[:, 0], "--", c="red", label="Controllable sets")
+            plt.plot(K[:, 1], "--", c="red")
+        if self.problem_data.sd_vec is not None:
+            plt.plot(self.problem_data.sd_vec ** 2, label="Velocity profile")
+        plt.title("Path-position path-velocity plot")
+        plt.xlabel("Path position")
+        plt.ylabel("Path velocity square")
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
 
-        traj_spline = SplineInterpolator(
-            t_grid,
-            q_grid,
-            (
-                (1, self.path(0, 1) * sd_start),
-                (1, self.path(self.path.duration, 1) * sd_end),
-            ),
-        )
 
-        if v_grid.shape[1] == 0:
-            v_spline = None
-        else:
-            v_grid_ = np.zeros((v_grid.shape[0] + 1, v_grid.shape[1]))
-            v_grid_[:-1] = v_grid
-            v_grid_[-1] = v_grid[-1]
-            v_grid_ = np.delete(v_grid_, skip_ent, axis=0)
-            v_spline = SplineInterpolator(t_grid, v_grid_)
-
-        self._problem_data.update(
-            {"sdd": sdd_grid, "sd": sd_grid, "v": v_grid, "K": K, "v_traj": v_spline}
-        )
-        if self.path.waypoints is not None:
-            t_waypts = np.interp(self.path.waypoints[0], gridpoints, t_grid)
-            self._problem_data.update({"t_waypts": t_waypts})
-
-        return traj_spline

@@ -40,12 +40,12 @@ class JointVelocityConstraint(LinearConstraint):
             self._format_string += "      J{:d}: {:}".format(
                 i + 1, self.vlim[i]) + "\n"
 
-    def compute_constraint_params(self, path, gridpoints, scaling=1):
+    def compute_constraint_params(self, path, gridpoints):
         if path.dof != self.get_dof():
             raise ValueError(
                 "Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})"
                 .format(self.get_dof(), path.dof))
-        qs = path(gridpoints / scaling, 1) / scaling
+        qs = path(gridpoints, 1)
         _, _, xbound_ = _create_velocity_constraint(qs, self.vlim)
         xbound = np.array(xbound_)
         xbound[:, 0] = xbound_[:, 1]
@@ -73,12 +73,12 @@ class JointVelocityConstraintVarying(LinearConstraint):
         self._format_string = "    Varying Velocity limit: \n"
         self.vlim_func = vlim_func
 
-    def compute_constraint_params(self, path, gridpoints, scaling=1):
+    def compute_constraint_params(self, path, gridpoints):
         if path.dof != self.get_dof():
             raise ValueError(
                 "Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})"
                 .format(self.get_dof(), path.dof))
-        qs = path((gridpoints / scaling), 1) / scaling
+        qs = path((gridpoints), 1)
         vlim_grid = np.array([self.vlim_func(s) for s in gridpoints])
         _, _, xbound_ = _create_velocity_constraint_varying(qs, vlim_grid)
         xbound = np.array(xbound_)

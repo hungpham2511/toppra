@@ -35,6 +35,10 @@ namespace toppra {
   /// Vector of Matrix
   typedef std::vector<Matrix, Eigen::aligned_allocator<Matrix> > Matrices;
 
+  // internal data rep for Matrix
+  typedef std::tuple<Eigen::Index, Eigen::Index, std::vector<value_type>> MatrixData;
+  typedef std::vector<MatrixData> MatricesData;
+
   /// 2D vector that stores the upper and lower bound of a variable.
   typedef Eigen::Matrix<value_type, 1, 2> Bound;
   /// Vector of Bound
@@ -58,6 +62,8 @@ namespace toppra {
   } // namespace solver
 
   class GeometricPath;
+  typedef std::shared_ptr<GeometricPath> GeometricPathPtr;
+
 } // namespace toppra
 
 #endif
