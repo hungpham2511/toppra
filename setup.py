@@ -9,9 +9,8 @@ NAME = "toppra"
 with open("VERSION", "r") as file_:
     VERSION = file_.read()
 DESCR = "toppra: time-optimal parametrization of trajectories for robots subject to constraints."
-LONG_DESCRIPTION = "An implementation of TOPP-RA (TOPP via Reachability Analysis) for time-parametrizing" \
-    "trajectories for robots subject to kinematic (velocity and acceleration) and dynamic" \
-    "(torque) constraints. Some other kinds of constraints are also supported."
+with open("README.md", "r") as file_:
+    LONG_DESCRIPTION = file_.read()
 
 URL = "https://github.com/hungpham2511/toppra"
 
@@ -52,6 +51,9 @@ ext_2 = Extension(SRC_DIR + ".solverwrapper.cy_seidel_solverwrapper",
                   include_dirs=[np.get_include()])
 
 EXTENSIONS = [ext_1, ext_2]
+SETUP_REQUIRES = ["numpy", "cython"]
+if sys.version[0] == '2' or sys.version[:3] == '3.5':
+    SETUP_REQUIRES = ["numpy", "cython", "strip_hints"]
 
 
 # custom install command: strip type-hints before installing toppra
@@ -94,6 +96,7 @@ if __name__ == "__main__":
           version=VERSION,
           description=DESCR,
           long_description=LONG_DESCRIPTION,
+          long_description_content_type='text/markdown',
           author=AUTHOR,
           author_email=EMAIL,
           url=URL,
