@@ -51,6 +51,9 @@ ext_2 = Extension(SRC_DIR + ".solverwrapper.cy_seidel_solverwrapper",
                   include_dirs=[np.get_include()])
 
 EXTENSIONS = [ext_1, ext_2]
+SETUP_REQUIRES = ["numpy", "cython"]
+if sys.version[0] == '2' or sys.version[:3] == '3.5':
+    SETUP_REQUIRES = ["numpy", "cython", "strip_hints"]
 
 
 # custom install command: strip type-hints before installing toppra
