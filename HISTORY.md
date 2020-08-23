@@ -20,6 +20,7 @@
 - [python] Remove useless `scaling` in parameter computation.
 - [cpp] Clamp velocities to be within controllable sets.
 - [ci] [#117] Improve CI pipeline to test on several python versions
+- [ci] [#139] Automate publish to PyPI server
 
 
 ## 0.3.0 (May 3 2020)
