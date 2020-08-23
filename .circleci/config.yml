@@ -208,6 +208,8 @@ workflows:
               only:
                 - fix-doc
                 - develop
+  release:
+    jobs:
       - release:
           filters:
             branches:
@@ -215,8 +217,6 @@ workflows:
               - master
               - test-release
 
-  release:
-    jobs:
       - pre-release:
           filters:
             branches:
