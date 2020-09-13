@@ -67,6 +67,7 @@ install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/toppra/export.hpp
 
   toppra/geometric_path.hpp
+  toppra/parametrizer.hpp
   toppra/toppra.hpp
 
   toppra/solver.hpp
@@ -83,7 +84,9 @@ install(FILES
 install(FILES
   toppra/geometric_path/piecewise_poly_path.hpp
   DESTINATION include/toppra/geometric_path)
-
+install(FILES
+  toppra/parametrizer/const_accel.hpp
+  DESTINATION include/toppra/parametrizer)
 install(FILES
   toppra/constraint/joint_torque/pinocchio.hpp
   DESTINATION include/toppra/constraint/joint_torque)
