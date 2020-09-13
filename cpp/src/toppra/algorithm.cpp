@@ -13,17 +13,16 @@ PathParametrizationAlgorithm::PathParametrizationAlgorithm(
 
 ReturnCode PathParametrizationAlgorithm::computePathParametrization(value_type vel_start,
                                                                     value_type vel_end) {
-  ReturnCode ret;
   initialize();
   m_solver->setupSolver();
   Bound vel_ends;
   vel_ends.setConstant(vel_end);
-  ret = computeControllableSets(vel_ends);
-  if ((int)ret > 0) {
-    return ret;
+  m_data.ret_code = computeControllableSets(vel_ends);
+  if ((int)m_data.ret_code > 0) {
+    return m_data.ret_code;
   }
-  ret = computeForwardPass(vel_start);
-  return ret;
+  m_data.ret_code = computeForwardPass(vel_start);
+  return m_data.ret_code;
 };
 
 ReturnCode PathParametrizationAlgorithm::computeControllableSets(
