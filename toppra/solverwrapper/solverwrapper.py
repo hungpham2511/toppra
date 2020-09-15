@@ -1,4 +1,49 @@
+"""This module provides different solverwrapper implementations."""
+import logging
 import numpy as np
+
+logger = logging.getLogger(__name__)
+
+
+# pylint: disable=unused-import
+def available_solvers(output_msg=True):
+    """Check for available solvers."""
+    try:
+        import ecos
+
+        IMPORT_ECOS = True
+    except ImportError as err:
+        IMPORT_ECOS = False
+    try:
+        import qpoases
+
+        IMPORT_QPOASES = True
+    except ImportError as err:
+        IMPORT_QPOASES = False
+    try:
+        import cvxpy
+
+        IMPORT_CVXPY = True
+    except ImportError as err:
+        IMPORT_CVXPY = False
+    solver_availability = (
+        ("seidel", True),
+        ("hotqpoases", IMPORT_QPOASES),
+        ("qpoases", IMPORT_QPOASES),
+        ("ecos", IMPORT_ECOS),
+        ("cvxpy", IMPORT_CVXPY),
+    )
+
+    if output_msg:
+        print(solver_availability)
+    return solver_availability
+
+def check_solver_availability(solver):
+    check = available_solvers(False)
+    for sname, avail in check:
+        if sname == solver and avail:
+            return True
+    return False
 
 
 class SolverWrapper(object):
@@ -40,18 +85,20 @@ class SolverWrapper(object):
         self.constraints = constraint_list
         self.path = path
         self.path_discretization = np.array(path_discretization)
-        # path scaling: intuitively, if this value is not 1, the TOPP
-        # problem will be solved as if the input path is scaled linearly.
-        self.scaling = self.path_discretization[-1] / self.path.get_duration()
         # End main attributes
-        self.N = len(path_discretization) - 1  # Number of stages. Number of point is _N + 1
+        self.N = (
+            len(path_discretization) - 1
+        )  # Number of stages. Number of point is _N + 1
         self.deltas = self.path_discretization[1:] - self.path_discretization[:-1]
         for i in range(self.N):
             assert path_discretization[i + 1] > path_discretization[i]
 
         self.params = [
-            c.compute_constraint_params(self.path, self.path_discretization, self.scaling)
-            for c in self.constraints]
+            c.compute_constraint_params(
+                self.path, self.path_discretization
+            )
+            for c in self.constraints
+        ]
         self.nV = 2 + sum([c.get_no_extra_vars() for c in self.constraints])
 
     def get_no_stages(self):

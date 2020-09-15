@@ -1,18 +1,16 @@
-from .solverwrapper import SolverWrapper
+from .solverwrapper import SolverWrapper, check_solver_availability
 from ..constraint import ConstraintType
 from ..constants import INFTY, ECOS_MAXX, ECOS_INFTY
 import logging
 import numpy as np
 import scipy.sparse
 
-logger = logging.getLogger(__name__)
-
 try:
     import ecos
-    IMPORT_ECOS = True
-except ImportError as err:
-    logger.warn("Unable to import ecos")
-    IMPORT_ECOS = False
+except ImportError:
+    pass
+
+logger = logging.getLogger(__name__)
 
 
 class ecosWrapper(SolverWrapper):
@@ -43,10 +41,13 @@ class ecosWrapper(SolverWrapper):
         The discretization grid use to discretize the geometric path.
 
     """
+
     def __init__(self, constraint_list, path, path_discretization):
         super(ecosWrapper, self).__init__(constraint_list, path, path_discretization)
-        if not IMPORT_ECOS:
-            raise RuntimeError("Unable to start ecos wrapper because ECOS solver is not installed.")
+        if not check_solver_availability('ecos'):
+            raise RuntimeError(
+                "Unable to start ecos wrapper because ECOS solver is not installed."
+            )
         # NOTE: Currently receive params in dense form.
         self._linear_idx = []
         self._conic_idx = []
@@ -73,12 +74,18 @@ class ecosWrapper(SolverWrapper):
                 self._conic_idx.append(i)
                 self._conic_dim += 4 * self.params[i][0].shape[1]
             else:
-                raise NotImplementedError("Constraint type {:} not implemented".format(_type))
+                raise NotImplementedError(
+                    "Constraint type {:} not implemented".format(_type)
+                )
         assert self._conic_dim % 4 == 0
         logger.debug("Indices of linear constraints: {:}".format(self._linear_idx))
         logger.debug("Indices of conic constraints : {:}".format(self._conic_idx))
-        logger.debug("Nb of row for linear constraints: {:d} rows".format(self._linear_dim))
-        logger.debug("Nb of row for conic constraints : {:d} rows".format(self._conic_dim))
+        logger.debug(
+            "Nb of row for linear constraints: {:d} rows".format(self._linear_dim)
+        )
+        logger.debug(
+            "Nb of row for conic constraints : {:d} rows".format(self._conic_dim)
+        )
 
     def solve_stagewise_optim(self, i, H, g, x_min, x_max, x_next_min, x_next_max):
         assert i <= self.N and 0 <= i
@@ -101,9 +108,9 @@ class ecosWrapper(SolverWrapper):
         # Fill G and h
         currow = 0
         ## Fill 1)
-        G_lil[currow: currow + 2, 1] = [[-1], [1]]
+        G_lil[currow : currow + 2, 1] = [[-1], [1]]
         if not np.isnan(x_min):
-            h[currow] = - x_min
+            h[currow] = -x_min
         else:
             h[currow] = ECOS_INFTY
         currow += 1
@@ -115,9 +122,9 @@ class ecosWrapper(SolverWrapper):
         ## Fill 2)
         if i < self.N:
             delta = self.get_deltas()[i]
-            G_lil[currow, :] = [[- 2 * delta, -1]]
+            G_lil[currow, :] = [[-2 * delta, -1]]
             if not np.isnan(x_next_min):
-                h[currow] = - x_next_min
+                h[currow] = -x_next_min
             else:
                 h[currow] = ECOS_INFTY
             currow += 1
@@ -134,27 +141,35 @@ class ecosWrapper(SolverWrapper):
             if _a is not None:
                 if self.constraints[k].identical:
                     nb_cnst = _F.shape[0]
-                    G_lil[currow:currow + nb_cnst, 0] = np.dot(_F, _a[i]).reshape(-1, 1)
-                    G_lil[currow:currow + nb_cnst, 1] = np.dot(_F, _b[i]).reshape(-1, 1)
-                    h[currow:currow + nb_cnst] = _h - np.dot(_F, _c[i])
+                    G_lil[currow : currow + nb_cnst, 0] = np.dot(_F, _a[i]).reshape(
+                        -1, 1
+                    )
+                    G_lil[currow : currow + nb_cnst, 1] = np.dot(_F, _b[i]).reshape(
+                        -1, 1
+                    )
+                    h[currow : currow + nb_cnst] = _h - np.dot(_F, _c[i])
                     currow += nb_cnst
                 else:
                     nb_cnst = _F.shape[1]
-                    G_lil[currow:currow + nb_cnst, 0] = np.dot(_F[i], _a[i]).reshape(-1, 1)
-                    G_lil[currow:currow + nb_cnst, 1] = np.dot(_F[i], _b[i]).reshape(-1, 1)
-                    h[currow:currow + nb_cnst] = _h[i] - np.dot(_F[i], _c[i])
+                    G_lil[currow : currow + nb_cnst, 0] = np.dot(_F[i], _a[i]).reshape(
+                        -1, 1
+                    )
+                    G_lil[currow : currow + nb_cnst, 1] = np.dot(_F[i], _b[i]).reshape(
+                        -1, 1
+                    )
+                    h[currow : currow + nb_cnst] = _h[i] - np.dot(_F[i], _c[i])
                     currow += nb_cnst
 
             if _ubound is not None:
                 G_lil[currow, 0] = 1
                 G_lil[currow + 1, 0] = -1
-                h[currow: currow + 2] = [_ubound[i, 1], -_ubound[i, 0]]
+                h[currow : currow + 2] = [_ubound[i, 1], -_ubound[i, 0]]
                 currow += 2
 
             if _xbound is not None:
                 G_lil[currow, 1] = 1
                 G_lil[currow + 1, 1] = -1
-                h[currow: currow + 2] = [min(ECOS_MAXX, _xbound[i, 1]), -_xbound[i, 0]]
+                h[currow : currow + 2] = [min(ECOS_MAXX, _xbound[i, 1]), -_xbound[i, 0]]
                 currow += 2
         ## Fill 4)
         for k in self._conic_idx:
@@ -167,26 +182,26 @@ class ecosWrapper(SolverWrapper):
             #       [- P_ij^T[:, 2] ]
             for j in range(_a.shape[1]):
                 G_lil[currow, :] = [_a[i, j], _b[i, j]]
-                G_lil[currow + 1: currow + 4, :] = _P[i, j].T[:, :2]
-                h[currow] = - _c[i, j]
-                h[currow + 1: currow + 4] = _P[i, j].T[:, 2]
+                G_lil[currow + 1 : currow + 4, :] = _P[i, j].T[:, :2]
+                h[currow] = -_c[i, j]
+                h[currow + 1 : currow + 4] = _P[i, j].T[:, 2]
                 currow += 4
 
-        # Fill 
+        # Fill
         G = scipy.sparse.csc_matrix(G_lil)
         result = ecos.solve(g, G, h, dims, verbose=False)
         accepted_infos = ["Optimal solution found", "Close to optimal solution found"]
-        if result['info']['infostring'] in accepted_infos:
+        if result["info"]["infostring"] in accepted_infos:
             success = True
         else:
             success = False
-            logger.warning("Optimization fails. Result dictionary: \n {:}".format(result))
+            logger.warning(
+                "Optimization fails. Result dictionary: \n {:}".format(result)
+            )
 
         ux_opt = np.zeros(2)
         if success:
-            ux_opt = result['x']
+            ux_opt = result["x"]
         else:
             ux_opt[:] = np.nan
         return ux_opt
-
-

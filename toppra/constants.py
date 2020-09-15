@@ -1,3 +1,16 @@
+"""
+Some constants used by TOPPRA solvers.
+"""
+import logging
+
+try:
+    import openravepy as orpy
+    FOUND_OPENRAVE = True
+except (ImportError, SyntaxError) as err:
+    FOUND_OPENRAVE = False
+    logging.getLogger("toppra").debug("Unable to import openrave.")
+
+
 # Constants
 SUPERTINY = 1e-10
 TINY = 1e-8

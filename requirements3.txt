@@ -1,7 +1,16 @@
-numpy
-cython>=0.22.0
 PyYAML
-scipy>0.18
+msgpack
+ipython
+ipdb
 coloredlogs
-enum34
-matplotlib
+
+# dev
+cvxopt
+cvxpy
+pandas
+tabulate
+cvxopt
+pytest
+pylint
+invoke
+mypy

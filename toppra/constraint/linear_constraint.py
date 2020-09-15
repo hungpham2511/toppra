@@ -1,7 +1,7 @@
-from .constraint import Constraint
-from .constraint import ConstraintType, DiscretizationType
-
+"""This module defines the abstract linear constraint class."""
 import numpy as np
+from .constraint import ConstraintType, DiscretizationType, Constraint
+from ..interpolator import AbstractGeometricPath
 
 
 class LinearConstraint(Constraint):
@@ -48,7 +48,9 @@ class LinearConstraint(Constraint):
         self.n_extra_vars = 0
         self.identical = False
 
-    def compute_constraint_params(self, path, gridpoints, scaling=1):
+    def compute_constraint_params(
+        self, path: AbstractGeometricPath, gridpoints: np.ndarray, *args, **kwargs
+    ):
         """Compute numerical coefficients of the given constraint.
 
         Parameters
@@ -57,13 +59,6 @@ class LinearConstraint(Constraint):
             The geometric path.
         gridpoints: np.ndarray
             Shape (N+1,). Gridpoint use for discretizing path.
-        scaling: float
-            Numerical scaling. If is 1, no scaling is performed.
-            NOTE: This parameter is deprecated. For numerical
-            stability it is better to scale at the solver level, as
-            then one can perform solver-specific optimization, as well
-            as strictly more general scaling strategy. Another
-            advantage of scaling at the solver level is a cleaner API.
 
         Returns
         -------

@@ -2,6 +2,7 @@
 import numpy as np
 from .linear_constraint import LinearConstraint, canlinear_colloc_to_interpolate
 from ..constraint import DiscretizationType
+from ..interpolator import AbstractGeometricPath
 
 
 class JointAccelerationConstraint(LinearConstraint):
@@ -28,7 +29,7 @@ class JointAccelerationConstraint(LinearConstraint):
     - :code:`h` := :math:`[\ddot{\mathbf{q}}_{max}^T, -\ddot{\mathbf{q}}_{min}^T]^T`
     """
 
-    def __init__(self, alim, discretization_scheme=DiscretizationType.Collocation):
+    def __init__(self, alim, discretization_scheme=DiscretizationType.Interpolation):
         """Initialize the joint acceleration class.
 
         Parameters
@@ -43,33 +44,61 @@ class JointAccelerationConstraint(LinearConstraint):
             higher computational cost.
         """
         super(JointAccelerationConstraint, self).__init__()
-        self.alim = np.array(alim, dtype=float)
+        alim = np.array(alim, dtype=float)
+        if np.isnan(alim).any():
+            raise ValueError("Bad velocity given: %s" % alim)
+        if len(alim.shape) == 1:
+            self.alim = np.vstack((-np.array(alim), np.array(alim))).T
+        else:
+            self.alim = np.array(alim, dtype=float)
         self.dof = self.alim.shape[0]
         self.set_discretization_type(discretization_scheme)
+
         assert self.alim.shape[1] == 2, "Wrong input shape."
         self._format_string = "    Acceleration limit: \n"
         for i in range(self.alim.shape[0]):
             self._format_string += "      J{:d}: {:}".format(i + 1, self.alim[i]) + "\n"
         self.identical = True
 
-    def compute_constraint_params(self, path, gridpoints, scaling):
+    def compute_constraint_params(
+        self, path: AbstractGeometricPath, gridpoints: np.ndarray, *args, **kwargs
+    ):
         if path.dof != self.dof:
-            raise ValueError("Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
-                self.dof, path.dof
-            ))
-        ps_vec = path.evald(gridpoints / scaling) / scaling
-        pss_vec = path.evaldd(gridpoints / scaling) / scaling ** 2
+            raise ValueError(
+                "Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
+                    self.dof, path.dof
+                )
+            )
+        ps_vec = (path(gridpoints, order=1)).reshape((-1, path.dof))
+        pss_vec = (path(gridpoints, order=2)).reshape((-1, path.dof))
         dof = path.dof
         F_single = np.zeros((dof * 2, dof))
         g_single = np.zeros(dof * 2)
         g_single[0:dof] = self.alim[:, 1]
-        g_single[dof:] = - self.alim[:, 0]
+        g_single[dof:] = -self.alim[:, 0]
         F_single[0:dof, :] = np.eye(dof)
         F_single[dof:, :] = -np.eye(dof)
         if self.discretization_type == DiscretizationType.Collocation:
-            return ps_vec, pss_vec, np.zeros_like(ps_vec), F_single, g_single, None, None
+            return (
+                ps_vec,
+                pss_vec,
+                np.zeros_like(ps_vec),
+                F_single,
+                g_single,
+                None,
+                None,
+            )
         elif self.discretization_type == DiscretizationType.Interpolation:
-            return canlinear_colloc_to_interpolate(ps_vec, pss_vec, np.zeros_like(ps_vec), F_single, g_single, None, None,
-                                                   gridpoints, identical=True)
+            return canlinear_colloc_to_interpolate(
+                ps_vec,
+                pss_vec,
+                np.zeros_like(ps_vec),
+                F_single,
+                g_single,
+                None,
+                None,
+                gridpoints,
+                identical=True,
+            )
         else:
             raise NotImplementedError("Other form of discretization not supported!")

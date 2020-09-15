@@ -1,0 +1,14 @@
+namespace toppra {
+/**
+
+\mainpage TOPP-RA - Time Optimal Path Parameterization by Reachability Analysis.
+
+The main classes are:
+- GeometricPath: \copybrief GeometricPath
+- LinearConstraint: \copybrief LinearConstraint
+- Solver: \copybrief Solver
+- PathParametrizationAlgorithm: \copybrief PathParametrizationAlgorithm
+
+*/
+
+}

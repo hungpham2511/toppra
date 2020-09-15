@@ -52,7 +52,14 @@ class JointTorqueConstraint(LinearConstraint):
         higher computational cost.
 
     """
-    def __init__(self, inv_dyn, tau_lim, fs_coef, discretization_scheme=DiscretizationType.Collocation):
+
+    def __init__(
+        self,
+        inv_dyn,
+        tau_lim,
+        fs_coef,
+        discretization_scheme=DiscretizationType.Collocation,
+    ):
         super(JointTorqueConstraint, self).__init__()
         self.inv_dyn = inv_dyn
         self.tau_lim = np.array(tau_lim, dtype=float)
@@ -62,47 +69,48 @@ class JointTorqueConstraint(LinearConstraint):
         assert self.tau_lim.shape[1] == 2, "Wrong input shape."
         self._format_string = "    Torque limit: \n"
         for i in range(self.tau_lim.shape[0]):
-            self._format_string += "      J{:d}: {:}".format(i + 1, self.tau_lim[i]) + "\n"
+            self._format_string += (
+                "      J{:d}: {:}".format(i + 1, self.tau_lim[i]) + "\n"
+            )
         self.identical = True
 
-    def compute_constraint_params(self, path, gridpoints, scaling):
-        if path.get_dof() != self.get_dof():
-            raise ValueError("Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
-                self.get_dof(), path.get_dof()
-            ))
-        v_zero = np.zeros(path.get_dof())
-        p = path.eval(gridpoints / scaling)
-        ps = path.evald(gridpoints / scaling) / scaling
-        pss = path.evaldd(gridpoints / scaling) / scaling ** 2
+    def compute_constraint_params(self, path, gridpoints):
+        if path.dof != self.get_dof():
+            raise ValueError(
+                "Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
+                    self.get_dof(), path.dof
+                )
+            )
+        v_zero = np.zeros(path.dof)
+        p = path.eval(gridpoints)
+        ps = path.evald(gridpoints)
+        pss = path.evaldd(gridpoints)
         N = gridpoints.shape[0] - 1
-        dof = path.get_dof()
+        dof = path.dof
         I_dof = np.eye(dof)
         F = np.zeros((dof * 2, dof))
         g = np.zeros(dof * 2)
         g[0:dof] = self.tau_lim[:, 1]
-        g[dof:] = - self.tau_lim[:, 0]
+        g[dof:] = -self.tau_lim[:, 0]
         F[0:dof, :] = I_dof
         F[dof:, :] = -I_dof
 
-        c = np.array(
-            [self.inv_dyn(p_, v_zero, v_zero) for p_ in p]
+        c = np.array([self.inv_dyn(p_, v_zero, v_zero) for p_ in p])
+        a = np.array([self.inv_dyn(p_, v_zero, ps_) for p_, ps_ in zip(p, ps)]) - c
+        b = (
+            np.array([self.inv_dyn(p_, ps_, pss_) for p_, ps_, pss_ in zip(p, ps, pss)])
+            - c
         )
-        a = np.array(
-            [self.inv_dyn(p_, v_zero, ps_) for p_, ps_ in zip(p, ps)]
-        ) - c
-        b = np.array(
-            [self.inv_dyn(p_, ps_, pss_) for p_, ps_, pss_ in zip(p, ps, pss)]
-        ) - c
 
         # dry friction
         for i in range(0, dof):
-            c[:,i] += self.fs_coef[i] * np.sign(ps[:,i])
+            c[:, i] += self.fs_coef[i] * np.sign(ps[:, i])
 
         if self.discretization_type == DiscretizationType.Collocation:
             return a, b, c, F, g, None, None
         elif self.discretization_type == DiscretizationType.Interpolation:
-            return canlinear_colloc_to_interpolate(a, b, c, F, g, None, None,
-                                                   gridpoints, identical=True)
+            return canlinear_colloc_to_interpolate(
+                a, b, c, F, g, None, None, gridpoints, identical=True
+            )
         else:
             raise NotImplementedError("Other form of discretization not supported!")
-

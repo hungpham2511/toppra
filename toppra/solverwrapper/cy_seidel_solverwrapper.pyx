@@ -437,7 +437,6 @@ cdef class seidelWrapper:
         self.path = path
         path_discretization = np.array(path_discretization)
         self.path_discretization = path_discretization
-        self.scaling = path_discretization[-1] / path.get_duration()
         self.N = len(path_discretization) - 1  # Number of stages. Number of point is _N + 1
         self.deltas = path_discretization[1:] - path_discretization[:-1]
         cdef unsigned int cur_index, j, i, k
@@ -452,7 +451,7 @@ cdef class seidelWrapper:
             if self.constraints[i].get_constraint_type() != ConstraintType.CanonicalLinear:
                 raise NotImplementedError
             a, b, c, F, v, ubnd, xbnd = self.constraints[i].compute_constraint_params(
-                self.path, path_discretization, self.scaling)
+                self.path, path_discretization)
             if a is not None:
                 if self.constraints[i].identical:
                     self.nC += F.shape[0]

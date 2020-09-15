@@ -1,159 +1,224 @@
-version: 2
+version: 2.1
+
+# Use this orb install python dependences.
+orbs:
+  python: circleci/python@0.3.0
+  gh-pages: sugarshin/gh-pages@0.0.6
+
+
+commands:
+  # For installing dep and building toppra C++ API
+  build_cpp:
+    description: "Install dependencies (C++) and build toppra C++ API"
+    parameters:
+      python-version:
+        type: string
+        default: "3.6"
+      python-version-short:
+        type: string
+        default: "36"
+    steps:
+      - run:
+          name: Install dependencies
+          command: |
+            echo "deb [arch=amd64] http://robotpkg.openrobots.org/packages/debian/pub $(lsb_release -sc) robotpkg" \
+              | sudo tee /etc/apt/sources.list.d/robotpkg.list
+            curl http://robotpkg.openrobots.org/packages/debian/robotpkg.key \
+              | sudo apt-key add -
+            sudo apt update
+            sudo apt install -y cmake clang-tidy libeigen3-dev robotpkg-pinocchio robotpkg-qpoases libglpk-dev \
+              robotpkg-py<< parameters.python-version-short >>-pinocchio \
+              robotpkg-py<< parameters.python-version-short >>-example-robot-data
+
+            cd ~/ && git clone https://github.com/pybind/pybind11
+            cd pybind11 && git checkout v2.5.0
+            mkdir build && cd build && cmake -DPYBIND11_TEST=false .. && sudo make install
+
+            cd ~/ && git clone https://github.com/msgpack/msgpack-c.git
+            cd msgpack-c && git checkout cpp-3.2.1 && cmake -DMSGPACK_CXX11=ON -DMSGPACK_BUILD_EXAMPLES=OFF -DMSGPACK_CXX_ONLY=ON .
+            sudo make install
+            
+          working_directory: ~/
+      - run:
+          name: Build toppra C++ API
+          command: |
+            export LD_LIBRARY_PATH=/opt/openrobots/lib:${LD_LIBRARY_PATH}
+            export CMAKE_PREFIX_PATH=/opt/openrobots
+            mkdir build && cd build && cmake \
+              -DBUILD_WITH_PINOCCHIO=ON \
+              -DBUILD_WITH_qpOASES=ON \
+              -DBUILD_WITH_GLPK=ON \
+              -DPYTHON_BINDINGS=ON \
+              -DPYTHON_VERSION=<< parameters.python-version >> \
+              -DBUILD_WITH_PINOCCHIO_PYTHON=true \
+              -DOPT_MSGPACK=ON ..
+            make -j4
+          working_directory: ~/repo/cpp
+
 jobs:
-  check-codestyle:
+  # Test the base python installation on multiple environments. In
+  # addition, run lint task.
+  python:
+    parameters:
+      python-version:
+        type: string
+        default: ""
+      tox-base-cmd:
+        type: string
+        default: "py"
     docker:
-      - image: hungpham2511/toppra-dep:0.0.2
+      - image: hungpham2511/toppra-dep:0.0.3
 
     working_directory: ~/repo
-
     steps:
       - checkout
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-dependencies3-{{ checksum "requirements3.txt" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies3-
-
       - run:
-          name: install dependencies
+          name: Run tests for python << parameters.python-version >>
           command: |
-            python3 -m venv venv3
-            . venv3/bin/activate
-             # main deps
-            pip install -r requirements3.txt
-            git clone https://github.com/hungpham2511/qpOASES && cd qpOASES/ && mkdir bin && make && cd interfaces/python/ && python setup.py install
-            # test deps
-            pip install cvxpy cvxopt pytest pytest-cov pandas tabulate pylint pydocstyle pycodestyle
+            virtualenv --python python3.7 venv3 && . venv3/bin/activate
+            pip install tox numpy cython  # need numpy and cython to create the sdist
+            tox -e << parameters.tox-base-cmd >><< parameters.python-version >>
 
-      - save_cache:
-          paths:
-            - ./venv3
-          key: v1-dependencies3-{{ checksum "requirements3.txt" }}
-
-      # build install
-      - run:
-          name: build and install
-          command: |
-            . venv3/bin/activate
-            python setup.py develop
-
-      - run:
-          name: check codestyle
-          command: |
-            . venv3/bin/activate
-            make lint
+      - store_test_results:
+          path: test-results
 
       - store_artifacts:
-          path: test-reports
-          destination: test-reports
+          path: test-results  
 
-  test-python-3:
+  # Test the cpp api and bindings on python3.6 The base image of this
+  # job is Ubuntu 18.04, which is required to install pinocchio and
+  # other deps.
+  cpp-python36:
+    description: Build and test the full Python API
     docker:
-      - image: hungpham2511/toppra-dep:0.0.2
-
+      - image: cimg/python:3.6
     working_directory: ~/repo
-
     steps:
       - checkout
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-dependencies3-{{ checksum "requirements3.txt" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies3-
+      - build_cpp
+      - run:
+          name: Unit tests (C++)
+          command: |
+            ./tests/all_tests
+          working_directory: ~/repo/cpp/build
+      - run:
+          name: Check codestyle (C++)
+          command: |
+            clang-tidy  src/**/*.cpp \
+            -checks=clang-analyzer-*,clang-analyzer-cplusplus*,cppcoreguidelines-*,performance-*,modernize-*,readability-,-cppcoreguidelines-pro-bounds-array-to-pointer-decay\
+            -warnings-as-errors=clang-analyzer-*,clang-analyzer-cplusplus*,cppcoreguidelines-*,modernize-*
+          working_directory: ~/repo/cpp
+      - python/load-cache:
+          dependency-file: requirements3.txt
+      - python/install-deps:
+          dependency-file: requirements3.txt
+      - python/save-cache:
+          dependency-file: requirements3.txt
+      - run:
+          name: Install Python API with bindings
+          command: |
+            pip install numpy cython invoke  # absolute minimum to run setup.py
+            invoke install-solvers
+            pip install -e .[dev]
 
       - run:
-          name: install dependencies
+          name: Test Python API with bindings
           command: |
-            python3 -m venv venv3
-            . venv3/bin/activate
-             # main deps
-            pip install -r requirements3.txt
-            git clone https://github.com/hungpham2511/qpOASES && cd qpOASES/ && mkdir bin && make && cd interfaces/python/ && python setup.py install
-            # test deps
-            pip install cvxpy cvxopt pytest pytest-cov pandas tabulate pylint pydocstyle pycodestyle
+            export ROS_PACKAGE_PATH=/opt/openrobots/share
+            export PYTHONPATH=/opt/openrobots/lib/python3.6/site-packages:$PYTHONPATH
+            pytest tests --durations=3 --junitxml=test-reports/junit.xml
 
-      - save_cache:
-          paths:
-            - ./venv3
-          key: v1-dependencies3-{{ checksum "requirements3.txt" }}
-
-      # build install
-      - run:
-          name: build and install
-          command: |
-            . venv3/bin/activate
-            python setup.py develop
-
-      - run:
-          name: test
-          command: |
-            . venv3/bin/activate
-            export PYTHONPATH=$PYTHONPATH:`openrave-config --python-dir`
-            pytest tests -W ignore::PendingDeprecationWarning
-
-      - store_artifacts:
+      - store_test_results:
           path: test-reports
-          destination: test-reports
 
-  test-python-2:
+      - run:
+          name: Build docs
+          command: |
+            export ROS_PACKAGE_PATH=/opt/openrobots/share
+            export PYTHONPATH=/opt/openrobots/lib/python3.6/site-packages:$PYTHONPATH
+            pip install -r docs/requirements.txt
+            invoke build-docs
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - docs/build
+
+  # Publishthe built doc from the last build step
+  publish-docs:
     docker:
-      - image: hungpham2511/toppra-dep:0.0.2
-
+      - image: cimg/python:3.6
     working_directory: ~/repo
-
     steps:
       - checkout
+      - attach_workspace:
+          at: .
+      - add_ssh_keys
+      - gh-pages/deploy:
+          ssh-fingerprints: "9f:09:37:d6:4a:48:0d:17:a7:c5:4a:5d:af:b5:fc:ab"
+          build-dir: ./docs/build/html
 
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-dependencies2-{{ checksum "requirements.txt" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies2-
+  pre-release:
+    docker:
+      - image: buildpack-deps:trusty
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          name: Pull all known tags and check that the tag in VERSION has not already exist.
+          command: |
+            VERSION=`cat VERSION`
+            git fetch --tags
+            git tag $VERSION
+
+  release:
+    docker:
+      - image: cimg/python:3.6
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          name: Build distribution
+          command: |
+            pip install cython numpy twine
+            python setup.py sdist
 
       - run:
-          name: install dependencies
+          name: Publish to PyPI
           command: |
-            pip install virtualenv
-            python -m virtualenv venv
-            . venv/bin/activate
-            # main deps
-            pip install -r requirements.txt 
-            git clone https://github.com/hungpham2511/qpOASES && cd qpOASES/ && mkdir bin && make && cd interfaces/python/ && python setup.py install
-            # test deps
-            pip install cvxpy==0.4.11 cvxopt pytest pytest-cov pandas tabulate pylint pydocstyle pycodestyle pathlib2
-
-      - save_cache:
-          paths:
-            - ./venv
-          key: v1-dependencies2-{{ checksum "requirements.txt" }}
-
-      - run:
-          name: build and install
-          command: |
-            . venv/bin/activate
-            python setup.py develop
-
-      - run:
-          name: test
-          command: |
-            . venv/bin/activate
-            export PYTHONPATH=$PYTHONPATH:`openrave-config --python-dir`
-            pytest tests -W ignore::PendingDeprecationWarning
-
-      - store_artifacts:
-          path: test-reports
-          destination: test-reports
-
+            twine upload dist/* --username hungpham --password $PYPI_PASSWORD
 
 workflows:
   version: 2
-  test:
+  integrate:
     jobs:
-      - test-python-2
-      - test-python-3
-      - check-codestyle
+      - python:
+          tox-base-cmd: "lint"
+      - python:
+          matrix:
+            parameters:
+              python-version: ["27", "36", "37"]
+
+      - cpp-python36
+      - publish-docs:
+          requires:
+            - cpp-python36
+          filters:
+            branches:
+              only:
+                - fix-doc
+                - develop
+  release:
+    jobs:
+      - release:
+          filters:
+            branches:
+              only:
+              - master
+              - test-release
+
+      - pre-release:
+          filters:
+            branches:
+              only:
+              - /release-.*/
