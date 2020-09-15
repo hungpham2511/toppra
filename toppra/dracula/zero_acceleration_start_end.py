@@ -129,10 +129,7 @@ def ZeroAccelerationAtStartAndEnd(cspl, debugging = False):
         plt.show()
 
 if __name__ == '__main__':
-    debugging = False
-    ## testing splines
     s_array = [0, 3, 8, 12]
     wp_array = [(0, 0, 3, -2), (1, 2, 0, -3), (2, 0, 4, 2),(3, -1, 2, 0)]
-    cspl = CubicSpline(s_array, wp_array,bc_type='clamped')
-    jmax = 0.5
-    ZeroAccelerationAtStartAndEnd(cspl,jmax, debugging)
+    cspl = CubicSpline(s_array, wp_array, bc_type='clamped')
+    ZeroAccelerationAtStartAndEnd(cspl)

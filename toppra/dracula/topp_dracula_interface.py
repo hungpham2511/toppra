@@ -13,20 +13,11 @@ logging.basicConfig()
 
 from .zero_acceleration_start_end import ZeroAccelerationAtStartAndEnd
 
-_CALLS_TO_RUN_TOPP = 0
 
 def RunTopp(knots_ext, vlim, alim,robot_command_rate, return_spline_parameters = False, topp_breaks_count = 1001, debug_active = False):
     #robot_command_rate is not used if return_spline_parameters==True
-    global _CALLS_TO_RUN_TOPP 
     if not return_spline_parameters:
         assert(robot_command_rate)
-
-    _CALLS_TO_RUN_TOPP += 1 
-    if _CALLS_TO_RUN_TOPP == 1: 
-        script_getfile = inspect.getfile(inspect.currentframe()) # script filename (usually with path)
-        print("In TOPPRA Python call 1: script(%s)" % script_getfile)
-    else:
-        print("In TOPPRA Python call %d" % _CALLS_TO_RUN_TOPP)
 
     knots = copy.deepcopy(knots_ext)
     if debug_active:
@@ -73,11 +64,11 @@ def RunTopp(knots_ext, vlim, alim,robot_command_rate, return_spline_parameters =
 
     if debug_active:
         print("yay we are ready to compute the traj")
-    jnt_traj, aux_traj = instance.compute_trajectory(0, 0, return_data=False,bc_type='clamped')
+    jnt_traj = instance.compute_trajectory(0, 0)
     if debug_active:
         print(jnt_traj.cspl)
     if debug_active:
-    	csplcp= copy.deepcopy(jnt_traj.cspl)
+    	csplcp = copy.deepcopy(jnt_traj.cspl)
 
     ZeroAccelerationAtStartAndEnd(jnt_traj.cspl)
 
