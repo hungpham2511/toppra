@@ -7,9 +7,9 @@
 
 #define TEST_PRECISION 1e-6
 
-class ParamtrizeConstAccel : public testing::Test {
+class ParametrizeConstAccel : public testing::Test {
  public:
-  ParamtrizeConstAccel() {
+  ParametrizeConstAccel() {
     toppra::Matrix coeff0{4, 2}, coeff1{4, 2}, coeff2{4, 2};
     coeff0 << -0.500000, -0.500000, 1.500000, 0.500000, 0.000000, 3.000000, 0.000000,
         0.000000;
@@ -24,8 +24,13 @@ class ParamtrizeConstAccel : public testing::Test {
   std::shared_ptr<toppra::PiecewisePolyPath> path;
 };
 
-TEST_F(ParamtrizeConstAccel, Basic) {
+TEST_F(ParametrizeConstAccel, Basic) {
   toppra::Vector gridpoints = toppra::Vector::LinSpaced(10, 0, 3);
   toppra::Vector vsquared = toppra::Vector::LinSpaced(10, 0.5, 1);
   auto p = toppra::parametrizer::ConstAccel(path, gridpoints, vsquared);
+  
+  toppra::Vector ts = toppra::Vector::LinSpaced(10, 0, 3);
+  auto qs = p.eval(ts);
+  auto qds = p.eval(ts, 1);
+  auto qdds = p.eval(ts, 2);
 }

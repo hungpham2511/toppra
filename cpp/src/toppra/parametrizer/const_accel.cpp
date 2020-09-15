@@ -28,7 +28,6 @@ void ConstAccel::process_internals() {
   }
 }
 
-// If ts is out of bound, extrapolate.
 bool ConstAccel::evalParams(const Vector& ts, Vector& ss, Vector& vs,
                             Vector& us) const {
   ss.resize(ts.size());
@@ -36,14 +35,25 @@ bool ConstAccel::evalParams(const Vector& ts, Vector& ss, Vector& vs,
   us.resize(ts.size());
   int k_grid = 0;
   for (std::size_t i = 0; i < ts.size(); i++) {
-    if (m_ts[k_grid] > ts[i]) k_grid = 0;
+    // TOPPRA_LOG_DEBUG("Finding velocity at index: " << i);
+
+    // reset the search back to the first gridpoint
+    if (m_ts[k_grid] > ts[i]) {
+      // TOPPRA_LOG_DEBUG("Reset grid point search to 0");
+      k_grid = 0;
+    }
+
     // find k_grid s.t m_gridpoints[k_grid] <= ss[i] < m_gridpoints[k_grid + 1]
-    while (k_grid < m_gridpoints.size() - 1) {
+    while (k_grid < (m_gridpoints.size() - 1)) {
       if (m_gridpoints[k_grid] <= ts[i] && ts[i] < m_gridpoints[k_grid + 1]) {
         break;
+      } else if (k_grid == (m_gridpoints.size() - 2)) {
+        break;
+      } else {
+        k_grid++;
       }
-      k_grid++;
     }
+    // TOPPRA_LOG_DEBUG("k_grid=" << k_grid);
     // k_grid could equal m_gridpoints.size() - 1, which means ts[i] >=
     // m_gridpoint[last]
     if (k_grid == (m_gridpoints.size() - 1)) {
@@ -62,6 +72,7 @@ bool ConstAccel::evalParams(const Vector& ts, Vector& ss, Vector& vs,
 
 Vectors ConstAccel::eval_impl(const Vector& times, int order) const {
   Vector ss, vs, us;
+  TOPPRA_LOG_DEBUG("Enter eval_impl");
   bool ret = evalParams(times, ss, vs, us);
   assert(ret);
   if (order == 0) {
@@ -95,6 +106,7 @@ bool ConstAccel::validate_impl() const {
   for (std::size_t i = 0; i < vs_norm.size() - 1; i++) {
     // check that there is no huge fluctuation
     if (std::abs(vs_norm[i + 1] - vs_norm[i]) > 0.1) {
+      TOPPRA_LOG_DEBUG("Large variation between path velocities detected. v[i+1] - v[i] = " << vs_norm[i + 1] - vs_norm[i]);
       return false;
     }
     // check if i != 0
