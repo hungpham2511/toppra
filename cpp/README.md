@@ -28,7 +28,6 @@ export PYTHONPATH=/opt/openrobots/lib/python3.6/site-packages:$PYTHONPATH
 # or any python version that you install
 ```
 
-
 ## How to install optional dependencies:
 
 - GLPK: `sudo apt install libglpk-dev`
@@ -65,6 +64,17 @@ below:
 -- Found PythonInterp: /usr/bin/python3.7 (found suitable version "3.7.4", minimum required is "3.7")
 -- Found PythonLibs: /usr/lib/x86_64-linux-gnu/libpython3.7m.so
 -- Found /usr/include/python3.7m /usr/bin/python3.7
+```
+
+## Building doxygen doc
+
+Make sure that `doxygen` is installed and available. Running cmake
+normally will create a rule for building doc with doxygen.
+
+``` sh
+# Run cmake normally
+ninja doc # or make doc
+# The documentation is available at doc/doc/html/index.html
 ```
 
 # Using TOPPRA in CMake-based project
