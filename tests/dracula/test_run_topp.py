@@ -43,10 +43,18 @@ print("Running it again")
 s_sampled = np.linspace(0, csplcp.x[-1], 100)
 fig, axs = plt.subplots(1, 4, sharex=True, figsize=[18, 4])
 for i in range(csplcp.c.shape[2]):
-    axs[0].plot(s_sampled, csplcp(s_sampled)[:, i], label="J{:d}".format(i + 1))
-    axs[1].plot(s_sampled, csplcp(s_sampled, 1)[:, i], label="J{:d}".format(i + 1))
-    axs[2].plot(s_sampled, csplcp(s_sampled, 2)[:, i], label="J{:d}".format(i + 1))
-    axs[3].plot(s_sampled, csplcp(s_sampled, 3)[:, i], label="J{:d}".format(i + 1))
+    axs[0].plot(
+        s_sampled, csplcp(s_sampled)[:, i], label="J{:d}".format(i + 1)
+    )
+    axs[1].plot(
+        s_sampled, csplcp(s_sampled, 1)[:, i], label="J{:d}".format(i + 1)
+    )
+    axs[2].plot(
+        s_sampled, csplcp(s_sampled, 2)[:, i], label="J{:d}".format(i + 1)
+    )
+    axs[3].plot(
+        s_sampled, csplcp(s_sampled, 3)[:, i], label="J{:d}".format(i + 1)
+    )
 axs[0].set_xlabel("Time (s)")
 axs[0].set_ylabel("Joint position (rad)")
 #     axs[0].legend()
@@ -68,10 +76,18 @@ plt.show()
 s_sampled2 = np.linspace(0, cspl.x[-1], 100)
 fig, axs = plt.subplots(1, 4, sharex=True, figsize=[18, 4])
 for i in range(cspl.c.shape[2]):
-    axs[0].plot(s_sampled2, cspl(s_sampled2)[:, i], label="J{:d}".format(i + 1))
-    axs[1].plot(s_sampled2, cspl(s_sampled2, 1)[:, i], label="J{:d}".format(i + 1))
-    axs[2].plot(s_sampled2, cspl(s_sampled2, 2)[:, i], label="J{:d}".format(i + 1))
-    axs[3].plot(s_sampled2, cspl(s_sampled2, 3)[:, i], label="J{:d}".format(i + 1))
+    axs[0].plot(
+        s_sampled2, cspl(s_sampled2)[:, i], label="J{:d}".format(i + 1)
+    )
+    axs[1].plot(
+        s_sampled2, cspl(s_sampled2, 1)[:, i], label="J{:d}".format(i + 1)
+    )
+    axs[2].plot(
+        s_sampled2, cspl(s_sampled2, 2)[:, i], label="J{:d}".format(i + 1)
+    )
+    axs[3].plot(
+        s_sampled2, cspl(s_sampled2, 3)[:, i], label="J{:d}".format(i + 1)
+    )
 axs[0].set_xlabel("Time (s)")
 axs[0].set_ylabel("Joint position (rad)")
 axs[1].set_xlabel("Time (s)")

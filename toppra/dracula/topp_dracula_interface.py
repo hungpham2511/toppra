@@ -108,7 +108,13 @@ def RunTopp(
             plt.show()
 
         if debug_active:
-            return (xs_sample, ts_sample, sample_number, xds_sample, xdds_sample)
+            return (
+                xs_sample,
+                ts_sample,
+                sample_number,
+                xds_sample,
+                xdds_sample,
+            )
         else:
             return (
                 np.ascontiguousarray(xs_sample, dtype=np.float64),

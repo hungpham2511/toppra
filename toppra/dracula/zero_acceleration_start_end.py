@@ -17,7 +17,9 @@ def InsertAtStartEndOfSpline(cspl_in, xin, cin, xend, cend, debugging=False):
     if debugging:
         print(
             "\n{}\n{}\n{}".format(
-                cspl_in.x[time_step - 1 : time_step], xin, cspl_in.x[time_step + 1 :]
+                cspl_in.x[time_step - 1 : time_step],
+                xin,
+                cspl_in.x[time_step + 1 :],
             )
         )
     cspl_in.x = np.concatenate(
@@ -39,10 +41,14 @@ def InsertAtStartEndOfSpline(cspl_in, xin, cin, xend, cend, debugging=False):
     if debugging:
         print(
             "\n{}\n{}\n{}".format(
-                cspl_in.x[time_step - 1 : time_step], xin, cspl_in.x[time_step + 1 :]
+                cspl_in.x[time_step - 1 : time_step],
+                xin,
+                cspl_in.x[time_step + 1 :],
             )
         )
-    cspl_in.x = np.concatenate([cspl_in.x[:time_step], xend + cspl_in.x[time_step - 1]])
+    cspl_in.x = np.concatenate(
+        [cspl_in.x[:time_step], xend + cspl_in.x[time_step - 1]]
+    )
     if debugging:
         print("x after replace at end=", cspl_in.x)
 
@@ -102,15 +108,23 @@ def ZeroAccelerationAtStartAndEnd(cspl, debugging=False):
         s_sampled = np.linspace(0, csplcp.x[-1], 100)
         fig, axs = plt.subplots(1, 4, sharex=True, figsize=[18, 4])
         for i in range(csplcp.c.shape[2]):
-            axs[0].plot(s_sampled, csplcp(s_sampled)[:, i], label="J{:d}".format(i + 1))
+            axs[0].plot(
+                s_sampled, csplcp(s_sampled)[:, i], label="J{:d}".format(i + 1)
+            )
             axs[1].plot(
-                s_sampled, csplcp(s_sampled, 1)[:, i], label="J{:d}".format(i + 1)
+                s_sampled,
+                csplcp(s_sampled, 1)[:, i],
+                label="J{:d}".format(i + 1),
             )
             axs[2].plot(
-                s_sampled, csplcp(s_sampled, 2)[:, i], label="J{:d}".format(i + 1)
+                s_sampled,
+                csplcp(s_sampled, 2)[:, i],
+                label="J{:d}".format(i + 1),
             )
             axs[3].plot(
-                s_sampled, csplcp(s_sampled, 3)[:, i], label="J{:d}".format(i + 1)
+                s_sampled,
+                csplcp(s_sampled, 3)[:, i],
+                label="J{:d}".format(i + 1),
             )
         axs[0].set_xlabel("Time (s)")
         axs[0].set_ylabel("Joint position (rad)")
@@ -130,15 +144,23 @@ def ZeroAccelerationAtStartAndEnd(cspl, debugging=False):
         s_sampled2 = np.linspace(0, cspl.x[-1], 100)
         fig, axs = plt.subplots(1, 4, sharex=True, figsize=[18, 4])
         for i in range(cspl.c.shape[2]):
-            axs[0].plot(s_sampled2, cspl(s_sampled2)[:, i], label="J{:d}".format(i + 1))
+            axs[0].plot(
+                s_sampled2, cspl(s_sampled2)[:, i], label="J{:d}".format(i + 1)
+            )
             axs[1].plot(
-                s_sampled2, cspl(s_sampled2, 1)[:, i], label="J{:d}".format(i + 1)
+                s_sampled2,
+                cspl(s_sampled2, 1)[:, i],
+                label="J{:d}".format(i + 1),
             )
             axs[2].plot(
-                s_sampled2, cspl(s_sampled2, 2)[:, i], label="J{:d}".format(i + 1)
+                s_sampled2,
+                cspl(s_sampled2, 2)[:, i],
+                label="J{:d}".format(i + 1),
             )
             axs[3].plot(
-                s_sampled2, cspl(s_sampled2, 3)[:, i], label="J{:d}".format(i + 1)
+                s_sampled2,
+                cspl(s_sampled2, 3)[:, i],
+                label="J{:d}".format(i + 1),
             )
         axs[0].set_xlabel("Time (s)")
         axs[0].set_ylabel("Joint position (rad)")

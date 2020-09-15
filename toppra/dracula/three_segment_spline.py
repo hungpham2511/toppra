@@ -11,7 +11,9 @@ from scipy.interpolate import PPoly
 # Ve - End Velocity
 # Ae - End Acceleration
 # fin - final time of threesegment spline, if not defined, Jmax is used
-def ThreeSegmentSpline(Ps, Vs, As, Pe, Ve, Ae, fin=None, Jmax=0.5, debugging=False):
+def ThreeSegmentSpline(
+    Ps, Vs, As, Pe, Ve, Ae, fin=None, Jmax=0.5, debugging=False
+):
     # Fixed Parameters:
     if fin is None:
         SafetyTime = 1.0
@@ -43,7 +45,16 @@ def ThreeSegmentSpline(Ps, Vs, As, Pe, Ve, Ae, fin=None, Jmax=0.5, debugging=Fal
     J0 = (
         A3 * o * (n + o)
         - A0 * (3 * m ** 2 + n * (n + o) + 2 * m * (2 * n + o))
-        - 2 * (3 * P0 - 3 * P3 + 3 * m * V0 + 2 * n * V0 + o * V0 + n * V3 + 2 * o * V3)
+        - 2
+        * (
+            3 * P0
+            - 3 * P3
+            + 3 * m * V0
+            + 2 * n * V0
+            + o * V0
+            + n * V3
+            + 2 * o * V3
+        )
     ) / (m * (m + n) * (m + n + o))
     P1 = (A0 * m ** 2) / 2 + (J0 * m ** 3) / 6 + P0 + m * V0
     V1 = A0 * m + (J0 * m ** 2) / 2 + V0
@@ -75,7 +86,9 @@ def ThreeSegmentSpline(Ps, Vs, As, Pe, Ve, Ae, fin=None, Jmax=0.5, debugging=Fal
     polynomial_coeff_n = np.stack((1 / 6 * J1, 1 / 2 * A1, V1, P1))
     polynomial_coeff_o = np.stack((1 / 6 * J2, 1 / 2 * A2, V2, P2))
     x = np.array([m, m + n, m + n + o])
-    c = np.stack([polynomial_coeff_m, polynomial_coeff_n, polynomial_coeff_o], axis=1)
+    c = np.stack(
+        [polynomial_coeff_m, polynomial_coeff_n, polynomial_coeff_o], axis=1
+    )
     if debugging:
         print("x=\n", x)
         print("c=\n", c)
@@ -93,7 +106,9 @@ if __name__ == "__main__":
     Pe = np.array(40.5)
     Ve = np.array(8.0)
     Ae = np.array(20.1)
-    x, c = ThreeSegmentSpline(Ps, Vs, As, Pe, Ve, Ae, Jmax, debugging=debugging)
+    x, c = ThreeSegmentSpline(
+        Ps, Vs, As, Pe, Ve, Ae, Jmax, debugging=debugging
+    )
     print("x =\n", x)
     print("c =\n", c)
     print("c.shape=\n", c.shape)
