@@ -20,6 +20,19 @@ class ConstAccel : public Parametrizer {
   Vectors eval_impl(const Vector &, int order = 0) const override;
   bool validate_impl() const override;
   Bound pathInterval_impl() const override;
+  
+  /** \brief Evaluate path variables ss, vs, and us at the input time instances.
+   * 
+   * For each t, a starting gridpoint will be selected. The selected
+   * path position, velocity and acceleration is then used to compute
+   * the corresponding output quantities.
+   * 
+   * \param[in] ts Time instances to be evaluated, starting from zero seconds.
+   * \param[out] ss Path positions at the given time instances.
+   * \param[out] vs Path velocities at the given time instances.
+   * \param[out] us Path accelerations at the given time instances.
+   * 
+   */
   bool evalParams(const Vector &ts, Vector &ss, Vector &vs, Vector &us) const;
   // Compute times and acclerations from given data (path, velocities)
   void process_internals();
