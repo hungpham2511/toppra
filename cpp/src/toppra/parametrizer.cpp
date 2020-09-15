@@ -32,4 +32,6 @@ Vectors Parametrizer::eval(const Vector& positions, int order) const {
 }
 
 Bound Parametrizer::pathInterval() const { return pathInterval_impl(); }
+
+bool Parametrizer::validate() const { return validate_impl(); }
 }  // namespace toppra

@@ -28,9 +28,9 @@ TEST_F(ParametrizeConstAccel, Basic) {
   toppra::Vector gridpoints = toppra::Vector::LinSpaced(10, 0, 3);
   toppra::Vector vsquared = toppra::Vector::LinSpaced(10, 0.5, 1);
   auto p = toppra::parametrizer::ConstAccel(path, gridpoints, vsquared);
-  
   toppra::Vector ts = toppra::Vector::LinSpaced(10, 0, 3);
   auto qs = p.eval(ts);
   auto qds = p.eval(ts, 1);
   auto qdds = p.eval(ts, 2);
+  ASSERT_TRUE(p.validate());
 }

@@ -8,6 +8,7 @@ set(TEST_SOURCES
   test_hermite_spline.cpp
   test_algorithm.cpp
   test_parametrizer.cpp
+  test_toppra_approach.cpp
   )
 
 add_executable(all_tests ${TEST_SOURCES})
