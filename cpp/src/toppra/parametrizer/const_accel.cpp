@@ -35,37 +35,30 @@ bool ConstAccel::evalParams(const Vector& ts, Vector& ss, Vector& vs,
   us.resize(ts.size());
   int k_grid = 0;
   for (std::size_t i = 0; i < ts.size(); i++) {
-    // TOPPRA_LOG_DEBUG("Finding velocity at index: " << i);
+    // find k_grid s.t m_gridpoints[k_grid] <= ss[i] < m_gridpoints[k_grid + 1]
 
-    // reset the search back to the first gridpoint
+    // reset the search back to the first gridpoint, only do once
     if (m_ts[k_grid] > ts[i]) {
-      // TOPPRA_LOG_DEBUG("Reset grid point search to 0");
       k_grid = 0;
     }
 
-    // find k_grid s.t m_gridpoints[k_grid] <= ss[i] < m_gridpoints[k_grid + 1]
-    while (k_grid < (m_gridpoints.size() - 1)) {
-      if (m_gridpoints[k_grid] <= ts[i] && ts[i] < m_gridpoints[k_grid + 1]) {
+    // increment k_grid until the condition is satisfied
+    while (k_grid < (m_ts.size() - 1)) {
+      if (m_ts[k_grid] <= ts[i] && ts[i] < m_ts[k_grid + 1]) {
         break;
-      } else if (k_grid == (m_gridpoints.size() - 2)) {
+      } else if (k_grid == (m_ts.size() - 2)) {
         break;
       } else {
         k_grid++;
       }
     }
-    // TOPPRA_LOG_DEBUG("k_grid=" << k_grid);
-    // k_grid could equal m_gridpoints.size() - 1, which means ts[i] >=
-    // m_gridpoint[last]
-    if (k_grid == (m_gridpoints.size() - 1)) {
-      ss[i] = m_gridpoints[k_grid];
-      us[i] = m_us[k_grid];
-      vs[i] = m_vs[k_grid];
-    } else {
-      value_type dt = ts[i] - m_ts[k_grid];
-      us[i] = m_us[k_grid];
-      vs[i] = m_vs[k_grid] + dt * us[i];
-      ss[i] = m_gridpoints[k_grid] + dt * m_vs[k_grid] + 0.5 * dt * dt * m_us[k_grid];
-    }
+
+    // compute ss[i], vs[i] and us[i] using the k_grid segment.
+    // extrapolate if ts[i] < m_ts[0] or ts[i] >= m_ts[m_ts.size() - 1].
+    value_type dt = ts[i] - m_ts[k_grid];
+    us[i] = m_us[k_grid];
+    vs[i] = m_vs[k_grid] + dt * us[i];
+    ss[i] = m_gridpoints[k_grid] + dt * m_vs[k_grid] + 0.5 * dt * dt * m_us[k_grid];
   }
   return true;
 }
