@@ -26,10 +26,14 @@ void ConstAccel::process_internals() {
     m_ts[i + 1] =
         m_ts[i] + 2 * (m_gridpoints[i + 1] - m_gridpoints[i]) / (m_vs[i + 1] + m_vs[i]);
   }
+  TOPPRA_LOG_DEBUG("process_internals: ts=" << m_ts.transpose());
+  TOPPRA_LOG_DEBUG("process_internals: us=" << m_us.transpose());
+  TOPPRA_LOG_DEBUG("process_internals: vs=" << m_vs.transpose());
 }
 
 bool ConstAccel::evalParams(const Vector& ts, Vector& ss, Vector& vs,
                             Vector& us) const {
+  TOPPRA_LOG_DEBUG("evalParams: ts=" << ts.transpose());
   ss.resize(ts.size());
   vs.resize(ts.size());
   us.resize(ts.size());
@@ -98,7 +102,7 @@ bool ConstAccel::validate_impl() const {
   // check that there is no "zero" velocity in the middle of the path
   for (std::size_t i = 0; i < vs_norm.size() - 1; i++) {
     // check that there is no huge fluctuation
-    if (std::abs(vs_norm[i + 1] - vs_norm[i]) > 0.1) {
+    if (std::abs(vs_norm[i + 1] - vs_norm[i]) > 1) {
       TOPPRA_LOG_DEBUG("Large variation between path velocities detected. v[i+1] - v[i] = " << vs_norm[i + 1] - vs_norm[i]);
       return false;
     }
@@ -115,7 +119,7 @@ bool ConstAccel::validate_impl() const {
 
 Bound ConstAccel::pathInterval_impl() const {
   Bound b;
-  b << m_gridpoints[0], m_gridpoints[m_gridpoints.size() - 1];
+  b << m_ts[0], m_ts[m_ts.size() - 1];
   return b;
 }
 
