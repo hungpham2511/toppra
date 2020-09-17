@@ -7,11 +7,13 @@
 namespace toppra {
 
 /**
- * \brief Abstract interface for output trajectory parametrizers.
+ * \brief Abstract output trajectory parametrizers.
  *
- * A parametrizer provides exactly the same functionality as a
- * geometric path object. In addition, a parametrizer can validate the
- * input data. If not validated, evaluation results are not defined.
+ * A parametrizer has the same interface as a geometric path. It
+ * receives as input the original geometric path and two arrays of
+ * gridpoints and parametrization (i.e. squared path velocities). A
+ * parametrizer should validate the input data. If not validated,
+ * evaluation results are not defined.
  *
  * Requirements: https://github.com/hungpham2511/toppra/issues/102
  *
@@ -59,7 +61,7 @@ class Parametrizer : public GeometricPath {
   Vector m_vs;
 
  private:
-  /// To be overwrite by derived classes
+  /// To be overwriten by derived classes
   virtual Vectors eval_impl(const Vector &, int order = 0) const = 0;
   virtual bool validate_impl() const = 0;
   virtual Bound pathInterval_impl() const = 0;

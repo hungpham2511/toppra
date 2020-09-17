@@ -1,5 +1,5 @@
 #include <toppra/parametrizer.hpp>
-#include "toppra/toppra.hpp"
+#include <toppra/toppra.hpp>
 
 namespace toppra {
 
