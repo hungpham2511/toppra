@@ -26,7 +26,7 @@ class ParametrizeConstAccel : public testing::Test {
 
 TEST_F(ParametrizeConstAccel, Basic) {
   toppra::Vector gridpoints = toppra::Vector::LinSpaced(10, 0, 3);
-  toppra::Vector vsquared {10};
+  toppra::Vector vsquared{10};
   vsquared << 0, 0.1, 0.2, 0.3, 0.5, 0.5, 0.3, 0.2, 0.1, 0.0;
   auto p = toppra::parametrizer::ConstAccel(path, gridpoints, vsquared);
 
