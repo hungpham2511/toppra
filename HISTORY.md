@@ -1,8 +1,9 @@
 # History
 
-## [unrelease]
+## 0.3.1 (Aug 23 2020)
 
 ### Added
+- [docs] Use example gallery to show examples.
 - [cpp] Implement serialization/deserialization for piecewise poly trajectory.
 - [cpp] Provide Python bindings for PiecewisePolyPath, TOPPRA and constraint classes.
 - [cpp] Construct piecewise poly as a hermite spline.
@@ -11,12 +12,15 @@
 - [python] [#117] Post-processing is now done via parametrizer classes.
 
 ### Changed
+- [python]Add some type annotations to parameterizer.py
+- [python]Support older interpolation method.
 - [cpp] Minor improvement to PiecewisePolyPath.
 - [python] Implement `ParametrizeConstAccel` to allow reparametrize path.
 - [python] Parametrization output accessible via ParameterizationData class.
 - [python] Remove useless `scaling` in parameter computation.
 - [cpp] Clamp velocities to be within controllable sets.
 - [ci] [#117] Improve CI pipeline to test on several python versions
+- [ci] [#139] Automate publish to PyPI server
 
 
 ## 0.3.0 (May 3 2020)

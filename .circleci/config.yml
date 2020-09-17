@@ -3,6 +3,8 @@ version: 2.1
 # Use this orb install python dependences.
 orbs:
   python: circleci/python@0.3.0
+  gh-pages: sugarshin/gh-pages@0.0.6
+
 
 commands:
   # For installing dep and building toppra C++ API
@@ -87,6 +89,7 @@ jobs:
   # job is Ubuntu 18.04, which is required to install pinocchio and
   # other deps.
   cpp-python36:
+    description: Build and test the full Python API
     docker:
       - image: cimg/python:3.6
     working_directory: ~/repo
@@ -128,6 +131,33 @@ jobs:
       - store_test_results:
           path: test-reports
 
+      - run:
+          name: Build docs
+          command: |
+            export ROS_PACKAGE_PATH=/opt/openrobots/share
+            export PYTHONPATH=/opt/openrobots/lib/python3.6/site-packages:$PYTHONPATH
+            pip install -r docs/requirements.txt
+            invoke build-docs
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - docs/build
+
+  # Publishthe built doc from the last build step
+  publish-docs:
+    docker:
+      - image: cimg/python:3.6
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - add_ssh_keys
+      - gh-pages/deploy:
+          ssh-fingerprints: "9f:09:37:d6:4a:48:0d:17:a7:c5:4a:5d:af:b5:fc:ab"
+          build-dir: ./docs/build/html
+
   pre-release:
     docker:
       - image: buildpack-deps:trusty
@@ -143,21 +173,20 @@ jobs:
 
   release:
     docker:
-      - image: buildpack-deps:trusty
+      - image: cimg/python:3.6
     working_directory: ~/repo
     steps:
       - checkout
       - run:
-          name: Tag code with the latest version in VERSION and push tag.
+          name: Build distribution
           command: |
-            VERSION=`cat VERSION`
-            git fetch --tags
-            git tag $VERSION
-            git push origin $VERSION
+            pip install cython numpy twine
+            python setup.py sdist
+
       - run:
           name: Publish to PyPI
           command: |
-            echo "TODO"
+            twine upload dist/* --username hungpham --password $PYPI_PASSWORD
 
 workflows:
   version: 2
@@ -171,22 +200,25 @@ workflows:
               python-version: ["27", "36", "37"]
 
       - cpp-python36
-
-  release:
-    jobs:
-      - pre-release:
+      - publish-docs:
+          requires:
+            - cpp-python36
           filters:
             branches:
               only:
-              - /release-.*/
-
-  publish:
+                - fix-doc
+                - develop
+  release:
     jobs:
       - release:
           filters:
             branches:
               only:
               - master
+              - test-release
 
-
-
+      - pre-release:
+          filters:
+            branches:
+              only:
+              - /release-.*/

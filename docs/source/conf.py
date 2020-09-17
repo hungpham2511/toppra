@@ -23,7 +23,11 @@ try:
     import pathlib2 as pathlib
 except ImportError:
     import pathlib
-# sys.path.insert(0, os.path.abspath('../../toppra/'))
+
+# -- Pre-process ----------------------------------------------------------
+import shutil
+HISTORY_path = pathlib.Path(__file__).parent / "../../HISTORY.md"
+shutil.copyfile(HISTORY_path.as_posix(), "HISTORY.md")
 
 
 # -- General configuration ------------------------------------------------
@@ -36,7 +40,14 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.viewcode',
               'sphinx.ext.intersphinx',
               "recommonmark",
-              'nbsphinx']
+              'nbsphinx',
+              'sphinx_gallery.gen_gallery'
+]
+
+sphinx_gallery_conf = {
+     'examples_dirs': '../../examples',   # path to your example scripts
+     'gallery_dirs': 'auto_examples',  # path to where to save gallery generated output
+}
 
 intersphinx_mapping = {
     'urllib3': ('http://urllib3.readthedocs.org/en/latest', None),
