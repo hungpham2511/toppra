@@ -27,5 +27,7 @@ endif()
 if (OPT_MSGPACK)
   target_compile_definitions(all_tests PRIVATE -DTOPPRA_OPT_MSGPACK)
 endif()
-
+if (TOPPRA_DEBUG_ON)
+  target_compile_definitions(all_tests PRIVATE -DTOPPRA_DEBUG_ON)
+endif()
 add_test(NAME all_tests COMMAND all_tests)
