@@ -65,6 +65,9 @@ namespace toppra {
   class GeometricPath;
   typedef std::shared_ptr<GeometricPath> GeometricPathPtr;
 
+  class PathParametrizationAlgorithm;
+  typedef std::shared_ptr<PathParametrizationAlgorithm> PathParametrizationAlgorithmPtr;
+
 } // namespace toppra
 
 #endif

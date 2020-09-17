@@ -69,7 +69,7 @@ bool ConstAccel::evalParams(const Vector& ts, Vector& ss, Vector& vs,
 
 Vectors ConstAccel::eval_impl(const Vector& times, int order) const {
   Vector ss, vs, us;
-  TOPPRA_LOG_DEBUG("Enter eval_impl");
+  TOPPRA_LOG_DEBUG("eval_impl. order=" << order);
   bool ret = evalParams(times, ss, vs, us);
   assert(ret);
   if (order == 0) {
@@ -103,7 +103,9 @@ bool ConstAccel::validate_impl() const {
   for (std::size_t i = 0; i < vs_norm.size() - 1; i++) {
     // check that there is no huge fluctuation
     if (std::abs(vs_norm[i + 1] - vs_norm[i]) > 1) {
-      TOPPRA_LOG_DEBUG("Large variation between path velocities detected. v[i+1] - v[i] = " << vs_norm[i + 1] - vs_norm[i]);
+      TOPPRA_LOG_DEBUG(
+          "Large variation between path velocities detected. v[i+1] - v[i] = "
+          << vs_norm[i + 1] - vs_norm[i]);
       return false;
     }
     // check if i != 0

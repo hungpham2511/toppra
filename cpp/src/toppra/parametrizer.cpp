@@ -21,7 +21,7 @@ Parametrizer::Parametrizer(GeometricPathPtr path, const Vector& gridpoints,
 }
 
 Vector Parametrizer::eval_single(value_type val, int order) const {
-  Vector v;
+  Vector v{1};
   v << val;
   auto results = eval_impl(v, order);
   return results[0];

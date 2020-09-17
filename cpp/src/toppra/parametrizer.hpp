@@ -14,7 +14,7 @@ namespace toppra {
  * input data. If not validated, evaluation results are not defined.
  *
  * Requirements: https://github.com/hungpham2511/toppra/issues/102
- * 
+ *
  * Sub-classes should override the virtual private methods *_impl.
  */
 class Parametrizer : public GeometricPath {
@@ -22,10 +22,10 @@ class Parametrizer : public GeometricPath {
   /** Construct the parametrizer.
    *
    * \param path Input geometric path.
-   * \param gridpoints Shape (N+1,). Gridpoints of the parametrization, should be compatible with the
-   * path domain. 
-   * \param vsquared Shape (N+1,). Path velocity squared, should have same shape as
-   * gridpoints as vsquared[i] corresponds to the velocity at gridpoints[i].
+   * \param gridpoints Shape (N+1,). Gridpoints of the parametrization, should be
+   * compatible with the path domain. \param vsquared Shape (N+1,). Path velocity
+   * squared, should have same shape as gridpoints as vsquared[i] corresponds to the
+   * velocity at gridpoints[i].
    */
   Parametrizer(GeometricPathPtr path, const Vector &gridpoints, const Vector &vsquared);
 
