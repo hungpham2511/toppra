@@ -1,4 +1,4 @@
-#include <c++/7/bits/c++config.h>
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <cstdlib>
@@ -39,23 +39,18 @@ bool ConstAccel::evalParams(const Vector& ts, Vector& ss, Vector& vs,
   us.resize(ts.size());
   int k_grid = 0;
   for (std::size_t i = 0; i < ts.size(); i++) {
-    // find k_grid s.t m_gridpoints[k_grid] <= ss[i] < m_gridpoints[k_grid + 1]
-
-    // reset the search back to the first gridpoint, only do once
-    if (m_ts[k_grid] > ts[i]) {
+    // find k_grid s.t                     m_ts[k_grid] <= ts[i] < m_ts[k_grid + 1], or
+    //      k_grid = 0 if                  ts[i] < m_ts[0], or
+    //      k_grid = m_ts.size() - 2 if    ts[i] > m_ts
+    auto ptr = std::lower_bound(m_ts.data(), m_ts.data() + m_ts.size(), ts[i]);
+    if (ptr == m_ts.data() + m_ts.size()) {
+      k_grid = m_ts.size() - 2;
+    } else if (ptr == m_ts.data()) {
       k_grid = 0;
+    } else {
+      k_grid = ptr - m_ts.data() - 1;
     }
-
-    // increment k_grid until the condition is satisfied
-    while (k_grid < (m_ts.size() - 1)) {
-      if (m_ts[k_grid] <= ts[i] && ts[i] < m_ts[k_grid + 1]) {
-        break;
-      } else if (k_grid == (m_ts.size() - 2)) {
-        break;
-      } else {
-        k_grid++;
-      }
-    }
+    TOPPRA_LOG_DEBUG("ts[i]=" << ts[i] << ", k_grid=" << k_grid);
 
     // compute ss[i], vs[i] and us[i] using the k_grid segment.
     // extrapolate if ts[i] < m_ts[0] or ts[i] >= m_ts[m_ts.size() - 1].
@@ -72,27 +67,31 @@ Vectors ConstAccel::eval_impl(const Vector& times, int order) const {
   TOPPRA_LOG_DEBUG("eval_impl. order=" << order);
   bool ret = evalParams(times, ss, vs, us);
   assert(ret);
-  if (order == 0) {
-    return m_path->eval(ss, 0);
-  } else if (order == 1) {
-    auto ps = m_path->eval(ss, 1);
-    Vectors qd;
-    qd.resize(ps.size());
-    for (std::size_t i = 0; i < times.size(); i++) {
-      qd[i] = ps[i] * vs[i];
+  switch (order) {
+    case 0:
+      return m_path->eval(ss, 0);
+      break;
+    case 1: {
+      auto ps = m_path->eval(ss, 1);
+      Vectors qd;
+      qd.resize(ps.size());
+      for (std::size_t i = 0; i < times.size(); i++) {
+        qd[i] = ps[i] * vs[i];
+      }
+      return qd;
     }
-    return qd;
-  } else if (order == 2) {
-    auto ps = m_path->eval(ss, 1);
-    auto pss = m_path->eval(ss, 2);
-    Vectors qdd;
-    qdd.resize(ps.size());
-    for (std::size_t i = 0; i < times.size(); i++) {
-      qdd[i] = pss[i] * vs[i] * vs[i] + ps[i] * us[i];
+    case 2: {
+      auto ps = m_path->eval(ss, 1);
+      auto pss = m_path->eval(ss, 2);
+      Vectors qdd;
+      qdd.resize(ps.size());
+      for (std::size_t i = 0; i < times.size(); i++) {
+        qdd[i] = pss[i] * vs[i] * vs[i] + ps[i] * us[i];
+      }
+      return qdd;
     }
-    return qdd;
-  } else {
-    throw std::runtime_error("Order >= 3 is not supported.");
+    default:
+      throw std::runtime_error("Order >= 3 is not supported.");
   }
 };
 
