@@ -17,7 +17,10 @@
 #define TOPPRA_LOG_DEBUG(X) ((void)0)
 #endif
 
+// Use for checking if a quantity is very close to zero
+#ifndef TOPPRA_NEARLY_ZERO
 #define TOPPRA_NEARLY_ZERO 1e-8
+#endif
 
 /// The TOPP-RA namespace
 namespace toppra {
