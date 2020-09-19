@@ -68,19 +68,23 @@
   <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">History</a><ul>
-<li><a class="reference internal" href="#aug-23-2020">0.3.1 (Aug 23 2020)</a><ul>
+<li><a class="reference internal" href="#unrelease">Unrelease</a><ul>
 <li><a class="reference internal" href="#added">Added</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#aug-23-2020">0.3.1 (Aug 23 2020)</a><ul>
+<li><a class="reference internal" href="#id1">Added</a></li>
 <li><a class="reference internal" href="#changed">Changed</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#may-3-2020">0.3.0 (May 3 2020)</a><ul>
-<li><a class="reference internal" href="#id1">Added</a></li>
-<li><a class="reference internal" href="#id2">Changed</a></li>
+<li><a class="reference internal" href="#id2">Added</a></li>
+<li><a class="reference internal" href="#id3">Changed</a></li>
 <li><a class="reference internal" href="#removed">Removed</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#jan-25-2020">0.2.3 (Jan 25 2020)</a></li>
-<li><a class="reference internal" href="#id3">&lt;0.2.3</a></li>
+<li><a class="reference internal" href="#id4">&lt;0.2.3</a></li>
 </ul>
 </li>
 </ul>
@@ -113,10 +117,19 @@
             
   <div class="section" id="history">
 <h1>History<a class="headerlink" href="#history" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="aug-23-2020">
-<h2>0.3.1 (Aug 23 2020)<a class="headerlink" href="#aug-23-2020" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="unrelease">
+<h2>Unrelease<a class="headerlink" href="#unrelease" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="added">
 <h3>Added<a class="headerlink" href="#added" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>[cpp] <a class="reference external" href="https://github.com/hungpham2511/toppra/pull/129">#129</a> Implement constant-acceleration trajectory parametrizer</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="aug-23-2020">
+<h2>0.3.1 (Aug 23 2020)<a class="headerlink" href="#aug-23-2020" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>Added<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>[docs] Use example gallery to show examples.</p></li>
 <li><p>[cpp] Implement serialization/deserialization for piecewise poly trajectory.</p></li>
@@ -145,16 +158,16 @@
 <div class="section" id="may-3-2020">
 <h2>0.3.0 (May 3 2020)<a class="headerlink" href="#may-3-2020" title="Permalink to this headline">¶</a></h2>
 <p>Major release! Implement TOPPRA in C++ and several improvements to Python codebase.</p>
-<div class="section" id="id1">
-<h3>Added<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id2">
+<h3>Added<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>[cpp] Add solver wrapper based on GLPK.</p></li>
 <li><p>[cpp] Initial cpp TOPPRA implementation: compute parametrization, feasible sets, qpOASES solver wrapper.</p></li>
 <li><p>[python] Implement a new trajectory class for specified velocities.</p></li>
 </ul>
 </div>
-<div class="section" id="id2">
-<h3>Changed<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id3">
+<h3>Changed<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>[python] Improve documentation for <code class="docutils literal notranslate"><span class="pre">toppra.constraint</span></code></p></li>
 <li><p>[python] #98: Eliminate use of deprecated method.</p></li>
@@ -179,8 +192,8 @@
 <li><p>Auto-gridpoints feature (#73)</p></li>
 </ul>
 </div>
-<div class="section" id="id3">
-<h2>&lt;0.2.3<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id4">
+<h2>&lt;0.2.3<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Many commits and features.</p></li>
 </ul>

@@ -1,5 +1,10 @@
 # History
 
+## Unrelease
+
+### Added
+- [cpp] [#129][#129] Implement constant-acceleration trajectory parametrizer
+
 ## 0.3.1 (Aug 23 2020)
 
 ### Added
@@ -58,4 +63,5 @@ Major release! Implement TOPPRA in C++ and several improvements to Python codeba
 [gh-78]: https://github.com/hungpham2511/toppra/pull/78
 [gh-79]: https://github.com/hungpham2511/toppra/pull/79
 [#117]: https://github.com/hungpham2511/toppra/pull/117
+[#129]: https://github.com/hungpham2511/toppra/pull/129
 [cm-0e022c]: https://github.com/hungpham2511/toppra/commit/0e022c53ab9db473485bd9fb6b8f34a7364efdf8
