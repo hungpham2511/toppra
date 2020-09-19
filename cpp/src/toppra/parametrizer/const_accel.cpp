@@ -34,6 +34,7 @@ void ConstAccel::process_internals() {
 bool ConstAccel::evalParams(const Vector& ts, Vector& ss, Vector& vs,
                             Vector& us) const {
   TOPPRA_LOG_DEBUG("evalParams: ts=" << ts.transpose());
+  assert (m_ts.size() >= 2);
   ss.resize(ts.size());
   vs.resize(ts.size());
   us.resize(ts.size());
@@ -42,14 +43,8 @@ bool ConstAccel::evalParams(const Vector& ts, Vector& ss, Vector& vs,
     // find k_grid s.t                     m_ts[k_grid] <= ts[i] < m_ts[k_grid + 1], or
     //      k_grid = 0 if                  ts[i] < m_ts[0], or
     //      k_grid = m_ts.size() - 2 if    ts[i] > m_ts
-    auto ptr = std::lower_bound(m_ts.data(), m_ts.data() + m_ts.size(), ts[i]);
-    if (ptr == m_ts.data() + m_ts.size()) {
-      k_grid = m_ts.size() - 2;
-    } else if (ptr == m_ts.data()) {
-      k_grid = 0;
-    } else {
-      k_grid = ptr - m_ts.data() - 1;
-    }
+    auto ptr = std::lower_bound(m_ts.data() + 1, m_ts.data() + m_ts.size() - 1, ts[i]);
+    k_grid = ptr - m_ts.data() - 1;
     TOPPRA_LOG_DEBUG("ts[i]=" << ts[i] << ", k_grid=" << k_grid);
 
     // compute ss[i], vs[i] and us[i] using the k_grid segment.
