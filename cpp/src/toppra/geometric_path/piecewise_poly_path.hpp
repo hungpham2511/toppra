@@ -37,17 +37,17 @@ class PiecewisePolyPath : public GeometricPath {
   /**
    * /brief Evaluate the path at given position.
    */
-  Vector eval_single(value_type, int order = 0) const;
+  Vector eval_single(value_type, int order = 0) const override;
 
   /**
    * /brief Evaluate the path at given positions (vector).
    */
-  Vectors eval(const Vector &, int order = 0) const;
+  Vectors eval(const Vector &, int order = 0) const override;
 
   /**
    * Return the starting and ending path positions.
    */
-  Bound pathInterval() const;
+  Bound pathInterval() const override;
   void serialize(std::ostream &O) const override;
   void deserialize(std::istream &I) override;
 

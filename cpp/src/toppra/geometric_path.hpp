@@ -31,19 +31,19 @@ public:
   GeometricPath(int configSize, int nDof) : m_configSize(configSize), m_dof (nDof) {}
 
   /**
-   * /brief Evaluate the path at given position.
+   * \brief Evaluate the path at given position.
    */
   virtual Vector eval_single(value_type, int order = 0) const = 0;
 
   /**
-   * /brief Evaluate the path at given positions (vector).
+   * \brief Evaluate the path at given positions (vector).
    *
    * Default implementation: Evaluation each point one-by-one.
    */
   virtual Vectors eval(const Vector &positions, int order = 0) const;
 
   /**
-   * \return the dimension of the configuration space
+   * \brief Dimension of the configuration space
    */
   int configSize() const
   {
@@ -59,17 +59,17 @@ public:
   }
 
   /**
-   * Serialize path to stream.
+   * \brief Serialize path to stream.
    */
   virtual void serialize(std::ostream &O) const {};
 
   /**
-   * Deserialize stream to construct path.
+   * \brief Deserialize stream to construct path.
    */
   virtual void deserialize(std::istream &I){};
 
   /**
-   * \return the starting and ending path positions.
+   * \brief Starting and ending path positions.
    */
   virtual Bound pathInterval() const = 0;
 
