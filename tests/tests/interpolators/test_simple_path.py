@@ -3,6 +3,14 @@ import pytest
 import numpy as np
 from numpy.testing import assert_allclose
 
+@pytest.fixture(name="f_2dof")
+def give_a_2dof_function_without_derivatives():
+    f = toppra.SimplePath([0, 1, 2], np.array([[0, 0], [1, 2.0], [1, 2.0]]))
+    yield f
+
+def test_check_basic_2dof_shape(f_2dof):
+    d1 = f_2dof(np.linspace(0, 2, 200), 1)
+    assert d1.shape == (200, 2)
 
 @pytest.fixture(name="f_scalar")
 def give_a_simple_scalar_function_without_derivatives():
@@ -17,7 +25,7 @@ def test_check_scalar_value_same_as_endpoint(f_scalar):
 
 def test_first_derivative_is_continuous(f_scalar):
     d1 = f_scalar(np.linspace(0, 2, 200), 1)
-    max_d1 = np.max(np.abs(np.diff(d1)))
+    max_d1 = np.max(np.abs(np.diff(d1, axis=0)))
     assert max_d1 < 0.1
 
 

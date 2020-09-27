@@ -3,6 +3,7 @@
 ## Unrelease
 
 ### Added
+- [python] Minor bug fixed in the SimplePath class
 - [cpp] [#129][#129] Implement constant-acceleration trajectory parametrizer
 
 ## 0.3.1 (Aug 23 2020)
