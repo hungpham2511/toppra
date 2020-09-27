@@ -138,7 +138,9 @@ class AbstractGeometricPath(object):
         :
             The evaluated joint positions, velocity or
             accelerations. The shape of the result depends on the
-            shape of the input.
+            shape of the input, it is either (N, m) where N is the
+            number of path positions and m is the number of
+            degree-of-freedom, or (m,).
 
         """
         raise NotImplementedError
