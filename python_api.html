@@ -490,7 +490,9 @@ algorithm.</p>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>The evaluated joint positions, velocity or
 accelerations. The shape of the result depends on the
-shape of the input.</p>
+shape of the input, it is either (N, m) where N is the
+number of path positions and m is the number of
+degree-of-freedom, or (m,).</p>
 </dd>
 </dl>
 </dd></dl>
@@ -580,7 +582,9 @@ end are clamped at zero.</p></li>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>The evaluated joint positions, velocity or
 accelerations. The shape of the result depends on the
-shape of the input.</p>
+shape of the input, it is either (N, m) where N is the
+number of path positions and m is the number of
+degree-of-freedom, or (m,).</p>
 </dd>
 </dl>
 </dd></dl>
@@ -644,7 +648,9 @@ object.</p>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>The evaluated joint positions, velocity or
 accelerations. The shape of the result depends on the
-shape of the input.</p>
+shape of the input, it is either (N, m) where N is the
+number of path positions and m is the number of
+degree-of-freedom, or (m,).</p>
 </dd>
 </dl>
 </dd></dl>
