@@ -64,7 +64,13 @@ class PathParametrizationAlgorithm {
    *
    * If is zero, will attempt to detect automatically the most suitable grid.
    */
-  void setN(int N) { m_N = N; };
+  void setN(int N) { m_N = N; m_initialized = false; };
+
+  /** \brief Set the gridpoints (points with the path intervals)
+   *
+   * If not set manually, then N equally distributed points is used.
+   */
+  void setGridpoints(const Vector& gridpoints);
 
   /** \brief Set the LP/QP solver
    *
