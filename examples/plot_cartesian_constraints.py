@@ -27,14 +27,13 @@ ta.setup_logging("INFO")
 # Create a chain for the panda as an example
 chain = kdl.Chain()
 
-# Mitsubishi PA10-7 DH params
-chain.addSegment(kdl.Segment(kdl.Joint(kdl.Joint.RotZ), kdl.Frame().DH(0, 0, 0.317, 0)))
-chain.addSegment(kdl.Segment(kdl.Joint(kdl.Joint.RotX), kdl.Frame().DH(0, math.pi/2, 0, 0)))
-chain.addSegment(kdl.Segment(kdl.Joint(kdl.Joint.RotZ), kdl.Frame().DH(0, -math.pi/2, 0.450, 0)))
-chain.addSegment(kdl.Segment(kdl.Joint(kdl.Joint.RotX), kdl.Frame().DH(0, math.pi/2, 0, 0)))
-chain.addSegment(kdl.Segment(kdl.Joint(kdl.Joint.RotZ), kdl.Frame().DH(0, -math.pi/2, 0.480, 0)))
-chain.addSegment(kdl.Segment(kdl.Joint(kdl.Joint.RotX), kdl.Frame().DH(0, math.pi/2, 0, 0)))
-chain.addSegment(kdl.Segment(kdl.Joint(kdl.Joint.RotZ), kdl.Frame().DH(0, -math.pi/2, 0.070, 0)))
+# UR10 DH params
+chain.addSegment(kdl.Segment(kdl.Joint(kdl.Joint.RotZ), kdl.Frame().DH(0,       math.pi/2,  0.1273,   0)))
+chain.addSegment(kdl.Segment(kdl.Joint(kdl.Joint.RotX), kdl.Frame().DH(-0.612,  0,          0,        0)))
+chain.addSegment(kdl.Segment(kdl.Joint(kdl.Joint.RotZ), kdl.Frame().DH(-0.5723, 0,          0,        0)))
+chain.addSegment(kdl.Segment(kdl.Joint(kdl.Joint.RotX), kdl.Frame().DH(0,       math.pi/2,  0.163941, 0)))
+chain.addSegment(kdl.Segment(kdl.Joint(kdl.Joint.RotZ), kdl.Frame().DH(0,       -math.pi/2, 0.1157,   0)))
+chain.addSegment(kdl.Segment(kdl.Joint(kdl.Joint.RotX), kdl.Frame().DH(0,       0,          0.0922,   0)))
 
 # Extract the number of joints
 dof = chain.getNrOfJoints()
