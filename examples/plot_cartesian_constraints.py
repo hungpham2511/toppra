@@ -39,7 +39,7 @@ chain.addSegment(kdl.Segment(kdl.Joint(kdl.Joint.RotZ), kdl.Frame().DH(0, -math.
 # Extract the number of joints
 dof = chain.getNrOfJoints()
 
-# Create a chain velocity solver
+# Create a forward velocity solver
 fk_solver_vel = kdl.ChainFkSolverVel_recursive(chain)
 
 ################################################################################
@@ -75,7 +75,7 @@ def fk_vel(q, dq):
     # Do the FK
     result = fk_solver_vel.JntToCart(jq, framevel)
     if 0 != result:
-        raise Exception(f"Error solving joint vel: result = {result}")
+        raise Exception(f"Error solving TCP velocity: Error code = {result}")
 
     twist = framevel.GetTwist()
     return twist.vel.Norm(), twist.rot.Norm()
@@ -99,18 +99,27 @@ jnt_traj = instance.compute_trajectory()
 ts_sample = np.linspace(0, jnt_traj.duration, 100)
 qs_sample = jnt_traj(ts_sample)
 qds_sample = jnt_traj(ts_sample, 1)
-# TODO plot the cartesian speed
+
+fkv = np.vectorize(fk_vel, signature='(n),(n)->(),()')
+linear_spd, angular_spd = fkv(qs_sample, qds_sample)
+
 qdds_sample = jnt_traj(ts_sample, 2)
-fig, axs = plt.subplots(3, 1, sharex=True)
+fig, axs = plt.subplots(4, 1, sharex=True)
 for i in range(path.dof):
     # plot the i-th joint trajectory
     axs[0].plot(ts_sample, qs_sample[:, i], c="C{:d}".format(i))
     axs[1].plot(ts_sample, qds_sample[:, i], c="C{:d}".format(i))
     axs[2].plot(ts_sample, qdds_sample[:, i], c="C{:d}".format(i))
-axs[2].set_xlabel("Time (s)")
+
+# Plot the cartesian linear speed and angular speed of the end effector
+axs[3].plot(ts_sample, linear_spd)
+axs[3].plot(ts_sample, angular_spd)
+
 axs[0].set_ylabel("Position (rad)")
 axs[1].set_ylabel("Velocity (rad/s)")
 axs[2].set_ylabel("Acceleration (rad/s2)")
+axs[3].set_ylabel("Cartesian velocity (m/s)")
+axs[3].set_xlabel("Time (s)")
 plt.show()
 
 
