@@ -87,3 +87,4 @@ from .linear_joint_velocity import (
 from .linear_second_order import SecondOrderConstraint, canlinear_colloc_to_interpolate
 from .conic_constraint import RobustLinearConstraint
 from .linear_constraint import LinearConstraint
+from .cartesian_constraints import CartesianSpeedConstraint

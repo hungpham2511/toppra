@@ -16,9 +16,6 @@ import time
 import PyKDL as kdl
 import math
 
-# Why do I have to import like this?
-import toppra.constraint.cartesian_constraints
-
 ta.setup_logging("INFO")
 
 ################################################################################
@@ -81,7 +78,7 @@ def fk_vel(q, dq):
 
 path = ta.SplineInterpolator(ss, way_pts)
 pc_vel = constraint.JointVelocityConstraint(vlims)
-pc_cart_vel = constraint.cartesian_constraints.CartesianSpeedConstraint(fk_vel, lin_spd, ang_spd, dof)
+pc_cart_vel = constraint.CartesianSpeedConstraint(fk_vel, lin_spd, ang_spd, dof)
 pc_acc = constraint.JointAccelerationConstraint(alims)
 
 ################################################################################
