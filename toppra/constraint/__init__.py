@@ -72,6 +72,12 @@ RobustLinearConstraint
    :members:
    :show-inheritance:
 
+CartesianSpeedConstraint
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: toppra.constraint.CartesianSpeedConstraint
+   :members:
+   :show-inheritance:
+
 [internal]
 ^^^^^^^^^^^^^
 .. autofunction:: toppra.constraint.canlinear_colloc_to_interpolate
