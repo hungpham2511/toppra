@@ -1,9 +1,12 @@
-"""Retime a path subject to kinematic constraints
-=================================================
+"""Retime a path subject to cartesian speed constraints
+=======================================================
 
 In this example, we will see how can we retime a generic spline-based
-path subject to kinematic constraints. This is very simple to do with
-`toppra`, as we shall see below. First import the library.
+path subject to speed constraints on the robot's TCP link.
+PyKDL is used for the forward kinematics.
+
+This example is very similar to the plot_kinematics.py example but the 
+joint velocity limits are substituted for cartesian velocity limits.
 
 """
 
@@ -21,10 +24,8 @@ ta.setup_logging("INFO")
 ################################################################################
 # Build a robot chain.
 
-# Create a chain for the panda as an example
+# Create a chain for the UR10 DH parameters as an example
 chain = kdl.Chain()
-
-# UR10 DH params
 chain.addSegment(kdl.Segment(kdl.Joint(kdl.Joint.RotZ), kdl.Frame().DH(0,       math.pi/2,  0.1273,   0)))
 chain.addSegment(kdl.Segment(kdl.Joint(kdl.Joint.RotX), kdl.Frame().DH(-0.612,  0,          0,        0)))
 chain.addSegment(kdl.Segment(kdl.Joint(kdl.Joint.RotZ), kdl.Frame().DH(-0.5723, 0,          0,        0)))
@@ -35,7 +36,7 @@ chain.addSegment(kdl.Segment(kdl.Joint(kdl.Joint.RotX), kdl.Frame().DH(0,       
 # Extract the number of joints
 dof = chain.getNrOfJoints()
 
-# Create a forward velocity solver
+# Create a forward kinematic velocity solver
 fk_solver_vel = kdl.ChainFkSolverVel_recursive(chain)
 
 ################################################################################
@@ -49,14 +50,14 @@ def generate_new_problem(seed=9):
     return (
         np.linspace(0, 1, 5),
         way_pts,
-        10 + np.random.rand(dof) * 20,
         2.0, 4.0,
         10 + np.random.rand(dof) * 2,
     )
-ss, way_pts, vlims, lin_spd, ang_spd, alims = generate_new_problem()
+ss, way_pts, lin_spd, ang_spd, alims = generate_new_problem()
 
 ################################################################################
-# Define the geometric path and three constraints.
+# Define the callback which calculates TCP velocity from joint positions and
+# velocities.
 
 def fk_vel(q, dq):
     # Convert numpy arrays to KDL-compatible JntArrayVel type
@@ -73,11 +74,14 @@ def fk_vel(q, dq):
     if 0 != result:
         raise Exception(f"Error solving TCP velocity: Error code = {result}")
 
+    # Get the twist and normalize to find absolute speeds
     twist = framevel.GetTwist()
     return twist.vel.Norm(), twist.rot.Norm()
 
+################################################################################
+# Define the geometric path and two constraints.
+
 path = ta.SplineInterpolator(ss, way_pts)
-pc_vel = constraint.JointVelocityConstraint(vlims)
 pc_cart_vel = constraint.CartesianSpeedConstraint(fk_vel, lin_spd, ang_spd, dof)
 pc_acc = constraint.JointAccelerationConstraint(alims)
 
@@ -86,7 +90,7 @@ pc_acc = constraint.JointAccelerationConstraint(alims)
 # `ParametrizeConstAccel` parametrizer. This parametrizer is the
 # classical solution, guarantee constraint and boundary conditions
 # satisfaction.
-instance = algo.TOPPRA([pc_vel, pc_cart_vel, pc_acc], path, parametrizer="ParametrizeConstAccel")
+instance = algo.TOPPRA([pc_cart_vel, pc_acc], path, parametrizer="ParametrizeConstAccel")
 jnt_traj = instance.compute_trajectory()
 
 ################################################################################
@@ -96,6 +100,7 @@ ts_sample = np.linspace(0, jnt_traj.duration, 100)
 qs_sample = jnt_traj(ts_sample)
 qds_sample = jnt_traj(ts_sample, 1)
 
+# Extract TCP speeds in order to plot
 fkv = np.vectorize(fk_vel, signature='(n),(n)->(),()')
 linear_spd, angular_spd = fkv(qs_sample, qds_sample)
 
@@ -107,7 +112,7 @@ for i in range(path.dof):
     axs[1].plot(ts_sample, qds_sample[:, i], c="C{:d}".format(i))
     axs[2].plot(ts_sample, qdds_sample[:, i], c="C{:d}".format(i))
 
-# Plot the cartesian linear speed and angular speed of the end effector
+# Plot the cartesian linear speed and angular speed of the TCP
 axs[3].plot(ts_sample, linear_spd)
 axs[3].plot(ts_sample, angular_spd)
 
