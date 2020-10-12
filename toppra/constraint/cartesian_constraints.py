@@ -2,7 +2,13 @@ import numpy as np
 from .linear_second_order import SecondOrderConstraint
 
 class CartesianSpeedConstraint(SecondOrderConstraint):
-    """This class implements a constraint on the linear & angular Cartesian speed of some part of the robot.
+    """
+    This class implements a constraint on the magnitudes of the linear & angular
+    Cartesian velocity vectors of one of the robot's parts (link, joint, etc).
+    
+    The forward kinematic velocity is be provided via a callback, which makes
+    this constraint agnostic of the robot's geometry and agnostic of whatever
+    FK algorithm is used.
     """
 
     def __init__(self, fk, linear_speed_max, angular_speed_max, dof):
@@ -10,14 +16,14 @@ class CartesianSpeedConstraint(SecondOrderConstraint):
 
         Parameters
         ----------
-        fk: (np.ndarray, np.ndarray) -> (linear_vel, angular_vel)
-            The "FK" function that receives joint position and velocity as
-            inputs and outputs the normal linear and angular speed of some part
-            of the robot.
+        fk: (np.ndarray, np.ndarray) -> (float, float)
+            The "FK" function that receives joint positions and velocities as
+            inputs and outputs the magnitude of the linear and angular
+            velocity vectors for some the monitored part of the robot.
         linear_speed_max: float
-            The max linear speed allowed for that link.
+            The max linear speed allowed for the monitored part.
         angular_speed_max: float
-            The max angular speed allowed for that link.
+            The max angular speed allowed for the monitored part.
         dof: int
             The dimension of the joint position.
         """
