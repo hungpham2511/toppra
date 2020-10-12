@@ -174,9 +174,9 @@ output.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sd_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Starting path velocity. Must be positive.</p></li>
-<li><p><strong>sd_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Goal path velocity. Must be positive.</p></li>
-<li><p><strong>return_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – If true also return the problem data.</p></li>
+<li><p><strong>sd_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Starting path velocity. Must be positive.</p></li>
+<li><p><strong>sd_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Goal path velocity. Must be positive.</p></li>
+<li><p><strong>return_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – If true also return the problem data.</p></li>
 </ul>
 </dd>
 </dl>
@@ -190,13 +190,13 @@ output.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sd_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Starting path velocity.</p></li>
-<li><p><strong>sd_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Goal path velocity.</p></li>
+<li><p><strong>sd_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Starting path velocity.</p></li>
+<li><p><strong>sd_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Goal path velocity.</p></li>
 <li><p><strong>return_data</strong> – If true, return a dict containing the internal data.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.8)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference internal" href="#toppra.interpolator.AbstractGeometricPath" title="toppra.interpolator.AbstractGeometricPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractGeometricPath</span></code></a>]</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference internal" href="#toppra.interpolator.AbstractGeometricPath" title="toppra.interpolator.AbstractGeometricPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractGeometricPath</span></code></a>]</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Time-parameterized joint position trajectory or
@@ -211,7 +211,7 @@ None If unable to parameterize.</p>
 <dd><p>Constraints of interests.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Constraint</span></code>]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Constraint</span></code>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -368,14 +368,14 @@ Analysis (TOPPRA).</p>
 and end points must agree with the geometric path’s
 <cite>path_interval</cite>. If omited a gridpoint will be automatically
 selected.</p></li>
-<li><p><strong>solver_wrapper</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><em>optional</em>) – <p>Name of the solver wrapper to use. Possible value are:</p>
+<li><p><strong>solver_wrapper</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – <p>Name of the solver wrapper to use. Possible value are:</p>
 <ul>
 <li><p>’seidel’</p></li>
 <li><p>’hotqpoases’</p></li>
 </ul>
 <p>For more details see the solverwrappers documentation.</p>
 </p></li>
-<li><p><strong>parametrizer</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><em>optional</em>) – Name of the output parametrizer to use.</p></li>
+<li><p><strong>parametrizer</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – Name of the output parametrizer to use.</p></li>
 </ul>
 </dd>
 </dl>
@@ -397,13 +397,13 @@ especially for well-conditioned problems.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sd_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Starting path velocity.</p></li>
-<li><p><strong>sd_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Goal path velocity.</p></li>
+<li><p><strong>sd_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Starting path velocity.</p></li>
+<li><p><strong>sd_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Goal path velocity.</p></li>
 <li><p><strong>return_data</strong> – If true, return a dict containing the internal data.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.8)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference internal" href="#toppra.interpolator.AbstractGeometricPath" title="toppra.interpolator.AbstractGeometricPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractGeometricPath</span></code></a>]</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference internal" href="#toppra.interpolator.AbstractGeometricPath" title="toppra.interpolator.AbstractGeometricPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractGeometricPath</span></code></a>]</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Time-parameterized joint position trajectory or
@@ -435,13 +435,13 @@ desired duration.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sd_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Starting path velocity.</p></li>
-<li><p><strong>sd_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Goal path velocity.</p></li>
+<li><p><strong>sd_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Starting path velocity.</p></li>
+<li><p><strong>sd_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Goal path velocity.</p></li>
 <li><p><strong>return_data</strong> – If true, return a dict containing the internal data.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.8)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference internal" href="#toppra.interpolator.AbstractGeometricPath" title="toppra.interpolator.AbstractGeometricPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractGeometricPath</span></code></a>]</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference internal" href="#toppra.interpolator.AbstractGeometricPath" title="toppra.interpolator.AbstractGeometricPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractGeometricPath</span></code></a>]</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Time-parameterized joint position trajectory or
@@ -474,8 +474,8 @@ algorithm.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path_positions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a><em> or </em><em>np.ndarray</em>) – Path positions to evaluate the interpolator.</p></li>
-<li><p><strong>order</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – <p>Order of the evaluation call.</p>
+<li><p><strong>path_positions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em> or </em><em>np.ndarray</em>) – Path positions to evaluate the interpolator.</p></li>
+<li><p><strong>order</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – <p>Order of the evaluation call.</p>
 <ul>
 <li><p>0: position</p></li>
 <li><p>1: first-order derivative</p></li>
@@ -503,7 +503,7 @@ degree-of-freedom, or (m,).</p>
 <dd><p>Return the degrees-of-freedom of the path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -528,7 +528,7 @@ degree-of-freedom, or (m,).</p>
 <dd><p>The path’s waypoints if applicable. None otherwise.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>Tuple[ndarray, ndarray] or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)">None</a></p>
+<dd class="field-odd"><p>Tuple[ndarray, ndarray] or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -569,8 +569,8 @@ end are clamped at zero.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path_positions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a><em> or </em><em>np.ndarray</em>) – Path positions to evaluate the interpolator.</p></li>
-<li><p><strong>order</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – <p>Order of the evaluation call.</p>
+<li><p><strong>path_positions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em> or </em><em>np.ndarray</em>) – Path positions to evaluate the interpolator.</p></li>
+<li><p><strong>order</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – <p>Order of the evaluation call.</p>
 <ul>
 <li><p>0: position</p></li>
 <li><p>1: first-order derivative</p></li>
@@ -635,8 +635,8 @@ object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path_positions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a><em> or </em><em>np.ndarray</em>) – Path positions to evaluate the interpolator.</p></li>
-<li><p><strong>order</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – <p>Order of the evaluation call.</p>
+<li><p><strong>path_positions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em> or </em><em>np.ndarray</em>) – Path positions to evaluate the interpolator.</p></li>
+<li><p><strong>order</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – <p>Order of the evaluation call.</p>
 <ul>
 <li><p>0: position</p></li>
 <li><p>1: first-order derivative</p></li>
@@ -673,7 +673,7 @@ degree-of-freedom, or (m,).</p>
 <dd><p>The path’s waypoints if applicable. None otherwise.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>Tuple[ndarray, ndarray] or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)">None</a></p>
+<dd class="field-odd"><p>Tuple[ndarray, ndarray] or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -697,7 +697,7 @@ on the input.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a>) – “Time instances” of the waypoints.</p></li>
 <li><p><strong>y</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a>) – Function values at waypoints.</p></li>
-<li><p><strong>yd</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.8)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a>]) – First-derivatives. If not given (None) will be computed
+<li><p><strong>yd</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a>]) – First-derivatives. If not given (None) will be computed
 automatically.</p></li>
 </ul>
 </dd>
@@ -755,9 +755,9 @@ gridpoint is optimally distributed.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<a class="reference internal" href="#toppra.interpolator.AbstractGeometricPath" title="toppra.interpolator.AbstractGeometricPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractGeometricPath</span></code></a>) – Input geometric path.</p></li>
-<li><p><strong>max_err_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – Maximum worstcase error thrshold allowable.</p></li>
-<li><p><strong>max_iteration</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Maximum number of iterations.</p></li>
-<li><p><strong>max_seg_length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – All segments length should be smaller than this value.</p></li>
+<li><p><strong>max_err_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Maximum worstcase error thrshold allowable.</p></li>
+<li><p><strong>max_iteration</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Maximum number of iterations.</p></li>
+<li><p><strong>max_seg_length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – All segments length should be smaller than this value.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -982,7 +982,7 @@ are given by vlim[j, 0] and vlim[j, 1] respectively.</p>
 <p>This class handle velocity constraints that vary along the path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>vlim_func</strong> (<em>(</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a><em>) </em><em>-&gt; np.ndarray</em>) – A function that receives a scalar (float) and produce an array
+<dd class="field-odd"><p><strong>vlim_func</strong> (<em>(</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>) </em><em>-&gt; np.ndarray</em>) – A function that receives a scalar (float) and produce an array
 with shape (dof, 2). The lower and upper velocity bounds of
 the j-th joint are given by out[j, 0] and out[j, 1]
 respectively.</p>
@@ -1089,7 +1089,7 @@ the constrained vector <span class="math notranslate nohighlight">\(\mathbf w\)<
 F(\mathbf q, s)\)</span>. See above for more details.</p></li>
 <li><p><strong>constraint_g</strong> (<em>(</em><em>np.ndarray</em><em>) </em><em>-&gt; np.ndarray</em>) – The constraint coefficient function <span class="math notranslate nohighlight">\(\mathbf
 g(\mathbf q, s)\)</span>. See above for more details.</p></li>
-<li><p><strong>dof</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – The dimension of the joint position.</p></li>
+<li><p><strong>dof</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The dimension of the joint position.</p></li>
 <li><p><strong>custom_term</strong> ((<code class="xref py py-class docutils literal notranslate"><span class="pre">Interpolator</span></code>, float) -&gt; np.ndarray) – This function receives as input a geometric path and a
 float path position, then returns an additive term. See
 the above note for more details.</p></li>
@@ -1331,15 +1331,15 @@ non-negative.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>np.ndarray</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a>) – Shape (N + 1, m). See notes.</p></li>
-<li><p><strong>b</strong> (<em>np.ndarray</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a>) – Shape (N + 1, m). See notes.</p></li>
-<li><p><strong>c</strong> (<em>np.ndarray</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a>) – Shape (N + 1, m). See notes.</p></li>
-<li><p><strong>F</strong> (<em>np.ndarray</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a>) – Shape (N + 1, k, m). See notes.</p></li>
-<li><p><strong>g</strong> (<em>np.ndarray</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a>) – Shape (N + 1, k,). See notes</p></li>
-<li><p><strong>ubound</strong> (<em>np.ndarray</em><em>, or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a>) – Shape (N + 1, 2). See notes.</p></li>
-<li><p><strong>xbound</strong> (<em>np.ndarray</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a>) – Shape (N + 1, 2). See notes.</p></li>
+<li><p><strong>a</strong> (<em>np.ndarray</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a>) – Shape (N + 1, m). See notes.</p></li>
+<li><p><strong>b</strong> (<em>np.ndarray</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a>) – Shape (N + 1, m). See notes.</p></li>
+<li><p><strong>c</strong> (<em>np.ndarray</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a>) – Shape (N + 1, m). See notes.</p></li>
+<li><p><strong>F</strong> (<em>np.ndarray</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a>) – Shape (N + 1, k, m). See notes.</p></li>
+<li><p><strong>g</strong> (<em>np.ndarray</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a>) – Shape (N + 1, k,). See notes</p></li>
+<li><p><strong>ubound</strong> (<em>np.ndarray</em><em>, or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a>) – Shape (N + 1, 2). See notes.</p></li>
+<li><p><strong>xbound</strong> (<em>np.ndarray</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a>) – Shape (N + 1, 2). See notes.</p></li>
 <li><p><strong>gridpoints</strong> (<em>np.ndarray</em>) – Shape (N+1,). The path discretization.</p></li>
-<li><p><strong>identical</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, matrices F and g are identical at all gridpoint.</p></li>
+<li><p><strong>identical</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, matrices F and g are identical at all gridpoint.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1424,14 +1424,14 @@ quadratic problem without the quadratic term.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>i</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – The stage index.</p></li>
+<li><p><strong>i</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The stage index.</p></li>
 <li><p><strong>H</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a> or None) – Shape (d, d). The coefficient of the quadratic objective
 function. If is None, set the quadratic term to zero.</p></li>
 <li><p><strong>g</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a>) – Shape (d,). The linear term.</p></li>
-<li><p><strong>x_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_next_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_next_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_next_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_next_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1469,10 +1469,10 @@ with PrintLevel.NONE</p>
 <li><p><strong>constraint_list</strong> (<a class="reference internal" href="#toppra.constraint.Constraint" title="toppra.constraint.Constraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">Constraint</span></code></a> []) – The constraints the robot is subjected to.</p></li>
 <li><p><strong>path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Interpolator</span></code>) – The geometric path.</p></li>
 <li><p><strong>path_discretization</strong> (<em>array</em>) – The discretized path positions.</p></li>
-<li><p><strong>disable_check</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>optional</em>) – Disable check for solution validity. Improve speed by about
+<li><p><strong>disable_check</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Disable check for solution validity. Improve speed by about
 20% but entails the possibility that failure is not reported
 correctly.</p></li>
-<li><p><strong>scaling_solverwrapper</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>optional</em>) – If is True, try to scale the data of each optimization before
+<li><p><strong>scaling_solverwrapper</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – If is True, try to scale the data of each optimization before
 running.  Important: Currently scaling is always done
 regardless of the value of this variable. To be fixed.</p></li>
 </ul>
@@ -1500,14 +1500,14 @@ quadratic problem without the quadratic term.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>i</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – The stage index.</p></li>
+<li><p><strong>i</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The stage index.</p></li>
 <li><p><strong>H</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a> or None) – Shape (d, d). The coefficient of the quadratic objective
 function. If is None, set the quadratic term to zero.</p></li>
 <li><p><strong>g</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a>) – Shape (d,). The linear term.</p></li>
-<li><p><strong>x_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_next_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_next_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_next_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_next_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1554,14 +1554,14 @@ quadratic problem without the quadratic term.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>i</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – The stage index.</p></li>
+<li><p><strong>i</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The stage index.</p></li>
 <li><p><strong>H</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a> or None) – Shape (d, d). The coefficient of the quadratic objective
 function. If is None, set the quadratic term to zero.</p></li>
 <li><p><strong>g</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a>) – Shape (d,). The linear term.</p></li>
-<li><p><strong>x_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_next_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_next_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_next_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_next_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1609,13 +1609,13 @@ LP. This optimization is currently not implemented.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>i</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – The stage index. See notes for details on each variable.</p></li>
-<li><p><strong>H</strong> (<em>array</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.8)"><em>None</em></a>) – This term is not used and is neglected.</p></li>
+<li><p><strong>i</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The stage index. See notes for details on each variable.</p></li>
+<li><p><strong>H</strong> (<em>array</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a>) – This term is not used and is neglected.</p></li>
 <li><p><strong>g</strong> (<em>(</em><em>d</em><em>,</em><em>)</em><em>array</em>) – The linear term.</p></li>
-<li><p><strong>x_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_next_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_next_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_next_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_next_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1624,7 +1624,7 @@ variable.  Since NaN is also a valid double, this list
 contains NaN if the optimization problem is infeasible.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>double C array or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a></p>
+<dd class="field-odd"><p>double C array or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1673,14 +1673,14 @@ quadratic problem without the quadratic term.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>i</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – The stage index.</p></li>
+<li><p><strong>i</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The stage index.</p></li>
 <li><p><strong>H</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a> or None) – Shape (d, d). The coefficient of the quadratic objective
 function. If is None, set the quadratic term to zero.</p></li>
 <li><p><strong>g</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a>) – Shape (d,). The linear term.</p></li>
-<li><p><strong>x_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_next_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_next_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_next_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_next_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
