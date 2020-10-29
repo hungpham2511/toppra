@@ -13,11 +13,12 @@ namespace toppra {
 namespace constraint {
 namespace cartesianVelocityNorm {
 
+/** Implementation of CartesianVelocityNorm using pinocchio function.
+ * \extends CartesianVelocityNorm
+ * */
 template<typename Model = pinocchio::Model>
 class Pinocchio;
 
-/** Implementation of CartesianVelocityNorm using pinocchio function.
- * */
 template<typename _Model>
 class Pinocchio : public CartesianVelocityNorm {
   public:
