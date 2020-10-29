@@ -3,6 +3,7 @@
 ## Unrelease
 
 ### Added
+- [ci] Fix python2.7 dependencies
 - [python] Minor bug fixed in the SimplePath class
 - [cpp] [#129][#129] Implement constant-acceleration trajectory parametrizer
 - [cpp] [#143][#143] Add PathParametrizationAlgorithm::setGridpoints
