@@ -7,10 +7,11 @@ enum34
 matplotlib<3.0.0
 
 cvxpy==0.4.11
+CVXcanon==0.1.1
+cvxopt==1.2.5
 pandas
 tabulate
-cvxopt
-pytest
+pytest==4.6.11
 msgpack
 ipython
 ipdb
