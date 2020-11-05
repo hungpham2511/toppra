@@ -5,6 +5,7 @@ set(SOURCE_FILES
   toppra/constraint/linear_joint_velocity.cpp
   toppra/constraint/linear_joint_acceleration.cpp
   toppra/constraint/joint_torque.cpp
+  toppra/constraint/cartesian_velocity_norm.cpp
 
   toppra/solver.cpp
 
@@ -80,6 +81,7 @@ install(FILES
   toppra/constraint/linear_joint_velocity.hpp
   toppra/constraint/linear_joint_acceleration.hpp
   toppra/constraint/joint_torque.hpp
+  toppra/constraint/cartesian_velocity_norm.hpp
   DESTINATION include/toppra/constraint)
 install(FILES
   toppra/geometric_path/piecewise_poly_path.hpp
@@ -90,6 +92,9 @@ install(FILES
 install(FILES
   toppra/constraint/joint_torque/pinocchio.hpp
   DESTINATION include/toppra/constraint/joint_torque)
+install(FILES
+  toppra/constraint/cartesian_velocity_norm/pinocchio.hpp
+  DESTINATION include/toppra/constraint/cartesian_velocity_norm)
 install(FILES
   toppra/solver/qpOASES-wrapper.hpp
   toppra/solver/glpk-wrapper.hpp

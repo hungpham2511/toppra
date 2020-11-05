@@ -12,11 +12,12 @@ namespace toppra {
 namespace constraint {
 namespace jointTorque {
 
+/** Implementation of JointTorque using pinocchio::rnea function.
+ * \extends JointTorque
+ * */
 template<typename Model = pinocchio::Model>
 class Pinocchio;
 
-/** Implementation of JointTorque using pinocchio::rnea function.
- * */
 template<typename _Model>
 class Pinocchio : public JointTorque {
   public:

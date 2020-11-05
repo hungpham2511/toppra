@@ -7,6 +7,7 @@
 - [python] Minor bug fixed in the SimplePath class
 - [cpp] [#129][#129] Implement constant-acceleration trajectory parametrizer
 - [cpp] [#143][#143] Add PathParametrizationAlgorithm::setGridpoints
+- [cpp] [#146][#146] Add constraint::CartesianVelocityNorm
 
 ## 0.3.1 (Aug 23 2020)
 
