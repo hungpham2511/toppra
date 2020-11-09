@@ -1,5 +1,3 @@
-import warnings
-
 import numpy as np
 
 import toppra as ta
@@ -18,12 +16,9 @@ def RunTopp(
     # max_grid_err=1e-4,
     return_cspl=False,
 ):
-    N_samples = knots.shape[0]
-    if N_samples < 10:
-        warnings.warn("Number of input knots < 10 ", UserWarning)
     # (N,) between 0, 1, knots for toppra's path
     # essentially normalised time on x axis
-    x = np.linspace(0, 1, N_samples)
+    x = np.linspace(0, 1, knots.shape[0])
     # specifying natural here doensn't make a difference
     # toppra only produces clamped cubic splines
     path = ta.SplineInterpolator(x, knots.copy(), bc_type="clamped")
