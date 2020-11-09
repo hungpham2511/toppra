@@ -15,7 +15,7 @@ def RunTopp(
     knots,  # ndarray, (N, dof)
     vlim,  # ndarray, (dof, 2)
     alim,  # ndarray, (dof 2)
-    max_grid_err=1e-4,
+    # max_grid_err=1e-4,
     return_cspl=False,
 ):
     N_samples = knots.shape[0]
