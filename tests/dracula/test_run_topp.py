@@ -5,9 +5,8 @@ import numpy as np
 from toppra.dracula import RunTopp
 
 
-def run_toppra_random(return_cspl=False):
+def run_toppra_random(N_samples=30, return_cspl=False):
     """Random Traj."""
-    N_samples = 10
     dof = 7
     knots = np.random.rand(N_samples, dof)
     vlim = np.asarray([2] * dof)
@@ -17,7 +16,11 @@ def run_toppra_random(return_cspl=False):
     return RunTopp(knots, vlim, alim, return_cspl=return_cspl)
 
 
-topp_breaks_count_final, _, _ = run_toppra_random(return_cspl=False)
+topp_breaks_count_final, _, _ = run_toppra_random(2, False)
+print("topp_breaks_count_final", topp_breaks_count_final)
+topp_breaks_count_final, _, _ = run_toppra_random(30, False)
+print("topp_breaks_count_final", topp_breaks_count_final)
+topp_breaks_count_final, _, _ = run_toppra_random(200, False)
 print("topp_breaks_count_final", topp_breaks_count_final)
 print("Running it again in debug mode for plotting")
 cspl = run_toppra_random(return_cspl=True)
@@ -53,7 +56,7 @@ axs[2].legend()
 axs[3].legend()
 plt.tight_layout()
 fig.suptitle("original")
-plt.show()
+# plt.show()
 
 s_sampled2 = np.linspace(0, cspl.x[-1], 100)
 fig, axs = plt.subplots(1, 4, sharex=True, figsize=[18, 4])
@@ -84,7 +87,7 @@ axs[2].legend()
 axs[3].legend()
 plt.tight_layout()
 fig.suptitle("new")
-plt.show()
+# plt.show()
 
 
 # test using two knot files
