@@ -92,11 +92,11 @@ vlim = np.array([0.9689, 0.9689, 0.9689, 0.9689, 1.1627, 1.1627, 1.1627])
 alim = np.array([6.6825, 3.3412, 4.4550, 5.5687, 6.6825, 8.9100, 8.9100])
 vlim = np.vstack([-vlim, vlim]).T
 alim = np.vstack([-alim, alim]).T
-print("testing knots file 1")
-knots_1 = np.loadtxt("/src/toppra/tests/dracula/test_knots_1.txt")  # (33, 7)
+print("testing waypoints file 1...")
+knots_1 = np.loadtxt("/src/toppra/tests/dracula/test_waypts_1.txt")  # (33, 7)
 _ = RunTopp(knots_1, vlim, alim)  # assert no throw
-print("testing knots file 2")
-knots_2 = np.loadtxt("/src/toppra/tests/dracula/test_knots_2.txt")  # (46, 7)
+print("testing waypoints file 2...")
+knots_2 = np.loadtxt("/src/toppra/tests/dracula/test_waypts_2.txt")  # (46, 7)
 _ = RunTopp(knots_2, vlim, alim)  # assert no throw
 
 # more debugging plots from code files
