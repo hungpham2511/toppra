@@ -29,7 +29,7 @@ def RunTopp(
         alim, discretization_scheme=constraint.DiscretizationType.Interpolation
     )
     # use the default gridpoints=None to let interpolator.propose_gridpoints
-    # calcualte grid that sufficients covers the path.
+    # calculate grid that sufficiently covers the path.
     # this ensures the instance is controllable and avoids error:
     #     "An error occurred when computing controllable velocities.
     #     The path is not controllable, or is badly conditioned.
