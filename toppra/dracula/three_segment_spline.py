@@ -1,47 +1,42 @@
-from numpy.testing import assert_almost_equal
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+from numpy.testing import assert_almost_equal
 from scipy.interpolate import PPoly
 
-#### Calculations for stretching one segment:
-# Ps - Start Position
-# Vs - Start Velocity
-# As - Start Acceleration
-# Pe - End Position
-# Ve - End Velocity
-# Ae - End Acceleration
-# fin - final time of threesegment spline, if not defined, Jmax is used
-def ThreeSegmentSpline(
-    Ps, Vs, As, Pe, Ve, Ae, fin=None, Jmax=0.5, debugging=False
-):
+
+def ThreeSegmentSpline(Ps, Vs, As, Pe, Ve, Ae, fin=None, Jmax=0.5):
+    """
+    Calculations for stretching one segment:
+        Ps - Start Position
+        Vs - Start Velocity
+        As - Start Acceleration
+        Pe - End Position
+        Ve - End Velocity
+        Ae - End Acceleration
+        fin - final time of threesegment spline, if not defined, Jmax is used
+    """
     # Fixed Parameters:
     if fin is None:
-        SafetyTime = 1.0
+        SafetyTime = 1
         # difference in Acceleration between start and end:
-        deltaA = np.array(abs(Ae - As))
-        deltaA = deltaA.max()
-        # calculate final time f:
-        f = np.array(deltaA / Jmax * SafetyTime)
+        deltaA = np.max(abs(Ae - As))
+        # calculate final time f
+        f = deltaA / Jmax * SafetyTime
     else:
         # set final time f from function input
-        f = np.array(fin)
+        f = fin
 
     m = f / 3
     n = f / 3
     o = f / 3
-    if debugging:
-        print("f =", f)
-        print("m =", m)
-        print("n =", n)
-        print("o =", o)
 
     # Calculate Coefficients:
-    P0 = np.array(Ps)
-    V0 = np.array(Vs)
-    A0 = np.array(As)
-    P3 = np.array(Pe)
-    V3 = np.array(Ve)
-    A3 = np.array(Ae)
+    P0 = Ps
+    V0 = Vs
+    A0 = As
+    P3 = Pe
+    V3 = Ve
+    A3 = Ae
     J0 = (
         A3 * o * (n + o)
         - A0 * (3 * m ** 2 + n * (n + o) + 2 * m * (2 * n + o))
@@ -72,15 +67,6 @@ def ThreeSegmentSpline(
     A2 = A1 + J1 * n
     J2 = -((3 * (A2 * o ** 2 + 2 * (P2 - P3 + o * V2))) / o ** 3)
 
-    if debugging:
-        V3test = V2 + A2 * o + (1 / 2) * J2 * (o ** 2)
-        A3test = A2 + J2 * o
-        print("V3test", V3test)
-        print("A3test", A3test)
-        print("J0", J0, "J1=", J1, "J2", J2)
-        print("P1,V1,A1,J1 = ", P1, V1, A1, J1)
-        print("P2,V2,A2,J2 = ", P2, V2, A2, J2)
-
     # Gather results
     polynomial_coeff_m = np.stack((1 / 6 * J0, 1 / 2 * A0, V0, P0))
     polynomial_coeff_n = np.stack((1 / 6 * J1, 1 / 2 * A1, V1, P1))
@@ -89,16 +75,12 @@ def ThreeSegmentSpline(
     c = np.stack(
         [polynomial_coeff_m, polynomial_coeff_n, polynomial_coeff_o], axis=1
     )
-    if debugging:
-        print("x=\n", x)
-        print("c=\n", c)
     return x, c
 
 
 if __name__ == "__main__":
     ### One Dimensional Test
     # Inputs
-    debugging = False
     Jmax = np.array(2)
     Ps = np.array(0.9)
     Vs = np.array(0.0)
@@ -106,22 +88,18 @@ if __name__ == "__main__":
     Pe = np.array(40.5)
     Ve = np.array(8.0)
     Ae = np.array(20.1)
-    x, c = ThreeSegmentSpline(
-        Ps, Vs, As, Pe, Ve, Ae, Jmax, debugging=debugging
-    )
+    x, c = ThreeSegmentSpline(Ps, Vs, As, Pe, Ve, Ae, Jmax)
     print("x =\n", x)
     print("c =\n", c)
     print("c.shape=\n", c.shape)
 
     # Prepend 0
     xr = np.insert(x, 0, 0)
-    if debugging:
-        print(xr)
+    print(xr)
 
     # Increase Dimensions
     cr = np.expand_dims(c, axis=2)
-    if debugging:
-        print(cr)
+    print(cr)
     cspl = PPoly(cr, xr)
     t_sampled = np.linspace(0, xr[-1], 100)
     y = cspl(t_sampled)
@@ -134,9 +112,8 @@ if __name__ == "__main__":
     assert_almost_equal(y[-1], Pe)
     assert_almost_equal(yd[-1], Ve)
     assert_almost_equal(ydd[-1], Ae)
-    if debugging:
-        plt.plot(t_sampled, cspl(t_sampled))
-        plt.show()
+    plt.plot(t_sampled, cspl(t_sampled))
+    plt.show()
 
     ### Multi Dimensional Test
     # Inputs before running ThreeSegmentSpline
@@ -154,8 +131,7 @@ if __name__ == "__main__":
     # Prepend 0 to x2:
     xr2 = np.insert(x2, 0, 0)
     cr2 = c2
-    if debugging:
-        print(xr)
+    print(xr)
     cspl2 = PPoly(cr2, xr2)
     t_sampled2 = np.linspace(0, xr2[-1], 100)
     y2 = cspl2(t_sampled2)
@@ -169,10 +145,9 @@ if __name__ == "__main__":
     assert_almost_equal(yd2[-1], Ve)
     assert_almost_equal(ydd2[-1], Ae)
 
-    if debugging:
-        plt.plot(t_sampled2, cspl2(t_sampled2))
-        plt.show()
-        plt.plot(t_sampled2, cspl2(t_sampled2, 1))
-        plt.show()
-        plt.plot(t_sampled2, cspl2(t_sampled2, 2))
-        plt.show()
+    plt.plot(t_sampled2, cspl2(t_sampled2))
+    plt.show()
+    plt.plot(t_sampled2, cspl2(t_sampled2, 1))
+    plt.show()
+    plt.plot(t_sampled2, cspl2(t_sampled2, 2))
+    plt.show()
