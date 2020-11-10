@@ -16,13 +16,10 @@ def run_toppra_random(N_samples=30, return_cspl=False):
     return RunTopp(knots, vlim, alim, return_cspl=return_cspl)
 
 
-topp_breaks_count_final, _, _ = run_toppra_random(2, False)
-print("topp_breaks_count_final", topp_breaks_count_final)
-topp_breaks_count_final, _, _ = run_toppra_random(30, False)
-print("topp_breaks_count_final", topp_breaks_count_final)
-topp_breaks_count_final, _, _ = run_toppra_random(5000, False)
-print("topp_breaks_count_final", topp_breaks_count_final)
-print("Running it again in debug mode for plotting")
+for n in [2, 20, 50, 200, 2000]:
+    print(f"Testing {n} random waypoints...")
+    topp_breaks_count_final, _, _ = run_toppra_random(n, False)
+
 cspl = run_toppra_random(return_cspl=True)
 
 # Plotting
