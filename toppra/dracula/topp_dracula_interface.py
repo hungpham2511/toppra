@@ -1,5 +1,4 @@
 import numpy as np
-
 import toppra as ta
 import toppra.algorithm as algo
 from toppra import constraint, interpolator
@@ -16,9 +15,10 @@ def RunTopp(
     # max_grid_err=1e-4,
     return_cspl=False,
 ):
-    # (N,) between 0, 1, knots for toppra's path
-    # essentially normalised time on x axis
-    x = np.linspace(0, 1, knots.shape[0])
+    N_samples = knots.shape[0]
+    # initial x for toppra's path, essentially normalised time on x axis
+    x_max = 2.542 - 2.413 * np.exp(-0.03 * N_samples)  # empirical fit
+    x = np.linspace(0, x_max, N_samples)
     # specifying natural here doensn't make a difference
     # toppra only produces clamped cubic splines
     path = ta.SplineInterpolator(x, knots.copy(), bc_type="clamped")
@@ -48,6 +48,7 @@ def RunTopp(
     )
     jnt_traj = instance.compute_trajectory(0, 0)
     if jnt_traj is None:
+        print(f"Failed knots:\n{knots}\n" f"vlim:\n{vlim}\n" f"alim:\n{alim}")
         raise RuntimeError("Toppra failed to compute trajectory.")
     # Toppra goes a bit wider than a precise natural cubic spline
     # we could find the leftmost and rightmost common roots of all dof
