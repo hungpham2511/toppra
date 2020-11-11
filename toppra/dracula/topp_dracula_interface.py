@@ -8,6 +8,16 @@ from .zero_acceleration_start_end import ZeroAccelerationAtStartAndEnd
 ta.setup_logging("WARNING")
 
 
+def length_parameterize(points, vmax):
+    dist = points.copy()
+    dist[1:] = dist[:-1]
+    dist = points - dist
+    dist = np.sqrt(dist ** 2)
+    t_knots = np.abs(dist / vmax)
+    t_knots = np.cumsum(t_knots, axis=0)
+    return np.max(t_knots, axis=-1)
+
+
 def RunTopp(
     waypts,  # ndarray, (N, dof)
     vlim,  # ndarray, (dof, 2)
@@ -16,12 +26,16 @@ def RunTopp(
     return_cspl=False,
 ):
     N_samples = waypts.shape[0]
-    # initial x for toppra's path, essentially normalised time on x axis
-    x_max = 2.5 - 2.35 * np.exp(-0.015 * N_samples)  # empirical fit
-    x = np.linspace(0, x_max, N_samples)
+
+    # positive v max
+    v_max = vlim[:, 1]
+
+    # scale v_max by 0.25 - arbitrary
+    t = length_parameterize(waypts, v_max / 0.25)
+
     # specifying natural here doensn't make a difference
     # toppra only produces clamped cubic splines
-    path = ta.SplineInterpolator(x, waypts.copy(), bc_type="clamped")
+    path = ta.SplineInterpolator(t, waypts.copy(), bc_type="clamped")
     pc_vel = constraint.JointVelocityConstraint(vlim)
     # Can be either Collocation (0) or Interpolation (1). Interpolation gives
     # more accurate results with slightly higher computational cost
@@ -48,9 +62,7 @@ def RunTopp(
     )
     jnt_traj = instance.compute_trajectory(0, 0)
     if jnt_traj is None:
-        print(
-            f"Failed waypts:\n{waypts}\n" f"vlim:\n{vlim}\n" f"alim:\n{alim}"
-        )
+        print(f"Failed waypts:\n{waypts}\n" f"vlim:\n{vlim}\n" f"alim:\n{alim}")
         raise RuntimeError("Toppra failed to compute trajectory.")
     # Toppra goes a bit wider than a precise natural cubic spline
     # we could find the leftmost and rightmost common roots of all dof
