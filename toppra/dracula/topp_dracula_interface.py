@@ -1,11 +1,16 @@
+import warnings
+
 import numpy as np
 import toppra as ta
 import toppra.algorithm as algo
+from numpy.testing import assert_almost_equal
+from scipy.interpolate import CubicSpline
 from toppra import constraint, interpolator
 
 from .zero_acceleration_start_end import ZeroAccelerationAtStartAndEnd
 
 ta.setup_logging("WARNING")
+N_DECIMALS = 2
 
 
 def RunTopp(
@@ -14,6 +19,7 @@ def RunTopp(
     alim,  # ndarray, (dof 2)
     # max_grid_err=1e-4,
     return_cspl=False,
+    path_length_limit=150,  # 150 is max we've seen, None to disable truncation
 ):
     N_samples = waypts.shape[0]
     # initial x for toppra's path, essentially normalised time on x axis
@@ -52,6 +58,42 @@ def RunTopp(
             f"Failed waypts:\n{waypts}\n" f"vlim:\n{vlim}\n" f"alim:\n{alim}"
         )
         raise RuntimeError("Toppra failed to compute trajectory.")
+    cspl = jnt_traj.cspl
+    # If the initial estimated path length (run time) of the trajectory isn't
+    # very close to the actual computed one (say off by a factor of 2),
+    # toppra goes a bit crazy sometimes extends the spline to x >~ 1e3.
+    # This cannot be fixed by tweaking the fit:
+    # N_samples = 39 may have this behaviour unless x_max > 1.6,
+    # while N_samples = 46 may require x_max < 1.6 to be controllable.
+    # So we keep x_max towards the small side to guarantee controllability.
+    # We check that and truncate the spline at a predefined upper bound.
+    if path_length_limit and cspl.x[-1] > path_length_limit:
+        mask = cspl.x <= path_length_limit
+        warnings.warn(
+            f"Toppra derived x > {path_length_limit} covering "
+            f"{(~mask).sum()}/{cspl.x.size} ending knots, "
+            f"x_max: {cspl.x[-1]:.2f}. Input waypoints are likely ill-formed, "
+            "resulting in a lengthy trajectory.",
+            UserWarning,
+        )
+        # now truncate and check that it is still close to the original end
+        cspl = CubicSpline(cspl.x[mask], cspl(cspl.x[mask]), bc_type="natural")
+        new_end_pos = cspl(cspl.x[-1])
+        msg = (
+            f"Truncated CubicSpline, ending at\n{new_end_pos},\n"
+            f"no longer arrives at the original ending waypoint\n"
+            f"{waypts[-1]}\n"
+            f"to {N_DECIMALS} decimal places. "
+            "Try another set of closer waypoints with a smaller path length."
+        )
+        assert_almost_equal(
+            new_end_pos, waypts[-1], decimal=N_DECIMALS, err_msg=msg
+        )
+        warnings.warn(
+            f"Resulitng CubicSpline was truncated at "
+            f"x upperbound: {path_length_limit}, but it still arrives at the "
+            f"original ending waypoint to {N_DECIMALS} decimal places."
+        )
     # Toppra goes a bit wider than a precise natural cubic spline
     # we could find the leftmost and rightmost common roots of all dof
     # which are the original end points, but that algorithm not guaranteed
@@ -62,11 +104,11 @@ def RunTopp(
     #                    jnt_traj.cspl(jnt_traj.cspl.x),
     #                    bc_type='natural')
     # Manually treat two ends by moving two points next to ends.
-    ZeroAccelerationAtStartAndEnd(jnt_traj.cspl)
+    ZeroAccelerationAtStartAndEnd(cspl)
     if return_cspl:
-        return jnt_traj.cspl
+        return cspl
     return (
-        len(jnt_traj.cspl.x),
-        np.ascontiguousarray(jnt_traj.cspl.x, dtype=np.float64),
-        np.ascontiguousarray(jnt_traj.cspl.c, dtype=np.float64),
+        len(cspl.x),
+        np.ascontiguousarray(cspl.x, dtype=np.float64),
+        np.ascontiguousarray(cspl.c, dtype=np.float64),
     )
