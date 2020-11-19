@@ -3,6 +3,7 @@
 ## Unrelease
 
 ### Added
+- [python] Minor performance tweak in reachability_algorithm.py
 - [ci] Fix python2.7 dependencies
 - [python] Minor bug fixed in the SimplePath class
 - [cpp] [#129][#129] Implement constant-acceleration trajectory parametrizer
