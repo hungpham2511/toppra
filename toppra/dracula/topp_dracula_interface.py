@@ -1,16 +1,18 @@
+"""Wrapper for toppra that takes in waypoints, v and a limits."""
+import sys
 import warnings
 
 import numpy as np
+from scipy.interpolate import CubicSpline
+
 import toppra as ta
 import toppra.algorithm as algo
-from numpy.testing import assert_almost_equal
-from scipy.interpolate import CubicSpline
-from toppra import constraint, interpolator
+from toppra import constraint  # , interpolator  # needed by custom gridpoints
 
 from .zero_acceleration_start_end import ZeroAccelerationAtStartAndEnd
 
 ta.setup_logging("WARNING")
-N_DECIMALS = 2
+JOINT_DIST_EPS = 5e-3  # min epsilon for treating two angles the same
 
 
 def RunTopp(
@@ -21,6 +23,21 @@ def RunTopp(
     return_cspl=False,
     path_length_limit=150,  # 150 is max we've seen, None to disable truncation
 ):
+    """Call toppra obeying velocity and acceleration limits and naturalness.
+
+    No consecutive duplicates in the waypoints allowed.
+    Return natural cubic spline coefficients by default.
+    """
+    # check for duplicates, assert adjacent pairs have distance not equal to 0
+    min_pair_dist = np.linalg.norm(np.diff(waypts, axis=0), axis=1).min()
+    if min_pair_dist < JOINT_DIST_EPS:  # issue a warning and try anyway
+        warnings.warn(
+            "Duplicates found in input waypoints. This is not allowed, "
+            "especially for the beginning and the end of the trajectory. "
+            "Expect Toppra to throw a controllability exception. "
+            "Attempting to optimise trajectory anyway...",
+            UserWarning,
+        )
     N_samples = waypts.shape[0]
     # initial x for toppra's path, essentially normalised time on x axis
     x_max = 2.5 - 2.35 * np.exp(-0.015 * N_samples)  # empirical fit
@@ -53,9 +70,17 @@ def RunTopp(
         solver_wrapper="seidel",
     )
     jnt_traj = instance.compute_trajectory(0, 0)
-    if jnt_traj is None:
+    if jnt_traj is None:  # toppra has failed
+        if min_pair_dist < JOINT_DIST_EPS:  # duplicates are probably why
+            print(
+                "Duplicates not allowed in input waypoints. "
+                "At least one pair of adjacent waypoints have distance "
+                f"less than epsilon = {JOINT_DIST_EPS} in joint space.",
+                file=sys.stderr,
+            )
         print(
-            f"Failed waypts:\n{waypts}\n" f"vlim:\n{vlim}\n" f"alim:\n{alim}"
+            f"Failed waypts:\n{waypts}\n" f"vlim:\n{vlim}\n" f"alim:\n{alim}",
+            file=sys.stderr,
         )
         raise RuntimeError("Toppra failed to compute trajectory.")
     cspl = jnt_traj.cspl
@@ -79,20 +104,17 @@ def RunTopp(
         # now truncate and check that it is still close to the original end
         cspl = CubicSpline(cspl.x[mask], cspl(cspl.x[mask]), bc_type="natural")
         new_end_pos = cspl(cspl.x[-1])
-        msg = (
+        assert np.linalg.norm(new_end_pos - waypts[-1]) < JOINT_DIST_EPS, (
             f"Truncated CubicSpline, ending at\n{new_end_pos},\n"
             f"no longer arrives at the original ending waypoint\n"
             f"{waypts[-1]}\n"
-            f"to {N_DECIMALS} decimal places. "
+            f"given max allowed single-joint distance {JOINT_DIST_EPS}. "
             "Try another set of closer waypoints with a smaller path length."
         )
-        assert_almost_equal(
-            new_end_pos, waypts[-1], decimal=N_DECIMALS, err_msg=msg
-        )
         warnings.warn(
-            f"Resulitng CubicSpline was truncated at "
-            f"x upperbound: {path_length_limit}, but it still arrives at the "
-            f"original ending waypoint to {N_DECIMALS} decimal places."
+            f"Resulitng CubicSpline was truncated at x upperbound: "
+            f"{path_length_limit}, but it still arrives at the original "
+            f"ending waypoint to max single-joint distance {JOINT_DIST_EPS}."
         )
     # Toppra goes a bit wider than a precise natural cubic spline
     # we could find the leftmost and rightmost common roots of all dof
