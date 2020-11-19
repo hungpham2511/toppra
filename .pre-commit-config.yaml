@@ -38,7 +38,7 @@ repos:
       exclude: '.*[.]ipynb$'
     - id: check-ast
     - id: check-builtin-literals
-    - id: check-byte-order-marker
+    - id: fix-byte-order-marker
     - id: check-case-conflict
     # - id: check-docstring-first
     - id: check-executables-have-shebangs
