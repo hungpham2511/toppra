@@ -1,0 +1,72 @@
+repos:
+-   repo: https://github.com/timothycrosley/isort
+    rev: 5.6.4
+    hooks:
+    - id: isort
+      types: [python]
+      args: [--filter-files]
+-   repo: https://github.com/psf/black
+    rev: 20.8b1
+    hooks:
+    - id: black
+      args: [--line-length, '79']
+-   repo: https://gitlab.com/pycqa/flake8
+    rev: 3.8.4
+    hooks:
+    - id: flake8
+-   repo: local
+    hooks:
+    - id: pylint
+      name: pylint
+      entry: pylint
+      language: system
+      types: [python]
+      args: [--rcfile=setup.cfg]
+-   repo: https://github.com/pycqa/pydocstyle
+    rev: 5.1.1
+    hooks:
+    - id: pydocstyle
+-   repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.790
+    hooks:
+    - id: mypy
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.3.0
+    hooks:
+    - id: check-added-large-files
+      args: [--maxkb=100]
+      exclude: '.*[.]ipynb$'
+    - id: check-ast
+    - id: check-builtin-literals
+    - id: check-byte-order-marker
+    - id: check-case-conflict
+    # - id: check-docstring-first
+    - id: check-executables-have-shebangs
+    - id: check-json
+    - id: check-merge-conflict
+    - id: check-symlinks
+    # - id: check-xml
+    - id: check-yaml
+      args: [--allow-multiple-documents, --unsafe]
+    - id: debug-statements
+    - id: end-of-file-fixer
+      exclude: '.*[.]urdf$'
+    - id: mixed-line-ending
+      args: [--fix=lf]
+    - id: no-commit-to-branch
+      args: [--branch, master]
+    - id: pretty-format-json
+      args: [--autofix, --indent, '4', --no-ensure-ascii]
+    - id: requirements-txt-fixer
+    - id: trailing-whitespace
+      exclude: '.*[.]urdf$'
+-   repo: local
+    hooks:
+    - id: unittest
+      name: Python3 unit tests in parallel
+      entry: unittest-parallel
+      language: system
+      types: [python]
+      args: [-s, tests/dracula, -v]
+      always_run: true
+      pass_filenames: false
