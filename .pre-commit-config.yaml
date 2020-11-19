@@ -63,10 +63,10 @@ repos:
 -   repo: local
     hooks:
     - id: unittest
-      name: Python3 unit tests in parallel
-      entry: unittest-parallel
+      name: unit tests
+      entry: python3
       language: system
       types: [python]
-      args: [-s, tests/dracula, -v]
+      args: [tests/dracula/test_run_topp.py]
       always_run: true
       pass_filenames: false
