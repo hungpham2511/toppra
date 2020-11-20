@@ -147,7 +147,7 @@ Retime the trajectory, only this step is necessary.
 
      INFO [desired_duration_algorithm.py : 158] Desired duration 60.000000 sec is achievable. Continue computing.
      INFO [algorithm.py : 185] Successfully parametrize path. Duration: 60.000, previously 1.000)
-     INFO [algorithm.py : 186] Finish parametrization in 0.031 secs
+     INFO [algorithm.py : 186] Finish parametrization in 0.032 secs
     /home/circleci/repo/toppra/utils.py:28: DeprecationWarning: Call to deprecated function get_duration in module toppra.interpolator.
       category=DeprecationWarning,
 
@@ -219,7 +219,7 @@ Note that these steps are not necessary.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.301 seconds)
+   **Total running time of the script:** ( 0 minutes  0.313 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_kinematics_duration.py:
