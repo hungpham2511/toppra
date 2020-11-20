@@ -352,11 +352,12 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
                 x_next = xs[i] + 2 * deltas[i] * us[i]
                 x_next = max(x_next - TINY, 0.9999 * x_next)
                 xs[i + 1] = min(K[i + 1, 1], max(K[i + 1, 0], x_next))
-                logger.debug(
-                    "[Forward pass] u[{:d}] = {:f}, x[{:d}] = {:f}".format(
-                        i, us[i], i + 1, xs[i + 1]
+                if logger.isEnabledFor(logging.DEBUG):
+                    logger.debug(
+                        "[Forward pass] u[{:d}] = {:f}, x[{:d}] = {:f}".format(
+                            i, us[i], i + 1, xs[i + 1]
+                        )
                     )
-                )
                 v_vec[i] = optim_res[2:]
                 i += 1
         self.solver_wrapper.close_solver()
