@@ -2,38 +2,38 @@ import copy
 
 import matplotlib.pyplot as plt
 import numpy as np
-from toppra.dracula import RunTopp
+
+from toppra.dracula import A_MAX, V_MAX, RunTopp
 
 
 def run_toppra_random(N_samples=30, return_cspl=False):
     """Random Traj."""
     dof = 7
-    waypts = np.random.rand(N_samples, dof)
-    vlim = np.asarray([2] * dof)
+    rand_waypts = np.random.rand(N_samples, dof)
+    vlim = np.asarray([1] * dof)
     alim = np.asarray([2] * dof)
     vlim = np.vstack([-vlim, vlim]).T
     alim = np.vstack([-alim, alim]).T
-    return RunTopp(
-        waypts, vlim, alim, return_cspl=return_cspl, path_length_limit=None
-    )
+    return RunTopp(rand_waypts, vlim, alim, return_cspl=return_cspl)
 
 
 if __name__ == "__main__":
     # test using static test data
-    vlim = np.array([0.9689, 0.9689, 0.9689, 0.9689, 1.1627, 1.1627, 1.1627])
-    alim = np.array([6.6825, 3.3412, 4.4550, 5.5687, 6.6825, 8.9100, 8.9100])
-    vlim = np.vstack([-vlim, vlim]).T
-    alim = np.vstack([-alim, alim]).T
-
-    for i in range(4):
-        print(f"testing waypoints file {i}...")
-        waypts = np.loadtxt(
-            f"/src/toppra/tests/dracula/test_waypts_{i}.txt"
-        )  # (33, 7)
-        _ = RunTopp(waypts, vlim, alim)  # assert no throw
+    v_max = np.vstack([-V_MAX, V_MAX]).T
+    a_max = np.vstack([-A_MAX, A_MAX]).T
+    # two sets of vlims, alims, two reduction coefficients (safety factor)
+    for coeff in [1, 0.5, 0.2, 0.1, 0.05]:
+        print(f"limit reduction coefficient: {coeff}")
+        for i in range(5):
+            print(f"testing waypoints file {i}...")
+            waypts = np.loadtxt(
+                f"/src/toppra/tests/dracula/test_waypts_{i}.txt"
+            )  # (33, 7)
+            _ = RunTopp(
+                waypts, coeff * v_max, coeff * a_max
+            )  # assert no throw
 
     # test using randoms
-
     for n in [2, 20, 50, 200, 2000]:
         print(f"Testing {n} random waypoints with no truncation...")
         topp_breaks_count_final, _, _ = run_toppra_random(n, False)
