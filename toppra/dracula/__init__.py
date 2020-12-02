@@ -46,7 +46,7 @@ def _check_waypoints(waypts, vlim):
 def _dump_input_data(**kwargs):
     """Dump input data for debugging when certain env vars are detected.
 
-    t is the timestamp of the input data, to be used as part of the filename.
+    t is the timestamp of the input data, used as the filename.
     Variables must be passed as named kwargs.
     """
     t = datetime.datetime.now(datetime.timezone.utc).strftime(
