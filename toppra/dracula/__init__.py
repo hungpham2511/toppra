@@ -43,13 +43,15 @@ def _check_waypoints(waypts, vlim):
     return min_pair_dist, t_sum
 
 
-def _dump_input_data(t, **kwargs):
+def _dump_input_data(**kwargs):
     """Dump input data for debugging when certain env vars are detected.
 
     t is the timestamp of the input data, to be used as part of the filename.
     Variables must be passed as named kwargs.
     """
-    t = t.astimezone(datetime.timezone.utc).strftime(r"%Y%m%dT%H%M%S.%f%z")
+    t = datetime.datetime.now(datetime.timezone.utc).strftime(
+        r"%Y%m%dT%H%M%S.%f%z"
+    )
     path = os.path.join(DATA_DIR, f"{t}.npz")
     np.savez(path, **kwargs)
     logger.info(f"Debug environment detected, input data saved to: {path}")
@@ -71,9 +73,8 @@ def RunTopp(
     at face value as in unit of seconds, it will result in very lengthy
     trajectories.
     """
-    t0 = datetime.datetime.now()
     if any(map(os.getenv, ["SIM_ROBOT", "TOPPRA_DEBUG"])):
-        _dump_input_data(t0, waypts=waypts, vlim=vlim, alim=alim)
+        _dump_input_data(waypts=waypts, vlim=vlim, alim=alim)
     # check for duplicates, assert adjacent pairs have distance not equal to 0
     min_pair_dist, t_sum = _check_waypoints(waypts, vlim)
     if min_pair_dist < JOINT_DIST_EPS:  # issue a warning and try anyway
@@ -177,10 +178,6 @@ def RunTopp(
     #                    bc_type='natural')
     # Manually treat two ends by moving two points next to ends.
     ZeroAccelerationAtStartAndEnd(cspl)
-    logger.info(
-        "Toppra finished in a total of "
-        f"{(datetime.datetime.now().timestamp() - t0.timestamp())*1e3:.2f} ms"
-    )
     if return_cspl:
         return cspl
     return (
