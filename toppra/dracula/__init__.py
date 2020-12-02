@@ -5,8 +5,9 @@ Wrapper for toppra that takes in waypoints, v and a limits.
 For rapid splining from Drake.
 """
 
-import sys
-import warnings
+import datetime
+import logging
+import os
 
 import numpy as np
 from scipy.interpolate import CubicSpline
@@ -17,11 +18,14 @@ from toppra import constraint  # , interpolator  # needed by custom gridpoints
 
 from .zero_acceleration_start_end import ZeroAccelerationAtStartAndEnd
 
-ta.setup_logging("WARNING")
-JOINT_DIST_EPS = 5e-3  # min epsilon for treating two angles the same
+ta.setup_logging("INFO")
+JOINT_DIST_EPS = 2e-3  # min epsilon for treating two angles the same
 # https://frankaemika.github.io/docs/control_parameters.html#constants
 V_MAX = np.array([2.1750, 2.1750, 2.1750, 2.1750, 2.6100, 2.6100, 2.6100])
 A_MAX = np.array([15, 7.5, 10, 12.5, 15, 20, 20])
+DATA_DIR = "/data/toppra"
+os.makedirs(DATA_DIR, exist_ok=True)
+logger = logging.getLogger("toppra")
 
 
 def _check_waypoints(waypts, vlim):
@@ -37,6 +41,20 @@ def _check_waypoints(waypts, vlim):
     t_sum = pair_t.max(axis=1).sum()
     min_pair_dist = np.linalg.norm(pair_dist, axis=1).min()
     return min_pair_dist, t_sum
+
+
+def _dump_input_data(**kwargs):
+    """Dump input data for debugging when certain env vars are detected.
+
+    t is the timestamp of the input data, used as the filename.
+    Variables must be passed as named kwargs.
+    """
+    t = datetime.datetime.now(datetime.timezone.utc).strftime(
+        r"%Y%m%dT%H%M%S.%f%z"
+    )
+    path = os.path.join(DATA_DIR, f"{t}.npz")
+    np.savez(path, **kwargs)
+    logger.info(f"Debug environment detected, input data saved to: {path}")
 
 
 def RunTopp(
@@ -55,15 +73,17 @@ def RunTopp(
     at face value as in unit of seconds, it will result in very lengthy
     trajectories.
     """
+    if any(map(os.getenv, ["SIM_ROBOT", "TOPPRA_DEBUG"])):
+        _dump_input_data(waypts=waypts, vlim=vlim, alim=alim)
     # check for duplicates, assert adjacent pairs have distance not equal to 0
     min_pair_dist, t_sum = _check_waypoints(waypts, vlim)
     if min_pair_dist < JOINT_DIST_EPS:  # issue a warning and try anyway
-        warnings.warn(
-            "Duplicates found in input waypoints. This is not allowed, "
+        logger.warning(
+            "Duplicates found in input waypoints. "
+            "This is not allowed in general, "
             "especially for the beginning and the end of the trajectory. "
             "Expect Toppra to throw a controllability exception. "
-            "Attempting to optimise trajectory anyway...",
-            UserWarning,
+            "Attempting to optimise trajectory anyway..."
         )
     if t_sum < 0.15:
         t_sum = 0.15  # this seems to be the minimum path length required
@@ -106,15 +126,13 @@ def RunTopp(
     jnt_traj = instance.compute_trajectory(0, 0)
     if jnt_traj is None:  # toppra has failed
         if min_pair_dist < JOINT_DIST_EPS:  # duplicates are probably why
-            print(
+            logger.warning(
                 "Duplicates not allowed in input waypoints. "
                 "At least one pair of adjacent waypoints have "
-                f"joint-space distance less than epsilon = {JOINT_DIST_EPS}.",
-                file=sys.stderr,
+                f"joint-space distance less than epsilon = {JOINT_DIST_EPS}."
             )
-        print(
-            f"Failed waypts:\n{waypts}\n" f"vlim:\n{vlim}\n" f"alim:\n{alim}",
-            file=sys.stderr,
+        logger.warning(
+            f"Failed waypts:\n{waypts}\n" f"vlim:\n{vlim}\n" f"alim:\n{alim}"
         )
         raise RuntimeError("Toppra failed to compute trajectory.")
     cspl = jnt_traj.cspl
@@ -128,12 +146,11 @@ def RunTopp(
     # We check that and truncate the spline at a predefined upper bound.
     if path_length_limit and cspl.x[-1] > path_length_limit:
         mask = cspl.x <= path_length_limit
-        warnings.warn(
+        logger.warning(
             f"Toppra derived x > {path_length_limit} covering "
             f"{(~mask).sum()}/{cspl.x.size} ending knots, "
             f"x_max: {cspl.x[-1]:.2f}. Input waypoints are likely ill-formed, "
-            "resulting in a lengthy trajectory.",
-            UserWarning,
+            "resulting in a lengthy trajectory."
         )
         # now truncate and check that it is still close to the original end
         cspl = CubicSpline(cspl.x[mask], cspl(cspl.x[mask]), bc_type="natural")
@@ -145,7 +162,7 @@ def RunTopp(
             f"given max allowed joint-space distance {JOINT_DIST_EPS}. "
             "Try another set of closer waypoints with a smaller path length."
         )
-        warnings.warn(
+        logger.warning(
             f"Resulitng CubicSpline was truncated at x upperbound: "
             f"{path_length_limit}, but it still arrives at the original "
             f"ending waypoint to max joint-space distance {JOINT_DIST_EPS}."
