@@ -79,10 +79,9 @@ def RunTopp(
     min_pair_dist, t_sum = _check_waypoints(waypts, vlim)
     if min_pair_dist < JOINT_DIST_EPS:  # issue a warning and try anyway
         logger.warning(
-            "Duplicates found in input waypoints. "
-            "This is not allowed in general, "
+            "Duplicates found in input waypoints. This is not recommended, "
             "especially for the beginning and the end of the trajectory. "
-            "Expect Toppra to throw a controllability exception. "
+            "Toppra might throw a controllability exception. "
             "Attempting to optimise trajectory anyway..."
         )
     if t_sum < 0.5:
@@ -99,7 +98,8 @@ def RunTopp(
     # specifying natural here doensn't make a difference
     # toppra only produces clamped cubic splines
     path = ta.SplineInterpolator(x, waypts.copy(), bc_type="clamped")
-    pc_vel = constraint.JointVelocityConstraint(vlim)
+    # 2e-3 is as precise as toppra can be, avoid going over limit
+    pc_vel = constraint.JointVelocityConstraint(vlim - JOINT_DIST_EPS)
     # Can be either Collocation (0) or Interpolation (1). Interpolation gives
     # more accurate results with slightly higher computational cost
     pc_acc = constraint.JointAccelerationConstraint(
@@ -126,12 +126,12 @@ def RunTopp(
     jnt_traj = instance.compute_trajectory(0, 0)
     if jnt_traj is None:  # toppra has failed
         if min_pair_dist < JOINT_DIST_EPS:  # duplicates are probably why
-            logger.warning(
+            logger.error(
                 "Duplicates not allowed in input waypoints. "
                 "At least one pair of adjacent waypoints have "
                 f"joint-space distance less than epsilon = {JOINT_DIST_EPS}."
             )
-        logger.warning(
+        logger.error(
             f"Failed waypts:\n{waypts}\n" f"vlim:\n{vlim}\n" f"alim:\n{alim}"
         )
         raise RuntimeError("Toppra failed to compute trajectory.")
@@ -162,7 +162,7 @@ def RunTopp(
             f"given max allowed joint-space distance {JOINT_DIST_EPS}. "
             "Try another set of closer waypoints with a smaller path length."
         )
-        logger.warning(
+        logger.info(
             f"Resulitng CubicSpline was truncated at x upperbound: "
             f"{path_length_limit:.3f}, but it still arrives at the original "
             f"ending waypoint to max joint-space distance {JOINT_DIST_EPS}. "
