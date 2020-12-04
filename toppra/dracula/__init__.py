@@ -35,7 +35,7 @@ log_path = f"/data/toppra/logs/{log_t0}.log"
 os.makedirs(os.path.dirname(log_path), exist_ok=True)
 logger = logging.getLogger("toppra")
 open(log_path, "a").close()  # create log file if it does not exist
-fh = logging.FileHandler(log_path, mode='a', encoding="utf-8")
+fh = logging.FileHandler(log_path, mode="a", encoding="utf-8")
 fh.setLevel(logging.DEBUG)
 logger.addHandler(fh)
 
@@ -77,14 +77,15 @@ def _verify_lims(cs, vlim):
     """
     v = cs.derivative(1)(cs.x)
     i, j = np.where(~((vlim[:, 0] < v) & (v < vlim[:, 1])))
-    signed_vlim = np.where(v>0, vlim[:, 1], vlim[:, 0])
+    signed_vlim = np.where(v > 0, vlim[:, 1], vlim[:, 0])
     excess_speed = np.sign(v) * (v - signed_vlim)  # want the +ve entries
     excess_percent = excess_speed / np.abs(signed_vlim)  # want the +ve entries
     if i or j:  # should have the same size, pick out +ve entries that violate
         logger.error(
             f"Velocity constraint violated:\n"
             f"excess_speed: {excess_speed[i, j]}\n"
-            f'excees_percent: {excess_percent[i, j]}')
+            f"excees_percent: {excess_percent[i, j]}"
+        )
         raise ValueError
 
 
