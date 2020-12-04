@@ -19,7 +19,10 @@ from toppra import constraint  # , interpolator  # needed by custom gridpoints
 from .zero_acceleration_start_end import ZeroAccelerationAtStartAndEnd
 
 ta.setup_logging("INFO")
-JOINT_DIST_EPS = 2e-3  # min epsilon for treating two angles the same
+# min epsilon for treating two angles the same, positive float
+# 2e-3 is also as precise as toppra can be
+# it's been observed to go over vlim by under 2e-3
+JOINT_DIST_EPS = 2.5e-3
 # https://frankaemika.github.io/docs/control_parameters.html#constants
 V_MAX = np.array([2.1750, 2.1750, 2.1750, 2.1750, 2.6100, 2.6100, 2.6100])
 A_MAX = np.array([15, 7.5, 10, 12.5, 15, 20, 20])
@@ -98,7 +101,7 @@ def RunTopp(
     # specifying natural here doensn't make a difference
     # toppra only produces clamped cubic splines
     path = ta.SplineInterpolator(x, waypts.copy(), bc_type="clamped")
-    # 2e-3 is as precise as toppra can be, avoid going over limit
+    # avoid going over limit taking into account toppra's precision
     pc_vel = constraint.JointVelocityConstraint(vlim - JOINT_DIST_EPS)
     # Can be either Collocation (0) or Interpolation (1). Interpolation gives
     # more accurate results with slightly higher computational cost
