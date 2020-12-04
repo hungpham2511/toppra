@@ -102,7 +102,9 @@ def RunTopp(
     # toppra only produces clamped cubic splines
     path = ta.SplineInterpolator(x, waypts.copy(), bc_type="clamped")
     # avoid going over limit taking into account toppra's precision
-    pc_vel = constraint.JointVelocityConstraint(vlim - JOINT_DIST_EPS)
+    pc_vel = constraint.JointVelocityConstraint(
+        vlim - np.sign(vlim) * JOINT_DIST_EPS
+    )
     # Can be either Collocation (0) or Interpolation (1). Interpolation gives
     # more accurate results with slightly higher computational cost
     pc_acc = constraint.JointAccelerationConstraint(
