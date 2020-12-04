@@ -85,8 +85,8 @@ def RunTopp(
             "Expect Toppra to throw a controllability exception. "
             "Attempting to optimise trajectory anyway..."
         )
-    if t_sum < 0.15:
-        t_sum = 0.15  # this seems to be the minimum path length required
+    if t_sum < 0.5:
+        t_sum = 0.5  # 0.15 seems to be the minimum path length required
     # initial x for toppra's path, essentially normalised time on x axis
     # rescale by given speed limits
     path_length_limit = 100 * t_sum  # magic number, cap at 100 x the time
@@ -95,7 +95,7 @@ def RunTopp(
     # time required to visit all given waypoints, toppra needs a smaller
     # number for controllabiility
     # it will find that the needed total path length > t_sum in the end
-    x = np.linspace(0, 0.1 * t_sum, N_samples)
+    x = np.linspace(0, 0.3 * t_sum, N_samples)
     # specifying natural here doensn't make a difference
     # toppra only produces clamped cubic splines
     path = ta.SplineInterpolator(x, waypts.copy(), bc_type="clamped")
@@ -147,10 +147,10 @@ def RunTopp(
     if path_length_limit and cspl.x[-1] > path_length_limit:
         mask = cspl.x <= path_length_limit
         logger.warning(
-            f"Toppra derived x > {path_length_limit} covering "
+            f"Toppra derived x > {path_length_limit:.3f} covering "
             f"{(~mask).sum()}/{cspl.x.size} ending knots, "
             f"x_max: {cspl.x[-1]:.2f}. Input waypoints are likely ill-formed, "
-            "resulting in a lengthy trajectory."
+            "resulting in a suboptimal trajectory."
         )
         # now truncate and check that it is still close to the original end
         cspl = CubicSpline(cspl.x[mask], cspl(cspl.x[mask]), bc_type="natural")
@@ -164,8 +164,9 @@ def RunTopp(
         )
         logger.warning(
             f"Resulitng CubicSpline was truncated at x upperbound: "
-            f"{path_length_limit}, but it still arrives at the original "
-            f"ending waypoint to max joint-space distance {JOINT_DIST_EPS}."
+            f"{path_length_limit:.3f}, but it still arrives at the original "
+            f"ending waypoint to max joint-space distance {JOINT_DIST_EPS}. "
+            f"New duration after truncation: {cspl.x[-1]:.3f}."
         )
     # Toppra goes a bit wider than a precise natural cubic spline
     # we could find the leftmost and rightmost common roots of all dof
