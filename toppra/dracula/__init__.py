@@ -173,7 +173,7 @@ def RunTopp(
     # If the initial estimated path length (run time) of the trajectory isn't
     # very close to the actual computed one (say off by a factor of 2),
     # toppra goes a bit crazy sometimes extends the spline to x >~ 1e3.
-    # This cannot be fixed by tweaking the fit:
+    # This cannot be fixed by tweaking the fit.
     # N_samples = 39 may have this behaviour unless x_max > 1.6,
     # while N_samples = 46 may require x_max < 1.6 to be controllable.
     # So we keep x_max towards the small side to guarantee controllability.
@@ -208,9 +208,6 @@ def RunTopp(
     # to converge below a sufficiently small error and is not efficient.
     # We could also use scipy to respline naturally,
     # this brings accel to down 1e-15, but zero velocity is lost (now 1e-3).
-    # cs = CubicSpline(jnt_traj.cs.x,
-    #                  jnt_traj.cs(jnt_traj.cs.x),
-    #                  bc_type='natural')
     # Manually treat two ends by moving two points next to ends.
     ZeroAccelerationAtStartAndEnd(cs)
     if verify_lims:  # check if vlim is obeyed
