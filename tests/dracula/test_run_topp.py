@@ -6,7 +6,7 @@ import numpy as np
 from toppra.dracula import A_MAX, V_MAX, RunTopp
 
 
-def run_toppra_random(N_samples=30, return_cspl=False):
+def run_toppra_random(N_samples=30, return_cs=False):
     """Random Traj."""
     dof = 7
     rand_waypts = np.random.rand(N_samples, dof)
@@ -14,7 +14,7 @@ def run_toppra_random(N_samples=30, return_cspl=False):
     alim = np.asarray([2] * dof)
     vlim = np.vstack([-vlim, vlim]).T
     alim = np.vstack([-alim, alim]).T
-    return RunTopp(rand_waypts, vlim, alim, return_cspl=return_cspl)
+    return RunTopp(rand_waypts, vlim, alim, return_cs=return_cs)
 
 
 if __name__ == "__main__":
@@ -38,7 +38,7 @@ if __name__ == "__main__":
         print(f"Testing {n} random waypoints with no truncation...")
         topp_breaks_count_final, _, _ = run_toppra_random(n, False)
 
-    cspl = run_toppra_random(return_cspl=True)
+    cspl = run_toppra_random(return_cs=True)
 
     # Plotting
     csplcp = copy.deepcopy(cspl)

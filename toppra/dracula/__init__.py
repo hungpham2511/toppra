@@ -22,13 +22,22 @@ ta.setup_logging("INFO")
 # min epsilon for treating two angles the same, positive float
 JOINT_DIST_EPS = 2e-3
 # toppra does not respect velocity limit precisely
-V_LIM_EPS = 6e-3
+V_LIM_EPS = 0.06
 # https://frankaemika.github.io/docs/control_parameters.html#constants
 V_MAX = np.array([2.1750, 2.1750, 2.1750, 2.1750, 2.6100, 2.6100, 2.6100])
 A_MAX = np.array([15, 7.5, 10, 12.5, 15, 20, 20])
-DATA_DIR = "/data/toppra"
+DATA_DIR = "/data/toppra/input_data"
 os.makedirs(DATA_DIR, exist_ok=True)
+log_t0 = datetime.datetime.now(datetime.timezone.utc).strftime(
+    r"%Y%m%dT%H%M%S%z"
+)
+log_path = f"/data/toppra/logs/{log_t0}.log"
+os.makedirs(os.path.dirname(log_path), exist_ok=True)
 logger = logging.getLogger("toppra")
+open(log_path, "a").close()  # create log file if it does not exist
+fh = logging.FileHandler(log_path, mode="a", encoding="utf-8")
+fh.setLevel(logging.DEBUG)
+logger.addHandler(fh)
 
 
 def _check_waypoints(waypts, vlim):
@@ -60,12 +69,32 @@ def _dump_input_data(**kwargs):
     logger.info(f"Debug environment detected, input data saved to: {path}")
 
 
+def _verify_lims(cs, vlim):
+    """Verify that velocity and acceleration constraints are strictly obeyed.
+
+    alim to be added.
+    TODO(@dyt): move this into proper unit tests
+    """
+    v = cs.derivative(1)(cs.x)
+    i, j = np.where(~((vlim[:, 0] < v) & (v < vlim[:, 1])))
+    signed_vlim = np.where(v > 0, vlim[:, 1], vlim[:, 0])
+    excess_speed = np.sign(v) * (v - signed_vlim)  # want the +ve entries
+    excess_percent = excess_speed / np.abs(signed_vlim)  # want the +ve entries
+    if i or j:  # should have the same size, pick out +ve entries that violate
+        logger.error(
+            f"Velocity constraint violated:\n"
+            f"excess_speed: {excess_speed[i, j]}\n"
+            f"excees_percent: {excess_percent[i, j]}"
+        )
+        raise ValueError
+
+
 def RunTopp(
     waypts,  # ndarray, (N, dof)
     vlim,  # ndarray, (dof, 2)
     alim,  # ndarray, (dof 2)
-    # max_grid_err=1e-4,
-    return_cspl=False,
+    return_cs=False,
+    verify_lims=False,
 ):
     """Call toppra obeying velocity and acceleration limits and naturalness.
 
@@ -140,26 +169,26 @@ def RunTopp(
             f"Failed waypts:\n{waypts}\n" f"vlim:\n{vlim}\n" f"alim:\n{alim}"
         )
         raise RuntimeError("Toppra failed to compute trajectory.")
-    cspl = jnt_traj.cspl
+    cs = jnt_traj.cspl
     # If the initial estimated path length (run time) of the trajectory isn't
     # very close to the actual computed one (say off by a factor of 2),
     # toppra goes a bit crazy sometimes extends the spline to x >~ 1e3.
-    # This cannot be fixed by tweaking the fit:
+    # This cannot be fixed by tweaking the fit.
     # N_samples = 39 may have this behaviour unless x_max > 1.6,
     # while N_samples = 46 may require x_max < 1.6 to be controllable.
     # So we keep x_max towards the small side to guarantee controllability.
     # We check that and truncate the spline at a predefined upper bound.
-    if path_length_limit and cspl.x[-1] > path_length_limit:
-        mask = cspl.x <= path_length_limit
+    if path_length_limit and cs.x[-1] > path_length_limit:
+        mask = cs.x <= path_length_limit
         logger.warning(
             f"Toppra derived x > {path_length_limit:.3f} covering "
-            f"{(~mask).sum()}/{cspl.x.size} ending knots, "
-            f"x_max: {cspl.x[-1]:.2f}. Input waypoints are likely ill-formed, "
+            f"{(~mask).sum()}/{cs.x.size} ending knots, "
+            f"x_max: {cs.x[-1]:.2f}. Input waypoints are likely ill-formed, "
             "resulting in a suboptimal trajectory."
         )
         # now truncate and check that it is still close to the original end
-        cspl = CubicSpline(cspl.x[mask], cspl(cspl.x[mask]), bc_type="natural")
-        new_end_pos = cspl(cspl.x[-1])
+        cs = CubicSpline(cs.x[mask], cs(cs.x[mask]), bc_type="natural")
+        new_end_pos = cs(cs.x[-1])
         assert np.linalg.norm(new_end_pos - waypts[-1]) < JOINT_DIST_EPS, (
             f"Truncated CubicSpline, ending at\n{new_end_pos},\n"
             f"no longer arrives at the original ending waypoint\n"
@@ -171,7 +200,7 @@ def RunTopp(
             f"Resulitng CubicSpline was truncated at x upperbound: "
             f"{path_length_limit:.3f}, but it still arrives at the original "
             f"ending waypoint to max joint-space distance {JOINT_DIST_EPS}. "
-            f"New duration after truncation: {cspl.x[-1]:.3f}."
+            f"New duration after truncation: {cs.x[-1]:.3f}."
         )
     # Toppra goes a bit wider than a precise natural cubic spline
     # we could find the leftmost and rightmost common roots of all dof
@@ -179,19 +208,16 @@ def RunTopp(
     # to converge below a sufficiently small error and is not efficient.
     # We could also use scipy to respline naturally,
     # this brings accel to down 1e-15, but zero velocity is lost (now 1e-3).
-    # cspl = CubicSpline(jnt_traj.cspl.x,
-    #                    jnt_traj.cspl(jnt_traj.cspl.x),
-    #                    bc_type='natural')
     # Manually treat two ends by moving two points next to ends.
-    ZeroAccelerationAtStartAndEnd(cspl)
-    n_knots = len(cspl.x)
-    logger.info(
-        f"Returning optimised cubic spline trajectory of {n_knots} knots"
-    )
-    if return_cspl:
-        return cspl
+    ZeroAccelerationAtStartAndEnd(cs)
+    if verify_lims:  # check if vlim is obeyed
+        _verify_lims(cs, vlim)
+    n_knots = len(cs.x)
+    logger.info(f"Returning optimised trajectory of {n_knots} knots")
+    if return_cs:
+        return cs
     return (
         n_knots,
-        np.ascontiguousarray(cspl.x, dtype=np.float64),
-        np.ascontiguousarray(cspl.c, dtype=np.float64),
+        np.ascontiguousarray(cs.x, dtype=np.float64),
+        np.ascontiguousarray(cs.c, dtype=np.float64),
     )

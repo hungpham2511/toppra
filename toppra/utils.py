@@ -2,13 +2,12 @@
 Some utility functions need to generate PathConstraints. Most are
 specific to different scenarios.
 """
-import logging
 import functools
+import logging
 import warnings
 
 import coloredlogs
 import numpy as np
-
 
 logger = logging.getLogger(__name__)
 
@@ -33,13 +32,16 @@ def deprecated(func):
 
 
 def setup_logging(level="WARN"):
-    """Setup basic logging facility to console.
-    """
+    """Setup basic logging facility to console."""
     coloredlogs.install(
         logger=logging.getLogger("toppra"),
         level=level,
-        fmt="%(levelname)5s [%(filename)s : %(lineno)d] %(message)s",
-        datefmt="%H:%M:%S",
+        fmt=(
+            r"{asctime} [{levelname:<8}] "
+            r"{name}.{funcName}+{lineno}: {message}"
+        ),
+        style="{",
+        datefmt=r"%Y-%m-%dT%H:%M:%S.%f+%z",
         milliseconds=True,
     )
     logging.basicConfig(filename="/tmp/toppra.log", level=level, filemode="a")
@@ -55,7 +57,9 @@ def compute_jacobian_wrench(robot, link, point):
     J_wrench is computed by stacking J_translation and J_rotation
 
     """
-    jacobian_translation = robot.ComputeJacobianTranslation(link.GetIndex(), point)
+    jacobian_translation = robot.ComputeJacobianTranslation(
+        link.GetIndex(), point
+    )
     jacobian_rotation = robot.ComputeJacobianAxisAngle(link.GetIndex())
     jacobian_wrench = np.vstack((jacobian_translation, jacobian_rotation))
     return jacobian_wrench
@@ -181,7 +185,10 @@ def smooth_singularities(parametrization_instance, us, xs, vs=None):
         us_smth[i] = (
             (xs_smth[i + 1] - xs_smth[i])
             / 2
-            / (parametrization_instance.ss[i + 1] - parametrization_instance.ss[i])
+            / (
+                parametrization_instance.ss[i + 1]
+                - parametrization_instance.ss[i]
+            )
         )
 
     if vs is not None:
