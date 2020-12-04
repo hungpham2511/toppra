@@ -19,7 +19,10 @@ from toppra import constraint  # , interpolator  # needed by custom gridpoints
 from .zero_acceleration_start_end import ZeroAccelerationAtStartAndEnd
 
 ta.setup_logging("INFO")
-JOINT_DIST_EPS = 2e-3  # min epsilon for treating two angles the same
+# min epsilon for treating two angles the same, positive float
+# 2e-3 is also as precise as toppra can be
+# it's been observed to go over vlim by under 2e-3
+JOINT_DIST_EPS = 2.5e-3
 # https://frankaemika.github.io/docs/control_parameters.html#constants
 V_MAX = np.array([2.1750, 2.1750, 2.1750, 2.1750, 2.6100, 2.6100, 2.6100])
 A_MAX = np.array([15, 7.5, 10, 12.5, 15, 20, 20])
@@ -79,14 +82,13 @@ def RunTopp(
     min_pair_dist, t_sum = _check_waypoints(waypts, vlim)
     if min_pair_dist < JOINT_DIST_EPS:  # issue a warning and try anyway
         logger.warning(
-            "Duplicates found in input waypoints. "
-            "This is not allowed in general, "
+            "Duplicates found in input waypoints. This is not recommended, "
             "especially for the beginning and the end of the trajectory. "
-            "Expect Toppra to throw a controllability exception. "
+            "Toppra might throw a controllability exception. "
             "Attempting to optimise trajectory anyway..."
         )
-    if t_sum < 0.15:
-        t_sum = 0.15  # this seems to be the minimum path length required
+    if t_sum < 0.5:
+        t_sum = 0.5  # 0.15 seems to be the minimum path length required
     # initial x for toppra's path, essentially normalised time on x axis
     # rescale by given speed limits
     path_length_limit = 100 * t_sum  # magic number, cap at 100 x the time
@@ -95,11 +97,12 @@ def RunTopp(
     # time required to visit all given waypoints, toppra needs a smaller
     # number for controllabiility
     # it will find that the needed total path length > t_sum in the end
-    x = np.linspace(0, 0.1 * t_sum, N_samples)
+    x = np.linspace(0, 0.3 * t_sum, N_samples)
     # specifying natural here doensn't make a difference
     # toppra only produces clamped cubic splines
     path = ta.SplineInterpolator(x, waypts.copy(), bc_type="clamped")
-    pc_vel = constraint.JointVelocityConstraint(vlim)
+    # avoid going over limit taking into account toppra's precision
+    pc_vel = constraint.JointVelocityConstraint(vlim - JOINT_DIST_EPS)
     # Can be either Collocation (0) or Interpolation (1). Interpolation gives
     # more accurate results with slightly higher computational cost
     pc_acc = constraint.JointAccelerationConstraint(
@@ -126,12 +129,12 @@ def RunTopp(
     jnt_traj = instance.compute_trajectory(0, 0)
     if jnt_traj is None:  # toppra has failed
         if min_pair_dist < JOINT_DIST_EPS:  # duplicates are probably why
-            logger.warning(
+            logger.error(
                 "Duplicates not allowed in input waypoints. "
                 "At least one pair of adjacent waypoints have "
                 f"joint-space distance less than epsilon = {JOINT_DIST_EPS}."
             )
-        logger.warning(
+        logger.error(
             f"Failed waypts:\n{waypts}\n" f"vlim:\n{vlim}\n" f"alim:\n{alim}"
         )
         raise RuntimeError("Toppra failed to compute trajectory.")
@@ -147,10 +150,10 @@ def RunTopp(
     if path_length_limit and cspl.x[-1] > path_length_limit:
         mask = cspl.x <= path_length_limit
         logger.warning(
-            f"Toppra derived x > {path_length_limit} covering "
+            f"Toppra derived x > {path_length_limit:.3f} covering "
             f"{(~mask).sum()}/{cspl.x.size} ending knots, "
             f"x_max: {cspl.x[-1]:.2f}. Input waypoints are likely ill-formed, "
-            "resulting in a lengthy trajectory."
+            "resulting in a suboptimal trajectory."
         )
         # now truncate and check that it is still close to the original end
         cspl = CubicSpline(cspl.x[mask], cspl(cspl.x[mask]), bc_type="natural")
@@ -162,10 +165,11 @@ def RunTopp(
             f"given max allowed joint-space distance {JOINT_DIST_EPS}. "
             "Try another set of closer waypoints with a smaller path length."
         )
-        logger.warning(
+        logger.info(
             f"Resulitng CubicSpline was truncated at x upperbound: "
-            f"{path_length_limit}, but it still arrives at the original "
-            f"ending waypoint to max joint-space distance {JOINT_DIST_EPS}."
+            f"{path_length_limit:.3f}, but it still arrives at the original "
+            f"ending waypoint to max joint-space distance {JOINT_DIST_EPS}. "
+            f"New duration after truncation: {cspl.x[-1]:.3f}."
         )
     # Toppra goes a bit wider than a precise natural cubic spline
     # we could find the leftmost and rightmost common roots of all dof
