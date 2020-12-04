@@ -20,9 +20,9 @@ from .zero_acceleration_start_end import ZeroAccelerationAtStartAndEnd
 
 ta.setup_logging("INFO")
 # min epsilon for treating two angles the same, positive float
-# 2e-3 is also as precise as toppra can be
-# it's been observed to go over vlim by under 2e-3
-JOINT_DIST_EPS = 2.5e-3
+JOINT_DIST_EPS = 2e-3
+# toppra does not respect velocity limit precisely
+V_LIM_EPS = 6e-3
 # https://frankaemika.github.io/docs/control_parameters.html#constants
 V_MAX = np.array([2.1750, 2.1750, 2.1750, 2.1750, 2.6100, 2.6100, 2.6100])
 A_MAX = np.array([15, 7.5, 10, 12.5, 15, 20, 20])
@@ -102,7 +102,9 @@ def RunTopp(
     # toppra only produces clamped cubic splines
     path = ta.SplineInterpolator(x, waypts.copy(), bc_type="clamped")
     # avoid going over limit taking into account toppra's precision
-    pc_vel = constraint.JointVelocityConstraint(vlim - JOINT_DIST_EPS)
+    pc_vel = constraint.JointVelocityConstraint(
+        vlim - np.sign(vlim) * V_LIM_EPS
+    )
     # Can be either Collocation (0) or Interpolation (1). Interpolation gives
     # more accurate results with slightly higher computational cost
     pc_acc = constraint.JointAccelerationConstraint(
@@ -182,10 +184,14 @@ def RunTopp(
     #                    bc_type='natural')
     # Manually treat two ends by moving two points next to ends.
     ZeroAccelerationAtStartAndEnd(cspl)
+    n_knots = len(cspl.x)
+    logger.info(
+        f"Returning optimised cubic spline trajectory of {n_knots} knots"
+    )
     if return_cspl:
         return cspl
     return (
-        len(cspl.x),
+        n_knots,
         np.ascontiguousarray(cspl.x, dtype=np.float64),
         np.ascontiguousarray(cspl.c, dtype=np.float64),
     )
