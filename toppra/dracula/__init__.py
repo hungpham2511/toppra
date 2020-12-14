@@ -23,7 +23,6 @@ ta.setup_logging("INFO")
 JOINT_DIST_EPS = 2e-3
 # toppra does not respect velocity limit precisely
 V_LIM_EPS = 0.06
-A_LIM_FACTOR = 1  # 0.59
 # https://frankaemika.github.io/docs/control_parameters.html#constants
 V_MAX = np.array([2.1750, 2.1750, 2.1750, 2.1750, 2.6100, 2.6100, 2.6100])
 A_MAX = np.array([15, 7.5, 10, 12.5, 15, 20, 20])
