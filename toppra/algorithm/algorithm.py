@@ -95,7 +95,7 @@ class ParameterizationAlgorithm(object):
         # Handle gridpoints
         if gridpoints is None:
             gridpoints = interpolator.propose_gridpoints(path, max_err_threshold=1e-3)
-            logger.info(
+            logger.debug(
                 "No gridpoint specified. Automatically choose a gridpoint with %d points",
                 len(gridpoints)
             )
@@ -181,9 +181,9 @@ class ParameterizationAlgorithm(object):
             return None
 
         outputtraj = self.parametrizer(self.path, self.problem_data.gridpoints, self.problem_data.sd_vec)
-        logger.info("Successfully parametrize path. Duration: %.3f, previously %.3f)",
+        logger.debug("Successfully parametrized path. Duration: %.3f, previously: %.3f.",
                     outputtraj.path_interval[1], self.path.path_interval[1])
-        logger.info("Finish parametrization in %.3f secs", time.time() - t0)
+        logger.debug("Finish parametrization in %.3f secs", time.time() - t0)
         return outputtraj
 
     def inspect(self, compute=True):
