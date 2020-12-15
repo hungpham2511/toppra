@@ -6,7 +6,6 @@ import logging
 import functools
 import warnings
 
-import coloredlogs
 import numpy as np
 
 
@@ -35,14 +34,13 @@ def deprecated(func):
 def setup_logging(level="WARN"):
     """Setup basic logging facility to console.
     """
-    coloredlogs.install(
-        logger=logging.getLogger("toppra"),
-        level=level,
-        fmt="%(levelname)5s [%(filename)s : %(lineno)d] %(message)s",
-        datefmt="%H:%M:%S",
-        milliseconds=True,
-    )
-    logging.basicConfig(filename="/tmp/toppra.log", level=level, filemode="a")
+    logger = logging.getLogger("toppra")
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+    formatter = logging.Formatter("%(levelname)5s [%(filename)s : %(lineno)d] %(message)s")
+    ch.setFormatter(formatter)
+    logger.setLevel(level)
+    logger.addHandler(ch)
 
 
 def compute_jacobian_wrench(robot, link, point):

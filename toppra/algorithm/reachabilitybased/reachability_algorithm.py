@@ -47,10 +47,10 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
     """
 
     def __init__(
-            self, constraint_list, path, gridpoints=None, solver_wrapper=None, parametrizer=None
+            self, constraint_list, path, gridpoints=None, solver_wrapper=None, parametrizer=None, **kwargs
     ):
         super(ReachabilityAlgorithm, self).__init__(
-            constraint_list, path, gridpoints=gridpoints, parametrizer=None
+            constraint_list, path, gridpoints=gridpoints, parametrizer=None, **kwargs
         )
 
         # Check for conic constraints
