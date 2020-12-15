@@ -3,6 +3,7 @@
 ## Unrelease
 
 ### Added
+- [python] Allow specifying minimum nb of grid-points during automatic selection
 - [python] Minor performance tweak in reachability_algorithm.py
 - [ci] Fix python2.7 dependencies
 - [python] Minor bug fixed in the SimplePath class
