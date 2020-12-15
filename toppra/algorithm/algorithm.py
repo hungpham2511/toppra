@@ -6,6 +6,7 @@ This module defines the abstract data types that define TOPP algorithms.
 
 """
 from typing import Dict, Any, List, Tuple, Optional
+import typing as T
 import abc
 import enum
 import numpy as np
@@ -118,7 +119,8 @@ class ParameterizationAlgorithm(object):
                 logger.fatal("Input gridpoints are not monotonically increasing.")
                 raise ValueError("Bad input gridpoints.")
         if parametrizer is None or parametrizer == "ParametrizeSpline":
-            self.parametrizer = tparam.ParametrizeSpline
+            # TODO: What is the best way to type parametrizer?
+            self.parametrizer: T.Any = tparam.ParametrizeSpline
         elif parametrizer == "ParametrizeConstAccel":
             self.parametrizer = tparam.ParametrizeConstAccel
 
