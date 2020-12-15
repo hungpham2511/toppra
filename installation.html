@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Installation instructions for Python API &#8212; toppra  documentation</title>
+    <title>Installation &#8212; toppra  documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
@@ -67,7 +67,8 @@
 
   <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Installation instructions for Python API</a><ul>
+<li><a class="reference internal" href="#">Installation</a><ul>
+<li><a class="reference internal" href="#installation-instructions-for-python-api">Installation instructions for Python API</a><ul>
 <li><a class="reference internal" href="#basic-installation">Basic installation</a></li>
 <li><a class="reference internal" href="#advanced-other-solver-backends">Advanced: Other solver backends</a></li>
 <li><a class="reference internal" href="#advanced-openrave-and-pymanoid">Advanced: OpenRAVE and Pymanoid</a></li>
@@ -77,6 +78,8 @@
 <li><a class="reference internal" href="#installation-instructions-for-c-api">Installation instructions for C++ API</a></li>
 <li><a class="reference internal" href="#building-docs">Building docs</a></li>
 <li><a class="reference internal" href="#testing">Testing</a></li>
+</ul>
+</li>
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>
@@ -105,10 +108,12 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="installation-instructions-for-python-api">
-<span id="installation"></span><h1>Installation instructions for Python API<a class="headerlink" href="#installation-instructions-for-python-api" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="installation">
+<span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="installation-instructions-for-python-api">
+<h2>Installation instructions for Python API<a class="headerlink" href="#installation-instructions-for-python-api" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="basic-installation">
-<h2>Basic installation<a class="headerlink" href="#basic-installation" title="Permalink to this headline">¶</a></h2>
+<h3>Basic installation<a class="headerlink" href="#basic-installation" title="Permalink to this headline">¶</a></h3>
 <p>To install <cite>toppra</cite>, ensure that <cite>numpy</cite> and <cite>cython</cite> are installed, then run</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install numpy cython
 git clone https://github.com/hungpham2511/toppra <span class="o">&amp;&amp;</span> <span class="nb">cd</span> toppra/
@@ -121,7 +126,7 @@ pip install .
 </div>
 </div>
 <div class="section" id="advanced-other-solver-backends">
-<h2>Advanced: Other solver backends<a class="headerlink" href="#advanced-other-solver-backends" title="Permalink to this headline">¶</a></h2>
+<h3>Advanced: Other solver backends<a class="headerlink" href="#advanced-other-solver-backends" title="Permalink to this headline">¶</a></h3>
 <p>The default installation comes with an implementation of the seidel LP
 solver, specialized for parametrization problem. Other backends are
 also available.</p>
@@ -136,7 +141,7 @@ extra requirements:</p>
 </div>
 </div>
 <div class="section" id="advanced-openrave-and-pymanoid">
-<h2>Advanced: OpenRAVE and Pymanoid<a class="headerlink" href="#advanced-openrave-and-pymanoid" title="Permalink to this headline">¶</a></h2>
+<h3>Advanced: OpenRAVE and Pymanoid<a class="headerlink" href="#advanced-openrave-and-pymanoid" title="Permalink to this headline">¶</a></h3>
 <p>In order to run some of the examples, it is necessary to install
 <a class="reference external" href="https://github.com/rdiankov/openrave">openRAVE</a>. A good instruction
 for installing this library on Ubuntu 16.04 can be found <a class="reference external" href="https://scaron.info/teaching/installing-openrave-on-ubuntu-16.04.html">here</a>.</p>
@@ -165,17 +170,17 @@ found
 <span class="pre">`</span></code></p>
 </div>
 <div class="section" id="advanced-toppra-c-and-bindings">
-<h2>Advanced: toppra C++ and bindings<a class="headerlink" href="#advanced-toppra-c-and-bindings" title="Permalink to this headline">¶</a></h2>
+<h3>Advanced: toppra C++ and bindings<a class="headerlink" href="#advanced-toppra-c-and-bindings" title="Permalink to this headline">¶</a></h3>
 <p>A C++ toppra API with python bindings is being developed. For
 instruction see <cite>toppra/cpp/README.md</cite>.</p>
 </div>
 </div>
 <div class="section" id="installation-instructions-for-c-api">
-<h1>Installation instructions for C++ API<a class="headerlink" href="#installation-instructions-for-c-api" title="Permalink to this headline">¶</a></h1>
+<h2>Installation instructions for C++ API<a class="headerlink" href="#installation-instructions-for-c-api" title="Permalink to this headline">¶</a></h2>
 <p>See <cite>cpp/README.md</cite> for more details.</p>
 </div>
 <div class="section" id="building-docs">
-<h1>Building docs<a class="headerlink" href="#building-docs" title="Permalink to this headline">¶</a></h1>
+<h2>Building docs<a class="headerlink" href="#building-docs" title="Permalink to this headline">¶</a></h2>
 <p>The latest documentation is available at
 <a class="reference external" href="https://toppra.readthedocs.io/en/latest/">https://toppra.readthedocs.io/en/latest/</a>.</p>
 <p>To build and view the documentation locally, install <a class="reference external" href="http://www.sphinx-doc.org/en/stable/index.html">sphinx</a> then run the
@@ -186,7 +191,7 @@ following command in the terminal</p>
 <p>The C++ API has its own doxygen-based API.</p>
 </div>
 <div class="section" id="testing">
-<h1>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h1>
+<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
 <p>The Python API test suites use <code class="code docutils literal notranslate"><span class="pre">pytest</span></code> for running unittests,
 you will need to install the <cite>dev</cite> extra (See above) and run <cite>pytest</cite>
 to run the full suite.</p>
@@ -197,6 +202,7 @@ pytest -v
 <p>The C++ API has a set of unit tests as well, from the build folder run:</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>./tests/all_tests
 </pre></div>
+</div>
 </div>
 </div>
 

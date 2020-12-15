@@ -139,7 +139,8 @@
 
 
 <div class="viewcode-block" id="propose_gridpoints"><a class="viewcode-back" href="../../python_api.html#toppra.interpolator.propose_gridpoints">[docs]</a><span class="k">def</span> <span class="nf">propose_gridpoints</span><span class="p">(</span>
-    <span class="n">path</span><span class="p">,</span> <span class="n">max_err_threshold</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">max_iteration</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">max_seg_length</span><span class="o">=</span><span class="mf">0.05</span>
+        <span class="n">path</span><span class="p">,</span> <span class="n">max_err_threshold</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">max_iteration</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">max_seg_length</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+        <span class="n">min_nb_points</span><span class="o">=</span><span class="mi">100</span>
 <span class="p">):</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Generate gridpoints that sufficiently cover the given path.</span>
 
@@ -194,9 +195,20 @@
             <span class="k">if</span> <span class="n">max_err</span> <span class="o">&gt;</span> <span class="n">max_err_threshold</span><span class="p">:</span>
                 <span class="n">add_new_points</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="n">gridpoints_ept</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gp_mid</span><span class="p">)</span>
+                <span class="k">continue</span>
+
         <span class="n">gridpoints_ept</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">gridpoints_ept</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">add_new_points</span><span class="p">:</span>
             <span class="k">break</span>
+
+    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">gridpoints_ept</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">min_nb_points</span><span class="p">:</span>
+        <span class="n">new_pts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">gridpoints_ept</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">gp_mid</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">gridpoints_ept</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">+</span> <span class="n">gridpoints_ept</span><span class="p">[</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="n">new_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gp_mid</span><span class="p">)</span>
+        <span class="n">gridpoints_ept</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">new_pts</span><span class="p">)</span>
+        <span class="n">gridpoints_ept</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">gridpoints_ept</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">iteration</span> <span class="o">==</span> <span class="n">max_iteration</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unable to find a good gridpoint for this path.&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">gridpoints_ept</span></div>

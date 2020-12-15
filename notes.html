@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Frequently Asked Questions &#8212; toppra  documentation</title>
+    <title>Usage Notes &#8212; toppra  documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
@@ -67,12 +67,11 @@
 
   <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Frequently Asked Questions</a><ul>
-<li><a class="reference internal" href="#how-many-gridpoints-should-i-take">1. How many gridpoints should I take?</a></li>
-<li><a class="reference internal" href="#minimum-requirement-on-path-smoothness">2. Minimum requirement on path smoothness</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#usage-notes">Usage Notes</a><ul>
+<li><a class="reference internal" href="#">Usage Notes</a><ul>
+<li><a class="reference internal" href="#logging">Logging</a></li>
+<li><a class="reference internal" href="#how-many-grid-points-should-be-used">How many grid-points should be used?</a></li>
+<li><a class="reference internal" href="#automatic-grid-points-selection">Automatic grid-points selection</a></li>
+<li><a class="reference internal" href="#minimum-requirement-on-path-smoothness">Minimum requirement on path smoothness</a></li>
 <li><a class="reference internal" href="#derivation-of-kinematical-quantities">Derivation of kinematical quantities</a></li>
 </ul>
 </li>
@@ -104,10 +103,15 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="frequently-asked-questions">
-<span id="notes"></span><h1>Frequently Asked Questions<a class="headerlink" href="#frequently-asked-questions" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="how-many-gridpoints-should-i-take">
-<h2>1. How many gridpoints should I take?<a class="headerlink" href="#how-many-gridpoints-should-i-take" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="usage-notes">
+<span id="notes"></span><h1>Usage Notes<a class="headerlink" href="#usage-notes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="logging">
+<h2>Logging<a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h2>
+<p>By default, <cite>toppra</cite> does not configure any of the <cite>toppra…</cite>
+loggers. Thus no log messages will be printed by default.</p>
+</div>
+<div class="section" id="how-many-grid-points-should-be-used">
+<h2>How many grid-points should be used?<a class="headerlink" href="#how-many-grid-points-should-be-used" title="Permalink to this headline">¶</a></h2>
 <p>A very important parameter in solving path parameterization instances
 with <cite>toppra</cite> is the number of the gridpoints. Below is how to create
 an instance with 1000 uniform gridpoints.</p>
@@ -125,12 +129,30 @@ has 200 gridpoints.</p>
 least a few times the number of waypoints in the given path. This is
 not a hard rule, depending on whether the waypoints naturally form a
 smooth curve or whether they vary wildly.</p>
+</div>
+<div class="section" id="automatic-grid-points-selection">
+<h2>Automatic grid-points selection<a class="headerlink" href="#automatic-grid-points-selection" title="Permalink to this headline">¶</a></h2>
 <p>By default, <cite>toppra</cite> (python) will try to determine the best set of
 gridpoints by doing a bisection search until a threshold level is
-reached.</p>
+reached. This is the behavior if the gridpoints are not given.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">instance</span> <span class="o">=</span> <span class="n">algo</span><span class="o">.</span><span class="n">TOPPRA</span><span class="p">([</span><span class="n">pc_vel</span><span class="p">,</span> <span class="n">pc_acc</span><span class="p">],</span> <span class="n">path</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>If there is a minimum requirement on the path quality in term of the
+number of gridpoints, use the keyword arguments
+<cite>gridpt_max_err_threshold</cite> and <cite>gridpt_min_nb_points</cite>. The default
+values are respectively <cite>1e-3</cite> and <cite>100</cite> points. To require the
+algorithm to select at least 500 points:</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">instance</span> <span class="o">=</span> <span class="n">algo</span><span class="o">.</span><span class="n">TOPPRA</span><span class="p">([</span><span class="n">pc_vel</span><span class="p">,</span> <span class="n">pc_acc</span><span class="p">],</span> <span class="n">path</span><span class="p">,</span>
+   <span class="n">gridpt_max_err_threshold</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+   <span class="n">gridpt_min_nb_points</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
 </div>
 <div class="section" id="minimum-requirement-on-path-smoothness">
-<h2>2. Minimum requirement on path smoothness<a class="headerlink" href="#minimum-requirement-on-path-smoothness" title="Permalink to this headline">¶</a></h2>
+<h2>Minimum requirement on path smoothness<a class="headerlink" href="#minimum-requirement-on-path-smoothness" title="Permalink to this headline">¶</a></h2>
 <p>TOPPRA requires the input path to be sufficiently smooth to work
 properly. An example of a noisy path that will be very difficult to
 work with can be seen below:</p>
@@ -140,9 +162,6 @@ it can lead to large fluctuation if the waypoints change rapidly. In
 this case, it is recommended to smooth the waypoints prior to using
 toppra using for example <cite>scipy.interpolation</cite>.</p>
 </div>
-</div>
-<div class="section" id="usage-notes">
-<h1>Usage Notes<a class="headerlink" href="#usage-notes" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="derivation-of-kinematical-quantities">
 <span id="derivationkinematics"></span><h2>Derivation of kinematical quantities<a class="headerlink" href="#derivation-of-kinematical-quantities" title="Permalink to this headline">¶</a></h2>
 <p>In <cite>toppra</cite> we deal with geometric paths, which are mathematically

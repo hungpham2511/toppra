@@ -16,6 +16,7 @@ Import necessary libraries.
 
 
 .. code-block:: default
+   :lineno-start: 7
 
     import toppra as ta
     import toppra.constraint as constraint
@@ -41,6 +42,7 @@ paths!
 
 
 .. code-block:: default
+   :lineno-start: 23
 
 
     waypts = [[0], [1], [10]]
@@ -58,6 +60,7 @@ Setup the velocity and acceleration
 
 
 .. code-block:: default
+   :lineno-start: 29
 
     vlim = np.array([[-3, 3]])
     alim = np.array([[-4, 4]])
@@ -77,6 +80,7 @@ Setup the problem instance and solve it.
 
 
 .. code-block:: default
+   :lineno-start: 38
 
     instance = algo.TOPPRA([pc_vel, pc_acc], path, solver_wrapper='seidel')
     jnt_traj = instance.compute_trajectory(0, 0)
@@ -91,9 +95,9 @@ Setup the problem instance and solve it.
 
  .. code-block:: none
 
-     INFO [algorithm.py : 100] No gridpoint specified. Automatically choose a gridpoint with 33 points
-     INFO [algorithm.py : 185] Successfully parametrize path. Duration: 4.087, previously 1.000)
-     INFO [algorithm.py : 186] Finish parametrization in 0.004 secs
+     INFO [algorithm.py : 106] No gridpoint specified. Automatically choose a gridpoint with 129 points
+     INFO [algorithm.py : 192] Successfully parametrize path. Duration: 4.084, previously 1.000)
+     INFO [algorithm.py : 193] Finish parametrization in 0.009 secs
 
 
 
@@ -102,6 +106,7 @@ We can now visualize the result
 
 
 .. code-block:: default
+   :lineno-start: 43
 
     duration = jnt_traj.duration
     print("Found optimal trajectory with duration {:f} sec".format(duration))
@@ -128,7 +133,7 @@ We can now visualize the result
 
  .. code-block:: none
 
-    Found optimal trajectory with duration 4.087129 sec
+    Found optimal trajectory with duration 4.083554 sec
 
 
 
@@ -136,7 +141,7 @@ We can now visualize the result
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.298 seconds)
+   **Total running time of the script:** ( 0 minutes  0.385 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_scalar_example.py:

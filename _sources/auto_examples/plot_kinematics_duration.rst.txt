@@ -18,6 +18,7 @@ example. First, import necessary libraries.
 
 
 .. code-block:: default
+   :lineno-start: 9
 
     import toppra as ta
     import toppra.constraint as constraint
@@ -39,6 +40,7 @@ Parameters
 
 
 .. code-block:: default
+   :lineno-start: 20
 
     N_samples = 5
     SEED = 9
@@ -56,6 +58,7 @@ we use spline interpolation.
 
 
 .. code-block:: default
+   :lineno-start: 27
 
     np.random.seed(SEED)
     way_pts = np.random.randn(N_samples, dof)
@@ -72,6 +75,7 @@ Create velocity bounds, then velocity constraint object
 
 
 .. code-block:: default
+   :lineno-start: 33
 
     vlim_ = np.random.rand(dof) * 20
     vlim = np.vstack((-vlim_, vlim_)).T
@@ -87,6 +91,7 @@ Create acceleration bounds, then acceleration constraint object
 
 
 .. code-block:: default
+   :lineno-start: 38
 
     alim_ = np.random.rand(dof) * 2
     alim = np.vstack((-alim_, alim_)).T
@@ -105,6 +110,7 @@ Setup a parametrization instance
 
 
 .. code-block:: default
+   :lineno-start: 46
 
     instance = algo.TOPPRAsd([pc_vel, pc_acc], path)
     instance.set_desired_duration(60)
@@ -119,7 +125,7 @@ Setup a parametrization instance
 
  .. code-block:: none
 
-     INFO [algorithm.py : 100] No gridpoint specified. Automatically choose a gridpoint with 290 points
+     INFO [algorithm.py : 106] No gridpoint specified. Automatically choose a gridpoint with 290 points
      INFO [reachability_algorithm.py : 66] Solver wrapper not supplied. Choose solver wrapper automatically!
      INFO [reachability_algorithm.py : 75] Select solver seidel
 
@@ -130,6 +136,7 @@ Retime the trajectory, only this step is necessary.
 
 
 .. code-block:: default
+   :lineno-start: 51
 
     jnt_traj = instance.compute_trajectory(0, 0)
     ts_sample = np.linspace(0, jnt_traj.get_duration(), 100)
@@ -146,9 +153,9 @@ Retime the trajectory, only this step is necessary.
  .. code-block:: none
 
      INFO [desired_duration_algorithm.py : 158] Desired duration 60.000000 sec is achievable. Continue computing.
-     INFO [algorithm.py : 185] Successfully parametrize path. Duration: 60.000, previously 1.000)
-     INFO [algorithm.py : 186] Finish parametrization in 0.032 secs
-    /home/circleci/repo/toppra/utils.py:28: DeprecationWarning: Call to deprecated function get_duration in module toppra.interpolator.
+     INFO [algorithm.py : 192] Successfully parametrize path. Duration: 60.000, previously 1.000)
+     INFO [algorithm.py : 193] Finish parametrization in 0.044 secs
+    /home/circleci/repo/toppra/utils.py:27: DeprecationWarning: Call to deprecated function get_duration in module toppra.interpolator.
       category=DeprecationWarning,
 
 
@@ -158,6 +165,7 @@ Output
 
 
 .. code-block:: default
+   :lineno-start: 57
 
     plt.plot(ts_sample, qs_sample)
     plt.xlabel("Time (s)")
@@ -180,6 +188,7 @@ Note that these steps are not necessary.
 
 
 .. code-block:: default
+   :lineno-start: 65
 
     X = instance.compute_feasible_sets()
     K = instance.compute_controllable_sets(0, 0)
@@ -219,7 +228,7 @@ Note that these steps are not necessary.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.313 seconds)
+   **Total running time of the script:** ( 0 minutes  0.395 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_kinematics_duration.py:

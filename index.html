@@ -21,7 +21,7 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Installation instructions for Python API" href="installation.html" />
+    <link rel="next" title="Installation" href="installation.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -69,7 +69,6 @@
 <li><a class="reference internal" href="#"><code class="code docutils literal notranslate"><span class="pre">toppra</span></code> : Path-parameterization for robots</a><ul>
 <li><a class="reference internal" href="#overview">Overview</a></li>
 <li><a class="reference internal" href="#user-guide">User Guide</a></li>
-<li><a class="reference internal" href="#api-reference">API Reference</a></li>
 <li><a class="reference internal" href="#bug-reports-and-supports">Bug reports and supports</a></li>
 <li><a class="reference internal" href="#citing-topp-ra">Citing TOPP-RA!</a></li>
 <li><a class="reference internal" href="#applications">Applications</a></li>
@@ -80,7 +79,7 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="#">Documentation overview</a><ul>
-      <li>Next: <a href="installation.html" title="next chapter">Installation instructions for Python API</a></li>
+      <li>Next: <a href="installation.html" title="next chapter">Installation</a></li>
   </ul></li>
 </ul>
 </div>
@@ -148,22 +147,39 @@ with <em>specified duration</em>.</p></li>
 <h2>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation instructions for Python API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="installation.html#installation-instructions-for-c-api">Installation instructions for C++ API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="installation.html#building-docs">Building docs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="installation.html#testing">Testing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">Examples gallery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notes.html">Frequently Asked Questions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notes.html#usage-notes">Usage Notes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="HISTORY.html">History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installation-instructions-for-python-api">Installation instructions for Python API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installation-instructions-for-c-api">Installation instructions for C++ API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#building-docs">Building docs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#testing">Testing</a></li>
 </ul>
-</div>
-</div>
-<div class="section" id="api-reference">
-<h2>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="python_api.html">Python API Reference</a></li>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="auto_examples/index.html">Examples gallery</a><ul>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="notes.html">Usage Notes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notes.html#logging">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notes.html#how-many-grid-points-should-be-used">How many grid-points should be used?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notes.html#automatic-grid-points-selection">Automatic grid-points selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notes.html#minimum-requirement-on-path-smoothness">Minimum requirement on path smoothness</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notes.html#derivation-of-kinematical-quantities">Derivation of kinematical quantities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="HISTORY.html">History</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="HISTORY.html#unrelease">Unrelease</a></li>
+<li class="toctree-l2"><a class="reference internal" href="HISTORY.html#aug-23-2020">0.3.1 (Aug 23 2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="HISTORY.html#may-3-2020">0.3.0 (May 3 2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="HISTORY.html#jan-25-2020">0.2.3 (Jan 25 2020)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="HISTORY.html#id4">&lt;0.2.3</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="python_api.html">Python API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="python_api.html#toppra-algorithm">toppra.algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python_api.html#toppra-interpolator">toppra.interpolator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python_api.html#toppra-constraint">toppra.constraint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python_api.html#toppra-solverwrapper">toppra.solverwrapper</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
