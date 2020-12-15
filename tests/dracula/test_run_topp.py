@@ -29,7 +29,7 @@ if __name__ == "__main__":
         for i in range(5):
             print(f"testing waypoints file {i}...")
             waypts = np.loadtxt(
-                f"/src/toppra/tests/dracula/test_waypts_{i}.txt"
+                f"/src/toppra/tests/dracula/test_waypts_jnt_{i}.txt"
             )  # (33, 7)
             _ = RunTopp(
                 waypts, coeff * v_max, coeff * a_max, verify_lims=True
