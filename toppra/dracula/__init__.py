@@ -20,7 +20,7 @@ from .zero_acceleration_start_end import impose_natural_bc
 
 ta.setup_logging("INFO")
 # min epsilon for treating two angles the same, positive float
-JOINT_DIST_EPS = 2e-3
+DIST_EPS = 2e-3  # nominally defined as L2 norm in joint space, i.e. in rad
 # toppra does not respect velocity limit precisely
 V_LIM_EPS = 0.09
 # https://frankaemika.github.io/docs/control_parameters.html#constants
@@ -123,7 +123,7 @@ def RunTopp(
         _dump_input_data(waypts=waypts, vlim=vlim, alim=alim)
     # check for duplicates, assert adjacent pairs have distance not equal to 0
     min_pair_dist, t_sum = _check_waypoints(waypts, vlim)
-    if min_pair_dist < JOINT_DIST_EPS:  # issue a warning and try anyway
+    if min_pair_dist < DIST_EPS:  # issue a warning and try anyway
         logger.warning(
             "Duplicates found in input waypoints. This is not recommended, "
             "especially for the beginning and the end of the trajectory. "
@@ -179,12 +179,11 @@ def RunTopp(
         )
         jnt_traj = instance.compute_trajectory(0, 0)
         if jnt_traj is None:  # toppra has failed
-            if min_pair_dist < JOINT_DIST_EPS:  # duplicates are probably why
+            if min_pair_dist < DIST_EPS:  # duplicates are probably why
                 logger.error(
                     "Duplicates not allowed in input waypoints. "
                     "At least one pair of adjacent waypoints have "
-                    "joint-space distance less than "
-                    f"epsilon = {JOINT_DIST_EPS}."
+                    f"distance less than epsilon = {DIST_EPS}."
                 )
             logger.error(
                 f"Failed waypts:\n{waypts}\nvlim:\n{vlim}\nalim:\n{alim}"
@@ -212,17 +211,17 @@ def RunTopp(
             # now truncate and check that it is still close to the original end
             cs = CubicSpline(cs.x[mask], cs(cs.x[mask]), bc_type="natural")
             new_end_pos = cs(cs.x[-1])
-            assert np.linalg.norm(new_end_pos - waypts[-1]) < JOINT_DIST_EPS, (
+            assert np.linalg.norm(new_end_pos - waypts[-1]) < DIST_EPS, (
                 f"Truncated CubicSpline, ending at\n{new_end_pos},\n"
                 f"no longer arrives at the original ending waypoint\n"
                 f"{waypts[-1]}\n"
-                f"given JOINT_DIST_EPS: {JOINT_DIST_EPS}. "
+                f"given DIST_EPS = {DIST_EPS}. "
                 "Try closer and smoother waypoints with a smaller path length."
             )
             logger.info(
                 f"Optimised CubicSpline truncated at limit x = "
                 f"{path_length_limit:.3f}, still arriving at the original "
-                f"ending waypoint up to JOINT_DIST_EPS: {JOINT_DIST_EPS}. "
+                f"ending waypoint up to DIST_EPS: {DIST_EPS}. "
                 f"Duration after truncation: {cs.x[-1]:.3f}."
             )
         # Toppra goes a bit wider than a precise natural cubic spline.
