@@ -56,23 +56,12 @@ User Guide
 ----------------------
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    installation
    auto_examples/index
    notes
    HISTORY
-   ..
-      quickstart
-      tutorials
-
-   
-API Reference
-----------------------
-
-.. toctree::
-   :maxdepth: 1
-  
    python_api
 
 Bug reports and supports

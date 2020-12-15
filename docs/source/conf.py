@@ -45,8 +45,9 @@ extensions = ['sphinx.ext.autodoc',
 ]
 
 sphinx_gallery_conf = {
-     'examples_dirs': '../../examples',   # path to your example scripts
-     'gallery_dirs': 'auto_examples',  # path to where to save gallery generated output
+    'examples_dirs': '../../examples',   # path to your example scripts
+    'gallery_dirs': 'auto_examples',  # path to where to save gallery generated output
+    'line_numbers': True
 }
 
 intersphinx_mapping = {
@@ -98,7 +99,6 @@ todo_include_todos = True
 # a list of builtin themes.
 #
 html_theme = 'alabaster'
-# html_theme = "sphinx_rtd_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the

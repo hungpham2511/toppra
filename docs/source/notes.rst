@@ -1,10 +1,17 @@
 .. _notes:
 
-Frequently Asked Questions
-================================
+Usage Notes
+=====================
+
+Logging
+-----------------------------
+
+By default, `toppra` does not configure any of the `toppra...`
+loggers. Thus no log messages will be printed by default.
 
 
-1. How many gridpoints should I take?
+
+How many grid-points should be used?
 ---------------------------------------
 
 A very important parameter in solving path parameterization instances
@@ -30,12 +37,33 @@ least a few times the number of waypoints in the given path. This is
 not a hard rule, depending on whether the waypoints naturally form a
 smooth curve or whether they vary wildly.
 
+Automatic grid-points selection
+---------------------------------------
+
 By default, `toppra` (python) will try to determine the best set of
 gridpoints by doing a bisection search until a threshold level is
-reached.
+reached. This is the behavior if the gridpoints are not given.
+
+.. code-block:: python
+  :linenos:
+
+  instance = algo.TOPPRA([pc_vel, pc_acc], path)
+
+If there is a minimum requirement on the path quality in term of the
+number of gridpoints, use the keyword arguments
+`gridpt_max_err_threshold` and `gridpt_min_nb_points`. The default
+values are respectively `1e-3` and `100` points. To require the
+algorithm to select at least 500 points:
+
+.. code-block:: python
+  :linenos:
+
+  instance = algo.TOPPRA([pc_vel, pc_acc], path,
+     gridpt_max_err_threshold=1e-3,
+     gridpt_min_nb_points=500)
 
 
-2. Minimum requirement on path smoothness
+Minimum requirement on path smoothness
 -------------------------------------------------
 
 TOPPRA requires the input path to be sufficiently smooth to work
@@ -49,9 +77,6 @@ it can lead to large fluctuation if the waypoints change rapidly. In
 this case, it is recommended to smooth the waypoints prior to using
 toppra using for example `scipy.interpolation`.
 
-
-Usage Notes
-=====================
 
 .. _derivationKinematics:
 
