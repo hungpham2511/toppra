@@ -3,13 +3,18 @@
 Usage Notes
 =====================
 
-Logging
+Configure logging
 -----------------------------
 
 By default, `toppra` does not configure any of the `toppra...`
-loggers. Thus no log messages will be printed by default.
+loggers. Thus no log messages will be printed by default. A simple
+logger that only print to the console can be setup easily.
 
+.. code-block:: python
+  :linenos:
 
+  import toppra as ta
+  ta.setup_logging("INFO")
 
 How many grid-points should be used?
 ---------------------------------------
