@@ -235,7 +235,7 @@ def RunTopp(
         impose_natural_bc(cs)
         return cs
 
-    alim_coefficients = np.ones(7)  # no reduction on the first try
+    alim_coefficients = np.ones(alim.shape[0])  # no reduction on the first try
     cs = _compute_cspl_with_varying_alim(alim_coefficients)
     if verify_lims:  # flag for checking if vlim is obeyed
         logger.info("Verifying that given limits are strictly obeyed...")
