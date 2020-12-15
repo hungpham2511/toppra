@@ -68,7 +68,7 @@
   <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Usage Notes</a><ul>
-<li><a class="reference internal" href="#logging">Logging</a></li>
+<li><a class="reference internal" href="#configure-logging">Configure logging</a></li>
 <li><a class="reference internal" href="#how-many-grid-points-should-be-used">How many grid-points should be used?</a></li>
 <li><a class="reference internal" href="#automatic-grid-points-selection">Automatic grid-points selection</a></li>
 <li><a class="reference internal" href="#minimum-requirement-on-path-smoothness">Minimum requirement on path smoothness</a></li>
@@ -105,10 +105,16 @@
             
   <div class="section" id="usage-notes">
 <span id="notes"></span><h1>Usage Notes<a class="headerlink" href="#usage-notes" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="logging">
-<h2>Logging<a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="configure-logging">
+<h2>Configure logging<a class="headerlink" href="#configure-logging" title="Permalink to this headline">¶</a></h2>
 <p>By default, <cite>toppra</cite> does not configure any of the <cite>toppra…</cite>
-loggers. Thus no log messages will be printed by default.</p>
+loggers. Thus no log messages will be printed by default. A simple
+logger that only print to the console can be setup easily.</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">toppra</span> <span class="k">as</span> <span class="nn">ta</span>
+<span class="n">ta</span><span class="o">.</span><span class="n">setup_logging</span><span class="p">(</span><span class="s2">&quot;INFO&quot;</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
 </div>
 <div class="section" id="how-many-grid-points-should-be-used">
 <h2>How many grid-points should be used?<a class="headerlink" href="#how-many-grid-points-should-be-used" title="Permalink to this headline">¶</a></h2>
