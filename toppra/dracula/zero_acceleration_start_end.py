@@ -1,11 +1,11 @@
+"""Functions for enforcing natural boundary conditions on cubic splines."""
 import numpy as np
-from scipy.interpolate import CubicSpline
 
 from .three_segment_spline import ThreeSegmentSpline
 
 
-def InsertAtStartEndOfSpline(cspl_in, xin, cin, xend, cend):
-
+def insert_at_start_end_of_cspl(cspl_in, xin, cin, xend, cend):
+    """Add given knot points into the given cubic spline."""
     assert np.ndim(xin) == 1, "xin is not vector"
     time_step = 1
     time_delta_start = xin[-1] - cspl_in.x[time_step]
@@ -26,7 +26,8 @@ def InsertAtStartEndOfSpline(cspl_in, xin, cin, xend, cend):
     return cspl_in
 
 
-def ZeroAccelerationAtStartAndEnd(cspl):
+def impose_natural_bc(cspl):
+    """Take a clamped CubicSpline (0 first derivative) and add natural bc."""
     # for start polynomial
     # Define Inputs
     Ps = cspl(cspl.x[0])
@@ -49,4 +50,4 @@ def ZeroAccelerationAtStartAndEnd(cspl):
 
     xend, cend = ThreeSegmentSpline(Ps, Vs, As, Pe, Ve, Ae, deltaTimeEnd)
 
-    InsertAtStartEndOfSpline(cspl, xstart, cstart, xend, cend)
+    insert_at_start_end_of_cspl(cspl, xstart, cstart, xend, cend)

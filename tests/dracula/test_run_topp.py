@@ -14,7 +14,9 @@ def run_toppra_random(N_samples=30, return_cs=False):
     alim = np.asarray([2] * dof)
     vlim = np.vstack([-vlim, vlim]).T
     alim = np.vstack([-alim, alim]).T
-    return RunTopp(rand_waypts, vlim, alim, return_cs=return_cs)
+    return RunTopp(
+        rand_waypts, vlim, alim, return_cs=return_cs, verify_lims=True
+    )
 
 
 if __name__ == "__main__":
@@ -30,7 +32,7 @@ if __name__ == "__main__":
                 f"/src/toppra/tests/dracula/test_waypts_{i}.txt"
             )  # (33, 7)
             _ = RunTopp(
-                waypts, coeff * v_max, coeff * a_max
+                waypts, coeff * v_max, coeff * a_max, verify_lims=True
             )  # assert no throw
 
     # test using randoms
