@@ -266,3 +266,15 @@ def RunTopp(
         np.ascontiguousarray(cs.x, dtype=np.float64),
         np.ascontiguousarray(cs.c, dtype=np.float64),
     )
+
+
+def RunToppJntCrt(waypts_jnt,  # (N, Ndof)
+                  vlim_jnt,  # (Ndof, 2)
+                  alim_jnt,  # (Ndof, 2)
+                  waypts_crt,  # (N, 3)
+                  vlim_crt,  # (3, 2)
+                  alim_crt,  # (3, 2)
+                  verify_lims=True,
+                  return_cs=False):
+    cs_jnt = RunTopp(waypts_jnt, vlim_jnt, alim_jnt, verify_lims=verify_lims, return_cs=True)
+    cs_crt = RunTopp(waypts_crt, vlim_crt, alim_crt, verify_lims=verify_lims, return_cs=True)
