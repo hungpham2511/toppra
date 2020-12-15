@@ -34,13 +34,13 @@ def deprecated(func):
 def setup_logging(level="WARN"):
     """Setup basic logging facility to console.
     """
-    logger = logging.getLogger("toppra")
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
+    logger_toppra = logging.getLogger("toppra")
+    handler_basic = logging.StreamHandler()
+    handler_basic.setLevel(logging.DEBUG)
     formatter = logging.Formatter("%(levelname)5s [%(filename)s : %(lineno)d] %(message)s")
-    ch.setFormatter(formatter)
-    logger.setLevel(level)
-    logger.addHandler(ch)
+    handler_basic.setFormatter(formatter)
+    logger_toppra.setLevel(level)
+    logger_toppra.addHandler(handler_basic)
 
 
 def compute_jacobian_wrench(robot, link, point):
