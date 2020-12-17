@@ -293,7 +293,7 @@ def _find_waypts_indices(waypts, cs):
     return idx
 
 
-def run_toppra_jnt_crt(
+def run_topp_jnt_crt(
     waypts_jnt,  # (N, Ndof)
     vlim_jnt,  # (Ndof, 2)
     alim_jnt,  # (Ndof, 2)
