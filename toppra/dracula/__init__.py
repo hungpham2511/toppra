@@ -257,6 +257,10 @@ def run_topp(
         f"Finished computing time-optimised trajectory of {n_knots} knots, "
         f"duration: {cs.x[-1]:.3f} s. "
     )
+    logger.warning(
+        "To preserve constraints, continuity, and boundary conditions, this "
+        "computed CubicSpline polynomial MUST NOT be resplined arbitrarily."
+    )
     if return_cs:
         return cs
     return (
