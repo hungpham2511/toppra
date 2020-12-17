@@ -252,7 +252,7 @@ def run_topp(
                 )
                 cs = _compute_cspl_with_varying_alim(alim_coefficients)
 
-    n_knots = len(cs.x)
+    n_knots = cs.x.size
     logger.info(
         f"Finished computing time-optimised trajectory of {n_knots} knots, "
         f"duration: {cs.x[-1]:.3f} s. "
@@ -329,14 +329,21 @@ def run_toppra_jnt_crt(
             x_jnt_new[idx_jnt[i - 1] + 1 : m + 1] = x_l + (x - x_l) * dx / dx0
             # shift x for all future knots after current waypt
             x_jnt_new[m + 1 :] += x_jnt_new[m] - x_r
-    cs_jnt_new = CubicSpline(x_jnt_new, cs_jnt(cs_jnt.x), bc_type="clamped")
-    impose_natural_bc(cs_jnt_new)
+    cs = CubicSpline(x_jnt_new, cs_jnt(cs_jnt.x), bc_type="clamped")
+    impose_natural_bc(cs)
+    n_knots = cs.x.size
     logger.info(
-        f"Finished optimising trajectory of {cs_jnt_new.x.size} knots "
-        f"with combined constraints, duration: {cs_jnt_new.x[-1]:.3f} s. "
+        f"Finished optimising trajectory of {n_knots} knots "
+        f"with combined constraints, duration: {cs.x[-1]:.3f} s. "
     )
     logger.warning(
         "To preserve constraints, continuity, and boundary conditions, this "
         "computed CubicSpline polynomial MUST NOT be resplined arbitrarily."
     )
-    return cs_jnt_new
+    if return_cs:
+        return cs
+    return (
+        n_knots,
+        np.ascontiguousarray(cs.x, dtype=np.float64),
+        np.ascontiguousarray(cs.c, dtype=np.float64),
+    )
