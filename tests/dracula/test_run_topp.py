@@ -1,3 +1,4 @@
+"""Unit test for the toppra.dracula.run_topp() wrapper."""
 import copy
 
 import matplotlib.pyplot as plt
@@ -6,7 +7,7 @@ import numpy as np
 from toppra.dracula import A_MAX, V_MAX, run_topp
 
 
-def run_toppra_random(N_samples=30, return_cs=False):
+def run_topp_random(N_samples=30, return_cs=False):
     """Random Traj."""
     dof = 7
     rand_waypts = np.random.rand(N_samples, dof)
@@ -39,9 +40,9 @@ if __name__ == "__main__":
     # 2000 is supported but commented out for speed
     for n in [2, 20, 50, 200]:  # , 2000]:
         print(f"Testing {n} random waypoints with no truncation...")
-        topp_breaks_count_final, _, _ = run_toppra_random(n, False)
+        topp_breaks_count_final, _, _ = run_topp_random(n, False)
 
-    cspl = run_toppra_random(return_cs=True)
+    cspl = run_topp_random(return_cs=True)
 
     # Plotting
     csplcp = copy.deepcopy(cspl)
@@ -134,7 +135,8 @@ if __name__ == "__main__":
     #         fig, axs = plt.subplots(1, 4, sharex=True, figsize=[18, 4])
     #         for i in range(csplcp.c.shape[2]):
     #             axs[0].plot(
-    #                 s_sampled, csplcp(s_sampled)[:, i], label="J{:d}".format(i + 1)
+    #                 s_sampled,
+    #                 csplcp(s_sampled)[:, i], label="J{:d}".format(i + 1)
     #             )
     #             axs[1].plot(
     #                 s_sampled,
@@ -170,7 +172,8 @@ if __name__ == "__main__":
     #         fig, axs = plt.subplots(1, 4, sharex=True, figsize=[18, 4])
     #         for i in range(cspl.c.shape[2]):
     #             axs[0].plot(
-    #                 s_sampled2, cspl(s_sampled2)[:, i], label="J{:d}".format(i + 1)
+    #                 s_sampled2,
+    #                 cspl(s_sampled2)[:, i], label="J{:d}".format(i + 1)
     #             )
     #             axs[1].plot(
     #                 s_sampled2,
