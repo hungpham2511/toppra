@@ -1,5 +1,6 @@
 """Unit test for the combined constraints interface test_run_toppra_jnt_crt."""
 
+import os
 import unittest
 
 import numpy as np
@@ -9,7 +10,7 @@ from toppra import dracula
 
 class TestRunToppJntCrt(unittest.TestCase):
     """Class for unit test."""
-
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
     waypts_jnt = np.loadtxt("test_waypts_jnt_0.txt")
     lim_ones = np.ones(waypts_jnt.shape[1])
     lim_ones = np.vstack([-lim_ones, lim_ones]).T
