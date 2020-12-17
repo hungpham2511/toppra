@@ -67,6 +67,6 @@ repos:
       entry: python3
       language: system
       types: [python]
-      args: [tests/dracula/test_run_topp.py]
+      args: [-m, unittest, discover, -s, tests/dracula/]
       always_run: true
       pass_filenames: false

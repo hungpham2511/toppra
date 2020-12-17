@@ -3,7 +3,7 @@ import copy
 import matplotlib.pyplot as plt
 import numpy as np
 
-from toppra.dracula import A_MAX, V_MAX, RunTopp
+from toppra.dracula import A_MAX, V_MAX, run_topp
 
 
 def run_toppra_random(N_samples=30, return_cs=False):
@@ -14,7 +14,7 @@ def run_toppra_random(N_samples=30, return_cs=False):
     alim = np.asarray([2] * dof)
     vlim = np.vstack([-vlim, vlim]).T
     alim = np.vstack([-alim, alim]).T
-    return RunTopp(
+    return run_topp(
         rand_waypts, vlim, alim, return_cs=return_cs, verify_lims=True
     )
 
@@ -29,14 +29,15 @@ if __name__ == "__main__":
         for i in range(5):
             print(f"testing waypoints file {i}...")
             waypts = np.loadtxt(
-                f"/src/toppra/tests/dracula/test_waypts_{i}.txt"
+                f"/src/toppra/tests/dracula/test_waypts_jnt_{i}.txt"
             )  # (33, 7)
-            _ = RunTopp(
+            _ = run_topp(
                 waypts, coeff * v_max, coeff * a_max, verify_lims=True
             )  # assert no throw
 
     # test using randoms
-    for n in [2, 20, 50, 200, 2000]:
+    # 2000 is supported but commented out for speed
+    for n in [2, 20, 50, 200]:  # , 2000]:
         print(f"Testing {n} random waypoints with no truncation...")
         topp_breaks_count_final, _, _ = run_toppra_random(n, False)
 
