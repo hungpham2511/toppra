@@ -3,6 +3,7 @@
 ## Unrelease
 
 ### Added
+- [python] Fix a bug that prevent user from using the ConstAccelParametrizer
 - [python] Allow specifying minimum nb of grid-points during automatic selection
 - [python] Minor performance tweak in reachability_algorithm.py
 - [ci] Fix python2.7 dependencies
