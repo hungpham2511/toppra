@@ -113,7 +113,7 @@ jobs:
       - run:
           name: Install Python API with bindings
           command: |
-            pip install invoke  # absolute minimum to run setup.py
+            pip install numpy cython invoke  # absolute minimum to run setup.py
             python -m invoke install-solvers  # require python because of circleci glitch
             pip install -e .[dev]
       - python/save-cache:
