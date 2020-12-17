@@ -37,7 +37,7 @@ commands:
             cd ~/ && git clone https://github.com/msgpack/msgpack-c.git
             cd msgpack-c && git checkout cpp-3.2.1 && cmake -DMSGPACK_CXX11=ON -DMSGPACK_BUILD_EXAMPLES=OFF -DMSGPACK_CXX_ONLY=ON .
             sudo make install
-            
+
           working_directory: ~/
       - run:
           name: Build toppra C++ API
@@ -83,7 +83,7 @@ jobs:
           path: test-results
 
       - store_artifacts:
-          path: test-results  
+          path: test-results
 
   # Test the cpp api and bindings on python3.6 The base image of this
   # job is Ubuntu 18.04, which is required to install pinocchio and
@@ -113,7 +113,7 @@ jobs:
       - run:
           name: Install Python API with bindings
           command: |
-            pip install numpy cython invoke  # absolute minimum to run setup.py
+            pip install invoke  # absolute minimum to run setup.py
             python -m invoke install-solvers  # require python because of circleci glitch
             pip install -e .[dev]
       - python/save-cache:
