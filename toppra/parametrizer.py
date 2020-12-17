@@ -64,8 +64,12 @@ class ParametrizeConstAccel(AbstractGeometricPath):
         self._us = np.array(us)
 
     @property
-    def path_interval(self):
+    def path_interval(self) -> np.ndarray:
         return np.array([self._ts[0], self._ts[-1]])
+
+    @property
+    def duration(self) -> float:
+        return self._ts[-1] - self._ts[0]
 
     def __call__(self, ts, order=0):
         scalar = False
@@ -76,9 +80,10 @@ class ParametrizeConstAccel(AbstractGeometricPath):
         if order == 0:
             out = self._path(ss)
         elif order == 1:
-            out = self._path(ss, 1) * vs
+            out = np.multiply(self._path(ss, 1), vs[:, np.newaxis])
         elif order == 2:
-            out = self._path(ss, 2) * vs ** 2 + self._path(ss, 1) * us
+            out = (np.multiply(self._path(ss, 2), vs[:, np.newaxis] ** 2) +
+                   np.multiply(self._path(ss, 1), us[:, np.newaxis]))
         else:
             raise ToppraError("Order %d is not supported." % order)
         if scalar:
