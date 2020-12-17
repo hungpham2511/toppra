@@ -108,7 +108,7 @@ satisfaction.
      INFO [reachability_algorithm.py : 66] Solver wrapper not supplied. Choose solver wrapper automatically!
      INFO [reachability_algorithm.py : 75] Select solver seidel
      INFO [algorithm.py : 192] Successfully parametrize path. Duration: 3.525, previously 1.000)
-     INFO [algorithm.py : 193] Finish parametrization in 0.016 secs
+     INFO [algorithm.py : 193] Finish parametrization in 0.020 secs
 
 
 
@@ -170,7 +170,7 @@ Optionally, we can inspect the output.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.346 seconds)
+   **Total running time of the script:** ( 0 minutes  0.508 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_kinematics.py:
