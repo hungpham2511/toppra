@@ -36,7 +36,8 @@ if __name__ == "__main__":
             )  # assert no throw
 
     # test using randoms
-    for n in [2, 20, 50, 200, 2000]:
+    # 2000 is supported but commented out for speed
+    for n in [2, 20, 50, 200]:  # , 2000]:
         print(f"Testing {n} random waypoints with no truncation...")
         topp_breaks_count_final, _, _ = run_toppra_random(n, False)
 
