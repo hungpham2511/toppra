@@ -6,7 +6,8 @@ This module contains classes that produce the output trajectories,
 given the input path and the time parametrization.
 
 """
-from typing import Tuple, Optional
+import logging
+import typing as T
 import numpy as np
 from toppra.interpolator import AbstractGeometricPath, SplineInterpolator
 from toppra.exceptions import ToppraError
@@ -17,6 +18,7 @@ try:
 except ImportError:
     pass
 
+logger = logging.getLogger(__name__)
 
 class ParametrizeConstAccel(AbstractGeometricPath):
     """Compute output traj under constant acceleration assumption.
@@ -32,8 +34,8 @@ class ParametrizeConstAccel(AbstractGeometricPath):
         self._ss: np.ndarray = np.array(gridpoints)
         self._velocities: np.ndarray = np.array(velocities)
         self._xs: np.ndarray = self._velocities ** 2
-        self._ts: Optional[np.ndarray] = None
-        self._us: Optional[np.ndarray] = None
+        self._ts: T.Optional[np.ndarray] = None
+        self._us: T.Optional[np.ndarray] = None
 
         # preconditions
         assert self._ss.shape[0] == self._velocities.shape[0]
@@ -65,11 +67,15 @@ class ParametrizeConstAccel(AbstractGeometricPath):
 
     @property
     def path_interval(self) -> np.ndarray:
+        if self._ts is None:
+            logger.warning("Unable to find _ts. Processing fails not does not run.")
+            raise ValueError("Internal error occur.")
         return np.array([self._ts[0], self._ts[-1]])
 
     @property
     def duration(self) -> float:
-        return self._ts[-1] - self._ts[0]
+        """Return the path duration."""
+        return self.path_interval[1] - self.path_interval[0]
 
     def __call__(self, ts, order=0):
         scalar = False
@@ -90,7 +96,7 @@ class ParametrizeConstAccel(AbstractGeometricPath):
             return out[0]
         return out
 
-    def _eval_params(self, ts: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    def _eval_params(self, ts: np.ndarray) -> T.Tuple[np.ndarray, np.ndarray, np.ndarray]:
         """Return the array of path positions, velocities and accels.
 
         Parameters
