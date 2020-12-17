@@ -103,7 +103,7 @@ def _verify_lims(cs, vlim, alim):
     return None
 
 
-def RunTopp(
+def run_topp(
     waypts,  # ndarray, (N, dof)
     vlim,  # ndarray, (dof, 2)
     alim,  # ndarray, (dof, 2)
@@ -256,8 +256,6 @@ def RunTopp(
     logger.info(
         f"Finished computing time-optimised trajectory of {n_knots} knots, "
         f"duration: {cs.x[-1]:.3f} s. "
-        "To preserve constraints, continuity, and boundary conditions, "
-        "you MUST NOT respline this CubicSpline polynomial arbitrarily."
     )
     if return_cs:
         return cs
@@ -268,13 +266,73 @@ def RunTopp(
     )
 
 
-def RunToppJntCrt(waypts_jnt,  # (N, Ndof)
-                  vlim_jnt,  # (Ndof, 2)
-                  alim_jnt,  # (Ndof, 2)
-                  waypts_crt,  # (N, 3)
-                  vlim_crt,  # (3, 2)
-                  alim_crt,  # (3, 2)
-                  verify_lims=True,
-                  return_cs=False):
-    cs_jnt = RunTopp(waypts_jnt, vlim_jnt, alim_jnt, verify_lims=verify_lims, return_cs=True)
-    cs_crt = RunTopp(waypts_crt, vlim_crt, alim_crt, verify_lims=verify_lims, return_cs=True)
+def _find_waypts_indices(waypts, cs):
+    """Find the indices for the original waypoints in cubic spline knots."""
+    idx = np.zeros(waypts.shape[0], dtype=int)
+    k = 0  # index for knots, scan all knots left to right, start at the 0th
+    for i, waypt in enumerate(waypts):
+        waypt_min_err = float("inf")  # always reset error for current waypt
+        while k < cs.x.size:
+            err = np.linalg.norm(cs(cs.x[k]) - waypt)
+            if err <= waypt_min_err:
+                waypt_min_err = err
+            else:  # we've found the closest knot at the previous knot, k-1
+                idx[i] = k - 1
+                break
+            k += 1
+        idx[i] = k - 1
+    assert idx[0] == 0, "The first knot is not the beginning waypoint"
+    assert all(
+        idx[1:] != 0
+    ), "Failed to find all original waypoints in CubicSpline"
+    assert idx[-1] == cs.x.size - 1, "The last knot is not the ending waypoint"
+    return idx
+
+
+def run_toppra_jnt_crt(
+    waypts_jnt,  # (N, Ndof)
+    vlim_jnt,  # (Ndof, 2)
+    alim_jnt,  # (Ndof, 2)
+    waypts_crt,  # (N, 3)
+    vlim_crt,  # (3, 2)
+    alim_crt,  # (3, 2)
+    return_cs=False,
+):
+    """Optimise joint-space trajectory with additional cartesian limits."""
+    logger.info("Optimising joint-space trajectory...")
+    cs_jnt = run_topp(
+        waypts_jnt, vlim_jnt, alim_jnt, verify_lims=True, return_cs=return_cs
+    )
+    logger.info("Optimising Cartesian trajectory...")
+    cs_crt = run_topp(
+        waypts_crt, vlim_crt, alim_crt, verify_lims=True, return_cs=return_cs
+    )
+    # find new indices for original waypts_jnt in cs_jnt
+    idx_jnt = _find_waypts_indices(waypts_jnt, cs_jnt)
+    # find new indices for original waypts_crt in cs_crt
+    idx_crt = _find_waypts_indices(waypts_crt, cs_crt)
+    # now modify timing of cs_jnt to take into account cartesian optimisation
+    # starting from the 1st waypoint (after the 0th)
+    x_jnt_new = cs_jnt.x.copy()
+    for i, (m, n) in enumerate(zip(idx_jnt[1:], idx_crt[1:]), start=1):
+        dx0 = cs_jnt.x[m] - cs_jnt.x[idx_jnt[i - 1]]
+        dx = cs_crt.x[n] - cs_crt.x[idx_crt[i - 1]]
+        if dx > dx0:  # need to slow down for cartesian constraints
+            # uniformly dilate x for knots in the current waypoint segment
+            x_l = x_jnt_new[idx_jnt[i - 1]]  # x at left waypt
+            x_r = x_jnt_new[m]  # x at right waypt
+            x = x_jnt_new[idx_jnt[i - 1] + 1 : m + 1]  # x of knots to modify
+            x_jnt_new[idx_jnt[i - 1] + 1 : m + 1] = x_l + (x - x_l) * dx / dx0
+            # shift x for all future knots after current waypt
+            x_jnt_new[m + 1 :] += x_jnt_new[m] - x_r
+    cs_jnt_new = CubicSpline(x_jnt_new, cs_jnt(cs_jnt.x), bc_type="clamped")
+    impose_natural_bc(cs_jnt_new)
+    logger.info(
+        f"Finished optimising trajectory of {cs_jnt_new.x.size} knots "
+        f"with combined constraints, duration: {cs_jnt_new.x[-1]:.3f} s. "
+    )
+    logger.warning(
+        "To preserve constraints, continuity, and boundary conditions, this "
+        "computed CubicSpline polynomial MUST NOT be resplined arbitrarily."
+    )
+    return cs_jnt_new
