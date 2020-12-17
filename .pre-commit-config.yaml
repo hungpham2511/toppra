@@ -63,7 +63,7 @@ repos:
 -   repo: local
     hooks:
     - id: unittest
-      name: unittest
+      name: unit tests
       entry: python3
       language: system
       types: [python]
