@@ -30,7 +30,6 @@ an instance with 1000 uniform gridpoints.
   gridpoints = np.linspace(0, path.duration, 1000)  # 1000 points
   instance = algo.TOPPRA([pc_vel, pc_acc], path, gridpoints=gridpoints)
 
-
 Generally, more gridpoints give you better solution quality, but also
 increase solution time. Often the increase in solution time is linear,
 that is if it takes 5ms to solve an instance with 100 gridpoints, then
@@ -67,6 +66,29 @@ algorithm to select at least 500 points:
      gridpt_max_err_threshold=1e-3,
      gridpt_min_nb_points=500)
 
+
+Using different parametrizers
+------------------------------------------
+
+After performing the path parametrization step, i.e., computing the
+velocity profile, there are multiple ways that one could use to find
+the final trajectory. This can be set using the `parametrizer` keyword
+argument as in the below example
+
+.. code-block:: python
+  :linenos:
+
+  instance = algo.TOPPRA(
+      [pc_vel, pc_acc], path,
+      parametrizer="ParametrizeConstAccel",
+  )
+
+This uses the constant acceleration parametrizer. See the related
+docstring for more details. The default parametrizer is
+`ParametrizeSpline`, which will be used if the keyword argument is not
+set. This parametrizer will try to fit a spline on the original
+waypoints using the joint velocities calculated from the velocity
+profile.
 
 Minimum requirement on path smoothness
 -------------------------------------------------
