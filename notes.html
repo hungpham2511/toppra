@@ -72,6 +72,7 @@
 <li><a class="reference internal" href="#configure-logging">Configure logging</a></li>
 <li><a class="reference internal" href="#how-many-grid-points-should-be-used">How many grid-points should be used?</a></li>
 <li><a class="reference internal" href="#automatic-grid-points-selection">Automatic grid-points selection</a></li>
+<li><a class="reference internal" href="#using-different-parametrizers">Using different parametrizers</a></li>
 <li><a class="reference internal" href="#minimum-requirement-on-path-smoothness">Minimum requirement on path smoothness</a></li>
 <li><a class="reference internal" href="#derivation-of-kinematical-quantities">Derivation of kinematical quantities</a></li>
 </ul>
@@ -157,6 +158,28 @@ algorithm to select at least 500 points:</p>
    <span class="n">gridpt_min_nb_points</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
 </pre></div>
 </td></tr></table></div>
+</div>
+<div class="section" id="using-different-parametrizers">
+<h2>Using different parametrizers<a class="headerlink" href="#using-different-parametrizers" title="Permalink to this headline">¶</a></h2>
+<p>After performing the path parametrization step, i.e., computing the
+velocity profile, there are multiple ways that one could use to find
+the final trajectory. This can be set using the <cite>parametrizer</cite> keyword
+argument as in the below example</p>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">instance</span> <span class="o">=</span> <span class="n">algo</span><span class="o">.</span><span class="n">TOPPRA</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">pc_vel</span><span class="p">,</span> <span class="n">pc_acc</span><span class="p">],</span> <span class="n">path</span><span class="p">,</span>
+    <span class="n">parametrizer</span><span class="o">=</span><span class="s2">&quot;ParametrizeConstAccel&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<p>This uses the constant acceleration parametrizer. See the related
+docstring for more details. The default parametrizer is
+<cite>ParametrizeSpline</cite>, which will be used if the keyword argument is not
+set. This parametrizer will try to fit a spline on the original
+waypoints using the joint velocities calculated from the velocity
+profile.</p>
 </div>
 <div class="section" id="minimum-requirement-on-path-smoothness">
 <h2>Minimum requirement on path smoothness<a class="headerlink" href="#minimum-requirement-on-path-smoothness" title="Permalink to this headline">¶</a></h2>
