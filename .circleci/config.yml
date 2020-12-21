@@ -110,23 +110,20 @@ jobs:
           working_directory: ~/repo/cpp
       - python/load-cache:
           dependency-file: requirements3.txt
-      - python/install-deps:
-          dependency-file: requirements3.txt
-      - python/save-cache:
-          dependency-file: requirements3.txt
       - run:
           name: Install Python API with bindings
           command: |
             pip install numpy cython invoke  # absolute minimum to run setup.py
-            invoke install-solvers
+            python -m invoke install-solvers  # require python because of circleci glitch
             pip install -e .[dev]
-
+      - python/save-cache:
+          dependency-file: requirements3.txt
       - run:
           name: Test Python API with bindings
           command: |
             export ROS_PACKAGE_PATH=/opt/openrobots/share
             export PYTHONPATH=/opt/openrobots/lib/python3.6/site-packages:$PYTHONPATH
-            pytest tests --durations=3 --junitxml=test-reports/junit.xml
+            python -m pytest tests --durations=3 --junitxml=test-reports/junit.xml
 
       - store_test_results:
           path: test-reports

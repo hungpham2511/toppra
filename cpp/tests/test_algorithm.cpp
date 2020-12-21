@@ -1,12 +1,13 @@
 #include <memory>
+#include <toppra/algorithm.hpp>
 #include <toppra/algorithm/toppra.hpp>
 #include <toppra/constraint.hpp>
 #include <toppra/constraint/linear_joint_acceleration.hpp>
 #include <toppra/constraint/linear_joint_velocity.hpp>
 #include <toppra/geometric_path.hpp>
 #include <toppra/geometric_path/piecewise_poly_path.hpp>
+#include <toppra/parametrizer/const_accel.hpp>
 #include <toppra/toppra.hpp>
-#include "toppra/algorithm.hpp"
 
 #include "gtest/gtest.h"
 
@@ -155,4 +156,28 @@ TEST_F(ProblemInstance, FeasibleSets) {
     EXPECT_NEAR(data.feasible_sets(i, 1), expected_feasible_max(i), TEST_PRECISION)
         << "idx: " << i
         << ", abs diff=" << data.parametrization(i) - expected_feasible_max(i);
+}
+
+TEST_F(ProblemInstance, ParametrizeOutputTrajectory) {
+  toppra::algorithm::TOPPRA problem{v, path};
+  problem.setN(50);
+  auto ret_code = problem.computePathParametrization();
+
+  TOPPRA_LOG_DEBUG("Pre constructed");
+  toppra::parametrizer::ConstAccel output_traj{
+      path, problem.getParameterizationData().gridpoints,
+      problem.getParameterizationData().parametrization};
+
+  // Qualitative assertion
+  ASSERT_TRUE(output_traj.validate());
+  ASSERT_EQ(output_traj.pathInterval()[0], 0);
+  ASSERT_GE(output_traj.pathInterval()[1], 0);
+  auto interval = output_traj.pathInterval();
+
+  // Qualitative assertion
+  for (int i = 0; i < path->dof(); i++) {
+    ASSERT_EQ(output_traj.eval_single(0)[i], path->eval_single(0)[i]);
+    ASSERT_EQ(output_traj.eval_single(output_traj.pathInterval()[1])[i],
+              path->eval_single(path->pathInterval()[1])[i]);
+  }
 }

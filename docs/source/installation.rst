@@ -1,5 +1,8 @@
 .. _installation:
 
+Installation 
+**********************
+
 Installation instructions for Python API
 =========================================
 

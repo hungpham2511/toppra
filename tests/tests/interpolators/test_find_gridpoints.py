@@ -32,6 +32,12 @@ def test_basic_usage(path):
     # plt.show()
 
 
+def test_number_of_points_(path):
+     path, waypoints = path
+     gridpoints_ept = toppra.interpolator.propose_gridpoints(path, 1.0, min_nb_points=100)  # large bounds
+     assert len(gridpoints_ept) > 100
+
+
 def test_hard_path_difficult_to_approximate_within_iterations(path):
     """The given setting makes the approximation fails."""
     path, _ = path

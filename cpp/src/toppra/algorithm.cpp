@@ -13,17 +13,16 @@ PathParametrizationAlgorithm::PathParametrizationAlgorithm(
 
 ReturnCode PathParametrizationAlgorithm::computePathParametrization(value_type vel_start,
                                                                     value_type vel_end) {
-  ReturnCode ret;
   initialize();
   m_solver->setupSolver();
   Bound vel_ends;
   vel_ends.setConstant(vel_end);
-  ret = computeControllableSets(vel_ends);
-  if ((int)ret > 0) {
-    return ret;
+  m_data.ret_code = computeControllableSets(vel_ends);
+  if ((int)m_data.ret_code > 0) {
+    return m_data.ret_code;
   }
-  ret = computeForwardPass(vel_start);
-  return ret;
+  m_data.ret_code = computeForwardPass(vel_start);
+  return m_data.ret_code;
 };
 
 ReturnCode PathParametrizationAlgorithm::computeControllableSets(
@@ -106,15 +105,35 @@ ReturnCode PathParametrizationAlgorithm::computeFeasibleSets() {
   return ret;
 }
 
+void PathParametrizationAlgorithm::setGridpoints(const Vector& gridpoints)
+{
+  Bound I (m_path->pathInterval());
+  auto s = gridpoints.size();
+  m_N = s-1;
+  if (   std::fabs(gridpoints[0] - I(0)) > TOPPRA_NEARLY_ZERO
+      || std::fabs(gridpoints[gridpoints.size()-1] - I(1)) > TOPPRA_NEARLY_ZERO)
+    throw std::invalid_argument("Path interval does not match first and last gridpoints.");
+  if (((gridpoints.tail(s-1) - gridpoints.head(s-1)).array() <= 0).any())
+    throw std::invalid_argument("gridpoints should be strictly increasing.");
+  m_data.gridpoints = gridpoints;
+  m_initialized = false;
+}
+
 void PathParametrizationAlgorithm::initialize() {
   if (m_initialized) return;
   if (!m_solver)
     throw std::logic_error("You must set a solver first.");
   Bound I (m_path->pathInterval());
-  m_data.gridpoints = Vector::LinSpaced(m_N + 1, I(0), I(1));
-  m_data.parametrization.resize(m_N + 1);
-  m_data.controllable_sets.resize(m_N + 1, 2);
-  m_data.feasible_sets.resize(m_N + 1, 2);
+
+  if (m_data.gridpoints.size() == 0)
+    m_data.gridpoints = Vector::LinSpaced(m_N + 1, I(0), I(1));
+  else if (m_data.gridpoints.size() != m_N + 1)
+    throw std::invalid_argument("number of gridpoints does not match attribute N.");
+
+  auto s = m_data.gridpoints.size();
+  m_data.parametrization.resize(s);
+  m_data.controllable_sets.resize(s, 2);
+  m_data.feasible_sets.resize(s, 2);
   m_solver->initialize(m_constraints, m_path, m_data.gridpoints);
   m_initialized = true;
 }
