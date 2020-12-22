@@ -47,10 +47,10 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
     """
 
     def __init__(
-            self, constraint_list, path, gridpoints=None, solver_wrapper=None, parametrizer=None
+            self, constraint_list, path, gridpoints=None, solver_wrapper=None, parametrizer=None, **kwargs
     ):
         super(ReachabilityAlgorithm, self).__init__(
-            constraint_list, path, gridpoints=gridpoints, parametrizer=None
+            constraint_list, path, gridpoints=gridpoints, parametrizer=parametrizer, **kwargs
         )
 
         # Check for conic constraints
@@ -352,11 +352,12 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
                 x_next = xs[i] + 2 * deltas[i] * us[i]
                 x_next = max(x_next - TINY, 0.9999 * x_next)
                 xs[i + 1] = min(K[i + 1, 1], max(K[i + 1, 0], x_next))
-                logger.debug(
-                    "[Forward pass] u[{:d}] = {:f}, x[{:d}] = {:f}".format(
-                        i, us[i], i + 1, xs[i + 1]
+                if logger.isEnabledFor(logging.DEBUG):
+                    logger.debug(
+                        "[Forward pass] u[{:d}] = {:f}, x[{:d}] = {:f}".format(
+                            i, us[i], i + 1, xs[i + 1]
+                        )
                     )
-                )
                 v_vec[i] = optim_res[2:]
                 i += 1
         self.solver_wrapper.close_solver()

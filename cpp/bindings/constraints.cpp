@@ -8,6 +8,7 @@
 #include <string>
 #include <toppra/geometric_path.hpp>
 #include <toppra/constraint.hpp>
+#include <toppra/constraint/cartesian_velocity_norm.hpp>
 #include <toppra/constraint/joint_torque.hpp>
 #include <toppra/constraint/linear_joint_acceleration.hpp>
 #include <toppra/constraint/linear_joint_velocity.hpp>
@@ -16,6 +17,7 @@ namespace py = pybind11;
 
 #ifdef BUILD_WITH_PINOCCHIO
 // Mind that pinocchio headers **must** be included before boost headers.
+#include <toppra/constraint/cartesian_velocity_norm/pinocchio.hpp>
 #include <toppra/constraint/joint_torque/pinocchio.hpp>
 #ifdef PINOCCHIO_WITH_PYTHON_INTERFACE
 #include <boost/python.hpp>
@@ -105,6 +107,30 @@ void exposeConstraints(py::module m)
               return new Pinocchio<>(
                   boost::python::extract<const pinocchio::Model&>(model.ptr()), fc);
             }), py::keep_alive<1, 2>(), py::arg("model"), py::arg("frictionCoeffs") = Vector())
+#endif
+      ;
+#endif
+  }
+
+  py::class_<CartesianVelocityNorm,
+    std::shared_ptr<CartesianVelocityNorm>,
+    LinearConstraint>(
+      m, "CartesianVelocityNorm");
+
+  {
+    auto mod_jointTorque = m.def_submodule("cartesianVelocityNorm");
+#ifdef BUILD_WITH_PINOCCHIO
+    using cartesianVelocityNorm::Pinocchio;
+#ifdef PINOCCHIO_WITH_PYTHON_INTERFACE
+    py::module::import("pinocchio");
+#endif
+    py::class_<Pinocchio<>, std::shared_ptr<Pinocchio<> >, CartesianVelocityNorm>(
+        mod_jointTorque, "Pinocchio")
+#ifdef PINOCCHIO_WITH_PYTHON_INTERFACE
+        .def(py::init([](py::object model, const Matrix& S, const double& limit, int frame_id) -> Pinocchio<>* {
+              return new Pinocchio<>(
+                  boost::python::extract<const pinocchio::Model&>(model.ptr()), S, limit, frame_id);
+            }), py::keep_alive<1, 2>(), py::arg("model"), py::arg("S"), py::arg("limit"), py::arg("frame_id"))
 #endif
       ;
 #endif

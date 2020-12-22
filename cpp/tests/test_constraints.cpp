@@ -2,6 +2,7 @@
 
 #ifdef BUILD_WITH_PINOCCHIO
 #include <toppra/constraint/joint_torque/pinocchio.hpp>
+#include <toppra/constraint/cartesian_velocity_norm/pinocchio.hpp>
 #include <pinocchio/parsers/sample-models.hpp>
 #endif
 
@@ -79,6 +80,37 @@ TEST_F(Constraint, jointTorquePinocchio) {
 
   EXPECT_EQ(constraint.nbVariables(), model.nv);
   EXPECT_EQ(constraint.nbConstraints(), 2*model.nv);
+
+  int N = 10;
+  Vector gridpoints;
+  {
+    Bound I (path.pathInterval());
+    gridpoints = toppra::Vector::LinSpaced (N, I[0], I[1]);
+  }
+
+  {
+    Vectors a, b, c, g;
+    Matrices F;
+    Bounds ub, xb;
+    constraint.computeParams(path, gridpoints, a, b, c, F, g, ub, xb);
+  }
+}
+
+TEST_F(Constraint, cartesianVelocityNormPinocchio) {
+  using namespace toppra;
+  typedef constraint::cartesianVelocityNorm::Pinocchio<> CartesianVelocityNorm;
+
+  CartesianVelocityNorm::Model model;
+  pinocchio::buildModels::manipulator(model);
+
+  toppra::Matrix S(6,6);
+  S.setZero();
+  S.diagonal().head<3>().setOnes();
+
+  CartesianVelocityNorm constraint (model, S, 1., model.getFrameId("effector_body"));
+
+  EXPECT_EQ(constraint.nbVariables(), 1);
+  EXPECT_EQ(constraint.nbConstraints(), 1);
 
   int N = 10;
   Vector gridpoints;

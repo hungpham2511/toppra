@@ -108,3 +108,7 @@ venv.bak/
 
 # emacs temp file
 *~
+cpp/.clangd
+build*
+cpp/doc/CMakeFiles/*
+cpp/doc/doc/*
