@@ -20,10 +20,10 @@ from .zero_acceleration_start_end import impose_natural_bc
 
 ta.setup_logging("INFO")
 # min epsilon for treating two angles the same, positive float
-DIST_EPS = 2e-3  # nominally defined as L2 norm in joint space, i.e. in rad
+JNT_DIST_EPS = 2e-3  # nominally defined as L2 norm in joint space, i.e. in rad
 # toppra does not respect velocity limit precisely
-V_LIM_EPS = 0.09
-A_LIM_EPS = 0.06
+V_LIM_EPS = 0.01  # 0.09
+A_LIM_EPS = 0.07
 # https://frankaemika.github.io/docs/control_parameters.html#constants
 V_MAX = np.array([2.1750, 2.1750, 2.1750, 2.1750, 2.6100, 2.6100, 2.6100])
 A_MAX = np.array([15, 7.5, 10, 12.5, 15, 20, 20])
@@ -55,7 +55,7 @@ def _dump_input_data(**kwargs):
     logger.info(f"Debug environment detected, input data saved to: {path}")
 
 
-def _check_waypoints(waypts, vlim):
+def _check_waypts(waypts, vlim):
     """
     Perform two checks on the input waypoints.
 
@@ -73,15 +73,13 @@ def _check_waypoints(waypts, vlim):
 class DraculaToppra:
     """Class for an optimisation session. Use the functional wrappers."""
 
-    def __init__(
-        self, waypts, vlim, alim  # ndarray, (N, dof)  # ndarray, (dof, 2)
-    ):  # ndarray, (dof, 2)
+    def __init__(self, waypts, vlim, alim):
         """Initialise with session data and perform common initial prep."""
         if any(map(os.getenv, ["SIM_ROBOT", "TOPPRA_DEBUG"])):
             _dump_input_data(waypts=waypts, vlim=vlim, alim=alim)
         # check for duplicates
-        self.min_pair_dist, t_sum = _check_waypoints(waypts, vlim)
-        if self.min_pair_dist < DIST_EPS:  # issue a warning and try anyway
+        self.min_pair_dist, t_sum = _check_waypts(waypts, vlim)
+        if self.min_pair_dist < JNT_DIST_EPS:  # issue a warning and try anyway
             logger.warning(
                 "Duplicates found in input waypoints. This is not recommended,"
                 " especially for the beginning and the end of the trajectory. "
@@ -94,7 +92,8 @@ class DraculaToppra:
         if t_sum < 0.5:
             t_sum = 0.5  # 0.15 seems to be the minimum path length required
         # initial x for toppra's path, essentially normalised time on x axis
-        # rescale by given speed limits
+        # rescale by given speed limits.
+        # only applies to ParametrizeSpline.
         self.path_length_limit = 100 * t_sum  # empirical magic number
         # magic number 0.3 because despite the fact that t_sum is the minimum
         # time required to visit all given waypoints, toppra needs a smaller
@@ -122,7 +121,7 @@ class DraculaToppra:
         except AttributeError:
             x = traj._ts
         for order, lim in enumerate([self.vlim, self.alim], start=1):
-            deriv = traj(x, order)
+            deriv = traj(x, order=order)
             # get mask not satisfying both uppwer and lower lims
             i, j = np.where(~((lim[:, 0] < deriv) & (deriv < lim[:, 1])))
             if i.size or j.size:  # should be same size
@@ -184,6 +183,7 @@ class DraculaToppra:
         return self._compute_and_check_traj(instance)
 
     def compute_const_accel(self):
+        """Compute optimised trajectory for ParametrizeConstAccel."""
         pc_acc = constraint.JointAccelerationConstraint(
             self.alim - np.sign(self.alim) * A_LIM_EPS,
             discretization_scheme=constraint.DiscretizationType.Interpolation,
@@ -200,11 +200,13 @@ class DraculaToppra:
     def _compute_and_check_traj(self, instance):
         traj = instance.compute_trajectory(0, 0)
         if traj is None:  # toppra has failed
-            if self.min_pair_dist < DIST_EPS:  # duplicates are probably why
+            if (
+                self.min_pair_dist < JNT_DIST_EPS
+            ):  # duplicates are probably why
                 logger.error(
                     "Duplicates not allowed in input waypoints. "
                     "At least one pair of adjacent waypoints have "
-                    f"distance less than epsilon = {DIST_EPS}."
+                    f"distance less than epsilon = {JNT_DIST_EPS}."
                 )
             logger.error(
                 f"Failed waypts:\n{self.waypts}"
@@ -213,7 +215,7 @@ class DraculaToppra:
             raise RuntimeError("Toppra failed to compute trajectory.")
         return traj
 
-    def truncate_cs_and_impose_natural_bc(self, cs):
+    def truncate_traj(self, traj, parametrizer):
         """Finish CubidSpline after it's settled and ready for return.
 
         Take care of ending truncation and natural boundary condition.
@@ -227,40 +229,54 @@ class DraculaToppra:
         # while N_samples = 46 may require x_max < 1.6 to be controllable.
         # So we keep x_max towards the small side to guarantee controllability.
         # We check that and truncate the spline at a predefined upper bound.
-        if cs.x[-1] > self.path_length_limit:
-            mask = cs.x <= self.path_length_limit
+        if parametrizer == "ParametrizeSpline":
+            x = traj.cspl.x
+        elif parametrizer == "ParametrizeConstAccel":
+            x = traj._ts
+        else:
+            raise ValueError(f"Invalid parametrizer type: {parametrizer}")
+
+        if x[-1] <= self.path_length_limit:  # quick and dirty detection
+            return traj  # should be all good, nothing to do here
+
+        if parametrizer == "ParametrizeSpline":
+            mask = x <= self.path_length_limit  # the good ones on the left
             logger.warning(
                 "Suboptimal trajectory derived, input waypoints likely "
                 "ill-formed. "
                 f"x > {self.path_length_limit:.3f} for "
-                f"{(~mask).sum()}/{cs.x.size} ending knots, "
-                f"x_max: {cs.x[-1]:.2f}."
+                f"{(~mask).sum()}/{x.size} ending knots, "
+                f"x_max: {x[-1]:.3f}."
             )
             # now truncate and check that it is still close to the original end
-            cs = CubicSpline(cs.x[mask], cs(cs.x[mask]), bc_type="natural")
+            cs = CubicSpline(x[mask], traj.cspl(x[mask]), bc_type="natural")
+            traj.cspl = cs  # just overwrite attr
             new_end_pos = cs(cs.x[-1])
-            assert np.linalg.norm(new_end_pos - self.waypts[-1]) < DIST_EPS, (
-                f"Truncated CubicSpline, ending at\n{new_end_pos},\n"
-                f"no longer arrives at the original ending waypoint\n"
-                f"{self.waypts[-1]}\n"
-                f"given DIST_EPS = {DIST_EPS}. "
-                "Try closer and smoother waypoints with a smaller path length."
+        else:  # parametrizer == ParametrizeConstAccel
+            # look from right for the first True or the last continuous Falses
+            mask = (
+                np.linalg.norm(np.abs((traj(x) - self.waypts[-1])), axis=1)
+                > JNT_DIST_EPS
             )
-            logger.info(
-                f"Optimised CubicSpline truncated at limit x = "
-                f"{self.path_length_limit:.3f}, still arriving at the "
-                f"original ending waypoint up to DIST_EPS: {DIST_EPS}. "
-                f"Duration after truncation: {cs.x[-1]:.3f}."
-            )
-        # Toppra goes a bit wider than a precise natural cubic spline.
-        # We could find the leftmost and rightmost common roots of all dof,
-        # which are the original end points, but that algorithm not guaranteed
-        # to converge below a sufficiently small error and is not efficient.
-        # We could also use scipy to respline naturally, but it only support
-        # one boundary condition, either zero velocity or zero accleration.
-        # Manually treat two ends to force both derivatives to be zero.
-        impose_natural_bc(cs)
-        return cs
+            # keep only the first False from the ending False block.
+            traj._ts = traj._ts[mask.size - np.argmax(np.flip(mask)) + 1]
+            new_end_pos = traj(traj.duration)
+        assert np.linalg.norm(new_end_pos - self.waypts[-1]) < JNT_DIST_EPS, (
+            f"Truncated trajectory, ending at\n{new_end_pos},\n"
+            f"no longer arrives at the original ending waypoint\n"
+            f"{self.waypts[-1]}\n"
+            f"given JNT_DIST_EPS = {JNT_DIST_EPS}. "
+            "Try closer and smoother waypoints with a smaller path length "
+            "if using ParametrizeSpline, and try a higher cmd_rate "
+            "if using ParametrizeConstAccel."
+        )
+        logger.info(
+            f"Time-optimised trajectory truncated at limit x = "
+            f"{self.path_length_limit:.3f}, still arriving at the "
+            f"original ending waypoint up to JNT_DIST_EPS: {JNT_DIST_EPS}. "
+            f"Duration after truncation: {traj.duration:.3f}."
+        )
+        return traj
 
 
 def run_topp_spline(waypts, vlim, alim, verify_lims=True, return_cs=True):
@@ -289,10 +305,18 @@ def run_topp_spline(waypts, vlim, alim, verify_lims=True, return_cs=True):
                 f"new coefficients: {repr(np.around(topp.alim_coeffs, 3))}..."
             )
             traj = topp.compute_spline_varying_alim()
-    cs = topp.truncate_cs_and_impose_natural_bc(traj.cspl)
+    traj = topp.truncate_traj(traj, parametrizer="ParametrizeSpline")
+    # Toppra goes a bit wider than a precise natural cubic spline.
+    # We could find the leftmost and rightmost common roots of all dof,
+    # which are the original end points, but that algorithm not guaranteed
+    # to converge below a sufficiently small error and is not efficient.
+    # We could also use scipy to respline naturally, but it only support
+    # one boundary condition, either zero velocity or zero accleration.
+    # Manually treat two ends to force both derivatives to be zero.
+    cs = impose_natural_bc(traj.cspl)
     logger.info(
-        f"Finished computing time-optimised trajectory of {cs.x.size} knots, "
-        f"duration: {traj.duration:.3f} s. "
+        f"Finished computing time-optimised CubicSpline trajectory of "
+        f"{cs.x.size} knots, duration: {traj.duration:.3f} s. "
     )
     logger.warning(
         "To preserve constraints, continuity, and boundary conditions, this "
@@ -301,7 +325,6 @@ def run_topp_spline(waypts, vlim, alim, verify_lims=True, return_cs=True):
     if return_cs:
         return cs
     return (
-        cs.x.size,
         np.ascontiguousarray(cs.x, dtype=np.float64),
         np.ascontiguousarray(cs.c, dtype=np.float64),
     )
@@ -315,7 +338,26 @@ def run_topp_const_accel(waypts, vlim, alim, cmd_rate=1000, verify_lims=True):
     Command rate is in Hz.
     """
     topp = DraculaToppra(waypts, vlim, alim)
+    traj = topp.compute_const_accel()
+    if verify_lims:
+        logger.info("Verifying that given limits are strictly obeyed...")
+        topp.lims_obeyed(traj, raise_2nd_order=True)
+    traj = topp.truncate_traj(traj, parametrizer="ParametrizeConstAccel")
 
+    t = np.arange(0, traj.duration, 1 / cmd_rate)  # duration is cut short
+    jnt_pos = traj(t)
+    assert np.linalg.norm(jnt_pos[[-1]] - waypts[-1]) < JNT_DIST_EPS, (
+        f"Time-optimised raw trajectory, ending at\n{jnt_pos[-1]},\n"
+        f"no longer arrives at the original ending waypoint\n"
+        f"{waypts[-1]}\n"
+        f"given JNT_DIST_EPS = {JNT_DIST_EPS}, usually because it is unable "
+        "to sufficiently cover the full duration. Try a higher command rate."
+    )
+    logger.info(
+        f"Finished computing time-optimised raw trajectory of "
+        f"{t.size} samples, duration: {traj.duration:.4f} -> {t[-1]:.4f} s. "
+    )
+    return t, jnt_pos
 
 
 def _find_waypts_indices(waypts, cs):
