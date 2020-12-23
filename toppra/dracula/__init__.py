@@ -116,7 +116,6 @@ class DraculaToppra:
 
         Either return None (all limits obeyed) or an array of coefficients
         for alims.
-        TODO(@dyt): add proper unit tests.
         """
         try:
             x = jnt_traj.cspl.x
