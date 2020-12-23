@@ -40,7 +40,7 @@ class TestRunToppJntCrt(unittest.TestCase):
         self.assertAlmostEqual(v_abs[-1].max(), 0)
         self.assertAlmostEqual(a_abs[0].max(), 0)
         self.assertAlmostEqual(a_abs[-1].max(), 0)
-        self.assertGreater(cs.x[-1], 0.619)
+        self.assertGreater(cs.x[-1], 0.479)
 
 
 if __name__ == "__main__":
