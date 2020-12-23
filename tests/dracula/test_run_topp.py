@@ -38,7 +38,6 @@ class TestRunTopp(unittest.TestCase):
                     verify_lims=True,
                 )
 
-    @unittest.skip("Awaiting implementation")
     def test_run_topp_const_accel_static_data(self):
         """Test run_topp_const_accel() using static test data."""
         for coeff in [1, 0.5, 0.2, 0.1, 0.05]:
