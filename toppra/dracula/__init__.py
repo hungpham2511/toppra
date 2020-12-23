@@ -279,9 +279,8 @@ def run_topp_spline(*args, **kwargs):
             )
             jnt_traj = topp.compute_with_varying_alim()
     cs = topp.truncate_cs_and_impose_natural_bc(jnt_traj.cspl)
-    n_knots = cs.x.size
     logger.info(
-        f"Finished computing time-optimised trajectory of {n_knots} knots, "
+        f"Finished computing time-optimised trajectory of {cs.x.size} knots, "
         f"duration: {jnt_traj.duration:.3f} s. "
     )
     logger.warning(
@@ -291,7 +290,7 @@ def run_topp_spline(*args, **kwargs):
     if return_cs:
         return cs
     return (
-        n_knots,
+        cs.x.size,
         np.ascontiguousarray(cs.x, dtype=np.float64),
         np.ascontiguousarray(cs.c, dtype=np.float64),
     )
