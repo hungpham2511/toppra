@@ -1,111 +1,168 @@
 """Unit test for the toppra.dracula.run_topp() wrapper."""
-import copy
 
-import matplotlib.pyplot as plt
+import glob
+import os
+import unittest
+
 import numpy as np
 
-from toppra.dracula import A_MAX, V_MAX, run_topp
+from toppra.dracula import A_MAX, V_MAX, run_topp_const_accel, run_topp_spline
 
 
-def run_topp_random(N_samples=30, return_cs=False):
-    """Random Traj."""
-    dof = 7
-    rand_waypts = np.random.rand(N_samples, dof)
-    vlim = np.asarray([1] * dof)
-    alim = np.asarray([2] * dof)
-    vlim = np.vstack([-vlim, vlim]).T
-    alim = np.vstack([-alim, alim]).T
-    return run_topp(
-        rand_waypts, vlim, alim, return_cs=return_cs, verify_lims=True
+class TestRunTopp(unittest.TestCase):
+    """Test RunTopp()."""
+
+    # setup test data only once as they aren't modified
+    paths = sorted(
+        glob.glob(
+            os.path.join(
+                os.path.dirname(os.path.abspath(__file__)),
+                "test_waypts_jnt_*.txt",
+            )
+        )
     )
+    waypts_list = [np.loadtxt(path) for path in paths]
+    v_max = np.vstack([-V_MAX, V_MAX]).T
+    a_max = np.vstack([-A_MAX, A_MAX]).T
+
+    def test_run_topp_spline_static_data_(self):
+        """Test run_topp_spline() using static test data."""
+        for coeff in [1, 0.5, 0.2, 0.1, 0.05]:
+            print(f"Testing with limit reduction coefficient: {coeff}...")
+            for i, waypts in enumerate(self.waypts_list):
+                print(f"Testing waypoints file {i}...")
+                run_topp_spline(
+                    waypts,
+                    coeff * self.v_max,
+                    coeff * self.a_max,
+                    verify_lims=True,
+                )
+
+    @unittest.skip("Awaiting implementation")
+    def test_run_topp_const_accel_static_data(self):
+        """Test run_topp_const_accel() using static test data."""
+        for coeff in [1, 0.5, 0.2, 0.1, 0.05]:
+            print(f"Testing with limit reduction coefficient: {coeff}...")
+            for i, waypts in enumerate(self.waypts_list):
+                print(f"Testing waypoints file {i}...")
+                run_topp_const_accel(
+                    waypts,
+                    coeff * self.v_max,
+                    coeff * self.a_max,
+                    cmd_rate=1000,
+                    verify_lims=True,
+                )
+
+    @staticmethod
+    def test_run_topp_spline_random_data():
+        """Test run_topp_spline() using randoms."""
+        # 2000 waypts supported but can be commented out for speed if needed
+        n_dof = 7
+        vlim = np.asarray([1] * n_dof)
+        alim = np.asarray([2] * n_dof)
+        vlim = np.vstack([-vlim, vlim]).T
+        alim = np.vstack([-alim, alim]).T
+        for n_waypts in [2, 20, 50, 200]:  # , 2000]:
+            print(f"Testing {n_waypts} random waypoints...")
+            waypts = np.random.rand(n_waypts, n_dof)
+            run_topp_spline(waypts, vlim, alim, verify_lims=True)
 
 
 if __name__ == "__main__":
-    # test using static test data
-    v_max = np.vstack([-V_MAX, V_MAX]).T
-    a_max = np.vstack([-A_MAX, A_MAX]).T
-    # two sets of vlims, alims, two reduction coefficients (safety factor)
-    for coeff in [1, 0.5, 0.2, 0.1, 0.05]:
-        print(f"limit reduction coefficient: {coeff}")
-        for i in range(5):
-            print(f"testing waypoints file {i}...")
-            waypts = np.loadtxt(
-                f"/src/toppra/tests/dracula/test_waypts_jnt_{i}.txt"
-            )  # (33, 7)
-            _ = run_topp(
-                waypts, coeff * v_max, coeff * a_max, verify_lims=True
-            )  # assert no throw
+    unittest.main()
 
-    # test using randoms
-    # 2000 is supported but commented out for speed
-    for n in [2, 20, 50, 200]:  # , 2000]:
-        print(f"Testing {n} random waypoints with no truncation...")
-        topp_breaks_count_final, _, _ = run_topp_random(n, False)
+    # import matplotlib.pyplot as plt
+    # # test using static test data
+    # v_max = np.vstack([-V_MAX, V_MAX]).T
+    # a_max = np.vstack([-A_MAX, A_MAX]).T
+    # # two sets of vlims, alims, two reduction coefficients (safety factor)
+    # for coeff in [1, 0.5, 0.2, 0.1, 0.05]:
+    #     print(f"limit reduction coefficient: {coeff}")
+    #     for i in range(5):
+    #         print(f"testing waypoints file {i}...")
+    #         waypts = np.loadtxt(
+    #             f"/src/toppra/tests/dracula/test_waypts_jnt_{i}.txt"
+    #         )  # (33, 7)
+    #         _ = run_topp(
+    #             waypts, coeff * v_max, coeff * a_max, verify_lims=True
+    #         )  # assert no throw
 
-    cspl = run_topp_random(return_cs=True)
+    # # test using randoms
+    # # 2000 is supported but commented out for speed
+    # for n in [2, 20, 50, 200]:  # , 2000]:
+    #     print(f"Testing {n} random waypoints with no truncation...")
+    #     topp_breaks_count_final, _, _ = run_topp_random(n, False)
 
-    # Plotting
-    csplcp = copy.deepcopy(cspl)
-    s_sampled = np.linspace(0, csplcp.x[-1], 100)
-    fig, axs = plt.subplots(1, 4, sharex=True, figsize=[18, 4])
-    for i in range(csplcp.c.shape[2]):
-        axs[0].plot(
-            s_sampled, csplcp(s_sampled)[:, i], label="J{:d}".format(i + 1)
-        )
-        axs[1].plot(
-            s_sampled, csplcp(s_sampled, 1)[:, i], label="J{:d}".format(i + 1)
-        )
-        axs[2].plot(
-            s_sampled, csplcp(s_sampled, 2)[:, i], label="J{:d}".format(i + 1)
-        )
-        axs[3].plot(
-            s_sampled, csplcp(s_sampled, 3)[:, i], label="J{:d}".format(i + 1)
-        )
-    axs[0].set_xlabel("Time (s)")
-    axs[0].set_ylabel("Joint position (rad)")
-    axs[1].set_xlabel("Time (s)")
-    axs[1].set_ylabel("Joint velocity (rad/s)")
-    axs[2].set_xlabel("Time (s)")
-    axs[2].set_ylabel("Joint acceleration (rad/s^2)")
-    axs[3].set_xlabel("Time (s)")
-    axs[3].set_ylabel("Joint jerk (rad/s^3)")
-    axs[0].legend()
-    axs[1].legend()
-    axs[2].legend()
-    axs[3].legend()
-    plt.tight_layout()
-    fig.suptitle("original")
-    # plt.show()
+    # # Plotting
+    # csplcp = copy.deepcopy(cspl)
+    # s_sampled = np.linspace(0, csplcp.x[-1], 100)
+    # fig, axs = plt.subplots(1, 4, sharex=True, figsize=[18, 4])
+    # for i in range(csplcp.c.shape[2]):
+    #     axs[0].plot(
+    #         s_sampled, csplcp(s_sampled)[:, i],
+    #         label="J{:d}".format(i + 1)
+    #     )
+    #     axs[1].plot(
+    #         s_sampled, csplcp(s_sampled, 1)[:, i],
+    #         label="J{:d}".format(i + 1)
+    #     )
+    #     axs[2].plot(
+    #         s_sampled, csplcp(s_sampled, 2)[:, i],
+    #         label="J{:d}".format(i + 1)
+    #     )
+    #     axs[3].plot(
+    #         s_sampled, csplcp(s_sampled, 3)[:, i],
+    #         label="J{:d}".format(i + 1)
+    #     )
+    # axs[0].set_xlabel("Time (s)")
+    # axs[0].set_ylabel("Joint position (rad)")
+    # axs[1].set_xlabel("Time (s)")
+    # axs[1].set_ylabel("Joint velocity (rad/s)")
+    # axs[2].set_xlabel("Time (s)")
+    # axs[2].set_ylabel("Joint acceleration (rad/s^2)")
+    # axs[3].set_xlabel("Time (s)")
+    # axs[3].set_ylabel("Joint jerk (rad/s^3)")
+    # axs[0].legend()
+    # axs[1].legend()
+    # axs[2].legend()
+    # axs[3].legend()
+    # plt.tight_layout()
+    # fig.suptitle("original")
+    # # plt.show()
 
-    s_sampled2 = np.linspace(0, cspl.x[-1], 100)
-    fig, axs = plt.subplots(1, 4, sharex=True, figsize=[18, 4])
-    for i in range(cspl.c.shape[2]):
-        axs[0].plot(
-            s_sampled2, cspl(s_sampled2)[:, i], label="J{:d}".format(i + 1)
-        )
-        axs[1].plot(
-            s_sampled2, cspl(s_sampled2, 1)[:, i], label="J{:d}".format(i + 1)
-        )
-        axs[2].plot(
-            s_sampled2, cspl(s_sampled2, 2)[:, i], label="J{:d}".format(i + 1)
-        )
-        axs[3].plot(
-            s_sampled2, cspl(s_sampled2, 3)[:, i], label="J{:d}".format(i + 1)
-        )
-    axs[0].set_xlabel("Time (s)")
-    axs[0].set_ylabel("Joint position (rad)")
-    axs[1].set_xlabel("Time (s)")
-    axs[1].set_ylabel("Joint velocity (rad/s)")
-    axs[2].set_xlabel("Time (s)")
-    axs[2].set_ylabel("Joint acceleration (rad/s^2)")
-    axs[3].set_xlabel("Time (s)")
-    axs[3].set_ylabel("Joint jerk (rad/s^3)")
-    axs[0].legend()
-    axs[1].legend()
-    axs[2].legend()
-    axs[3].legend()
-    plt.tight_layout()
-    fig.suptitle("new")
+    # s_sampled2 = np.linspace(0, cspl.x[-1], 100)
+    # fig, axs = plt.subplots(1, 4, sharex=True, figsize=[18, 4])
+    # for i in range(cspl.c.shape[2]):
+    #     axs[0].plot(
+    #         s_sampled2, cspl(s_sampled2)[:, i],
+    #         label="J{:d}".format(i + 1)
+    #     )
+    #     axs[1].plot(
+    #         s_sampled2, cspl(s_sampled2, 1)[:, i],
+    #         label="J{:d}".format(i + 1)
+    #     )
+    #     axs[2].plot(
+    #         s_sampled2, cspl(s_sampled2, 2)[:, i],
+    #         label="J{:d}".format(i + 1)
+    #     )
+    #     axs[3].plot(
+    #         s_sampled2, cspl(s_sampled2, 3)[:, i],
+    #         label="J{:d}".format(i + 1)
+    #     )
+    # axs[0].set_xlabel("Time (s)")
+    # axs[0].set_ylabel("Joint position (rad)")
+    # axs[1].set_xlabel("Time (s)")
+    # axs[1].set_ylabel("Joint velocity (rad/s)")
+    # axs[2].set_xlabel("Time (s)")
+    # axs[2].set_ylabel("Joint acceleration (rad/s^2)")
+    # axs[3].set_xlabel("Time (s)")
+    # axs[3].set_ylabel("Joint jerk (rad/s^3)")
+    # axs[0].legend()
+    # axs[1].legend()
+    # axs[2].legend()
+    # axs[3].legend()
+    # plt.tight_layout()
+    # fig.suptitle("new")
     # plt.show()
 
     # more debugging plots from code files
