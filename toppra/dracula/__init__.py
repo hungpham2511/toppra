@@ -110,7 +110,7 @@ class DraculaToppra:
         )
         self.alim_coeffs = np.ones(alim.shape[0])  # IV for multiplication
 
-    def lims_obeyed(self, jnt_traj, raise_2nd_order):
+    def lims_obeyed(self, traj, raise_2nd_order):
         """
         Verify that velocity and acceleration constraints are strictly obeyed.
 
@@ -118,11 +118,11 @@ class DraculaToppra:
         for alims.
         """
         try:
-            x = jnt_traj.cspl.x
+            x = traj.cspl.x
         except AttributeError:
-            x = jnt_traj._ts
+            x = traj._ts
         for order, lim in enumerate([self.vlim, self.alim], start=1):
-            deriv = jnt_traj(x, order)
+            deriv = traj(x, order)
             # get mask not satisfying both uppwer and lower lims
             i, j = np.where(~((lim[:, 0] < deriv) & (deriv < lim[:, 1])))
             if i.size or j.size:  # should be same size
@@ -154,22 +154,8 @@ class DraculaToppra:
                 return False
         return True
 
-    def _check_jnt_traj(self, jnt_traj):
-        if jnt_traj is None:  # toppra has failed
-            if self.min_pair_dist < DIST_EPS:  # duplicates are probably why
-                logger.error(
-                    "Duplicates not allowed in input waypoints. "
-                    "At least one pair of adjacent waypoints have "
-                    f"distance less than epsilon = {DIST_EPS}."
-                )
-            logger.error(
-                f"Failed waypts:\n{self.waypts}"
-                f"\nvlim:\n{self.vlim}\nalim:\n{self.alim}"
-            )
-            raise RuntimeError("Toppra failed to compute trajectory.")
-
-    def compute_with_varying_alim(self):
-        """One-pass compute spline-based jnt_traj using current alim."""
+    def compute_spline_varying_alim(self):
+        """Compute spline-based jnt_traj one-pass using current alim."""
         # Can be either Collocation (0) or Interpolation (1).
         # Interpolation gives more accurate results with
         # slightly higher computational cost
@@ -195,9 +181,37 @@ class DraculaToppra:
             solver_wrapper="seidel",
             parametrizer="ParametrizeSpline",
         )
-        jnt_traj = instance.compute_trajectory(0, 0)
-        self._check_jnt_traj(jnt_traj)
-        return jnt_traj
+        return self._compute_and_check_traj(instance)
+
+    def compute_const_accel(self):
+        pc_acc = constraint.JointAccelerationConstraint(
+            self.alim - np.sign(self.alim) * A_LIM_EPS,
+            discretization_scheme=constraint.DiscretizationType.Interpolation,
+        )
+        instance = algo.TOPPRA(
+            [self.pc_vel, pc_acc],
+            self.path,
+            solver_wrapper="seidel",
+            parametrizer="ParametrizeConstAccel",
+            gridpt_min_nb_points=1000,  # ensure eps ~ O(1e-2)
+        )
+        return self._compute_and_check_traj(instance)
+
+    def _compute_and_check_traj(self, instance):
+        traj = instance.compute_trajectory(0, 0)
+        if traj is None:  # toppra has failed
+            if self.min_pair_dist < DIST_EPS:  # duplicates are probably why
+                logger.error(
+                    "Duplicates not allowed in input waypoints. "
+                    "At least one pair of adjacent waypoints have "
+                    f"distance less than epsilon = {DIST_EPS}."
+                )
+            logger.error(
+                f"Failed waypts:\n{self.waypts}"
+                f"\nvlim:\n{self.vlim}\nalim:\n{self.alim}"
+            )
+            raise RuntimeError("Toppra failed to compute trajectory.")
+        return traj
 
     def truncate_cs_and_impose_natural_bc(self, cs):
         """Finish CubidSpline after it's settled and ready for return.
@@ -249,7 +263,7 @@ class DraculaToppra:
         return cs
 
 
-def run_topp_spline(*args, **kwargs):
+def run_topp_spline(waypts, vlim, alim, verify_lims=True, return_cs=True):
     """Call toppra obeying velocity and acceleration limits and naturalness.
 
     Use of run_topp_const_accel() or run_topp_jnt_crt() is encouraged for
@@ -265,22 +279,20 @@ def run_topp_spline(*args, **kwargs):
         verify_lims     bool
         return_cs       cs
     """
-    verify_lims = kwargs.pop("verify_lims", True)
-    return_cs = kwargs.pop("return_cs", False)
-    topp = DraculaToppra(*args, **kwargs)
-    jnt_traj = topp.compute_with_varying_alim()
+    topp = DraculaToppra(waypts, vlim, alim)
+    traj = topp.compute_spline_varying_alim()
     if verify_lims:  # flag for checking if vlim is obeyed
         logger.info("Verifying that given limits are strictly obeyed...")
-        while not topp.lims_obeyed(jnt_traj, raise_2nd_order=False):
+        while not topp.lims_obeyed(traj, raise_2nd_order=False):
             logger.info(
                 "Current iteration violates acceleration limits, trying "
                 f"new coefficients: {repr(np.around(topp.alim_coeffs, 3))}..."
             )
-            jnt_traj = topp.compute_with_varying_alim()
-    cs = topp.truncate_cs_and_impose_natural_bc(jnt_traj.cspl)
+            traj = topp.compute_spline_varying_alim()
+    cs = topp.truncate_cs_and_impose_natural_bc(traj.cspl)
     logger.info(
         f"Finished computing time-optimised trajectory of {cs.x.size} knots, "
-        f"duration: {jnt_traj.duration:.3f} s. "
+        f"duration: {traj.duration:.3f} s. "
     )
     logger.warning(
         "To preserve constraints, continuity, and boundary conditions, this "
@@ -302,20 +314,8 @@ def run_topp_const_accel(waypts, vlim, alim, cmd_rate=1000, verify_lims=True):
     violate the constraints. Must evaluate on the result directly.
     Command rate is in Hz.
     """
-    # min_pair_dist, path_length_limit, path, pc_vel = _common_prep(
-    #     waypts, vlim, alim
-    # )
-    # pc_acc = constraint.JointAccelerationConstraint(
-    #     alim - np.sign(alim) * A_LIM_EPS,
-    #     discretization_scheme=constraint.DiscretizationType.Interpolation,
-    # )
-    # instance = algo.TOPPRA(
-    #     [pc_vel, pc_acc],
-    #     path,
-    #     solver_wrapper="seidel",
-    #     parametrizer="ParametrizeSpline",
-    #     gridpt_min_nb_points=2000,  # ensure eps ~ O(1e-2)
-    # )
+    topp = DraculaToppra(waypts, vlim, alim)
+
 
 
 def _find_waypts_indices(waypts, cs):
