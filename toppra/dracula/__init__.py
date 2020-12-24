@@ -279,7 +279,7 @@ class DraculaToppra:
         return traj
 
 
-def run_topp_spline(waypts, vlim, alim, verify_lims=True, return_cs=True):
+def run_topp_spline(waypts, vlim, alim, verify_lims=True, return_cs=False):
     """Call toppra obeying velocity and acceleration limits and naturalness.
 
     Use of run_topp_const_accel() or run_topp_jnt_crt() is encouraged for
@@ -315,7 +315,7 @@ def run_topp_spline(waypts, vlim, alim, verify_lims=True, return_cs=True):
     # Manually treat two ends to force both derivatives to be zero.
     cs = impose_natural_bc(traj.cspl)
     logger.info(
-        f"Finished computing time-optimised CubicSpline trajectory of "
+        f"Finished computing time-optimised cubic spline trajectory of "
         f"{cs.x.size} knots, duration: {traj.duration:.3f} s. "
     )
     logger.warning(
