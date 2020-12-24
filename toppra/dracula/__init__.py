@@ -325,6 +325,7 @@ def run_topp_spline(waypts, vlim, alim, verify_lims=True, return_cs=True):
     if return_cs:
         return cs
     return (
+        cs.x.size,
         np.ascontiguousarray(cs.x, dtype=np.float64),
         np.ascontiguousarray(cs.c, dtype=np.float64),
     )
@@ -357,7 +358,7 @@ def run_topp_const_accel(waypts, vlim, alim, cmd_rate=1000, verify_lims=True):
         f"Finished computing time-optimised raw trajectory of "
         f"{t.size} samples, duration: {traj.duration:.4f} -> {t[-1]:.4f} s. "
     )
-    return t, jnt_pos
+    return t.size, t, jnt_pos
 
 
 def _find_waypts_indices(waypts, cs):
