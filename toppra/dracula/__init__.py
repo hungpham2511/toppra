@@ -22,7 +22,7 @@ ta.setup_logging("INFO")
 # min epsilon for treating two angles the same, positive float
 JNT_DIST_EPS = 2e-3  # nominally defined as L2 norm in joint space, i.e. in rad
 # toppra does not respect velocity limit precisely
-V_LIM_EPS = 0.01  # 0.09
+V_LIM_EPS = 0.12
 A_LIM_EPS = 0.07
 # https://frankaemika.github.io/docs/control_parameters.html#constants
 V_MAX = np.array([2.1750, 2.1750, 2.1750, 2.1750, 2.6100, 2.6100, 2.6100])
