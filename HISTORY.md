@@ -13,6 +13,9 @@
 - [cpp] [#143][#143] Add PathParametrizationAlgorithm::setGridpoints
 - [cpp] [#146][#146] Add constraint::CartesianVelocityNorm
 
+### Changed
+- [cpp] [#153] Fix variable mismatch in constraint::CartesianVelocityNorm
+
 ## 0.3.1 (Aug 23 2020)
 
 ### Added
