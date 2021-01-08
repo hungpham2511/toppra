@@ -16,7 +16,6 @@
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
@@ -71,21 +70,22 @@
 <li><a class="reference internal" href="#">History</a><ul>
 <li><a class="reference internal" href="#unrelease">Unrelease</a><ul>
 <li><a class="reference internal" href="#added">Added</a></li>
+<li><a class="reference internal" href="#changed">Changed</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#aug-23-2020">0.3.1 (Aug 23 2020)</a><ul>
 <li><a class="reference internal" href="#id1">Added</a></li>
-<li><a class="reference internal" href="#changed">Changed</a></li>
+<li><a class="reference internal" href="#id2">Changed</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#may-3-2020">0.3.0 (May 3 2020)</a><ul>
-<li><a class="reference internal" href="#id2">Added</a></li>
-<li><a class="reference internal" href="#id3">Changed</a></li>
+<li><a class="reference internal" href="#id3">Added</a></li>
+<li><a class="reference internal" href="#id4">Changed</a></li>
 <li><a class="reference internal" href="#removed">Removed</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#jan-25-2020">0.2.3 (Jan 25 2020)</a></li>
-<li><a class="reference internal" href="#id4">&lt;0.2.3</a></li>
+<li><a class="reference internal" href="#id5">&lt;0.2.3</a></li>
 </ul>
 </li>
 </ul>
@@ -134,6 +134,12 @@
 <li><p>[cpp] [#146][#146] Add constraint::CartesianVelocityNorm</p></li>
 </ul>
 </div>
+<div class="section" id="changed">
+<h3>Changed<a class="headerlink" href="#changed" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>[cpp] [#153] Fix variable mismatch in constraint::CartesianVelocityNorm</p></li>
+</ul>
+</div>
 </div>
 <div class="section" id="aug-23-2020">
 <h2>0.3.1 (Aug 23 2020)<a class="headerlink" href="#aug-23-2020" title="Permalink to this headline">¶</a></h2>
@@ -149,8 +155,8 @@
 <li><p>[python] <a class="reference external" href="https://github.com/hungpham2511/toppra/pull/117">#117</a> Post-processing is now done via parametrizer classes.</p></li>
 </ul>
 </div>
-<div class="section" id="changed">
-<h3>Changed<a class="headerlink" href="#changed" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id2">
+<h3>Changed<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>[python]Add some type annotations to parameterizer.py</p></li>
 <li><p>[python]Support older interpolation method.</p></li>
@@ -167,16 +173,16 @@
 <div class="section" id="may-3-2020">
 <h2>0.3.0 (May 3 2020)<a class="headerlink" href="#may-3-2020" title="Permalink to this headline">¶</a></h2>
 <p>Major release! Implement TOPPRA in C++ and several improvements to Python codebase.</p>
-<div class="section" id="id2">
-<h3>Added<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id3">
+<h3>Added<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>[cpp] Add solver wrapper based on GLPK.</p></li>
 <li><p>[cpp] Initial cpp TOPPRA implementation: compute parametrization, feasible sets, qpOASES solver wrapper.</p></li>
 <li><p>[python] Implement a new trajectory class for specified velocities.</p></li>
 </ul>
 </div>
-<div class="section" id="id3">
-<h3>Changed<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id4">
+<h3>Changed<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>[python] Improve documentation for <code class="docutils literal notranslate"><span class="pre">toppra.constraint</span></code></p></li>
 <li><p>[python] #98: Eliminate use of deprecated method.</p></li>
@@ -201,8 +207,8 @@
 <li><p>Auto-gridpoints feature (#73)</p></li>
 </ul>
 </div>
-<div class="section" id="id4">
-<h2>&lt;0.2.3<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id5">
+<h2>&lt;0.2.3<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Many commits and features.</p></li>
 </ul>
@@ -220,7 +226,7 @@
       &copy;2020, Hung Pham.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
