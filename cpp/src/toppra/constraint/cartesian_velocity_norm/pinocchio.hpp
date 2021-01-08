@@ -32,7 +32,7 @@ class Pinocchio : public CartesianVelocityNorm {
 
     void computeVelocity (const Vector& q, const Vector& qdot, Vector& v)
     {
-      pinocchio::forwardKinematics(m_model, m_data, q, v);
+      pinocchio::forwardKinematics(m_model, m_data, q, qdot);
       v = pinocchio::getFrameVelocity(m_model, m_data, m_frame_id, m_reference_frame).toVector();
     }
 
