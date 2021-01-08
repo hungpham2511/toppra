@@ -37,6 +37,11 @@ ReturnCode PathParametrizationAlgorithm::computeControllableSets(
 
   Matrix H;
   Bound x, x_next;
+  /// \todo The hard-coded bound below avoids numerical issues in LP / QP solvers
+  /// when \f$ x \f$ becomes too big. This issue should be addressed in the
+  /// solver wrapper themselfves as numerical behaviors is proper to each
+  /// individual solver.
+  /// See https://github.com/hungpham2511/toppra/issues/156
   x << 0, 100;
   x_next << 0, 1;
   for (std::size_t i = m_N - 1; i != (std::size_t)-1; i--) {
