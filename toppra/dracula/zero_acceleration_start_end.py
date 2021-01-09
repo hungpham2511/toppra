@@ -51,3 +51,4 @@ def impose_natural_bc(cspl):
     xend, cend = ThreeSegmentSpline(Ps, Vs, As, Pe, Ve, Ae, deltaTimeEnd)
 
     insert_at_start_end_of_cspl(cspl, xstart, cstart, xend, cend)
+    return cspl  # still return even if we've modified in-place
