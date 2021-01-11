@@ -8,6 +8,7 @@ set(SOURCE_FILES
   toppra/constraint/cartesian_velocity_norm.cpp
 
   toppra/solver.cpp
+  toppra/solver/seidel.cpp
 
   toppra/geometric_path.cpp
   toppra/geometric_path/piecewise_poly_path.cpp
@@ -98,4 +99,5 @@ install(FILES
 install(FILES
   toppra/solver/qpOASES-wrapper.hpp
   toppra/solver/glpk-wrapper.hpp
+  toppra/solver/seidel.hpp
   DESTINATION include/toppra/solver)
