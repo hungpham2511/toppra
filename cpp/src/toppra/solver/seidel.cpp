@@ -85,14 +85,14 @@ LpSol solve_lp1d(const RowVector2& v, const Eigen::MatrixBase<Derived>& A)
         cur_min = cur_x;
         active_c_min = i;
       }
-    } else {
-      // a[i] is approximately zero. do nothing.
-      // TODO shouldn't we check that b is zero b <= 0 ? otherwise, the problem
-      // is not feasible.
+    } else if (b[i] > SMALL) {
+      TOPPRA_LOG_DEBUG("Seidel LP 1D: constraint " << i << " infeasible.");
+      return INFEASIBLE;
     }
+    // else a[i] is approximately zero. do nothing.
   }
 
-  if (cur_min > cur_max)
+  if (cur_min - cur_max > SMALL)
     return INFEASIBLE;
 
   if (abs(v[0]) < TINY || v[0] < 0) {
@@ -272,7 +272,6 @@ LpSol solve_lp2d(const RowVector2& v,
               d_tan, zero_prj, denom, t_limit);
           break;
         default: // handle other constraint
-          Aj = A.row(index_map[j]);
           internal::compute_denom_and_t_limit(A.row(index_map[j]),
               d_tan, zero_prj, denom, t_limit);
       }
@@ -399,9 +398,9 @@ void Seidel::initialize (const LinearConstraintPtrs& constraints, const Geometri
 
   // init constraint coefficients for the 1d LPs
   m_A_1d = MatrixX2::Zero(nC + 4, 2);
-  index_map.resize(nC, 0);
-  active_c_up.fill(0);
-  active_c_down.fill(0);
+  m_index_map.resize(nC, 0);
+  m_active_c_up.fill(0);
+  m_active_c_down.fill(0);
 }
 
 bool Seidel::solveStagewiseOptim(std::size_t i,
@@ -446,16 +445,16 @@ bool Seidel::solveStagewiseOptim(std::size_t i,
   // warmstarting feature: one in two solvers, upper and lower,
   // is be selected depending on the sign of g[1]
   bool upper (g[1] > 0);
-  auto& active_c = (upper ? active_c_up : active_c_down);
+  auto& active_c = (upper ? m_active_c_up : m_active_c_down);
   // solver selected:
   // - upper: when computing the lower bound of the controllable set.
   // - lower: when computing the lower bound of the controllable set,
   //          or computing the parametrization in the forward pass.
   seidel::LpSol lpsol = seidel::solve_lp2d(v, m_A[i],
-      low, high, active_c, true, index_map, m_A_1d);
+      low, high, active_c, true, m_index_map, m_A_1d);
   if (lpsol.feasible) {
     solution = lpsol.optvar;
-    (upper ? active_c_up : active_c_down) = lpsol.active_c;
+    active_c = lpsol.active_c;
     return true;
   }
   TOPPRA_LOG_DEBUG("Seidel: solver fails (upper ? " << upper << ')');

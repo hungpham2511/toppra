@@ -15,7 +15,7 @@ namespace solver {
  * */
 class Seidel : public Solver {
   public:
-    Seidel () {}
+    Seidel () = default;
 
     void initialize (const LinearConstraintPtrs& constraints, const GeometricPathPtr& path,
         const Vector& times);
@@ -34,8 +34,8 @@ class Seidel : public Solver {
     MatrixX2 m_low, m_high;
 
     MatrixX2 m_A_1d;
-    std::vector<int> index_map;
-    std::array<int, 2> active_c_up, active_c_down;
+    std::vector<int> m_index_map;
+    std::array<int, 2> m_active_c_up, m_active_c_down;
 }; // class Seidel
 
 } // namespace solver
