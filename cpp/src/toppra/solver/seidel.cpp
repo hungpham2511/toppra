@@ -112,6 +112,19 @@ LpSol solve_lp1d(const RowVector2& v, const Eigen::MatrixBase<Derived>& A)
   }
 }
 
+namespace internal {
+  // projective coefficients to the line
+  // add respective coefficients to A_1d
+  template<typename Derived>
+  void compute_denom_and_t_limit (const Eigen::MatrixBase<Derived>& Aj,
+      const Vector2& d_tan, const Vector2& zero_prj,
+      value_type& denom, value_type& t_limit)
+  {
+    denom = Aj.template head<2>() * d_tan;
+    t_limit = value(Aj, zero_prj);
+  }
+}
+
 /**
 Solve a LP with two variables.
 
@@ -240,42 +253,43 @@ LpSol solve_lp2d(const RowVector2& v,
     // project 4 + k constraints onto the parallel line. each
     // constraint occupies a row of A_1d.
     for (int j = 0; j < 4 + k; ++j) { // nb rows 1d.
-      RowVector3 Aj;
+      value_type denom, t_limit;
       switch (j-k) {
         case 0: // j == k: handle low <= x
-          Aj << -1, 0, low[0];
+          internal::compute_denom_and_t_limit(RowVector3 { -1., 0., low[0] },
+              d_tan, zero_prj, denom, t_limit);
           break;
         case 1: // j == k + 1: handle x <= high
-          Aj << 1, 0, -high[0];
+          internal::compute_denom_and_t_limit(RowVector3 { 1., 0., -high[0] },
+              d_tan, zero_prj, denom, t_limit);
           break;
         case 2: // j == k + 2: handle low <= y
-          Aj << 0, -1, low[1];
+          internal::compute_denom_and_t_limit(RowVector3 { 0., -1., low[1] },
+              d_tan, zero_prj, denom, t_limit);
           break;
         case 3: // j == k + 3: handle y <= high
-          Aj << 0, 1, -high[1];
+          internal::compute_denom_and_t_limit(RowVector3 { 0., 1., -high[1] },
+              d_tan, zero_prj, denom, t_limit);
           break;
         default: // handle other constraint
           Aj = A.row(index_map[j]);
+          internal::compute_denom_and_t_limit(A.row(index_map[j]),
+              d_tan, zero_prj, denom, t_limit);
       }
 
-      // projective coefficients to the line
-      value_type denom = Aj.head<2>() * d_tan;
-
-      // add respective coefficients to a_1d and b_1d
-      value_type t_limit = value(Aj, zero_prj);
       if (denom > TINY)
         A_1d.row(j) <<  1.,  t_limit / denom;
       else if (denom < -TINY)
         A_1d.row(j) << -1., -t_limit / denom;
       else {
-        // Current constraint is parallel to the base one. Check if they are
-        // infeasible, in which case return failure immediately.
+        // Current constraint is parallel to the base one.
+        // if infeasible, return failure.
         if (t_limit > SMALL) {
           TOPPRA_LOG_DEBUG("Seidel: infeasible constraint. t_limit = " << t_limit
               << ", denom = " << denom);
           return INFEASIBLE;
         }
-        // feasible constraints, specify 0 <= 1
+        // Otherwise, specify 0 <= 1
         A_1d.row(j) << 0, -1.;
       }
     }
