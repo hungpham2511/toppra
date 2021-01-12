@@ -78,7 +78,7 @@ TEST_F(ProblemInstance, GridpointsHasCorrectShape) {
   toppra::algorithm::TOPPRA problem{v, path};
   problem.setN(50);
   problem.computePathParametrization();
-  auto data = problem.getParameterizationData();
+  const auto& data = problem.getParameterizationData();
 
   ASSERT_EQ(data.gridpoints.size(), 51);
   ASSERT_TRUE(data.gridpoints.isApprox(toppra::Vector::LinSpaced(51, 0, 3)));
@@ -88,7 +88,7 @@ TEST_F(ProblemInstance, ControllableSets) {
   toppra::algorithm::TOPPRA problem{v, path};
   problem.setN(50);
   auto ret_code = problem.computePathParametrization();
-  auto data = problem.getParameterizationData();
+  const auto& data = problem.getParameterizationData();
   toppra::Vector e_K_max(51);
   e_K_max << 0.06666667, 0.07624309, 0.08631706, 0.09690258, 0.1005511, 0.09982804,
       0.09979021, 0.1004364, 0.10178673, 0.10184412, 0.09655088, 0.09173679, 0.08734254,
@@ -110,7 +110,7 @@ TEST_F(ProblemInstance, OutputParmetrization) {
   toppra::algorithm::TOPPRA problem{v, path};
   problem.setN(50);
   auto ret_code = problem.computePathParametrization();
-  auto data = problem.getParameterizationData();
+  const auto& data = problem.getParameterizationData();
   toppra::Vector expected_parametrization(51);
   expected_parametrization << 0., 0.00799999, 0.01559927, 0.02295854, 0.03021812,
       0.0375065, 0.04494723, 0.05266502, 0.06079176, 0.06947278, 0.07887417, 0.08890758,
@@ -138,7 +138,7 @@ TEST_F(ProblemInstance, FeasibleSets) {
   toppra::algorithm::TOPPRA problem{v, path};
   problem.setN(50);
   auto ret_code = problem.computeFeasibleSets();
-  auto data = problem.getParameterizationData();
+  const auto& data = problem.getParameterizationData();
   toppra::Vector expected_feasible_max(51);
   expected_feasible_max << 0.06666667, 0.07624309, 0.08631706, 0.09690258, 0.1005511,
       0.09982804, 0.09979021, 0.1004364, 0.10178673, 0.10388394, 0.10679654, 0.11062383,

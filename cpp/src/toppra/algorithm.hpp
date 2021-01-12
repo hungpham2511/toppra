@@ -80,7 +80,7 @@ class PathParametrizationAlgorithm {
 
   /** \brief Get output or result of algorithm.
    */
-  ParametrizationData getParameterizationData() const { return m_data; };
+  const ParametrizationData& getParameterizationData() const { return m_data; };
 
   /** Compute the time parametrization of the given path.
    *
