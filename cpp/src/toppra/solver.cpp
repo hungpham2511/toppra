@@ -9,6 +9,7 @@
 #ifdef BUILD_WITH_GLPK
 #include <toppra/solver/glpk-wrapper.hpp>
 #endif
+#include <toppra/solver/seidel.hpp>
 
 namespace toppra {
 
@@ -18,7 +19,7 @@ SolverPtr Solver::createDefault() {
 #elif BUILD_WITH_GLPK
     return std::make_shared<solver::GLPKWrapper>();
 #else
-    return SolverPtr();
+    return std::make_shared<solver::Seidel>();
 #endif
 }
 
