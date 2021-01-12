@@ -7,6 +7,13 @@
 #include <toppra/geometric_path.hpp>
 #include <toppra/geometric_path/piecewise_poly_path.hpp>
 #include <toppra/parametrizer/const_accel.hpp>
+#ifdef BUILD_WITH_qpOASES
+#include <toppra/solver/qpOASES-wrapper.hpp>
+#endif
+#ifdef BUILD_WITH_GLPK
+#include <toppra/solver/glpk-wrapper.hpp>
+#endif
+#include <toppra/solver/seidel.hpp>
 #include <toppra/toppra.hpp>
 
 #include "gtest/gtest.h"
@@ -50,6 +57,7 @@ feasible_sets = instance.compute_feasible_sets().
  */
 // clang-format on
 
+template<typename Solver>
 class ProblemInstance : public testing::Test {
  public:
   ProblemInstance() {
@@ -74,21 +82,26 @@ class ProblemInstance : public testing::Test {
   int nDof = 2;
 };
 
-TEST_F(ProblemInstance, GridpointsHasCorrectShape) {
-  toppra::algorithm::TOPPRA problem{v, path};
+using SolverTypes = ::testing::Types<
+#ifdef BUILD_WITH_qpOASES
+  toppra::solver::qpOASESWrapper,
+#endif
+#ifdef BUILD_WITH_GLPK
+  // toppra::solver::GLPKWrapper, // Failure due to numerical issue.
+#endif
+  toppra::solver::Seidel>;
+TYPED_TEST_SUITE(ProblemInstance, SolverTypes);
+
+TYPED_TEST(ProblemInstance, ControllableSets) {
+  toppra::algorithm::TOPPRA problem{this->v, this->path};
   problem.setN(50);
-  problem.computePathParametrization();
+  problem.solver(std::make_shared<TypeParam>());
+  auto ret_code = problem.computePathParametrization();
   const auto& data = problem.getParameterizationData();
 
   ASSERT_EQ(data.gridpoints.size(), 51);
   ASSERT_TRUE(data.gridpoints.isApprox(toppra::Vector::LinSpaced(51, 0, 3)));
-}
 
-TEST_F(ProblemInstance, ControllableSets) {
-  toppra::algorithm::TOPPRA problem{v, path};
-  problem.setN(50);
-  auto ret_code = problem.computePathParametrization();
-  const auto& data = problem.getParameterizationData();
   toppra::Vector e_K_max(51);
   e_K_max << 0.06666667, 0.07624309, 0.08631706, 0.09690258, 0.1005511, 0.09982804,
       0.09979021, 0.1004364, 0.10178673, 0.10184412, 0.09655088, 0.09173679, 0.08734254,
@@ -106,9 +119,10 @@ TEST_F(ProblemInstance, ControllableSets) {
         << "idx: " << i;
 }
 
-TEST_F(ProblemInstance, OutputParmetrization) {
-  toppra::algorithm::TOPPRA problem{v, path};
+TYPED_TEST(ProblemInstance, OutputParmetrization) {
+  toppra::algorithm::TOPPRA problem{this->v, this->path};
   problem.setN(50);
+  problem.solver(std::make_shared<TypeParam>());
   auto ret_code = problem.computePathParametrization();
   const auto& data = problem.getParameterizationData();
   toppra::Vector expected_parametrization(51);
@@ -134,9 +148,10 @@ TEST_F(ProblemInstance, OutputParmetrization) {
   EXPECT_DOUBLE_EQ(data.parametrization(50), 0);
 }
 
-TEST_F(ProblemInstance, FeasibleSets) {
-  toppra::algorithm::TOPPRA problem{v, path};
+TYPED_TEST(ProblemInstance, FeasibleSets) {
+  toppra::algorithm::TOPPRA problem{this->v, this->path};
   problem.setN(50);
+  problem.solver(std::make_shared<TypeParam>());
   auto ret_code = problem.computeFeasibleSets();
   const auto& data = problem.getParameterizationData();
   toppra::Vector expected_feasible_max(51);
@@ -158,14 +173,15 @@ TEST_F(ProblemInstance, FeasibleSets) {
         << ", abs diff=" << data.parametrization(i) - expected_feasible_max(i);
 }
 
-TEST_F(ProblemInstance, ParametrizeOutputTrajectory) {
-  toppra::algorithm::TOPPRA problem{v, path};
+TYPED_TEST(ProblemInstance, ParametrizeOutputTrajectory) {
+  toppra::algorithm::TOPPRA problem{this->v, this->path};
   problem.setN(50);
+  problem.solver(std::make_shared<TypeParam>());
   auto ret_code = problem.computePathParametrization();
 
   TOPPRA_LOG_DEBUG("Pre constructed");
   toppra::parametrizer::ConstAccel output_traj{
-      path, problem.getParameterizationData().gridpoints,
+      this->path, problem.getParameterizationData().gridpoints,
       problem.getParameterizationData().parametrization};
 
   // Qualitative assertion
@@ -175,9 +191,9 @@ TEST_F(ProblemInstance, ParametrizeOutputTrajectory) {
   auto interval = output_traj.pathInterval();
 
   // Qualitative assertion
-  for (int i = 0; i < path->dof(); i++) {
-    ASSERT_EQ(output_traj.eval_single(0)[i], path->eval_single(0)[i]);
+  for (int i = 0; i < this->path->dof(); i++) {
+    ASSERT_EQ(output_traj.eval_single(0)[i], this->path->eval_single(0)[i]);
     ASSERT_EQ(output_traj.eval_single(output_traj.pathInterval()[1])[i],
-              path->eval_single(path->pathInterval()[1])[i]);
+              this->path->eval_single(this->path->pathInterval()[1])[i]);
   }
 }
