@@ -34,7 +34,13 @@ class TestRunToppJntCrt(unittest.TestCase):
     alim_crt = 10 * lim_ones  # m/s^2
 
     def test_run_topp_jnt_crt(self):
-        """Test run_topp_jnt_crt(), just assert no throw."""
+        """Test case for run_topp_jnt_crt().
+
+        Test that run_topp_jnt_crt() runs through fine, that the first and
+        second derivatives are all zero at both ends, and that the new runtime
+        is indeed extended compared to the joint-space-only calculation for
+        the known test case due the the addition of Cartesian v & a limits.
+        """
         for i, (waypts_jnt, waypts_crt) in enumerate(
             zip(self.waypts_jnt_list, self.waypts_crt_list)
         ):
