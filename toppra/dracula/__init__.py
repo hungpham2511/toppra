@@ -406,7 +406,7 @@ def run_topp_jnt_crt(
 ):
     """Optimise joint-space trajectory with additional cartesian limits.
 
-    Only spline parameteriser is supported as this module has no access to IK,
+    Only spline parameteriser is supported as this module has no access to FK,
     and the Cartesian limits are incorporated by matching the waypoints.
     """
     logger.info("Optimising joint-space trajectory...")
