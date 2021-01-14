@@ -83,8 +83,8 @@ class DraculaToppra:
             f"\n{vlim}"
         )
         assert (np.abs(alim.flatten()) > A_LIM_EPS).all(), (
-            f"vlim magnitude must be larger than V_LIM_EPS = {A_LIM_EPS}:"
-            f"\n{vlim}"
+            f"alim magnitude must be larger than A_LIM_EPS = {A_LIM_EPS}:"
+            f"\n{alim}"
         )
         # check for duplicates
         self.min_pair_dist, t_sum = _check_waypts(waypts, vlim)
