@@ -107,11 +107,13 @@ bool qpOASESWrapper::solveStagewiseOptim(std::size_t i,
     }
   }
 
-  TOPPRA_LOG_DEBUG("lA: " << std::endl << m_lA);
-  TOPPRA_LOG_DEBUG("hA: " << std::endl << m_hA);
-  TOPPRA_LOG_DEBUG(" A: " << std::endl << m_A);
-  TOPPRA_LOG_DEBUG("l : " << std::endl << l);
-  TOPPRA_LOG_DEBUG("h : " << std::endl << h);
+  TOPPRA_LOG_DEBUG("qpOASES QP:\n"
+      << "g: " << g.transpose() << '\n'
+      << "lA: " << m_lA.transpose() << '\n'
+      << "hA: " << m_hA.transpose() << '\n'
+      << "l: " << l << '\n'
+      << "h: " << h << '\n'
+      << "A:\n" << m_A);
 
   qpOASES::returnValue res;
   // TODO I assumed 1000 is the argument nWSR of the SQProblem.init function.
@@ -151,7 +153,14 @@ bool qpOASESWrapper::solveStagewiseOptim(std::size_t i,
   if (res == qpOASES::SUCCESSFUL_RETURN) {
     solution.resize(nbVars());
     m_impl->qp.getPrimalSolution(solution.data());
-    TOPPRA_LOG_DEBUG("solution: " << solution);
+    TOPPRA_LOG_DEBUG("solution: " << solution.transpose());
+#ifdef TOPPRA_DEBUG_ON
+    {
+      Vector lambdas (m_impl->qp.getNV() + m_impl->qp.getNC());
+      m_impl->qp.getDualSolution(lambdas.data());
+      TOPPRA_LOG_DEBUG("dual solution: " << lambdas.transpose());
+    }
+#endif
     solution = solution.cwiseMax(l.transpose());
     solution = solution.cwiseMin(h.transpose());
     assert((solution.transpose().array() <= h.array()).all());
