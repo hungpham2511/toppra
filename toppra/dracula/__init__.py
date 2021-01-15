@@ -77,6 +77,15 @@ class DraculaToppra:
         """Initialise with session data and perform common initial prep."""
         if any(map(os.getenv, ["SIM_ROBOT", "TOPPRA_DEBUG"])):
             _dump_input_data(waypts=waypts, vlim=vlim, alim=alim)
+        # check vlim and alim are sufficiently large, at least eps
+        assert (np.abs(vlim.flatten()) > V_LIM_EPS).all(), (
+            f"vlim magnitude must be larger than V_LIM_EPS = {V_LIM_EPS}:"
+            f"\n{vlim}"
+        )
+        assert (np.abs(alim.flatten()) > A_LIM_EPS).all(), (
+            f"alim magnitude must be larger than A_LIM_EPS = {A_LIM_EPS}:"
+            f"\n{alim}"
+        )
         # check for duplicates
         self.min_pair_dist, t_sum = _check_waypts(waypts, vlim)
         if self.min_pair_dist < JNT_DIST_EPS:  # issue a warning and try anyway
@@ -369,7 +378,9 @@ def _find_waypts_indices(waypts, cs):
         waypt_min_err = float("inf")  # always reset error for current waypt
         while k < cs.x.size:
             err = np.linalg.norm(cs(cs.x[k]) - waypt)
-            if err <= waypt_min_err:
+            if err <= waypt_min_err + (i > 0) * JNT_DIST_EPS:
+                # for non-initial point, error may fluctuate up to eps
+                # only call it farther if it's farther than min + eps
                 waypt_min_err = err
             else:  # we've found the closest knot at the previous knot, k-1
                 idx[i] = k - 1
@@ -395,7 +406,8 @@ def run_topp_jnt_crt(
 ):
     """Optimise joint-space trajectory with additional cartesian limits.
 
-    Only spline parameteriser is supported.
+    Only spline parameteriser is supported as this module has no access to FK,
+    and the Cartesian limits are incorporated by matching the waypoints.
     """
     logger.info("Optimising joint-space trajectory...")
     cs_jnt = run_topp_spline(
