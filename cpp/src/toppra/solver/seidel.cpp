@@ -29,6 +29,14 @@ namespace internal {
   }
 }
 
+#define TOPPRA_SEIDEL_LP2D(w,X)                         \
+  TOPPRA_LOG_##w("Seidel LP 2D:\n"                      \
+      << "v: " << v << '\n'                             \
+      << "A:\n" << A << '\n'                            \
+      << low[0] << "\t<= x[0] <= " << high[0] << '\n'    \
+      << low[1] << "\t<= x[1] <= " << high[1] << '\n'    \
+      << X);
+
 LpSol solve_lp2d(const RowVector2& v,
     const MatrixX3& A,
     const Vector2& low, const Vector2& high,
@@ -47,12 +55,7 @@ LpSol solve_lp2d(const RowVector2& v,
   LpSol sol;
 
   // print all input to the algorithm
-  TOPPRA_LOG_DEBUG("Seidel LP 2D:\n"
-      << "v: " << v << '\n'
-      << "A:\n" << A << '\n'
-      << "lo: " << low .transpose() << '\n'
-      << "hi: " << high.transpose() << '\n'
-      );
+  TOPPRA_SEIDEL_LP2D(DEBUG, "");
 
   if (use_cache) {
     assert(index_map.size() == nrows);
@@ -69,12 +72,8 @@ LpSol solve_lp2d(const RowVector2& v,
   for (int i = 0; i < 2; ++i) {
     if (low[i] > high[i]) {
       if (low[i] > high[i] + TINY) {
-        TOPPRA_LOG_WARN("Seidel LP 2D:\n"
-            << "v: " << v << '\n'
-            << "A:\n" << A << '\n'
-            << "lo: " << low .transpose() << '\n'
-            << "hi: " << high.transpose() << '\n'
-            << "-> incoherent bounds. high - low = " << (high - low).transpose());
+        TOPPRA_SEIDEL_LP2D(WARN,
+            "-> incoherent bounds. high - low = " << (high - low).transpose());
         return INFEASIBLE;
       }
       // Assume variable i is static.
@@ -87,12 +86,7 @@ LpSol solve_lp2d(const RowVector2& v,
 
       LpSol sol_1d = solve_lp1d({ v[j], 0. }, A_1d.topRows(nrows+2));
       if (!sol_1d.feasible) {
-        TOPPRA_LOG_WARN("Seidel LP 2D:\n"
-            << "v: " << v << '\n'
-            << "A:\n" << A << '\n'
-            << "lo: " << low .transpose() << '\n'
-            << "hi: " << high.transpose() << '\n'
-            << "-> infeasible");
+        TOPPRA_SEIDEL_LP2D(WARN, "-> infeasible");
         return INFEASIBLE;
       }
       sol.optvar[j] = sol_1d.optvar[0];
@@ -190,8 +184,8 @@ LpSol solve_lp2d(const RowVector2& v,
         // Current constraint is parallel to the base one.
         // if infeasible, return failure.
         if (t_limit > SMALL) {
-          TOPPRA_LOG_WARN("Seidel 2D: infeasible constraint. t_limit = " << t_limit
-              << ", denom = " << denom);
+          TOPPRA_SEIDEL_LP2D(WARN, "infeasible constraint. t_limit = "
+              << t_limit << ", denom = " << denom);
           return INFEASIBLE;
         }
         // Otherwise, specify 0 <= 1
@@ -206,12 +200,7 @@ LpSol solve_lp2d(const RowVector2& v,
 
     // 1d lp infeasible
     if (!sol_1d.feasible) {
-      TOPPRA_LOG_WARN("Seidel LP 2D:\n"
-          << "v: " << v << '\n'
-          << "A:\n" << A << '\n'
-          << "lo: " << low .transpose() << '\n'
-          << "hi: " << high.transpose() << '\n'
-          << "-> infeasible");
+      TOPPRA_SEIDEL_LP2D(WARN, "-> infeasible");
       return INFEASIBLE;
     }
 
@@ -243,6 +232,8 @@ LpSol solve_lp2d(const RowVector2& v,
   sol.optval = v * sol.optvar;
   return sol;
 }
+
+#undef TOPPRA_SEIDEL_LP2D
 
 }
 

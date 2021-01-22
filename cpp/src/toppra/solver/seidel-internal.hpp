@@ -53,6 +53,12 @@ constexpr double INF = 1e10;
 
 constexpr value_type infinity = std::numeric_limits<value_type>::infinity();
 
+#define TOPPRA_SEIDEL_LP1D(w,X)                         \
+  TOPPRA_LOG_##w("Seidel LP 1D:\n"                      \
+      << "v: " << v << '\n'                             \
+      << "A:\n" << A << '\n'                            \
+      << X);
+
 /**
 Solve a Linear Program with 1 variable.
 
@@ -68,10 +74,7 @@ LpSol solve_lp1d(const RowVector2& v, const Eigen::MatrixBase<Derived>& A)
       active_c_max = -2;
   auto a (A.col(0)), b (A.col(1));
 
-  TOPPRA_LOG_DEBUG("Seidel LP 1D:\n"
-      << "v: " << v << '\n'
-      << "A:\n" << A << '\n'
-      );
+  TOPPRA_SEIDEL_LP1D(DEBUG, "");
   bool feasibility { abs(v[0]) < TINY };
   bool maximize { v[0] > 0 };
   bool compute_min (feasibility || !maximize);
@@ -91,20 +94,14 @@ LpSol solve_lp1d(const RowVector2& v, const Eigen::MatrixBase<Derived>& A)
         active_c_min = i;
       }
     } else if (abs(a[i]) < TINY && b[i] > SMALL) {
-      TOPPRA_LOG_WARN("Seidel LP 1D:\n"
-          << "v: " << v << '\n'
-          << "A:\n" << A << '\n'
-          << "-> constraint " << i << " infeasible.");
+      TOPPRA_SEIDEL_LP1D(WARN, "-> constraint " << i << " infeasible.");
       return INFEASIBLE;
     }
     // else a[i] is approximately zero. do nothing.
   }
 
   if (cur_min - cur_max > SMALL) {
-    TOPPRA_LOG_WARN("Seidel LP 1D:\n"
-        << "v: " << v << '\n'
-        << "A:\n" << A << '\n'
-        << "-> incoherent bounds. high - low = "
+    TOPPRA_SEIDEL_LP1D(WARN, "-> incoherent bounds. high - low = "
         << cur_max << " - " << cur_min << " = " << cur_max - cur_min);
     return INFEASIBLE;
   }
@@ -125,6 +122,8 @@ LpSol solve_lp1d(const RowVector2& v, const Eigen::MatrixBase<Derived>& A)
     };
   }
 }
+
+#undef TOPPRA_SEIDEL_LP1D
 
 /**
 Solve a LP with two variables.
