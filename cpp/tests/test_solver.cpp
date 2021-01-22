@@ -123,3 +123,99 @@ TEST_F(Solver, consistency)
     }
   }
 }
+
+#include <toppra/solver/seidel-internal.hpp>
+
+TEST(SeidelFunctions, seidel_1d) {
+  using namespace toppra::solver;
+
+  {
+    /*
+     * max   x
+     * s.t.  x - 1e11 <= 0
+     */
+    RowVector2 v (1, 0);
+    MatrixX2 A (1, 2);
+    A << 1, -seidel::INF*10;
+    auto sol = seidel::solve_lp1d(v, A);
+    EXPECT_TRUE(sol.feasible);
+    EXPECT_FLOAT_EQ(-A(0,1), sol.optvar[0]);
+  }
+
+  {
+    /*
+     * max   -x
+     * s.t.   x - 1e11 <= 0
+     */
+    RowVector2 v (-1, 0);
+    MatrixX2 A (1, 2);
+    A << 1, -seidel::INF*10;
+    auto sol = seidel::solve_lp1d(v, A);
+    EXPECT_TRUE(sol.feasible);
+    EXPECT_FLOAT_EQ(-seidel::infinity, sol.optvar[0]);
+  }
+
+  {
+    /*
+     * max   -x
+     * s.t.  -x + 3 <= 0
+     */
+    RowVector2 v (-1, 0);
+    MatrixX2 A (1, 2);
+    A << -1, 3;
+    auto sol = seidel::solve_lp1d(v, A);
+    EXPECT_TRUE(sol.feasible);
+    EXPECT_FLOAT_EQ(3, sol.optvar[0]);
+  }
+}
+
+TEST(SeidelFunctions, seidel_2d) {
+  using namespace toppra::solver;
+  RowVector2 v;
+  MatrixX3 A;
+  Vector2 low, high;
+  std::array<int, 2> active_c;
+  bool use_cache = false;
+  std::vector<int> index_map;
+  MatrixX2 A_1d;
+
+  {
+    /*
+     */
+    A.resize(16, 3);
+    A_1d.resize(16, 2);
+    v << 0.04, 1;
+    A <<
+           -0.04,           -1,           0,
+            0.04,            1,    -2.26492,
+       -0.087295,    0.0654839,    -28.3501,
+        0.258242,    -0.114201,    -43.4429,
+      -0.0964134,     0.262025,    -27.1247,
+        0.117863,    -0.191702,    -27.7368,
+      0.00258571,   0.00680004,    -14.5918,
+        0.017961,   -0.0688431,    -14.1562,
+    -0.000553256,   0.00212078,    -14.7322,
+        0.087295,   -0.0654839,    -28.3499,
+       -0.258242,     0.114201,    -13.2571,
+       0.0964134,    -0.262025,    -29.5753,
+       -0.117863,     0.191702,    -28.9632,
+     -0.00258571,  -0.00680004,    -14.8082,
+       -0.017961,    0.0688431,    -15.2438,
+     0.000553256,  -0.00212078,    -14.6678;
+
+    low << -1e+08, 2.06944;
+    high << 1e+08, 2.06944 - 2.22045e-14;
+
+    auto sol = seidel::solve_lp2d(v, A, low, high,
+        active_c, use_cache, index_map, A_1d);
+
+    std::cout << "Seidel LP 2D:\n"
+      << "v: " << v << '\n'
+      << "A:\n" << A << '\n'
+      << "lo: " << low .transpose() << '\n'
+      << "hi: " << high.transpose() << '\n'
+      << "solution:\n" << sol << std::endl;
+
+    EXPECT_TRUE(sol.feasible);
+  }
+}

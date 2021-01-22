@@ -1,46 +1,10 @@
 #include <toppra/solver/seidel.hpp>
+#include <toppra/solver/seidel-internal.hpp>
 
 namespace toppra {
 namespace solver {
 
-typedef Eigen::Matrix<value_type, 2, 1> Vector2;
-typedef Eigen::Matrix<value_type, 1, 2> RowVector2;
-typedef Eigen::Matrix<value_type, 3, 1> Vector3;
-typedef Eigen::Matrix<value_type, 1, 3> RowVector3;
-typedef Eigen::Matrix<value_type, Eigen::Dynamic, 2> MatrixX2;
-typedef Eigen::Matrix<value_type, Eigen::Dynamic, 3> MatrixX3;
-
 namespace seidel {
-struct LpSol {
-  bool feasible;
-  value_type optval;
-  Vector2 optvar;
-  std::array<int, 2> active_c;
-};
-
-std::ostream& operator<< (std::ostream& os, const LpSol& sol)
-{
-  if (!sol.feasible) return os << "infeasible";
-  os << "feasible: " << sol.optval
-    << "\n\toptvar: " << sol.optvar.transpose()
-    //<< "\n\tactive_c: " << sol.active_c
-    ;
-}
-
-const LpSol INFEASIBLE { false };
-
-constexpr double TINY = 1e-10;
-constexpr double SMALL = 1e-8;
-
-// bounds on variable used in seidel solver wrapper. u and x at every
-// stage is constrained to stay within this range.
-constexpr double VAR_MIN = -1e8;
-constexpr double VAR_MAX =  1e8;
-
-// absolute largest value that a variable can have. This bound should
-// be never be reached, however, in order for the code to work properly.
-constexpr double INF = 1e10;
-
 template<class Coeffs, class Vars>
 typename Coeffs::Scalar value(const Eigen::MatrixBase<Coeffs>& coeffs,
     const Eigen::MatrixBase<Vars>& vars)
@@ -50,66 +14,6 @@ typename Coeffs::Scalar value(const Eigen::MatrixBase<Coeffs>& coeffs,
       && Coeffs::ColsAtCompileTime == Vars::RowsAtCompileTime + 1,
       "Size mismatch between coefficient (1x(N+1)) and vars (Nx1)");
   return coeffs.template head<Vars::RowsAtCompileTime>() * vars + coeffs[Coeffs::ColsAtCompileTime-1];
-}
-
-/**
-Solve a Linear Program with 1 variable.
-
-max   v[0] x + v[1]
-s.t.  A [ x 1 ] <= 0
-**/
-template<typename Derived>
-LpSol solve_lp1d(const RowVector2& v, const Eigen::MatrixBase<Derived>& A)
-{
-  value_type cur_min = -INF,
-             cur_max = INF;
-  int active_c_min = -1,
-      active_c_max = -2;
-  auto a (A.col(0)), b (A.col(1));
-
-  TOPPRA_LOG_DEBUG("Seidel LP 1D:\n"
-      << "v: " << v << '\n'
-      << "A:\n" << A << '\n'
-      );
-
-  for (int i = 0; i < a.size(); ++i) {
-    if (a[i] > TINY) {
-      value_type cur_x = - b[i] / a[i];
-      if (cur_x < cur_max) {
-        cur_max = cur_x;
-        active_c_max = i;
-      }
-    } else if (a[i] < -TINY) {
-      value_type cur_x = - b[i] / a[i];
-      if (cur_x > cur_min) {
-        cur_min = cur_x;
-        active_c_min = i;
-      }
-    } else if (b[i] > SMALL) {
-      TOPPRA_LOG_DEBUG("Seidel LP 1D: constraint " << i << " infeasible.");
-      return INFEASIBLE;
-    }
-    // else a[i] is approximately zero. do nothing.
-  }
-
-  if (cur_min - cur_max > SMALL)
-    return INFEASIBLE;
-
-  if (abs(v[0]) < TINY || v[0] < 0) {
-    // optimizing direction is perpencicular to the line, or is
-    // pointing toward the negative direction.
-    return LpSol{ true,
-      v[0] * cur_min + v[1],
-      { cur_min, 0. },
-      { active_c_min, false },
-    };
-  } else {
-    return LpSol{ true,
-      v[0] * cur_max + v[1],
-      { cur_max, 0. },
-      { active_c_max, 0 },
-    };
-  }
 }
 
 namespace internal {
@@ -125,39 +29,6 @@ namespace internal {
   }
 }
 
-/**
-Solve a LP with two variables.
-
-The LP is specified as follow:
-        max     v^T x
-        s.t.    A [ x^T 1 ]^T <= 0
-                low <= x <= high
-
-NOTE: A possible optimization for this function is pruning linear
-constraints that are clearly infeasible. This is not implemented
-because in my current code, the bottleneck is not in solving
-TOPP-RA but in setting up the parameters.
-
-Parameters
-----------
-\param v
-\param a
-\param b
-\param c
-\param low
-\param high
-\param active_c Contains (2) indicies of rows in a, b, c that are likely the
-    active constraints at the optimal solution.
-\param use_cache: bool
-\param index_map A view to a pre-allocated integer array, to map from
-    [1,...,nrows] to the considered entries. This array is created
-    to avoid the cost of initializing a new array.
-\param A_1d A view to an initialized array. This array is created to avoid
-    the cost of initializing a new array.
-
-\return A LpSol instance that contains the ouput. When LpSol.feasible is false,
-        other fields are not meaningful.
-**/
 LpSol solve_lp2d(const RowVector2& v,
     const MatrixX3& A,
     const Vector2& low, const Vector2& high,
@@ -195,16 +66,49 @@ LpSol solve_lp2d(const RowVector2& v,
   // adhered to: fixed bounds are assigned the numbers: -1, -2, -3,
   // -4 according to the following order: low[0], high[0], low[1],
   // high[1].
-  if ((low.array() > high.array()).any()) {
-    TOPPRA_LOG_WARN("Seidel LP 2D:\n"
-        << "v: " << v << '\n'
-        << "A:\n" << A << '\n'
-        << "lo: " << low .transpose() << '\n'
-        << "hi: " << high.transpose() << '\n'
-        << "-> incoherent bounds. high - low = " << (high - low).transpose());
-    return INFEASIBLE;
-  }
   for (int i = 0; i < 2; ++i) {
+    if (low[i] > high[i]) {
+      if (low[i] > high[i] + TINY) {
+        TOPPRA_LOG_WARN("Seidel LP 2D:\n"
+            << "v: " << v << '\n'
+            << "A:\n" << A << '\n'
+            << "lo: " << low .transpose() << '\n'
+            << "hi: " << high.transpose() << '\n'
+            << "-> incoherent bounds. high - low = " << (high - low).transpose());
+        return INFEASIBLE;
+      }
+      // Assume variable i is static.
+      // Remove it and call lp1d
+      int j = 1-i;
+      sol.optvar[i] = (low[i]+high[i])/2;
+      A_1d.topRows(nrows) << A.col(j), A.col(2) + sol.optvar[i] * A.col(i);
+      A_1d.row(nrows  ) << -1,   low[j];
+      A_1d.row(nrows+1) <<  1, -high[j];
+
+      LpSol sol_1d = solve_lp1d({ v[j], 0. }, A_1d.topRows(nrows+2));
+      std::cout << A_1d.col(0) * sol_1d.optvar[0] + A_1d.col(1) << std::endl;
+      if (!sol_1d.feasible) {
+        TOPPRA_LOG_WARN("Seidel LP 2D:\n"
+            << "v: " << v << '\n'
+            << "A:\n" << A << '\n'
+            << "lo: " << low .transpose() << '\n'
+            << "hi: " << high.transpose() << '\n'
+            << "-> infeasible");
+        return INFEASIBLE;
+      }
+      sol.optvar[j] = sol_1d.optvar[0];
+      sol.feasible = true;
+      sol.optval = v * sol.optvar;
+      sol.active_c[0] = -2*i - (v[i] > 0 ? 2 : 1);
+      switch(sol_1d.active_c[0] - nrows) {
+        case 0: sol.active_c[1] = -2*j-2; break;
+        case 1: sol.active_c[1] = -2*j-1; break;
+        default: sol.active_c[1] = sol_1d.active_c[0];
+      }
+      std::cout << A.leftCols(2) * sol.optvar + A.col(2) << std::endl;
+      return sol;
+    }
+
     if (v[i] > TINY) {
       cur_optvar[i] = high[i];
       sol.active_c[i] = (i == 0) ? -2 : -4;
