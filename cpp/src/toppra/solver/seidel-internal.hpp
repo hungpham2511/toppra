@@ -13,6 +13,14 @@ typedef Eigen::Matrix<value_type, Eigen::Dynamic, 2> MatrixX2;
 typedef Eigen::Matrix<value_type, Eigen::Dynamic, 3> MatrixX3;
 
 namespace seidel {
+constexpr int LOW_0  = -1,
+              HIGH_0 = -2,
+              LOW_1  = -3,
+              HIGH_1 = -4;
+
+constexpr int LOW (int i) { return (i == 0) ? LOW_0  : LOW_1 ; }
+constexpr int HIGH(int i) { return (i == 0) ? HIGH_0 : HIGH_1; }
+
 struct LpSol {
   bool feasible;
   value_type optval;
@@ -60,7 +68,7 @@ LpSol solve_lp1d(const RowVector2& v, const Eigen::MatrixBase<Derived>& A)
       active_c_max = -2;
   auto a (A.col(0)), b (A.col(1));
 
-  TOPPRA_LOG_WARN("Seidel LP 1D:\n"
+  TOPPRA_LOG_DEBUG("Seidel LP 1D:\n"
       << "v: " << v << '\n'
       << "A:\n" << A << '\n'
       );

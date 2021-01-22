@@ -86,7 +86,6 @@ LpSol solve_lp2d(const RowVector2& v,
       A_1d.row(nrows+1) <<  1, -high[j];
 
       LpSol sol_1d = solve_lp1d({ v[j], 0. }, A_1d.topRows(nrows+2));
-      std::cout << A_1d.col(0) * sol_1d.optvar[0] + A_1d.col(1) << std::endl;
       if (!sol_1d.feasible) {
         TOPPRA_LOG_WARN("Seidel LP 2D:\n"
             << "v: " << v << '\n'
@@ -101,20 +100,19 @@ LpSol solve_lp2d(const RowVector2& v,
       sol.optval = v * sol.optvar;
       sol.active_c[0] = -2*i - (v[i] > 0 ? 2 : 1);
       switch(sol_1d.active_c[0] - nrows) {
-        case 0: sol.active_c[1] = -2*j-2; break;
-        case 1: sol.active_c[1] = -2*j-1; break;
+        case 0: sol.active_c[1] = LOW (j); break;
+        case 1: sol.active_c[1] = HIGH(j); break;
         default: sol.active_c[1] = sol_1d.active_c[0];
       }
-      std::cout << A.leftCols(2) * sol.optvar + A.col(2) << std::endl;
       return sol;
     }
 
     if (v[i] > TINY) {
       cur_optvar[i] = high[i];
-      sol.active_c[i] = (i == 0) ? -2 : -4;
+      sol.active_c[i] = HIGH(i);
     } else {
       cur_optvar[i] = low[i];
-      sol.active_c[i] = (i == 0) ? -1 : -3;
+      sol.active_c[i] = LOW(i);
     }
   }
   TOPPRA_LOG_DEBUG("cur_optvar = " << cur_optvar.transpose());
@@ -223,22 +221,11 @@ LpSol solve_lp2d(const RowVector2& v,
     cur_optvar = zero_prj + sol_1d.optvar[0] * d_tan;
     TOPPRA_LOG_DEBUG("cur_optvar = " << cur_optvar.transpose());
     // record the active constraint's index
-    switch (sol_1d.active_c[0] - k) {
-      case 0: sol.active_c[1] = -1; break;
-      case 1: sol.active_c[1] = -2; break;
-      case 2: sol.active_c[1] = -3; break;
-      case 3: sol.active_c[1] = -4; break;
-      default:
-              if (sol_1d.active_c[0] < k)
-                sol.active_c[1] = index_map[sol_1d.active_c[0]];
-              else
-                // the algorithm should not reach this point. If it
-                // does, this means the active constraint at the
-                // optimal solution is the fixed bound used in the 1
-                // dimensional subproblem. This should not happen
-                // though.
-                return INFEASIBLE;
-    }
+    assert(sol_1d.active_c[0] >= 0 && sol_1d.active_c[k] < k+4);
+    if (sol_1d.active_c[0] >= k) // Bound constraint
+      sol.active_c[1] = k - sol_1d.active_c[0] - 1;
+    else // Linear constraint
+      sol.active_c[1] = index_map[sol_1d.active_c[0]];
   }
 
   for (int i = 0; i < nrows; ++i) {

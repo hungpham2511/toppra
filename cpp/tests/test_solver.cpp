@@ -139,7 +139,7 @@ TEST(SeidelFunctions, seidel_1d) {
     A << 1, -seidel::INF*10;
     auto sol = seidel::solve_lp1d(v, A);
     EXPECT_TRUE(sol.feasible);
-    EXPECT_FLOAT_EQ(-A(0,1), sol.optvar[0]);
+    EXPECT_DOUBLE_EQ(-A(0,1), sol.optvar[0]);
   }
 
   {
@@ -152,7 +152,7 @@ TEST(SeidelFunctions, seidel_1d) {
     A << 1, -seidel::INF*10;
     auto sol = seidel::solve_lp1d(v, A);
     EXPECT_TRUE(sol.feasible);
-    EXPECT_FLOAT_EQ(-seidel::infinity, sol.optvar[0]);
+    EXPECT_DOUBLE_EQ(-seidel::infinity, sol.optvar[0]);
   }
 
   {
@@ -165,7 +165,7 @@ TEST(SeidelFunctions, seidel_1d) {
     A << -1, 3;
     auto sol = seidel::solve_lp1d(v, A);
     EXPECT_TRUE(sol.feasible);
-    EXPECT_FLOAT_EQ(3, sol.optvar[0]);
+    EXPECT_DOUBLE_EQ(3, sol.optvar[0]);
   }
 }
 
@@ -178,12 +178,39 @@ TEST(SeidelFunctions, seidel_2d) {
   bool use_cache = false;
   std::vector<int> index_map;
   MatrixX2 A_1d;
+  seidel::LpSol sol;
+
+  using Eigen::VectorXd;
+  auto LooseNegative = [](const Eigen::VectorXd &a) { return (a.array() < seidel::TINY).all(); };
+
+  auto check = [&LooseNegative, &A, &low, &high, &sol](bool expectFeasible){
+    EXPECT_EQ(expectFeasible, sol.feasible);
+    if (sol.feasible) {
+      Eigen::VectorXd A_times_optvar = A.leftCols<2>() * sol.optvar + A.col(2);
+
+      // Check that all constraints are statisfied.
+      EXPECT_PRED1(LooseNegative, A_times_optvar);
+      // Check that active constraints are approximatevely zero.
+      for (int i = 0; i < 2; ++i) {
+        ASSERT_LT(sol.active_c[i], A.rows());
+        ASSERT_GE(sol.active_c[i], -4);
+        if (sol.active_c[i] < 0) {
+          switch (sol.active_c[i]) {
+            case seidel::LOW_0 : EXPECT_NEAR(low [0], sol.optvar[0], seidel::TINY); break;
+            case seidel::HIGH_0: EXPECT_NEAR(high[0], sol.optvar[0], seidel::TINY); break;
+            case seidel::LOW_1 : EXPECT_NEAR(low [1], sol.optvar[1], seidel::TINY); break;
+            case seidel::HIGH_1: EXPECT_NEAR(high[1], sol.optvar[1], seidel::TINY); break;
+          }
+        } else {
+          EXPECT_DOUBLE_EQ(A_times_optvar[sol.active_c[i]], 0.);
+        }
+      }
+    }
+  };
 
   {
-    /*
-     */
     A.resize(16, 3);
-    A_1d.resize(16, 2);
+    A_1d.resize(A.rows()+4, 2);
     v << 0.04, 1;
     A <<
            -0.04,           -1,           0,
@@ -206,16 +233,9 @@ TEST(SeidelFunctions, seidel_2d) {
     low << -1e+08, 2.06944;
     high << 1e+08, 2.06944 - 2.22045e-14;
 
-    auto sol = seidel::solve_lp2d(v, A, low, high,
+    sol = seidel::solve_lp2d(v, A, low, high,
         active_c, use_cache, index_map, A_1d);
 
-    std::cout << "Seidel LP 2D:\n"
-      << "v: " << v << '\n'
-      << "A:\n" << A << '\n'
-      << "lo: " << low .transpose() << '\n'
-      << "hi: " << high.transpose() << '\n'
-      << "solution:\n" << sol << std::endl;
-
-    EXPECT_TRUE(sol.feasible);
+    check(true);
   }
 }
