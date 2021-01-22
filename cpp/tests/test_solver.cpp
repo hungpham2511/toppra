@@ -129,30 +129,63 @@ TEST_F(Solver, consistency)
 TEST(SeidelFunctions, seidel_1d) {
   using namespace toppra::solver;
 
+  // absolute largest value that a variable can have. This bound should
+  // be never be reached, however, in order for the code to work properly.
+  constexpr double INF = 1e10;
+
+  RowVector2 v;
+  MatrixX2 A (1, 2);
+
+  v = {1, 0};
   {
     /*
      * max   x
-     * s.t.  x - 1e11 <= 0
+     * s.t.  0 - 1    <= 0
+     *       x - 1e11 <= 0
      */
-    RowVector2 v (1, 0);
-    MatrixX2 A (1, 2);
-    A << 1, -seidel::INF*10;
+    A.resize(2, 2);
+    A << 0, -1, // Checks that this constraints is not taken into account.
+         1, -INF*10;
     auto sol = seidel::solve_lp1d(v, A);
     EXPECT_TRUE(sol.feasible);
-    EXPECT_DOUBLE_EQ(-A(0,1), sol.optvar[0]);
+    EXPECT_DOUBLE_EQ(-A(1,1), sol.optvar);
   }
 
+  { // Incoherent bounds.
+    /*
+     * max   x
+     * s.t.  x - 3 <= 0
+     *      -x + 4 <= 0
+     */
+    A.resize(2, 2);
+    A << 1, -3,
+        -1,  4;
+    auto sol = seidel::solve_lp1d(v, A);
+    EXPECT_FALSE(sol.feasible);
+  }
+
+  { // Incoherent bounds.
+    /*
+     * max   x
+     * s.t.  x + inf <= 0
+     */
+    A.resize(1, 2);
+    A << 1, seidel::infinity;
+    auto sol = seidel::solve_lp1d(v, A);
+    EXPECT_FALSE(sol.feasible);
+  }
+
+  v = {-1, 0};
   {
     /*
      * max   -x
      * s.t.   x - 1e11 <= 0
      */
-    RowVector2 v (-1, 0);
-    MatrixX2 A (1, 2);
-    A << 1, -seidel::INF*10;
+    A.resize(1, 2);
+    A << 1, -INF*10;
     auto sol = seidel::solve_lp1d(v, A);
     EXPECT_TRUE(sol.feasible);
-    EXPECT_DOUBLE_EQ(-seidel::infinity, sol.optvar[0]);
+    EXPECT_DOUBLE_EQ(-seidel::infinity, sol.optvar);
   }
 
   {
@@ -160,12 +193,53 @@ TEST(SeidelFunctions, seidel_1d) {
      * max   -x
      * s.t.  -x + 3 <= 0
      */
-    RowVector2 v (-1, 0);
-    MatrixX2 A (1, 2);
+    A.resize(1, 2);
     A << -1, 3;
     auto sol = seidel::solve_lp1d(v, A);
     EXPECT_TRUE(sol.feasible);
-    EXPECT_DOUBLE_EQ(3, sol.optvar[0]);
+    EXPECT_DOUBLE_EQ(3, sol.optvar);
+  }
+
+  v = {0, 0};
+  {
+    /*
+     * max   0.
+     * s.t.  -x + 3 <= 0
+     */
+    A.resize(1, 2);
+    A << -1, 3;
+    auto sol = seidel::solve_lp1d(v, A);
+    EXPECT_TRUE(sol.feasible);
+    EXPECT_DOUBLE_EQ(3, sol.optvar);
+  }
+
+  {
+    /*
+     * max   0.
+     * s.t.  x - 1 <= 0
+     *      -x - 1 <= 0
+     */
+    A.resize(2, 2);
+    A <<  1, -1,
+         -1, -1;
+    auto sol = seidel::solve_lp1d(v, A);
+    EXPECT_TRUE(sol.feasible);
+    EXPECT_DOUBLE_EQ(0, sol.optvar);
+  }
+
+  v = {seidel::TINY/2, 0};
+  {
+    /*
+     * max   TINY * x
+     * s.t.  x - 1 <= 0
+     *      -x - 1 <= 0
+     */
+    A.resize(2, 2);
+    A <<  1, -1,
+         -1, -1;
+    auto sol = seidel::solve_lp1d(v, A);
+    EXPECT_TRUE(sol.feasible);
+    EXPECT_DOUBLE_EQ(1, sol.optvar);
   }
 }
 
@@ -174,19 +248,30 @@ TEST(SeidelFunctions, seidel_2d) {
   RowVector2 v;
   MatrixX3 A;
   Vector2 low, high;
-  std::array<int, 2> active_c;
-  bool use_cache = false;
+  std::array<int, 2> active_c {0, 0};
   std::vector<int> index_map;
   MatrixX2 A_1d;
   seidel::LpSol sol;
 
   using Eigen::VectorXd;
-  auto LooseNegative = [](const Eigen::VectorXd &a) { return (a.array() < seidel::TINY).all(); };
 
-  auto check = [&LooseNegative, &A, &low, &high, &sol](bool expectFeasible){
+  auto check = [&A, &low, &high, &sol](bool expectFeasible){
+    auto LooseNegative = [](const Eigen::VectorXd &a) { return (a.array() < seidel::TINY).all(); };
+    auto CompareDouble = [](double a, double b) { return (a == b || fabs(a-b) < seidel::TINY); };
+    auto values = [](const MatrixX3& coeffs, const Vector2& vars) -> VectorXd {
+      VectorXd res (coeffs.rightCols<1>());
+      for (int i = 0; i < 2; ++i) {
+        if (std::isfinite(vars[i]))
+          res += coeffs.col(i)*vars[i];
+        else
+          res += (coeffs.col(i).array() == 0.).select(0., coeffs.col(i)*vars[i]);
+      }
+      return res;
+    };
+
     EXPECT_EQ(expectFeasible, sol.feasible);
     if (sol.feasible) {
-      Eigen::VectorXd A_times_optvar = A.leftCols<2>() * sol.optvar + A.col(2);
+      Eigen::VectorXd A_times_optvar = values(A, sol.optvar);
 
       // Check that all constraints are statisfied.
       EXPECT_PRED1(LooseNegative, A_times_optvar);
@@ -196,13 +281,13 @@ TEST(SeidelFunctions, seidel_2d) {
         ASSERT_GE(sol.active_c[i], -4);
         if (sol.active_c[i] < 0) {
           switch (sol.active_c[i]) {
-            case seidel::LOW_0 : EXPECT_NEAR(low [0], sol.optvar[0], seidel::TINY); break;
-            case seidel::HIGH_0: EXPECT_NEAR(high[0], sol.optvar[0], seidel::TINY); break;
-            case seidel::LOW_1 : EXPECT_NEAR(low [1], sol.optvar[1], seidel::TINY); break;
-            case seidel::HIGH_1: EXPECT_NEAR(high[1], sol.optvar[1], seidel::TINY); break;
+            case seidel::LOW_0 : EXPECT_PRED2(CompareDouble, low [0], sol.optvar[0]); break;
+            case seidel::HIGH_0: EXPECT_PRED2(CompareDouble, high[0], sol.optvar[0]); break;
+            case seidel::LOW_1 : EXPECT_PRED2(CompareDouble, low [1], sol.optvar[1]); break;
+            case seidel::HIGH_1: EXPECT_PRED2(CompareDouble, high[1], sol.optvar[1]); break;
           }
         } else {
-          EXPECT_DOUBLE_EQ(A_times_optvar[sol.active_c[i]], 0.);
+          EXPECT_NEAR(A_times_optvar[sol.active_c[i]], 0., seidel::TINY);
         }
       }
     }
@@ -230,11 +315,90 @@ TEST(SeidelFunctions, seidel_2d) {
        -0.017961,    0.0688431,    -15.2438,
      0.000553256,  -0.00212078,    -14.6678;
 
-    low << -1e+08, 2.06944;
-    high << 1e+08, 2.06944 - 2.22045e-14;
+    low  << -seidel::infinity, 2.06944;
+    high <<  seidel::infinity, 2.06944 - 2.22045e-14;
 
     sol = seidel::solve_lp2d(v, A, low, high,
-        active_c, use_cache, index_map, A_1d);
+        active_c, false, index_map, A_1d);
+
+    check(true);
+  }
+
+  {
+    A.resize(1, 3);
+    A_1d.resize(A.rows()+4, 2);
+    v = { -1, 1};
+    A << 0, 1, -2;
+    low = { -seidel::infinity, 0};
+    high = { seidel::infinity, 1};
+
+    sol = seidel::solve_lp2d(v, A, low, high,
+        active_c, false, index_map, A_1d);
+
+    check(true);
+  }
+
+  {
+    A.resize(17, 3);
+    A_1d.resize(A.rows()+4, 2);
+    v = { -1e-09, 1};
+    A <<
+           -0.04,           -1,            0,
+            0.04,            1,     -96.6645,
+      0.00950227,    0.0127432,     -28.3499,
+     -0.00102272,   -0.0430245,     -15.0205,
+     -0.00468815,   -0.0189229,     -27.9265,
+     0.000181267,    0.0116963,     -29.9426,
+     0.000228502,   0.00118769,     -14.7433,
+    -0.000139133,    -0.000333,     -14.6901,
+    -4.48311e-05, -0.000264438,     -14.6928,
+     -0.00950227,   -0.0127432,     -28.3501,
+      0.00102272,    0.0430245,     -41.6795,
+      0.00468815,    0.0189229,     -28.7735,
+    -0.000181267,   -0.0116963,     -26.7574,
+    -0.000228502,  -0.00118769,     -14.6567,
+     0.000139133,     0.000333,     -14.7099,
+     4.48311e-05,  0.000264438,     -14.7072,
+               0,  0.000174979,      -0.0225;
+    low = { -seidel::infinity, 0};
+    high = { seidel::infinity, 100};
+    active_c = {0, 16};
+
+    index_map.resize(17);
+    for (int i = 0; i < index_map.size(); ++i) index_map[i] = i;
+    sol = seidel::solve_lp2d(v, A, low, high,
+        active_c, true, index_map, A_1d);
+
+    check(true);
+  }
+
+  {
+    A.resize(17, 3);
+    A_1d.resize(A.rows()+4, 2);
+    v = { 1e-09, 1};
+    A <<
+           -0.04,           -1,      99.8403,
+            0.04,            1,         -100,
+      -0.0020703,  0.000263966,     -28.3499,
+      0.00442128, -0.000610605,     -12.4686,
+     0.000369489, -4.18819e-05,     -30.4098,
+      -0.0011122,  0.000181629,     -28.8316,
+     8.41287e-05, -1.23018e-05,     -14.8322,
+    -0.000242411,   3.7092e-05,     -15.3541,
+     4.13197e-06, -6.85238e-07,     -14.7261,
+       0.0020703, -0.000263966,     -28.3501,
+     -0.00442128,  0.000610605,     -44.2314,
+    -0.000369489,  4.18819e-05,     -26.2902,
+       0.0011122, -0.000181629,     -27.8684,
+    -8.41287e-05,  1.23018e-05,     -14.5678,
+     0.000242411,  -3.7092e-05,     -14.0459,
+    -4.13197e-06,  6.85238e-07,     -14.6739,
+               0,  8.08395e-06,      -0.0225;
+    low = { -seidel::infinity, 0};
+    high = { seidel::infinity, 100};
+
+    sol = seidel::solve_lp2d(v, A, low, high,
+        active_c, false, index_map, A_1d);
 
     check(true);
   }

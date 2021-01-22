@@ -5,6 +5,11 @@ namespace toppra {
 namespace solver {
 
 namespace seidel {
+const LpSol INFEASIBLE { false };
+
+/// Compute value coeffs * [v 1] of a constraint.
+/// handling infinite values for v as, when v[i] is +/- infinity,
+/// c[i]*v[i] == 0 if v[i] == 0.
 template<class Coeffs, class Vars>
 typename Coeffs::Scalar value(const Eigen::MatrixBase<Coeffs>& coeffs,
     const Eigen::MatrixBase<Vars>& vars)
@@ -13,7 +18,10 @@ typename Coeffs::Scalar value(const Eigen::MatrixBase<Coeffs>& coeffs,
       && Vars::ColsAtCompileTime == 1
       && Coeffs::ColsAtCompileTime == Vars::RowsAtCompileTime + 1,
       "Size mismatch between coefficient (1x(N+1)) and vars (Nx1)");
-  return coeffs.template head<Vars::RowsAtCompileTime>() * vars + coeffs[Coeffs::ColsAtCompileTime-1];
+  typename Coeffs::Scalar res = coeffs(coeffs.cols()-1);
+  for (int i = 0; i < Vars::RowsAtCompileTime; ++i)
+    res += (coeffs[i]==0 && !std::isfinite(vars[i]) ? 0 : coeffs[i]*vars[i]);
+  return res;
 }
 
 namespace internal {
@@ -71,7 +79,9 @@ LpSol solve_lp2d(const RowVector2& v,
   // high[1].
   for (int i = 0; i < 2; ++i) {
     if (low[i] > high[i]) {
-      if (low[i] > high[i] + TINY) {
+      if (   low[i] > high[i] + THR_VIOLATION
+          || low[i] == infinity
+          || high[i] == -infinity) {
         TOPPRA_SEIDEL_LP2D(WARN,
             "-> incoherent bounds. high - low = " << (high - low).transpose());
         return INFEASIBLE;
@@ -84,19 +94,19 @@ LpSol solve_lp2d(const RowVector2& v,
       A_1d.row(nrows  ) << -1,   low[j];
       A_1d.row(nrows+1) <<  1, -high[j];
 
-      LpSol sol_1d = solve_lp1d({ v[j], 0. }, A_1d.topRows(nrows+2));
+      LpSol1d sol_1d = solve_lp1d({ v[j], 0. }, A_1d.topRows(nrows+2));
       if (!sol_1d.feasible) {
         TOPPRA_SEIDEL_LP2D(WARN, "-> infeasible");
         return INFEASIBLE;
       }
-      sol.optvar[j] = sol_1d.optvar[0];
+      sol.optvar[j] = sol_1d.optvar;
       sol.feasible = true;
       sol.optval = v * sol.optvar;
       sol.active_c[0] = -2*i - (v[i] > 0 ? 2 : 1);
-      switch(sol_1d.active_c[0] - nrows) {
+      switch(sol_1d.active_c - nrows) {
         case 0: sol.active_c[1] = LOW (j); break;
         case 1: sol.active_c[1] = HIGH(j); break;
-        default: sol.active_c[1] = sol_1d.active_c[0];
+        default: sol.active_c[1] = sol_1d.active_c;
       }
       return sol;
     }
@@ -132,7 +142,7 @@ LpSol solve_lp2d(const RowVector2& v,
   for (int k = 0; k < nrows; ++k) {
     int i = index_map[k];
     // if current optimal variable satisfies the i-th constraint, continue
-    if (value(A.row(i), cur_optvar) < TINY)
+    if (value(A.row(i), cur_optvar) < THR_VIOLATION)
       continue;
     // otherwise, project all constraints on the line defined by (a[i], b[i], c[i])
     sol.active_c[0] = i;
@@ -183,9 +193,10 @@ LpSol solve_lp2d(const RowVector2& v,
       else {
         // Current constraint is parallel to the base one.
         // if infeasible, return failure.
-        if (t_limit > SMALL) {
-          TOPPRA_SEIDEL_LP2D(WARN, "infeasible constraint. t_limit = "
-              << t_limit << ", denom = " << denom);
+        if (t_limit > THR_VIOLATION) {
+          TOPPRA_SEIDEL_LP2D(WARN, "infeasible constraint " <<
+	      ( j < k ? index_map[j] : k-j-1 ) << " with active constraint " <<
+	      i << ". t_limit = " << t_limit << ", denom = " << denom);
           return INFEASIBLE;
         }
         // Otherwise, specify 0 <= 1
@@ -195,7 +206,7 @@ LpSol solve_lp2d(const RowVector2& v,
 
     // solve the projected, 1 dimensional LP
     TOPPRA_LOG_DEBUG("Seidel LP 2D activate constraint " << i);
-    LpSol sol_1d = solve_lp1d(v_1d, A_1d.topRows(4+k));
+    LpSol1d sol_1d = solve_lp1d_atomic(v_1d, A_1d.topRows(4+k));
     TOPPRA_LOG_DEBUG("Seidel LP 1D solution:\n" << sol_1d);
 
     // 1d lp infeasible
@@ -206,14 +217,14 @@ LpSol solve_lp2d(const RowVector2& v,
 
     // feasible, wrapping up
     // compute the current optimal solution
-    cur_optvar = zero_prj + sol_1d.optvar[0] * d_tan;
-    TOPPRA_LOG_DEBUG("cur_optvar = " << cur_optvar.transpose());
+    cur_optvar = zero_prj + sol_1d.optvar * d_tan;
+    TOPPRA_LOG_DEBUG("k = " << k << ". cur_optvar = " << cur_optvar.transpose());
     // record the active constraint's index
-    assert(sol_1d.active_c[0] >= 0 && sol_1d.active_c[k] < k+4);
-    if (sol_1d.active_c[0] >= k) // Bound constraint
-      sol.active_c[1] = k - sol_1d.active_c[0] - 1;
+    assert(sol_1d.active_c >= 0 && sol_1d.active_c < k+4);
+    if (sol_1d.active_c >= k) // Bound constraint
+      sol.active_c[1] = k - sol_1d.active_c - 1;
     else // Linear constraint
-      sol.active_c[1] = index_map[sol_1d.active_c[0]];
+      sol.active_c[1] = index_map[sol_1d.active_c];
   }
 
   for (int i = 0; i < nrows; ++i) {
@@ -256,8 +267,8 @@ void Seidel::initialize (const LinearConstraintPtrs& constraints, const Geometri
   // m_A, m_low, m_high.
   // The first dimensions of these array all equal N + 1.
   m_A.assign(N+1, MatrixX3::Zero(nC, 3));
-  m_low  = MatrixX2::Constant(N + 1, 2, seidel::VAR_MIN);
-  m_high = MatrixX2::Constant(N + 1, 2, seidel::VAR_MAX);
+  m_low  = MatrixX2::Constant(N + 1, 2, -seidel::infinity);
+  m_high = MatrixX2::Constant(N + 1, 2,  seidel::infinity);
   int cur_index = 2;
 
   for (const Solver::LinearConstraintParams& p : m_constraintsParams.lin) {
@@ -319,11 +330,11 @@ bool Seidel::solveStagewiseOptim(std::size_t i,
   // handle x_next_min <= 2 delta u + x_i <= x_next_max
   if (i < N) {
     value_type delta = deltas()[i];
-    if (xNext[0] < -seidel::INF) // TODO isnan(x_next_min)
+    if (xNext[0] <= -seidel::infinity) // TODO isnan(x_next_min)
       m_A[i].row(0) << 0, 0, -1;
     else
       m_A[i].row(0) << -2*delta, -1, xNext[0];
-    if (xNext[1] > seidel::INF) // TODO isnan(x_next_max)
+    if (xNext[1] >= seidel::infinity) // TODO isnan(x_next_max)
       m_A[i].row(1) << 0, 0, -1;
     else
       m_A[i].row(1) << 2*delta, 1, -xNext[1];

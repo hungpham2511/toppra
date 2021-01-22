@@ -21,6 +21,11 @@ constexpr int LOW_0  = -1,
 constexpr int LOW (int i) { return (i == 0) ? LOW_0  : LOW_1 ; }
 constexpr int HIGH(int i) { return (i == 0) ? HIGH_0 : HIGH_1; }
 
+struct LpSol1d {
+  bool feasible;
+  value_type optvar;
+  int active_c;
+};
 struct LpSol {
   bool feasible;
   value_type optval;
@@ -28,28 +33,27 @@ struct LpSol {
   std::array<int, 2> active_c;
 };
 
+inline std::ostream& operator<< (std::ostream& os, const LpSol1d& sol)
+{
+  if (!sol.feasible) return os << "infeasible";
+  return os << "feasible. (x* = " << sol.optvar
+    << ", active_c = " << sol.active_c;
+}
 inline std::ostream& operator<< (std::ostream& os, const LpSol& sol)
 {
   if (!sol.feasible) return os << "infeasible";
-  os << "feasible: " << sol.optval
+  return os << "feasible: " << sol.optval
     << "\n\toptvar: " << sol.optvar.transpose()
     << "\n\tactive_c: " << sol.active_c[0] << ' ' << sol.active_c[1]
     ;
 }
 
-const LpSol INFEASIBLE { false };
+constexpr LpSol1d INFEASIBLE_1D { false };
 
+/// Avoid division by number less TINY.
 constexpr double TINY = 1e-10;
-constexpr double SMALL = 1e-8;
-
-// bounds on variable used in seidel solver wrapper. u and x at every
-// stage is constrained to stay within this range.
-constexpr double VAR_MIN = -1e8;
-constexpr double VAR_MAX =  1e8;
-
-// absolute largest value that a variable can have. This bound should
-// be never be reached, however, in order for the code to work properly.
-constexpr double INF = 1e10;
+/// Authorized constraint violation threshold.
+constexpr double THR_VIOLATION = 1e-8;
 
 constexpr value_type infinity = std::numeric_limits<value_type>::infinity();
 
@@ -64,9 +68,11 @@ Solve a Linear Program with 1 variable.
 
 max   v[0] x + v[1]
 s.t.  A [ x 1 ] <= 0
+
+\tparam Unitary if True, the first column of A contains only -1, 0 or 1.
 **/
-template<typename Derived>
-LpSol solve_lp1d(const RowVector2& v, const Eigen::MatrixBase<Derived>& A)
+template<bool Unitary, typename Derived>
+LpSol1d solve_lp1d_tpl(const RowVector2& v, const Eigen::MatrixBase<Derived>& A)
 {
   value_type cur_min = -infinity,
              cur_max = infinity;
@@ -75,52 +81,61 @@ LpSol solve_lp1d(const RowVector2& v, const Eigen::MatrixBase<Derived>& A)
   auto a (A.col(0)), b (A.col(1));
 
   TOPPRA_SEIDEL_LP1D(DEBUG, "");
-  bool feasibility { abs(v[0]) < TINY };
   bool maximize { v[0] > 0 };
-  bool compute_min (feasibility || !maximize);
-  bool compute_max (feasibility || maximize);
 
-  for (int i = 0; i < a.size(); ++i) {
-    if (compute_max && a[i] > TINY) {
-      value_type cur_x = - b[i] / a[i];
-      if (cur_x < cur_max) {
-        cur_max = cur_x;
+  auto ap = [&a](int i) { return (Unitary? 1.:a[i]); }; // a+
+  auto an = [&a](int i) { return (Unitary?-1.:a[i]); }; // a-
+
+  for (int i = 0; i < A.rows(); ++i) {
+    if (Unitary) assert(a[i] == 0. || a[i] == 1. || a[i] == -1.);
+
+    if (!Unitary && a[i] == 0 && b[i] > THR_VIOLATION) {
+      TOPPRA_SEIDEL_LP1D(WARN, "-> constraint " << i << " infeasible.");
+      return INFEASIBLE_1D;
+    }
+    if (a[i] > 0) {
+      if (ap(i) * cur_max + b[i] > 0) { // Constraint bounds x from above
+        cur_max = std::min(-b[i]/ap(i), cur_max);
         active_c_max = i;
       }
-    } else if (compute_min && a[i] < -TINY) {
-      value_type cur_x = - b[i] / a[i];
-      if (cur_x > cur_min) {
-        cur_min = cur_x;
-        active_c_min = i;
-      }
-    } else if (abs(a[i]) < TINY && b[i] > SMALL) {
-      TOPPRA_SEIDEL_LP1D(WARN, "-> constraint " << i << " infeasible.");
-      return INFEASIBLE;
+    } else if (a[i] < 0 && an(i) * cur_min + b[i] > 0) { // Constraint bounds x from below
+      cur_min = std::max(-b[i]/an(i), cur_min);
+      active_c_min = i;
     }
-    // else a[i] is approximately zero. do nothing.
   }
 
-  if (cur_min - cur_max > SMALL) {
+  if (   cur_min - cur_max > THR_VIOLATION
+      || cur_min == infinity
+      || cur_max == -infinity) {
     TOPPRA_SEIDEL_LP1D(WARN, "-> incoherent bounds. high - low = "
         << cur_max << " - " << cur_min << " = " << cur_max - cur_min);
-    return INFEASIBLE;
+    return INFEASIBLE_1D;
   }
 
-  if (maximize) {
-    return LpSol{ true,
-      v[0] * cur_max + v[1],
-      { cur_max, 0. },
-      { active_c_max, 0 },
-    };
-  } else {
+  if (v[0] == 0) {
+    value_type x;
+    if (cur_min != -infinity)
+      if (cur_max != infinity) return { true, (cur_max/2+cur_min/2), active_c_min };
+      else return { true, cur_min, active_c_min };
+    else return { true, cur_max, active_c_max };
+  }
+  if (maximize)
+    return LpSol1d{ true, cur_max, active_c_max };
+  else
     // optimizing direction is perpencicular to the line, or is
     // pointing toward the negative direction.
-    return LpSol{ true,
-      v[0] * cur_min + v[1],
-      { cur_min, 0. },
-      { active_c_min, 0 },
-    };
-  }
+    return LpSol1d{ true, cur_min, active_c_min };
+}
+
+template<typename Derived>
+inline LpSol1d solve_lp1d(const RowVector2& v, const Eigen::MatrixBase<Derived>& A)
+{
+  return solve_lp1d_tpl<false, Derived> (v, A);
+}
+template<typename Derived>
+inline LpSol1d solve_lp1d_atomic(const RowVector2& v, const Eigen::MatrixBase<Derived>& A)
+{
+  return solve_lp1d_tpl<true, Derived> (v, A);
 }
 
 #undef TOPPRA_SEIDEL_LP1D
