@@ -33,7 +33,7 @@ LpSol solve_lp2d(const RowVector2& v,
     const MatrixX3& A,
     const Vector2& low, const Vector2& high,
     std::array<int, 2> active_c, bool use_cache,
-    std::vector<int> index_map,
+    std::vector<int>& index_map,
     MatrixX2& A_1d)
 {
   // number of working set recomputation
@@ -119,14 +119,13 @@ LpSol solve_lp2d(const RowVector2& v,
 
   // If active_c contains valid entries, swap the first two indices
   // in index_map to these values.
-  unsigned int cur_row = 2;
   if (   active_c[0] >= 0 && active_c[0] < nrows
       && active_c[1] >= 0 && active_c[1] < nrows
       && active_c[0] != active_c[1]) {
     // active_c contains valid indices
     index_map[0] = active_c[1];
     index_map[1] = active_c[0];
-    for (int i = 0; i < nrows; ++i)
+    for (int i = 0, cur_row = 2; i < nrows; ++i)
       if (i != active_c[0] && i != active_c[1])
         index_map[cur_row++] = i;
   } else
@@ -191,7 +190,7 @@ LpSol solve_lp2d(const RowVector2& v,
         // Current constraint is parallel to the base one.
         // if infeasible, return failure.
         if (t_limit > SMALL) {
-          TOPPRA_LOG_DEBUG("Seidel: infeasible constraint. t_limit = " << t_limit
+          TOPPRA_LOG_WARN("Seidel 2D: infeasible constraint. t_limit = " << t_limit
               << ", denom = " << denom);
           return INFEASIBLE;
         }
