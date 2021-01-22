@@ -104,7 +104,7 @@ LpSol1d solve_lp1d_tpl(const RowVector2& v, const Eigen::MatrixBase<Derived>& A)
     }
   }
 
-  if (   cur_min - cur_max > THR_VIOLATION
+  if (   cur_min - cur_max > std::max(std::abs(cur_min),std::abs(cur_max))*THR_VIOLATION
       || cur_min == infinity
       || cur_max == -infinity) {
     TOPPRA_SEIDEL_LP1D(WARN, "-> incoherent bounds. high - low = "

@@ -79,7 +79,7 @@ LpSol solve_lp2d(const RowVector2& v,
   // high[1].
   for (int i = 0; i < 2; ++i) {
     if (low[i] > high[i]) {
-      if (   low[i] > high[i] + THR_VIOLATION
+      if (   low[i] - high[i] > std::max(std::abs(low[i]),std::abs(high[i]))* THR_VIOLATION
           || low[i] == infinity
           || high[i] == -infinity) {
         TOPPRA_SEIDEL_LP2D(WARN,
