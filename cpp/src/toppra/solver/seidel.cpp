@@ -196,7 +196,12 @@ LpSol solve_lp2d(const RowVector2& v,
   // -4 according to the following order: low[0], high[0], low[1],
   // high[1].
   if ((low.array() > high.array()).any()) {
-    TOPPRA_LOG_DEBUG("Seidel: incoherent bounds.");
+    TOPPRA_LOG_WARN("Seidel LP 2D:\n"
+        << "v: " << v << '\n'
+        << "A:\n" << A << '\n'
+        << "lo: " << low .transpose() << '\n'
+        << "hi: " << high.transpose() << '\n'
+        << "-> incoherent bounds. high - low = " << (high - low).transpose());
     return INFEASIBLE;
   }
   for (int i = 0; i < 2; ++i) {
@@ -299,7 +304,15 @@ LpSol solve_lp2d(const RowVector2& v,
     TOPPRA_LOG_DEBUG("Seidel LP 1D solution:\n" << sol_1d);
 
     // 1d lp infeasible
-    if (!sol_1d.feasible) return INFEASIBLE;
+    if (!sol_1d.feasible) {
+      TOPPRA_LOG_WARN("Seidel LP 2D:\n"
+          << "v: " << v << '\n'
+          << "A:\n" << A << '\n'
+          << "lo: " << low .transpose() << '\n'
+          << "hi: " << high.transpose() << '\n'
+          << "-> infeasible");
+      return INFEASIBLE;
+    }
 
     // feasible, wrapping up
     // compute the current optimal solution

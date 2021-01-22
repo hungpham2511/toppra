@@ -4,9 +4,6 @@
 #include <memory.h>
 #include <toppra/solver.hpp>
 
-// Forward declare glpk solver.
-struct glp_prob;
-
 namespace toppra {
 namespace solver {
 
