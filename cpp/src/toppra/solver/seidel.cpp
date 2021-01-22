@@ -220,8 +220,10 @@ LpSol solve_lp2d(const RowVector2& v,
     cur_optvar = zero_prj + sol_1d.optvar * d_tan;
     TOPPRA_LOG_DEBUG("k = " << k << ". cur_optvar = " << cur_optvar.transpose());
     // record the active constraint's index
-    assert(sol_1d.active_c >= 0 && sol_1d.active_c < k+4);
-    if (sol_1d.active_c >= k) // Bound constraint
+    assert(sol_1d.active_c >= -2 && sol_1d.active_c < k+4);
+    if (sol_1d.active_c < 0) // Unbounded
+      sol.active_c[i] = sol_1d.active_c;
+    else if (sol_1d.active_c >= k) // Bound constraint
       sol.active_c[1] = k - sol_1d.active_c - 1;
     else // Linear constraint
       sol.active_c[1] = index_map[sol_1d.active_c];
