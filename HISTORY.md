@@ -14,6 +14,7 @@
 - [cpp] [#146][#146] Add constraint::CartesianVelocityNorm
 - [cpp] [#158][#158] Add Seidel solver.
 - [cpp] Enhance Seidel solver numerical behaviour.
+- [cpp] [#157] Enable to construct spline from 1st and 2nd order derivatives at the curve endpoints
 
 ### Changed
 - [cpp] [#153] Fix variable mismatch in constraint::CartesianVelocityNorm
