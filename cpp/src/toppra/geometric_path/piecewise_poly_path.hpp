@@ -9,9 +9,9 @@ namespace toppra {
 /**
  * \brief Piecewise polynomial geometric path.
  *
- * An implemetation of a piecewise polynoamial geometric path.
+ * An implementation of a piecewise polynomial geometric path.
  *
- * The coefficent vector has shape (N, P, D), where N is the number
+ * The coefficient vector has shape (N, P, D), where N is the number
  * segments. For each segment, the i-th row (P index) denotes the
  * power, while the j-th column is the degree of freedom. In
  * particular,
@@ -29,10 +29,13 @@ class PiecewisePolyPath : public GeometricPath {
    *
    * See class docstring for details.
    *
-   * @param coefficients Polynoamial coefficients.
+   * @param coefficients Polynomial coefficients.
    * @param breakpoints Vector of breakpoints.
    */
   PiecewisePolyPath(const Matrices &coefficients, std::vector<value_type> breakpoints);
+
+
+  PiecewisePolyPath(const Vectors &positions, const Vector &times, const std::array<BoundaryCond, 2> &bc_type);
 
   /**
    * /brief Evaluate the path at given position.
@@ -64,6 +67,8 @@ class PiecewisePolyPath : public GeometricPath {
   void reset();
   size_t findSegmentIndex(value_type pos) const;
   void checkInputArgs();
+  void checkInputArgs(const Vectors &positions, const Vector &times,
+                      const std::array<BoundaryCond, 2> &bc_type);
   void computeDerivativesCoefficients();
   const Matrix &getCoefficient(int seg_index, int order) const;
   Matrices m_coefficients, m_coefficients_1, m_coefficients_2;

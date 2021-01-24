@@ -54,6 +54,12 @@ namespace toppra {
   /// Vector of Bound
   typedef std::vector<Bound, Eigen::aligned_allocator<Bound> > Bounds;
 
+  /// Boundary condition
+  typedef struct {
+      int order;
+      Vector values;
+  } BoundaryCond;
+
   class LinearConstraint;
   /// Shared pointer to a LinearConstraint
   typedef std::shared_ptr<LinearConstraint> LinearConstraintPtr;
