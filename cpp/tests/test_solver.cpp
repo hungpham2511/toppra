@@ -151,6 +151,37 @@ TEST(SeidelFunctions, seidel_1d) {
     EXPECT_DOUBLE_EQ(-A(1,1), sol.optvar);
   }
 
+  {
+    /*
+     * max   x
+     * s.t.      x -   2 <= 0
+     *       eps*x - eps <= 0
+     */
+    // The correct solution here is 1 but the solver is expected to find 2
+    // because the second constraint is considered constant.
+    constexpr double eps = seidel::ABS_TOLERANCE / 2;
+    A.resize(2, 2);
+    A << 1, -2,
+         eps, -eps;
+    auto sol = seidel::solve_lp1d(v, A);
+    EXPECT_TRUE(sol.feasible);
+    EXPECT_DOUBLE_EQ(2, sol.optvar);
+  }
+
+  {
+    /*
+     * max   x
+     * s.t.  eps*x - eps^2 <= 0
+     */
+    // Check that the constraint is not considered.
+    constexpr double eps = seidel::ABS_TOLERANCE / 2;
+    A.resize(1, 2);
+    A << eps, -eps*eps;
+    auto sol = seidel::solve_lp1d(v, A);
+    EXPECT_TRUE(sol.feasible);
+    EXPECT_DOUBLE_EQ(seidel::infinity, sol.optvar);
+  }
+
   { // Incoherent bounds.
     /*
      * max   x

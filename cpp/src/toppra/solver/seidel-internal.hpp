@@ -36,7 +36,7 @@ struct LpSol {
 inline std::ostream& operator<< (std::ostream& os, const LpSol1d& sol)
 {
   if (!sol.feasible) return os << "infeasible";
-  return os << "feasible. (x* = " << sol.optvar
+  return os << "feasible. x* = " << sol.optvar
     << ", active_c = " << sol.active_c;
 }
 inline std::ostream& operator<< (std::ostream& os, const LpSol& sol)
@@ -53,7 +53,8 @@ constexpr LpSol1d INFEASIBLE_1D { false };
 /// Avoid division by number less TINY.
 constexpr double TINY = 1e-10;
 /// Authorized constraint violation threshold.
-constexpr double THR_VIOLATION = 1e-8;
+constexpr double REL_TOLERANCE = 1e-10;
+constexpr double ABS_TOLERANCE = 1e-13;
 
 constexpr value_type infinity = std::numeric_limits<value_type>::infinity();
 
@@ -72,6 +73,7 @@ s.t.  A [ x 1 ] <= 0
 template<typename Derived>
 LpSol1d solve_lp1d(const RowVector2& v, const Eigen::MatrixBase<Derived>& A)
 {
+  // initial bounds are +/- infinity.
   value_type cur_min = -infinity,
              cur_max = infinity;
   int active_c_min = -1,
@@ -82,9 +84,19 @@ LpSol1d solve_lp1d(const RowVector2& v, const Eigen::MatrixBase<Derived>& A)
   bool maximize { v[0] > 0 };
 
   for (int i = 0; i < A.rows(); ++i) {
-    if (a[i] == 0 && b[i] > THR_VIOLATION) {
-      TOPPRA_SEIDEL_LP1D(WARN, "-> constraint " << i << " infeasible.");
-      return INFEASIBLE_1D;
+    // If a[i] is very small, then consider the constraint as constant.
+    // TODO: Shouldn't we check instead that a[i] is much smaller that b[i] ?
+    // For the following problem, what solution should be returned ?
+    // max   x
+    // s.t.      x -   2 <= 0
+    //       eps*x - eps <= 0
+    // For eps small, the code below skips the second constraint and returns 2.
+    if (std::abs(a[i]) < ABS_TOLERANCE) {
+      if (b[i] > ABS_TOLERANCE) {
+        TOPPRA_SEIDEL_LP1D(WARN, "-> constraint " << i << " infeasible.");
+        return INFEASIBLE_1D;
+      }
+      continue;
     }
     if (a[i] > 0) {
       if (a[i] * cur_max + b[i] > 0) { // Constraint bounds x from above
@@ -97,7 +109,7 @@ LpSol1d solve_lp1d(const RowVector2& v, const Eigen::MatrixBase<Derived>& A)
     }
   }
 
-  if (   cur_min - cur_max > std::max(std::abs(cur_min),std::abs(cur_max))*THR_VIOLATION
+  if (   cur_min - cur_max > std::max(std::abs(cur_min),std::abs(cur_max))*REL_TOLERANCE
       || cur_min == infinity
       || cur_max == -infinity) {
     TOPPRA_SEIDEL_LP1D(WARN, "-> incoherent bounds. high - low = "

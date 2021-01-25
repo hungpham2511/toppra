@@ -28,7 +28,7 @@ namespace internal {
   // projective coefficients to the line
   // add respective coefficients to A_1d
   template<typename Derived, typename Derived2>
-  inline void compute_denom_and_t_limit (const Eigen::MatrixBase<Derived>& Aj,
+  inline void project_linear_constraint (const Eigen::MatrixBase<Derived>& Aj,
       const Vector2& d_tan, const Vector2& zero_prj,
       const Eigen::MatrixBase<Derived2>& Aj_1d_)
   {
@@ -72,15 +72,16 @@ LpSol solve_lp2d(const RowVector2& v, const MatrixX3& A,
   // high[1].
   for (int i = 0; i < 2; ++i) {
     if (low[i] > high[i]) {
-      if (   low[i] - high[i] > std::max(std::abs(low[i]),std::abs(high[i]))* THR_VIOLATION
+      // If the difference between low and high is sufficiently small, then
+      // return infeasible.
+      if (   low[i] - high[i] > std::max(std::abs(low[i]),std::abs(high[i]))* REL_TOLERANCE
           || low[i] == infinity
           || high[i] == -infinity) {
         TOPPRA_SEIDEL_LP2D(WARN,
             "-> incoherent bounds. high - low = " << (high - low).transpose());
         return INFEASIBLE;
       }
-      // Assume variable i is static.
-      // Remove it and call lp1d
+      // Otherwise, assume variable i is static. Thus we are left with a 1D LP.
       int j = 1-i;
       sol.optvar[i] = (low[i]+high[i])/2;
       A_1d.topRows(nrows) << A.col(j), A.col(2) + sol.optvar[i] * A.col(i);
@@ -114,7 +115,7 @@ LpSol solve_lp2d(const RowVector2& v, const MatrixX3& A,
   // handle other constraints in a, b, c
   for (int i = 0; i < nrows; ++i) {
     // if current optimal variable satisfies the i-th constraint, continue
-    if (value(A.row(i), cur_optvar) < THR_VIOLATION)
+    if (value(A.row(i), cur_optvar) < ABS_TOLERANCE)
       continue;
     // otherwise, project all constraints on the line defined by (a[i], b[i], c[i])
     sol.active_c[0] = i;
@@ -132,23 +133,26 @@ LpSol solve_lp2d(const RowVector2& v, const MatrixX3& A,
     Vector2 d_tan { -A(i,1), A(i,0) }; // vector parallel to the line
     Vector2 v_1d { v * d_tan, 0 };
 
-    // project 4 + k constraints onto the parallel line. each
-    // constraint occupies a row of A_1d.
-    for (int j = 0; j < i; ++j) // handle other constraint
-      internal::compute_denom_and_t_limit(A.row(j),
+    // Size of the 1D LP: 4 + k
+    // Compute the constraint parameters of the 1D LP corresponding to the
+    // linear constraints.
+    for (int j = 0; j < i; ++j)
+      internal::project_linear_constraint(A.row(j),
               d_tan, zero_prj, A_1d.row(j));
     //A_1d.topRows(k) << A.topRows(k) * d_tan, value(A.topRows(k), zero_prj);
+    // Compute the constraint parameters of the 1D LP corresponding to the
+    // 4 bound constraints.
     // handle low <= x
-    internal::compute_denom_and_t_limit(RowVector3 { -1., 0., low[0] },
+    internal::project_linear_constraint(RowVector3 { -1., 0., low[0] },
         d_tan, zero_prj, A_1d.row(i));
     // handle x <= high
-    internal::compute_denom_and_t_limit(RowVector3 { 1., 0., -high[0] },
+    internal::project_linear_constraint(RowVector3 { 1., 0., -high[0] },
         d_tan, zero_prj, A_1d.row(i+1));
     // handle low <= y
-    internal::compute_denom_and_t_limit(RowVector3 { 0., -1., low[1] },
+    internal::project_linear_constraint(RowVector3 { 0., -1., low[1] },
         d_tan, zero_prj, A_1d.row(i+2));
     // handle y <= high
-    internal::compute_denom_and_t_limit(RowVector3 { 0., 1., -high[1] },
+    internal::project_linear_constraint(RowVector3 { 0., 1., -high[1] },
         d_tan, zero_prj, A_1d.row(i+3));
 
     // solve the projected, 1 dimensional LP
@@ -156,7 +160,6 @@ LpSol solve_lp2d(const RowVector2& v, const MatrixX3& A,
     LpSol1d sol_1d = solve_lp1d(v_1d, A_1d.topRows(4+i));
     TOPPRA_LOG_DEBUG("Seidel LP 1D solution:\n" << sol_1d);
 
-    // 1d lp infeasible
     if (!sol_1d.feasible) {
       TOPPRA_SEIDEL_LP2D(WARN, "-> infeasible");
       return INFEASIBLE;
@@ -176,6 +179,7 @@ LpSol solve_lp2d(const RowVector2& v, const MatrixX3& A,
       sol.active_c[1] = sol_1d.active_c;
   }
 
+  // Sanity check for debugging purpose.
   for (int i = 0; i < nrows; ++i) {
     value_type v = value(A.row(i), cur_optvar);
     if (v > 0) {
