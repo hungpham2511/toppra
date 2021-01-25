@@ -102,7 +102,7 @@ LpSol solve_lp2d(const RowVector2& v,
       sol.optvar[j] = sol_1d.optvar;
       sol.feasible = true;
       sol.optval = v * sol.optvar;
-      sol.active_c[0] = -2*i - (v[i] > 0 ? 2 : 1);
+      sol.active_c[0] = v[i] > 0 ? HIGH(i) : LOW(i);
       switch(sol_1d.active_c - nrows) {
         case 0: sol.active_c[1] = LOW (j); break;
         case 1: sol.active_c[1] = HIGH(j); break;
@@ -111,13 +111,8 @@ LpSol solve_lp2d(const RowVector2& v,
       return sol;
     }
 
-    if (v[i] > TINY) {
-      cur_optvar[i] = high[i];
-      sol.active_c[i] = HIGH(i);
-    } else {
-      cur_optvar[i] = low[i];
-      sol.active_c[i] = LOW(i);
-    }
+    cur_optvar[i]   = v[i] > 0 ? high[i] : low[i];
+    sol.active_c[i] = v[i] > 0 ? HIGH(i) : LOW(i);
   }
   TOPPRA_LOG_DEBUG("cur_optvar = " << cur_optvar.transpose());
 
@@ -186,27 +181,12 @@ LpSol solve_lp2d(const RowVector2& v,
               d_tan, zero_prj, denom, t_limit);
       }
 
-      if (denom > TINY)
-        A_1d.row(j) <<  1.,  t_limit / denom;
-      else if (denom < -TINY)
-        A_1d.row(j) << -1., -t_limit / denom;
-      else {
-        // Current constraint is parallel to the base one.
-        // if infeasible, return failure.
-        if (t_limit > THR_VIOLATION) {
-          TOPPRA_SEIDEL_LP2D(WARN, "infeasible constraint " <<
-	      ( j < k ? index_map[j] : k-j-1 ) << " with active constraint " <<
-	      i << ". t_limit = " << t_limit << ", denom = " << denom);
-          return INFEASIBLE;
-        }
-        // Otherwise, specify 0 <= 1
-        A_1d.row(j) << 0, -1.;
-      }
+      A_1d.row(j) <<  denom,  t_limit / denom;
     }
 
     // solve the projected, 1 dimensional LP
     TOPPRA_LOG_DEBUG("Seidel LP 2D activate constraint " << i);
-    LpSol1d sol_1d = solve_lp1d_atomic(v_1d, A_1d.topRows(4+k));
+    LpSol1d sol_1d = solve_lp1d(v_1d, A_1d.topRows(4+k));
     TOPPRA_LOG_DEBUG("Seidel LP 1D solution:\n" << sol_1d);
 
     // 1d lp infeasible

@@ -68,11 +68,9 @@ Solve a Linear Program with 1 variable.
 
 max   v[0] x + v[1]
 s.t.  A [ x 1 ] <= 0
-
-\tparam Unitary if True, the first column of A contains only -1, 0 or 1.
 **/
-template<bool Unitary, typename Derived>
-LpSol1d solve_lp1d_tpl(const RowVector2& v, const Eigen::MatrixBase<Derived>& A)
+template<typename Derived>
+LpSol1d solve_lp1d(const RowVector2& v, const Eigen::MatrixBase<Derived>& A)
 {
   value_type cur_min = -infinity,
              cur_max = infinity;
@@ -83,23 +81,18 @@ LpSol1d solve_lp1d_tpl(const RowVector2& v, const Eigen::MatrixBase<Derived>& A)
   TOPPRA_SEIDEL_LP1D(DEBUG, "");
   bool maximize { v[0] > 0 };
 
-  auto ap = [&a](int i) { return (Unitary? 1.:a[i]); }; // a+
-  auto an = [&a](int i) { return (Unitary?-1.:a[i]); }; // a-
-
   for (int i = 0; i < A.rows(); ++i) {
-    if (Unitary) assert(a[i] == 0. || a[i] == 1. || a[i] == -1.);
-
-    if (!Unitary && a[i] == 0 && b[i] > THR_VIOLATION) {
+    if (a[i] == 0 && b[i] > THR_VIOLATION) {
       TOPPRA_SEIDEL_LP1D(WARN, "-> constraint " << i << " infeasible.");
       return INFEASIBLE_1D;
     }
     if (a[i] > 0) {
-      if (ap(i) * cur_max + b[i] > 0) { // Constraint bounds x from above
-        cur_max = std::min(-b[i]/ap(i), cur_max);
+      if (a[i] * cur_max + b[i] > 0) { // Constraint bounds x from above
+        cur_max = std::min(-b[i]/a[i], cur_max);
         active_c_max = i;
       }
-    } else if (a[i] < 0 && an(i) * cur_min + b[i] > 0) { // Constraint bounds x from below
-      cur_min = std::max(-b[i]/an(i), cur_min);
+    } else if (a[i] < 0 && a[i] * cur_min + b[i] > 0) { // Constraint bounds x from below
+      cur_min = std::max(-b[i]/a[i], cur_min);
       active_c_min = i;
     }
   }
@@ -125,17 +118,6 @@ LpSol1d solve_lp1d_tpl(const RowVector2& v, const Eigen::MatrixBase<Derived>& A)
     // optimizing direction is perpencicular to the line, or is
     // pointing toward the negative direction.
     return LpSol1d{ true, cur_min, active_c_min };
-}
-
-template<typename Derived>
-inline LpSol1d solve_lp1d(const RowVector2& v, const Eigen::MatrixBase<Derived>& A)
-{
-  return solve_lp1d_tpl<false, Derived> (v, A);
-}
-template<typename Derived>
-inline LpSol1d solve_lp1d_atomic(const RowVector2& v, const Eigen::MatrixBase<Derived>& A)
-{
-  return solve_lp1d_tpl<true, Derived> (v, A);
 }
 
 #undef TOPPRA_SEIDEL_LP1D
