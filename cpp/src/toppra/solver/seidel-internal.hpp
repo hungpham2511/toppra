@@ -155,11 +155,8 @@ Parameters
 \return A LpSol instance that contains the ouput. When LpSol.feasible is false,
         other fields are not meaningful.
 **/
-LpSol solve_lp2d(const RowVector2& v,
-    const MatrixX3& A,
+LpSol solve_lp2d(const RowVector2& v, const MatrixX3& A,
     const Vector2& low, const Vector2& high,
-    std::array<int, 2> active_c, bool use_cache,
-    std::vector<int>& index_map,
     MatrixX2& A_1d);
 
 } // namespace seidel

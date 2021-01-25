@@ -30,6 +30,7 @@ class Seidel : public Solver {
     MatricesX3 m_A;
     MatrixX2 m_low, m_high;
 
+    MatrixX3 m_A_ordered;
     MatrixX2 m_A_1d;
     std::vector<int> m_index_map;
     std::array<int, 2> m_active_c_up, m_active_c_down;

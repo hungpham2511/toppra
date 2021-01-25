@@ -248,8 +248,6 @@ TEST(SeidelFunctions, seidel_2d) {
   RowVector2 v;
   MatrixX3 A;
   Vector2 low, high;
-  std::array<int, 2> active_c {0, 0};
-  std::vector<int> index_map;
   MatrixX2 A_1d;
   seidel::LpSol sol;
 
@@ -318,8 +316,7 @@ TEST(SeidelFunctions, seidel_2d) {
     low  << -seidel::infinity, 2.06944;
     high <<  seidel::infinity, 2.06944 - 2.22045e-14;
 
-    sol = seidel::solve_lp2d(v, A, low, high,
-        active_c, false, index_map, A_1d);
+    sol = seidel::solve_lp2d(v, A, low, high, A_1d);
 
     check(true);
   }
@@ -332,8 +329,7 @@ TEST(SeidelFunctions, seidel_2d) {
     low = { -seidel::infinity, 0};
     high = { seidel::infinity, 1};
 
-    sol = seidel::solve_lp2d(v, A, low, high,
-        active_c, false, index_map, A_1d);
+    sol = seidel::solve_lp2d(v, A, low, high, A_1d);
 
     check(true);
   }
@@ -362,12 +358,8 @@ TEST(SeidelFunctions, seidel_2d) {
                0,  0.000174979,      -0.0225;
     low = { -seidel::infinity, 0};
     high = { seidel::infinity, 100};
-    active_c = {0, 16};
 
-    index_map.resize(17);
-    for (int i = 0; i < index_map.size(); ++i) index_map[i] = i;
-    sol = seidel::solve_lp2d(v, A, low, high,
-        active_c, true, index_map, A_1d);
+    sol = seidel::solve_lp2d(v, A, low, high, A_1d);
 
     check(true);
   }
@@ -397,8 +389,7 @@ TEST(SeidelFunctions, seidel_2d) {
     low = { -seidel::infinity, 0};
     high = { seidel::infinity, 100};
 
-    sol = seidel::solve_lp2d(v, A, low, high,
-        active_c, false, index_map, A_1d);
+    sol = seidel::solve_lp2d(v, A, low, high, A_1d);
 
     check(true);
   }
@@ -412,8 +403,7 @@ TEST(SeidelFunctions, seidel_2d) {
     low << -seidel::infinity, 3110.43739850094;
     high << seidel::infinity, 3110.43739850094;
 
-    sol = seidel::solve_lp2d(v, A, low, high,
-        active_c, false, index_map, A_1d);
+    sol = seidel::solve_lp2d(v, A, low, high, A_1d);
 
     check(true);
   }

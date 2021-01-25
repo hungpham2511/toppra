@@ -27,13 +27,15 @@ typename Coeffs::Scalar value(const Eigen::MatrixBase<Coeffs>& coeffs,
 namespace internal {
   // projective coefficients to the line
   // add respective coefficients to A_1d
-  template<typename Derived>
-  void compute_denom_and_t_limit (const Eigen::MatrixBase<Derived>& Aj,
+  template<typename Derived, typename Derived2>
+  inline void compute_denom_and_t_limit (const Eigen::MatrixBase<Derived>& Aj,
       const Vector2& d_tan, const Vector2& zero_prj,
-      value_type& denom, value_type& t_limit)
+      const Eigen::MatrixBase<Derived2>& Aj_1d_)
   {
-    denom = Aj.template head<2>() * d_tan;
-    t_limit = value(Aj, zero_prj);
+    Derived2& Aj_1d = const_cast<Derived2&>(Aj_1d_.derived());
+    Aj_1d <<
+      Aj.template head<2>() * d_tan,
+      value(Aj, zero_prj);
   }
 }
 
@@ -45,13 +47,12 @@ namespace internal {
       << low[1] << "\t<= x[1] <= " << high[1] << '\n'    \
       << X);
 
-LpSol solve_lp2d(const RowVector2& v,
-    const MatrixX3& A,
+LpSol solve_lp2d(const RowVector2& v, const MatrixX3& A,
     const Vector2& low, const Vector2& high,
-    std::array<int, 2> active_c, bool use_cache,
-    std::vector<int>& index_map,
     MatrixX2& A_1d)
 {
+  assert(A_1d.rows() == A.rows()+4);
+
   // number of working set recomputation
   unsigned int nrows = A.rows();
   Vector2 cur_optvar;
@@ -64,14 +65,6 @@ LpSol solve_lp2d(const RowVector2& v,
 
   // print all input to the algorithm
   TOPPRA_SEIDEL_LP2D(DEBUG, "");
-
-  if (use_cache) {
-    assert(index_map.size() == nrows);
-  } else {
-    index_map.resize(nrows);
-    for (int i = 0; i < nrows; ++i) index_map[i] = i;
-    A_1d = MatrixX2::Zero(nrows+4, 2);
-  }
 
   // handle fixed bounds (low, high). The following convention is
   // adhered to: fixed bounds are assigned the numbers: -1, -2, -3,
@@ -91,8 +84,8 @@ LpSol solve_lp2d(const RowVector2& v,
       int j = 1-i;
       sol.optvar[i] = (low[i]+high[i])/2;
       A_1d.topRows(nrows) << A.col(j), A.col(2) + sol.optvar[i] * A.col(i);
-      A_1d.row(nrows  ) << -1,   low[j];
-      A_1d.row(nrows+1) <<  1, -high[j];
+      A_1d.middleRows<2>(nrows) << -1,   low[j],
+                                    1, -high[j];
 
       LpSol1d sol_1d = solve_lp1d({ v[j], 0. }, A_1d.topRows(nrows+2));
       if (!sol_1d.feasible) {
@@ -116,26 +109,10 @@ LpSol solve_lp2d(const RowVector2& v,
   }
   TOPPRA_LOG_DEBUG("cur_optvar = " << cur_optvar.transpose());
 
-  // If active_c contains valid entries, swap the first two indices
-  // in index_map to these values.
-  if (   active_c[0] >= 0 && active_c[0] < nrows
-      && active_c[1] >= 0 && active_c[1] < nrows
-      && active_c[0] != active_c[1]) {
-    // active_c contains valid indices
-    index_map[0] = active_c[1];
-    index_map[1] = active_c[0];
-    for (int i = 0, cur_row = 2; i < nrows; ++i)
-      if (i != active_c[0] && i != active_c[1])
-        index_map[cur_row++] = i;
-  } else
-    for (int i = 0; i < nrows; ++i)
-      index_map[i] = i;
-
   // pre-process the inequalities, remove those that are redundant
 
   // handle other constraints in a, b, c
-  for (int k = 0; k < nrows; ++k) {
-    int i = index_map[k];
+  for (int i = 0; i < nrows; ++i) {
     // if current optimal variable satisfies the i-th constraint, continue
     if (value(A.row(i), cur_optvar) < THR_VIOLATION)
       continue;
@@ -157,36 +134,26 @@ LpSol solve_lp2d(const RowVector2& v,
 
     // project 4 + k constraints onto the parallel line. each
     // constraint occupies a row of A_1d.
-    for (int j = 0; j < 4 + k; ++j) { // nb rows 1d.
-      value_type denom, t_limit;
-      switch (j-k) {
-        case 0: // j == k: handle low <= x
-          internal::compute_denom_and_t_limit(RowVector3 { -1., 0., low[0] },
-              d_tan, zero_prj, denom, t_limit);
-          break;
-        case 1: // j == k + 1: handle x <= high
-          internal::compute_denom_and_t_limit(RowVector3 { 1., 0., -high[0] },
-              d_tan, zero_prj, denom, t_limit);
-          break;
-        case 2: // j == k + 2: handle low <= y
-          internal::compute_denom_and_t_limit(RowVector3 { 0., -1., low[1] },
-              d_tan, zero_prj, denom, t_limit);
-          break;
-        case 3: // j == k + 3: handle y <= high
-          internal::compute_denom_and_t_limit(RowVector3 { 0., 1., -high[1] },
-              d_tan, zero_prj, denom, t_limit);
-          break;
-        default: // handle other constraint
-          internal::compute_denom_and_t_limit(A.row(index_map[j]),
-              d_tan, zero_prj, denom, t_limit);
-      }
-
-      A_1d.row(j) <<  denom,  t_limit / denom;
-    }
+    for (int j = 0; j < i; ++j) // handle other constraint
+      internal::compute_denom_and_t_limit(A.row(j),
+              d_tan, zero_prj, A_1d.row(j));
+    //A_1d.topRows(k) << A.topRows(k) * d_tan, value(A.topRows(k), zero_prj);
+    // handle low <= x
+    internal::compute_denom_and_t_limit(RowVector3 { -1., 0., low[0] },
+        d_tan, zero_prj, A_1d.row(i));
+    // handle x <= high
+    internal::compute_denom_and_t_limit(RowVector3 { 1., 0., -high[0] },
+        d_tan, zero_prj, A_1d.row(i+1));
+    // handle low <= y
+    internal::compute_denom_and_t_limit(RowVector3 { 0., -1., low[1] },
+        d_tan, zero_prj, A_1d.row(i+2));
+    // handle y <= high
+    internal::compute_denom_and_t_limit(RowVector3 { 0., 1., -high[1] },
+        d_tan, zero_prj, A_1d.row(i+3));
 
     // solve the projected, 1 dimensional LP
     TOPPRA_LOG_DEBUG("Seidel LP 2D activate constraint " << i);
-    LpSol1d sol_1d = solve_lp1d(v_1d, A_1d.topRows(4+k));
+    LpSol1d sol_1d = solve_lp1d(v_1d, A_1d.topRows(4+i));
     TOPPRA_LOG_DEBUG("Seidel LP 1D solution:\n" << sol_1d);
 
     // 1d lp infeasible
@@ -198,15 +165,15 @@ LpSol solve_lp2d(const RowVector2& v,
     // feasible, wrapping up
     // compute the current optimal solution
     cur_optvar = zero_prj + sol_1d.optvar * d_tan;
-    TOPPRA_LOG_DEBUG("k = " << k << ". cur_optvar = " << cur_optvar.transpose());
+    TOPPRA_LOG_DEBUG("i = " << i << ". cur_optvar = " << cur_optvar.transpose());
     // record the active constraint's index
-    assert(sol_1d.active_c >= -2 && sol_1d.active_c < k+4);
+    assert(sol_1d.active_c >= -2 && sol_1d.active_c < i+4);
     if (sol_1d.active_c < 0) // Unbounded
       sol.active_c[i] = sol_1d.active_c;
-    else if (sol_1d.active_c >= k) // Bound constraint
-      sol.active_c[1] = k - sol_1d.active_c - 1;
+    else if (sol_1d.active_c >= i) // Bound constraint
+      sol.active_c[1] = i - sol_1d.active_c - 1;
     else // Linear constraint
-      sol.active_c[1] = index_map[sol_1d.active_c];
+      sol.active_c[1] = sol_1d.active_c;
   }
 
   for (int i = 0; i < nrows; ++i) {
@@ -249,6 +216,7 @@ void Seidel::initialize (const LinearConstraintPtrs& constraints, const Geometri
   // m_A, m_low, m_high.
   // The first dimensions of these array all equal N + 1.
   m_A.assign(N+1, MatrixX3::Zero(nC, 3));
+  m_A_ordered.resize(nC, 3);
   m_low  = MatrixX2::Constant(N + 1, 2, -seidel::infinity);
   m_high = MatrixX2::Constant(N + 1, 2,  seidel::infinity);
   int cur_index = 2;
@@ -286,8 +254,8 @@ void Seidel::initialize (const LinearConstraintPtrs& constraints, const Geometri
   // init constraint coefficients for the 1d LPs
   m_A_1d = MatrixX2::Zero(nC + 4, 2);
   m_index_map.resize(nC, 0);
-  m_active_c_up.fill(0);
-  m_active_c_down.fill(0);
+  m_active_c_up.fill(-1);
+  m_active_c_down.fill(-1);
 }
 
 bool Seidel::solveStagewiseOptim(std::size_t i,
@@ -333,15 +301,41 @@ bool Seidel::solveStagewiseOptim(std::size_t i,
   // is be selected depending on the sign of g[1]
   bool upper (g[1] > 0);
   auto& active_c = (upper ? m_active_c_up : m_active_c_down);
+
+  // If active_c contains valid entries, swap the first two indices
+  // in index_map to these values.
+  if (active_c[0] != -1) {
+    assert(active_c[0] >= 0 && active_c[0] < m_A[i].rows()
+        && active_c[1] >= 0 && active_c[1] < m_A[i].rows()
+        && active_c[0] != active_c[1]);
+    // active_c contains valid indices
+    m_index_map[0] = active_c[1];
+    m_index_map[1] = active_c[0];
+    m_A_ordered.topRows<2>() << m_A[i].row(active_c[1]),
+                                m_A[i].row(active_c[0]);
+    for (int k = 0, cur_row = 2; k < m_A[i].rows(); ++k)
+      if (k != active_c[0] && k != active_c[1]) {
+        m_index_map[cur_row] = k;
+        m_A_ordered.row(cur_row++) = m_A[i].row(k);
+      }
+  } else {
+    for (int i = 0; i < m_A[i].rows(); ++i)
+      m_index_map[i] = i;
+    m_A_ordered = m_A[i];
+  }
+
   // solver selected:
   // - upper: when computing the lower bound of the controllable set.
   // - lower: when computing the lower bound of the controllable set,
   //          or computing the parametrization in the forward pass.
-  seidel::LpSol lpsol = seidel::solve_lp2d(v, m_A[i],
-      low, high, active_c, true, m_index_map, m_A_1d);
+  seidel::LpSol lpsol = seidel::solve_lp2d(v, m_A[i], low, high, m_A_1d);
   if (lpsol.feasible) {
     solution = lpsol.optvar;
-    active_c = lpsol.active_c;
+    if (lpsol.active_c[0] < 0 || lpsol.active_c[1] < 0)
+      active_c = {-1, -1};
+    else
+      for (int k = 0; k < 2; ++k)
+        active_c[k] = m_index_map[lpsol.active_c[k]];
     return true;
   }
   TOPPRA_LOG_DEBUG("Seidel: solver fails (upper ? " << upper << ')');
