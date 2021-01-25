@@ -1,19 +1,9 @@
 #include <toppra/geometric_path/piecewise_poly_path.hpp>
 #include <toppra/toppra.hpp>
 #include "gtest/gtest.h"
+#include "utils.hpp"
 
 namespace toppra {
-
-using vvvectors = std::vector<std::vector<value_type> >;
-Vectors makeVectors(vvvectors v) {
-  Vectors ret;
-  for (auto vi : v) {
-    Vector vi_eigen(vi.size());
-    for (std::size_t i = 0; i < vi.size(); i++) vi_eigen(i) = vi[i];
-    ret.push_back(vi_eigen);
-  }
-  return ret;
-}
 
 TEST(SplineHermite, BasicUsage) {
   toppra::Vectors pos = makeVectors({{0, 0}, {1, 1}, {0, 2}});

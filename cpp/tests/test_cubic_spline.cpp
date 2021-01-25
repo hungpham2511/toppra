@@ -3,20 +3,9 @@
 #include <iostream>
 #include <algorithm>
 #include "gtest/gtest.h"
+#include "utils.hpp"
 
 namespace toppra {
-
-using vvvectors = std::vector<std::vector<value_type>>;
-
-Vectors makevectors(vvvectors v) {
-    Vectors ret;
-    for (auto vi : v) {
-        Vector vi_eigen(vi.size());
-        for (std::size_t i = 0; i < vi.size(); i++) vi_eigen(i) = vi[i];
-        ret.push_back(vi_eigen);
-    }
-    return ret;
-}
 
 BoundaryCond makeBoundaryCond(const int order, const std::vector<value_type> &values) {
     BoundaryCond cond;
@@ -32,7 +21,7 @@ protected:
     virtual ~CubicSpline() {}
     static void SetUpTestSuite() {
         positions =
-                makevectors({{1.3, 2.1, 4.35, 2.14, -7.31, 4.31},
+                makeVectors({{1.3, 2.1, 4.35, 2.14, -7.31, 4.31},
                              {1.5, -4.3, 1.23, -4.3, 2.13, 6.24},
                              {-3.78, 1.53, 8.12, 12.75, 9.11, 5.42},
                              {6.25, 8.12, 9.52, 20.42, 5.21, 8.31},
@@ -100,7 +89,7 @@ TEST_F(CubicSpline, SecondOrderBoundaryConditions) {
 }
 
 TEST_F(CubicSpline, BadPositions) {
-    Vectors bad_positions = makevectors({{1.3, 2.1, 4.35, 2.14, -7.31, 4.31},
+    Vectors bad_positions = makeVectors({{1.3, 2.1, 4.35, 2.14, -7.31, 4.31},
                                          {1.5, -4.3, 1.23, -4.3, 2.13, 6.24},
                                          {-3.78, 1.53, 8.12, 12.75, 9.11, 5.42},
                                          {6.25, 8.12, 9.52, 5.21, 8.31},
@@ -109,7 +98,7 @@ TEST_F(CubicSpline, BadPositions) {
                                          makeBoundaryCond(2, {-5.12, 8.21, 9.12, 5.12, 24.12, 9.42})};
     ASSERT_THROW(ConstructCubicSpline(bad_positions, times, bc_type), std::runtime_error);
 
-    bad_positions = makevectors({{1.3, 2.1, 4.35, 2.14, -7.31, 4.31},
+    bad_positions = makeVectors({{1.3, 2.1, 4.35, 2.14, -7.31, 4.31},
                                  {1.5, -4.3, 1.23, -4.3, 2.13, 6.24},
                                  {-3.78, 1.53, 8.12, 12.75, 9.11, 5.42},
                                  {6.25, 8.12, 11.23, 9.52, 5.21, 8.31}});
@@ -150,4 +139,4 @@ TEST_F(CubicSpline, BadBoundaryConditions) {
     ASSERT_THROW(ConstructCubicSpline(positions, times, bc_type), std::runtime_error);
 }
 
-}
+}  // namespace toppra
