@@ -57,20 +57,30 @@ PiecewisePolyPath::PiecewisePolyPath(const Vectors &positions, const Vector &tim
     }
 
     // Insert boundary conditions to A and B
-    if (bc_type[0].order == 1 and bc_type[1].order == 1) {
+    if (bc_type[0].order == 1) {
         A.row(0).segment(0, 2) << 2 * h(0), h(0);
-        A.row(A.rows() - 1).segment(A.cols() - 2, 2) << h(h.rows() - 1), 2 * h(h.rows() - 1);
         for (size_t i = 0; i < B.size(); i++) {
             B[i](0) = 3 * (positions[1](i) - positions[0](i)) / h(0) - 3 * bc_type[0].values(i);
-            B[i](B[i].rows() - 1) = 3 * bc_type[1].values(i) -
+        }
+    }
+    else if (bc_type[0].order == 2) {
+        A(0, 0) = 2;
+        for (size_t i = 0; i < B.size(); i++) {
+            B[i](0) = bc_type[0].values(i);
+        }
+    }
+
+    if (bc_type[1].order == 1) {
+        A.row(A.rows() - 1).segment(A.cols() - 2, 2) << h(h.rows() - 1), 2 * h(h.rows() - 1);
+        for (size_t i = 0; i < B.size(); i++) {
+            B[i](B[i].rows() - 1) =
+                    3 * bc_type[1].values(i) -
                     3 * (positions[positions.size() - 1](i) - positions[positions.size() - 2](i)) / h(h.rows() - 1);
         }
     }
-    else if (bc_type[0].order == 2 and bc_type[1].order == 2) {
-        A(0, 0) = 2;
+    else if (bc_type[1].order == 2) {
         A(A.rows() - 1, A.cols() - 1) = 2;
         for (size_t i = 0; i < B.size(); i++) {
-            B[i](0) = bc_type[0].values(i);
             B[i](B[i].rows() - 1) = bc_type[1].values(i);
         }
     }
@@ -186,9 +196,6 @@ void PiecewisePolyPath::checkInputArgs(const Vectors &positions, const Vector &t
 
     // Validate boundary conditions
     int expected_deriv_size = positions[0].size();
-    if (bc_type[0].order != bc_type[1].order) {
-        throw std::runtime_error("The specified derivative order must be equal.");
-    }
     for (const BoundaryCond &bc: bc_type) {
         if (bc.order != 1 and bc.order != 2) {
             throw std::runtime_error("The specified derivative order must be 1 or 2.");
