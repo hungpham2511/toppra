@@ -13,6 +13,7 @@
 - [cpp] [#143][#143] Add PathParametrizationAlgorithm::setGridpoints
 - [cpp] [#146][#146] Add constraint::CartesianVelocityNorm
 - [cpp] [#158][#158] Add Seidel solver.
+- [cpp] Enhance Seidel solver numerical behaviour.
 
 ### Changed
 - [cpp] [#153] Fix variable mismatch in constraint::CartesianVelocityNorm

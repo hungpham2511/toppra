@@ -95,6 +95,14 @@ class PathParametrizationAlgorithm {
    */
   ReturnCode computeFeasibleSets();
 
+  /** Set initial bounds on \f$ \dot{s}^2.
+   * This is helpfull when the solver encounters numerical issues.
+   */
+  void setInitialXBounds (const Bound& xbound)
+  {
+    m_initXBound = xbound;
+  }
+
   virtual ~PathParametrizationAlgorithm() {}
 
  protected:
@@ -128,6 +136,16 @@ class PathParametrizationAlgorithm {
   int m_N = 100;
 
   int m_initialized = false;
+
+  /** Set initial bounds on \f$ \dot{s}^2.
+   * \sa setInitialXBounds
+   * \todo The hard-coded bound below avoids numerical issues in LP / QP solvers
+   * when \f$ x \f$ becomes too big. This issue should be addressed in the
+   * solver wrapper themselfves as numerical behaviors is proper to each
+   * individual solver.
+   * See https://github.com/hungpham2511/toppra/issues/156
+   */
+  Bound m_initXBound = {0, 100};
 };
 
 }  // namespace toppra

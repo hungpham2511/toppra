@@ -1,0 +1,16 @@
+<?xml version='1.0'?>
+<package format='2'>
+ <name>toppra</name>
+ <version>0.3.1</version>
+ <description>Time-Optimal Path Parameterization</description>
+
+ <maintainer email="hungpham2511@gmail.com">Hung Pham</maintainer>
+ <license>MIT</license>
+
+ <url type='website'>https://hungpham2511.github.io/toppra/index.html</url>
+
+ <author>Hung Pham</author>
+ <author>Joseph Mirabel</author>
+
+ <buildtool_depend>catkin</buildtool_depend>
+</package>

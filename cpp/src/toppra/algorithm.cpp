@@ -36,17 +36,10 @@ ReturnCode PathParametrizationAlgorithm::computeControllableSets(
   m_data.controllable_sets.row(m_N) = vel_ends.cwiseAbs2();
 
   Matrix H;
-  Bound x, x_next;
-  /// \todo The hard-coded bound below avoids numerical issues in LP / QP solvers
-  /// when \f$ x \f$ becomes too big. This issue should be addressed in the
-  /// solver wrapper themselfves as numerical behaviors is proper to each
-  /// individual solver.
-  /// See https://github.com/hungpham2511/toppra/issues/156
-  x << 0, 100;
-  x_next << 0, 1;
+  Bound x (m_initXBound), x_next;
   for (std::size_t i = m_N - 1; i != (std::size_t)-1; i--) {
     TOPPRA_LOG_DEBUG(i << ", " << m_N);
-    x_next << m_data.controllable_sets.row(i + 1);
+    x_next = m_data.controllable_sets.row(i + 1);
     solver_ret = m_solver->solveStagewiseOptim(i, H, g_upper, x, x_next, solution);
 
     if (!solver_ret) {
