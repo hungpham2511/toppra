@@ -33,7 +33,14 @@ PiecewisePolyPath::PiecewisePolyPath(const Vectors &positions, const Vector &tim
         const std::array<BoundaryCond, 2> &bc_type) {
     // Prepare input
     checkInputArgs(positions, times, bc_type);
+    Matrices coefficients(times.size() - 1);
+    computeCubicSplineCoefficients(positions, times, bc_type, coefficients);
+    std::vector<value_type> breakpoints (times.data(), times.data() + times.size());
+    *this = PiecewisePolyPath(coefficients, breakpoints);
+}
 
+void PiecewisePolyPath::computeCubicSplineCoefficients(const Vectors &positions, const Vector &times,
+        const std::array<BoundaryCond, 2> &bc_type, Matrices &coefficients) {
     // h(i) = t(i+1) - t(i)
     Vector h (times.rows() - 1);
     for (size_t i = 0; i < h.rows(); i++){
@@ -52,7 +59,7 @@ PiecewisePolyPath::PiecewisePolyPath(const Vectors &positions, const Vector &tim
         B[i].resize(times.rows());
         for (size_t j = 1; j < A.rows() - 1; j++) {
             B[i](j) = 3 * (positions[j + 1](i) - positions[j](i)) / h(j) -
-                    3 * (positions[j](i) - positions[j - 1](i)) / h(j - 1);
+                      3 * (positions[j](i) - positions[j - 1](i)) / h(j - 1);
         }
     }
 
@@ -93,7 +100,6 @@ PiecewisePolyPath::PiecewisePolyPath(const Vectors &positions, const Vector &tim
     }
 
     // Insert spline coefficients
-    Matrices coefficients(times.size() - 1);
     for (size_t i = 0; i < coefficients.size() ; i++) {
         coefficients[i].resize(4, positions[0].rows());
         for (size_t j = 0; j < coefficients[i].cols(); j++) {
@@ -104,9 +110,6 @@ PiecewisePolyPath::PiecewisePolyPath(const Vectors &positions, const Vector &tim
             coefficients[i](3, j) = positions[i](j);
         }
     }
-
-    std::vector<value_type> breakpoints (times.data(), times.data() + times.size());
-    *this = PiecewisePolyPath(coefficients, breakpoints);
 }
 
 Bound PiecewisePolyPath::pathInterval() const {

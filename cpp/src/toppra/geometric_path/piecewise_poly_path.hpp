@@ -6,6 +6,12 @@
 
 namespace toppra {
 
+/// Boundary condition
+typedef struct {
+    int order;
+    Vector values;
+} BoundaryCond;
+
 /**
  * \brief Piecewise polynomial geometric path.
  *
@@ -34,7 +40,12 @@ class PiecewisePolyPath : public GeometricPath {
    */
   PiecewisePolyPath(const Matrices &coefficients, std::vector<value_type> breakpoints);
 
-
+  /**
+   * \brief Construct a new piecewise 3rd degree polynomial.
+   * @param positions Vectors of path positions at given times.
+   * @param times Vector of times in a strictly increasing order.
+   * @param bc_type Boundary conditions at the curve start and end.
+   */
   PiecewisePolyPath(const Vectors &positions, const Vector &times, const std::array<BoundaryCond, 2> &bc_type);
 
   /**
@@ -64,6 +75,8 @@ class PiecewisePolyPath : public GeometricPath {
  protected:
   void initAsHermite(const Vectors &positions, const Vectors &velocities,
                      const std::vector<value_type> times);
+  void computeCubicSplineCoefficients(const Vectors &positions, const Vector &times,
+          const std::array<BoundaryCond, 2> &bc_type, Matrices &coefficients);
   void reset();
   size_t findSegmentIndex(value_type pos) const;
   void checkInputArgs();
