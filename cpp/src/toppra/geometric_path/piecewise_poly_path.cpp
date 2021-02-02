@@ -35,7 +35,7 @@ PiecewisePolyPath::PiecewisePolyPath(const Vectors &positions, const Vector &tim
     checkInputArgs(positions, times, bc_type);
 
     // h(i) = t(i+1) - t(i)
-    Vector h (times.size() - 1);
+    Vector h (times.rows() - 1);
     for (size_t i = 0; i < h.rows(); i++){
         h(i) = times(i + 1) - times(i);
     }
@@ -89,22 +89,20 @@ PiecewisePolyPath::PiecewisePolyPath(const Vectors &positions, const Vector &tim
     Vectors X (positions[0].rows());
     for (size_t i = 0; i < X.size(); i++) {
         X[i].resize(times.rows());
-        X[i] << A.colPivHouseholderQr().solve(B[i]);
+        X[i] = A.colPivHouseholderQr().solve(B[i]);
     }
 
     // Insert spline coefficients
     Matrices coefficients(times.size() - 1);
-    Matrix coeff(4, positions[0].rows());
     for (size_t i = 0; i < coefficients.size() ; i++) {
-        for (size_t j = 0; j < coeff.cols(); j++) {
-            coeff(0, j) = (X[j](i + 1) - X[j](i)) / (3 * h(i));
-            coeff(1, j) = X[j](i);
-            coeff(2, j) = (positions[i + 1](j) - positions[i](j)) / h(i) -
+        coefficients[i].resize(4, positions[0].rows());
+        for (size_t j = 0; j < coefficients[i].cols(); j++) {
+            coefficients[i](0, j) = (X[j](i + 1) - X[j](i)) / (3 * h(i));
+            coefficients[i](1, j) = X[j](i);
+            coefficients[i](2, j) = (positions[i + 1](j) - positions[i](j)) / h(i) -
                     h(i) / 3 * (2 * X[j](i) + X[j](i + 1));
-            coeff(3, j) = positions[i](j);
+            coefficients[i](3, j) = positions[i](j);
         }
-        coefficients[i].resize(4, coeff.cols());
-        coefficients[i] << coeff;
     }
 
     std::vector<value_type> breakpoints (times.data(), times.data() + times.size());
@@ -197,7 +195,7 @@ void PiecewisePolyPath::checkInputArgs(const Vectors &positions, const Vector &t
     // Validate boundary conditions
     int expected_deriv_size = positions[0].size();
     for (const BoundaryCond &bc: bc_type) {
-        if (bc.order != 1 and bc.order != 2) {
+        if (bc.order != 1 && bc.order != 2) {
             throw std::runtime_error("The specified derivative order must be 1 or 2.");
         }
         if (bc.values.size() != expected_deriv_size) {
