@@ -29,17 +29,17 @@ class TOPPRAsd(ReachabilityAlgorithm):
 
     """
 
-    def set_desired_duration(self, desired_duration):
+    def set_desired_duration(self, desired_duration: float):
         """Set desired duration for the time-parametrization.
 
         Parameters
         ----------
-        desired_duration: float,
-            Abc
+        desired_duration: 
+          The desired duration.
         """
         self.desired_duration = desired_duration
 
-    def compute_parameterization(self, sd_start, sd_end, return_data=False, atol=1e-5):
+    def compute_parameterization(self, sd_start: float, sd_end: float, return_data: bool=False, atol: float=1e-5):
         """Compute a path parameterization.
 
         If there is no valid parameterizations, simply return None(s).
@@ -48,14 +48,14 @@ class TOPPRAsd(ReachabilityAlgorithm):
 
         Parameters
         ----------
-        sd_start: float
+        sd_start:
             Starting path velocity. Must be positive.
-        sd_end: float
+        sd_end:
             Goal path velocity. Must be positive.
-        return_data: bool, optional
-            If is True, also return matrix K which contains the controllable sets.
-        atol: float, optional
-            Absolute tolerance of duration.
+        return_data:
+            If is True, also return matrix K which contains the controllable sets. Default to False.
+        atol:
+            Absolute tolerance of duration. Default to 1e-5.
 
         Returns
         -------

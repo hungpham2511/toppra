@@ -92,15 +92,16 @@ Building docs
 ==============================
 
 The latest documentation is available at
-`<https://toppra.readthedocs.io/en/latest/>`_.
+`<https://hungpham2511.github.io/toppra>`_.
 
-To build and view the documentation locally, install `sphinx
-<http://www.sphinx-doc.org/en/stable/index.html>`_ then run the
-following command in the terminal
+To build and view the documentation locally, run the following command
+in the terminal.
 
 .. code-block:: shell
 
-   invoke build-docs
+   cd toppra/docs
+   pip install -r requirements.txt
+   make livehtml
 
 The C++ API has its own doxygen-based API.
 

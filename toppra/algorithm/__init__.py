@@ -1,12 +1,17 @@
-"""toppra.algorithm
+"""Parametrization algorithms
 ------------------------
 
+TOPPRA
+^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: toppra.algorithm.TOPPRA
+   :show-inheritance:
+   :members: compute_trajectory, compute_parameterization
 
-ParameterizationAlgorithm
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. autoclass:: toppra.algorithm.ParameterizationAlgorithm
-   :members:
+TOPPRAsd
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: toppra.algorithm.TOPPRAsd
+   :members: compute_trajectory, set_desired_duration, compute_parameterization
+   :show-inheritance:
 
 ParameterizationReturnCode
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -20,26 +25,17 @@ ParameterizationReturnCode
    .. autoattribute:: FailUncontrollable
    .. autoattribute:: ErrForwardPassFail
 
-
 ParameterizationData
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: toppra.algorithm.ParameterizationData
    :members:
 
+[abstract]ParameterizationAlgorithm
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-TOPPRA
-^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: toppra.algorithm.TOPPRA
-   :show-inheritance:
-   :members: compute_trajectory
-
-TOPPRAsd
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: toppra.algorithm.TOPPRAsd
-   :members: compute_trajectory
-   :show-inheritance:
-
+.. autoclass:: toppra.algorithm.ParameterizationAlgorithm
+   :members:
 
 """
 from .algorithm import ParameterizationAlgorithm, ParameterizationData, ParameterizationReturnCode
