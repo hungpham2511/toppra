@@ -9,6 +9,7 @@ set(TEST_SOURCES
   test_cubic_spline.cpp
   test_algorithm.cpp
   test_parametrizer.cpp
+  test_spline_parametrizer.cpp
   test_toppra_approach.cpp
   )
 
