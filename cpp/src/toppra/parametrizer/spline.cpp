@@ -10,12 +10,11 @@ Spline::Spline(GeometricPathPtr path, const Vector& gridpoints, const Vector& vs
         std::vector<value_type> t_grid (gridpoints.rows(), 0);
         std::vector<value_type> copied_gridpoints (gridpoints.data(), gridpoints.data() + gridpoints.rows());
         std::vector<int> skip_ent;
-        value_type sd_average, delta_s, delta_t;
+        value_type sd_average, delta_t;
         for (int i = 1; i < t_grid.size(); i++) {
             sd_average = (m_vs[i - 1] + m_vs[i]) / 2;
-            delta_s = gridpoints[i] - gridpoints[i - 1];
             if (sd_average > TOPPRA_NEARLY_ZERO) {
-                delta_t = delta_s / sd_average;
+                delta_t = (gridpoints[i] - gridpoints[i - 1]) / sd_average;
             }
             else {
                 delta_t = 5;
