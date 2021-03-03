@@ -174,7 +174,7 @@ class DraculaToppra:
         x = np.linspace(0, x_max, self.waypts.shape[0])
         logger.debug(
             f"t_sum = {t_sum}, t_sum_multiplier = {t_sum_multiplier}, "
-            f"estimated path length: {x[-1]}"
+            f"estimated path length: {x_max}"
         )
         # specifying natural here doensn't make a difference
         # toppra only produces clamped cubic splines
