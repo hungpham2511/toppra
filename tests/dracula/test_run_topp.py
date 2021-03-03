@@ -6,7 +6,7 @@ import unittest
 
 import numpy as np
 
-from toppra.dracula import A_MAX, V_MAX, run_topp_const_accel, run_topp_spline
+import toppra.dracula as tdrac
 
 
 class TestRunTopp(unittest.TestCase):
@@ -22,32 +22,51 @@ class TestRunTopp(unittest.TestCase):
         )
     )
     waypts_list = [np.loadtxt(path) for path in paths]
-    v_max = np.vstack([-V_MAX, V_MAX]).T
-    a_max = np.vstack([-A_MAX, A_MAX]).T
 
-    def test_run_topp_spline_static_data_(self):
+    @staticmethod
+    def _gen_limits(waypts):
+        """Generate maximum vlim and alim arrays given waypts.
+
+        Assume the last 7-dof belong to a cobot. The rest is filled with 3.
+        """
+        n_dof = waypts.shape[1]
+        v_max = 3 * np.ones((n_dof, 2))  # init with 3
+        a_max = 3 * np.ones((n_dof, 2))  # init with 3
+        v_max[-7:, 0] = -tdrac.V_MAX  # fill 7-dof limits
+        v_max[-7:, 1] = tdrac.V_MAX
+        a_max[-7:, 0] = -tdrac.A_MAX
+        a_max[-7:, 1] = tdrac.A_MAX
+        v_max[:-7, 0] *= -1
+        a_max[:-7, 0] *= -1
+        return v_max, a_max
+
+    def test_run_topp_spline_static_data(self):
         """Test run_topp_spline() using static test data."""
+        print("Starting test_run_topp_spline_static_data")
         for coeff in [1, 0.5, 0.1]:
             print(f"Testing with limit reduction coefficient: {coeff}...")
             for i, waypts in enumerate(self.waypts_list):
                 print(f"Testing waypoints file {i}...")
-                run_topp_spline(
+                v_max, a_max = TestRunTopp._gen_limits(waypts)
+                tdrac.run_topp_spline(
                     waypts,
-                    coeff * self.v_max,
-                    coeff * self.a_max,
+                    coeff * v_max,
+                    coeff * a_max,
                     verify_lims=True,
                 )
 
     def test_run_topp_const_accel_static_data(self):
         """Test run_topp_const_accel() using static test data."""
+        print("Starting test_run_topp_const_accel_static_data")
         for coeff in [1, 0.5, 0.1]:
             print(f"Testing with limit reduction coefficient: {coeff}...")
             for i, waypts in enumerate(self.waypts_list):
                 print(f"Testing waypoints file {i}...")
-                run_topp_const_accel(
+                v_max, a_max = TestRunTopp._gen_limits(waypts)
+                tdrac.run_topp_const_accel(
                     waypts,
-                    coeff * self.v_max,
-                    coeff * self.a_max,
+                    coeff * v_max,
+                    coeff * a_max,
                     cmd_rate=1000,
                     verify_lims=True,
                 )
@@ -64,7 +83,7 @@ class TestRunTopp(unittest.TestCase):
         for n_waypts in [2, 20, 50, 200]:  # , 2000]:
             print(f"Testing {n_waypts} random waypoints...")
             waypts = np.random.rand(n_waypts, n_dof)
-            run_topp_spline(waypts, vlim, alim, verify_lims=True)
+            tdrac.run_topp_spline(waypts, vlim, alim, verify_lims=True)
 
 
 if __name__ == "__main__":
