@@ -64,11 +64,11 @@ def _check_waypts(waypts, vlim, alim):
     velocity limit and the waypoints in joint space.
     """
     pair_dist = np.diff(waypts, axis=0)  # (N-1, N_dof)
-    i_sign_flip = (
+    i_sign_flip = (  # find where it changes direction
         np.where(np.sign(pair_dist[:-1]) != np.sign(pair_dist[1:]))[0] + 1
     )
     pair_t = np.abs(pair_dist) / vlim[:, 1]
-    pair_t[i_sign_flip] = np.sqrt(
+    pair_t[i_sign_flip] = np.sqrt(  # assume 0 velocity start at max accel
         2 * np.abs(pair_dist)[i_sign_flip] / alim[:, 1]
     )
     t_sum = pair_t.max(axis=1).sum()
