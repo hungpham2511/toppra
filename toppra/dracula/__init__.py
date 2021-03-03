@@ -76,7 +76,7 @@ def _check_waypts(waypts, vlim, alim):
     return min_pair_dist, t_sum
 
 
-class DraculaToppra:  # pylint: disable=R0902
+class DraculaToppra:
     """Class for an optimisation session. Use the functional wrappers."""
 
     def __init__(self, waypts, vlim, alim):
@@ -99,9 +99,6 @@ class DraculaToppra:  # pylint: disable=R0902
         # declare attributes to be set later
         self.min_pair_dist = None
         self.path_length_limit = None
-        self.pc_vel = None
-        self.pc_acc = None
-        self.path = None
 
     def lims_obeyed(self, traj, raise_2nd_order):
         """
@@ -147,7 +144,7 @@ class DraculaToppra:  # pylint: disable=R0902
                 return False
         return True
 
-    def _estimate_path(self, t_sum_multiplier):
+    def _estimate_path(self, t_sum_multiplier, pc_vel, pc_acc):
         """Estimate path length from reduced v/a limits.
 
         This sets up the path only after pc_vel and pc_acc
@@ -155,7 +152,7 @@ class DraculaToppra:  # pylint: disable=R0902
         """
         # check for duplicates
         self.min_pair_dist, t_sum = _check_waypts(
-            self.waypts, self.pc_vel.vlim, self.pc_acc.alim
+            self.waypts, pc_vel.vlim, pc_acc.alim
         )
         if self.min_pair_dist < JNT_DIST_EPS:  # issue a warning and try anyway
             logger.warning(
@@ -181,24 +178,24 @@ class DraculaToppra:  # pylint: disable=R0902
         )
         # specifying natural here doensn't make a difference
         # toppra only produces clamped cubic splines
-        self.path = ta.SplineInterpolator(x, self.waypts, bc_type="clamped")
+        return ta.SplineInterpolator(x, self.waypts, bc_type="clamped")
 
     def compute_spline_varying_alim(self):
         """Compute spline-based jnt_traj one-pass using current alim."""
         # avoid going over limit taking into account toppra's precision
-        self.pc_vel = constraint.JointVelocityConstraint(
+        pc_vel = constraint.JointVelocityConstraint(
             self.vlim - np.sign(self.vlim) * V_LIM_EPS
         )
         # Can be either Collocation (0) or Interpolation (1).
         # Interpolation gives more accurate results with
         # slightly higher computational cost
-        self.pc_acc = constraint.JointAccelerationConstraint(
+        pc_acc = constraint.JointAccelerationConstraint(
             self.alim_coeffs.reshape(-1, 1)
             * (self.alim - np.sign(self.alim) * A_LIM_EPS),
             discretization_scheme=constraint.DiscretizationType.Interpolation,
         )
         # scaling to shorter path improves siedel stability
-        self._estimate_path(t_sum_multiplier=0.05)
+        path = self._estimate_path(0.05, pc_vel, pc_acc)
         # Use the default gridpoints=None to let
         # interpolator.propose_gridpoints calculate gridpoints
         # that sufficiently covers the path.
@@ -211,8 +208,8 @@ class DraculaToppra:  # pylint: disable=R0902
         # Boundary condition "natural" especially needs support by
         # smaller error.
         instance = algo.TOPPRA(
-            [self.pc_vel, self.pc_acc],
-            self.path,
+            [pc_vel, pc_acc],
+            path,
             solver_wrapper="seidel",
             parametrizer="ParametrizeSpline",
         )
@@ -221,17 +218,17 @@ class DraculaToppra:  # pylint: disable=R0902
     def compute_const_accel(self):
         """Compute optimised trajectory for ParametrizeConstAccel."""
         # avoid going over limit taking into account toppra's precision
-        self.pc_vel = constraint.JointVelocityConstraint(
+        pc_vel = constraint.JointVelocityConstraint(
             self.vlim - np.sign(self.vlim) * V_LIM_EPS
         )
-        self.pc_acc = constraint.JointAccelerationConstraint(
+        pc_acc = constraint.JointAccelerationConstraint(
             self.alim - np.sign(self.alim) * A_LIM_EPS,
             discretization_scheme=constraint.DiscretizationType.Interpolation,
         )
-        self._estimate_path(t_sum_multiplier=0.5)
+        path = self._estimate_path(0.5, pc_vel, pc_acc)
         instance = algo.TOPPRA(
-            [self.pc_vel, self.pc_acc],
-            self.path,
+            [pc_vel, pc_acc],
+            path,
             solver_wrapper="seidel",
             parametrizer="ParametrizeConstAccel",
             gridpt_min_nb_points=1000,  # ensure eps ~ O(1e-2)
