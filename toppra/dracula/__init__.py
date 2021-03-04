@@ -55,7 +55,7 @@ def _dump_input_data(**kwargs):
     logger.info(f"Debug environment detected, input data saved to: {path}")
 
 
-def _check_waypts(waypts, vlim):
+def _check_waypts(waypts, vlim, alim):
     """
     Perform two checks on the input waypoints.
 
@@ -64,7 +64,13 @@ def _check_waypts(waypts, vlim):
     velocity limit and the waypoints in joint space.
     """
     pair_dist = np.diff(waypts, axis=0)  # (N-1, N_dof)
+    i_sign_flip = (  # find where it changes direction
+        np.where(np.sign(pair_dist[:-1]) != np.sign(pair_dist[1:]))[0] + 1
+    )
     pair_t = np.abs(pair_dist) / vlim[:, 1]
+    pair_t[i_sign_flip] = np.sqrt(  # assume 0 velocity start at max accel
+        2 * np.abs(pair_dist)[i_sign_flip] / alim[:, 1]
+    )
     t_sum = pair_t.max(axis=1).sum()
     min_pair_dist = np.linalg.norm(pair_dist, axis=1).min()
     return min_pair_dist, t_sum
@@ -86,37 +92,13 @@ class DraculaToppra:
             f"alim magnitude must be larger than A_LIM_EPS = {A_LIM_EPS}:"
             f"\n{alim}"
         )
-        # check for duplicates
-        self.min_pair_dist, t_sum = _check_waypts(waypts, vlim)
-        if self.min_pair_dist < JNT_DIST_EPS:  # issue a warning and try anyway
-            logger.warning(
-                "Duplicates found in input waypoints. This is not recommended,"
-                " especially for the beginning and the end of the trajectory. "
-                "Toppra might throw a controllability exception. "
-                "Attempting to optimise trajectory anyway..."
-            )
-        self.waypts = waypts
+        self.waypts = waypts.copy()
         self.vlim = vlim
         self.alim = alim
-        if t_sum < 0.5:
-            t_sum = 0.5  # 0.15 seems to be the minimum path length required
-        # initial x for toppra's path, essentially normalised time on x axis
-        # rescale by given speed limits.
-        # only applies to ParametrizeSpline.
-        self.path_length_limit = 100 * t_sum  # empirical magic number
-        # magic number 0.3 because despite the fact that t_sum is the minimum
-        # time required to visit all given waypoints, toppra needs a smaller
-        # number for controllabiility
-        # it will find that the needed total path length > t_sum in the end
-        x = np.linspace(0, 0.3 * t_sum, waypts.shape[0])
-        # specifying natural here doensn't make a difference
-        # toppra only produces clamped cubic splines
-        self.path = ta.SplineInterpolator(x, waypts.copy(), bc_type="clamped")
-        # avoid going over limit taking into account toppra's precision
-        self.pc_vel = constraint.JointVelocityConstraint(
-            vlim - np.sign(vlim) * V_LIM_EPS
-        )
         self.alim_coeffs = np.ones(alim.shape[0])  # IV for multiplication
+        # declare attributes to be set later
+        self.min_pair_dist = None
+        self.path_length_limit = None
 
     def lims_obeyed(self, traj, raise_2nd_order):
         """
@@ -162,16 +144,58 @@ class DraculaToppra:
                 return False
         return True
 
+    def _estimate_path(self, t_sum_multiplier, pc_vel, pc_acc):
+        """Estimate path length from reduced v/a limits.
+
+        This sets up the path only after pc_vel and pc_acc
+        have been established.
+        """
+        # check for duplicates
+        self.min_pair_dist, t_sum = _check_waypts(
+            self.waypts, pc_vel.vlim, pc_acc.alim
+        )
+        if self.min_pair_dist < JNT_DIST_EPS:  # issue a warning and try anyway
+            logger.warning(
+                "Duplicates found in input waypoints. This is not recommended,"
+                " especially for the beginning and the end of the trajectory. "
+                "Toppra might throw a controllability exception. "
+                "Attempting to optimise trajectory anyway..."
+            )
+        # initial x for toppra's path, essentially normalised time on x axis
+        # rescale by given speed limits.
+        # only applies to ParametrizeSpline.
+        self.path_length_limit = 100 * t_sum  # empirical magic number
+        # t_sum is the minimum time required to visit all given waypoints.
+        # toppra generally needs a smaller number for controllabiility.
+        # It will find that the needed total path length > t_sum in the end.
+        x_max = t_sum_multiplier * t_sum
+        if x_max < 0.15:
+            x_max = 0.15
+        x = np.linspace(0, x_max, self.waypts.shape[0])
+        logger.debug(
+            f"t_sum = {t_sum}, t_sum_multiplier = {t_sum_multiplier}, "
+            f"estimated path length: {x_max}"
+        )
+        # specifying natural here doensn't make a difference
+        # toppra only produces clamped cubic splines
+        return ta.SplineInterpolator(x, self.waypts, bc_type="clamped")
+
     def compute_spline_varying_alim(self):
         """Compute spline-based jnt_traj one-pass using current alim."""
+        # avoid going over limit taking into account toppra's precision
+        pc_vel = constraint.JointVelocityConstraint(
+            self.vlim - np.sign(self.vlim) * V_LIM_EPS
+        )
         # Can be either Collocation (0) or Interpolation (1).
         # Interpolation gives more accurate results with
         # slightly higher computational cost
         pc_acc = constraint.JointAccelerationConstraint(
-            self.alim_coeffs.reshape(-1, 1) * self.alim
-            - np.sign(self.alim) * A_LIM_EPS,
+            self.alim_coeffs.reshape(-1, 1)
+            * (self.alim - np.sign(self.alim) * A_LIM_EPS),
             discretization_scheme=constraint.DiscretizationType.Interpolation,
         )
+        # scaling to shorter path improves siedel stability
+        path = self._estimate_path(0.05, pc_vel, pc_acc)
         # Use the default gridpoints=None to let
         # interpolator.propose_gridpoints calculate gridpoints
         # that sufficiently covers the path.
@@ -184,8 +208,8 @@ class DraculaToppra:
         # Boundary condition "natural" especially needs support by
         # smaller error.
         instance = algo.TOPPRA(
-            [self.pc_vel, pc_acc],
-            self.path,
+            [pc_vel, pc_acc],
+            path,
             solver_wrapper="seidel",
             parametrizer="ParametrizeSpline",
         )
@@ -193,13 +217,18 @@ class DraculaToppra:
 
     def compute_const_accel(self):
         """Compute optimised trajectory for ParametrizeConstAccel."""
+        # avoid going over limit taking into account toppra's precision
+        pc_vel = constraint.JointVelocityConstraint(
+            self.vlim - np.sign(self.vlim) * V_LIM_EPS
+        )
         pc_acc = constraint.JointAccelerationConstraint(
             self.alim - np.sign(self.alim) * A_LIM_EPS,
             discretization_scheme=constraint.DiscretizationType.Interpolation,
         )
+        path = self._estimate_path(0.5, pc_vel, pc_acc)
         instance = algo.TOPPRA(
-            [self.pc_vel, pc_acc],
-            self.path,
+            [pc_vel, pc_acc],
+            path,
             solver_wrapper="seidel",
             parametrizer="ParametrizeConstAccel",
             gridpt_min_nb_points=1000,  # ensure eps ~ O(1e-2)
