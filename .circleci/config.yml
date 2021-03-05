@@ -106,14 +106,14 @@ jobs:
             ./tests/all_tests
           working_directory: ~/repo/cpp/build
           
-      - run:
-          name: Check codestyle (C++)
-          command: |
-            clang-tidy  src/**/*.cpp \
-            -checks=clang-analyzer-*,clang-analyzer-cplusplus*,cppcoreguidelines-*,performance-*,modernize-*,readability-,-cppcoreguidelines-pro-bounds-array-to-pointer-decay \
-            -warnings-as-errors=clang-analyzer-*,clang-analyzer-cplusplus*,cppcoreguidelines-*,modernize-* -p build | echo "Fail ok"
+      # - run:
+      #     name: Check codestyle (C++)
+      #     command: |
+      #       clang-tidy  src/**/*.cpp \
+      #       -checks=clang-analyzer-*,clang-analyzer-cplusplus*,cppcoreguidelines-*,performance-*,modernize-*,readability-,-cppcoreguidelines-pro-bounds-array-to-pointer-decay \
+      #       -warnings-as-errors=clang-analyzer-*,clang-analyzer-cplusplus*,cppcoreguidelines-*,modernize-* -p build
+      #     working_directory: ~/repo/cpp
 
-          working_directory: ~/repo/cpp
       - python/load-cache:
           dependency-file: requirements3.txt
       - run:
