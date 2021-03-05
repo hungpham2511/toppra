@@ -43,7 +43,7 @@ commands:
           name: Build toppra C++ API
           command: |
             export LD_LIBRARY_PATH=/opt/openrobots/lib:${LD_LIBRARY_PATH}
-            export CMAKE_PREFIX_PATH=/opt/openrobots
+            export CMAKE_PREFIX_PATH=/opt/openrobots:$CMAKE_PREFIX_PATH
             mkdir build && cd build && cmake \
               -DBUILD_WITH_PINOCCHIO=ON \
               -DBUILD_WITH_qpOASES=ON \
