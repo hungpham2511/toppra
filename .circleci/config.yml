@@ -13,10 +13,10 @@ commands:
     parameters:
       python-version:
         type: string
-        default: "3.6"
+        default: "3.8"
       python-version-short:
         type: string
-        default: "36"
+        default: "38"
     steps:
       - run:
           name: Install dependencies
@@ -88,10 +88,10 @@ jobs:
   # Test the cpp api and bindings on python3.6 The base image of this
   # job is Ubuntu 18.04, which is required to install pinocchio and
   # other deps.
-  cpp-python36:
+  cpp-python38:
     description: Build and test the full Python API
     docker:
-      - image: cimg/python:3.6
+      - image: cimg/python:3.8
     working_directory: ~/repo
     steps:
       - checkout
@@ -101,6 +101,7 @@ jobs:
           command: |
             ./tests/all_tests
           working_directory: ~/repo/cpp/build
+          
       - run:
           name: Check codestyle (C++)
           command: |
@@ -196,10 +197,10 @@ workflows:
             parameters:
               python-version: ["36", "37"]
 
-      - cpp-python36
+      - cpp-python38
       - publish-docs:
           requires:
-            - cpp-python36
+            - cpp-python38
           filters:
             branches:
               only:
