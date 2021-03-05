@@ -28,7 +28,7 @@ if(${PYTHON_BINDINGS})
     if(DEFINED PINOCCHIO_WITH_PYTHON_INTERFACE)
       find_package(Boost REQUIRED COMPONENTS python${PYTHON_VERSION})
       target_compile_options(toppra_int PRIVATE -DPINOCCHIO_WITH_PYTHON_INTERFACE)
-      target_link_libraries(toppra_int PUBLIC Boost::python3)
+      target_link_libraries(toppra_int PUBLIC Boost::python${PYTHON_VERSION})
     endif()
   endif()
 
