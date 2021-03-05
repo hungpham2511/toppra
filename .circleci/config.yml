@@ -41,6 +41,7 @@ commands:
           working_directory: ~/
       - run:
           name: Build toppra C++ API
+          # Add DBoost_NO_BOOST_CMAKE=ON based on https://github.com/rdkit/rdkit/issues/3030 
           command: |
             export LD_LIBRARY_PATH=/opt/openrobots/lib:${LD_LIBRARY_PATH}
             export CMAKE_PREFIX_PATH=/opt/openrobots:$CMAKE_PREFIX_PATH
@@ -51,7 +52,9 @@ commands:
               -DPYTHON_BINDINGS=ON \
               -DPYTHON_VERSION=<< parameters.python-version >> \
               -DBUILD_WITH_PINOCCHIO_PYTHON=true \
-              -DOPT_MSGPACK=ON ..
+              -DOPT_MSGPACK=ON \
+              -DBoost_NO_BOOST_CMAKE=ON \
+              ..
             make -j4
           working_directory: ~/repo/cpp
 
