@@ -194,7 +194,7 @@ workflows:
       - python:
           matrix:
             parameters:
-              python-version: ["27", "36", "37"]
+              python-version: ["36", "37", "38"]
 
       - cpp-python36
       - publish-docs:
