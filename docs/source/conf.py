@@ -24,20 +24,6 @@ try:
 except ImportError:
     import pathlib
 
-# -- Pre-process ----------------------------------------------------------
-import datetime
-import pathlib
-source_path = pathlib.Path(__file__).parent / "../../HISTORY.md"
-target_path = pathlib.Path("__file__").parent / "HISTORY.md"
-
-target_mtime = datetime .datetime.fromtimestamp(target_path.stat().st_mtime)
-source_mtime = datetime .datetime.fromtimestamp(source_path.stat().st_mtime)
-
-if target_mtime < source_mtime:
-    print("Copying new HISTORY file")
-    import shutil
-    shutil.copyfile(source_path.as_posix(), target_path.as_posix())
-
 # -- General configuration ------------------------------------------------
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.coverage',
