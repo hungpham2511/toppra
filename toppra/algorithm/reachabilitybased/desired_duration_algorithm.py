@@ -156,8 +156,8 @@ class TOPPRAsd(ReachabilityAlgorithm):
             alpha = .0
         else:
             logger.info("Desired duration {:f} sec is achievable. Continue computing.".format(self.desired_duration))
-            alpha_low = 1  # here, low means a lower duration, and faster speed
-            alpha_high = 0
+            alpha_low = 1.0  # here, low means a lower duration, and faster speed
+            alpha_high = 0.0
             diff = 10
             it = 0
             while diff > atol:
