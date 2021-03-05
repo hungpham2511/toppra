@@ -1,95 +1,143 @@
+<!doctype html>
+<html class="no-js">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/><link rel="index" title="Index" href="../../../../genindex.html" /><link rel="search" title="Search" href="../../../../search.html" />
 
-<!DOCTYPE html>
+    <meta name="generator" content="sphinx-3.5.1, furo 2021.02.28.beta28"/>
+        <title>toppra.algorithm.reachabilitybased.desired_duration_algorithm - toppra documentation</title>
+      <link rel="stylesheet" href="../../../../_static/styles/furo.css?digest=be5985a4059b5c2cd56ed0804790452beca62674">
+    <link rel="stylesheet" href="../../../../_static/pygments.css">
+    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="../../../../_static/pygments_dark.css">
+    
 
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>toppra.algorithm.reachabilitybased.desired_duration_algorithm &#8212; toppra  documentation</title>
-    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/gallery.css" />
+
+<style>
+  :root {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+  }
+
+  /* For allowing end-user-specific overrides */
+  .override-light {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  .override-dark {
+    --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+  }
+</style><link rel="stylesheet" type="text/css" href="../../../../_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/gallery-rendered-html.css" />
-    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
-    <script src="../../../../_static/jquery.js"></script>
-    <script src="../../../../_static/underscore.js"></script>
-    <script src="../../../../_static/doctools.js"></script>
-    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    <link rel="index" title="Index" href="../../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../../search.html" />
-   
-  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
-  </head><body>
-  <div class="document">
+    <link rel="stylesheet" href="../../../../_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
+  <body dir="">
     
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../../../../index.html">toppra</a></h1>
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke-width="1.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z"/>
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="10" y1="12" x2="20" y2="12" />
+      <line x1="6" y1="18" x2="20" y2="18" />
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="feather feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+      class="feather feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
 
 
 
-<p class="blurb">A robotic motion planning library for path-parametrization</p>
-
-
-
-
-<p>
-<iframe src="https://ghbtns.com/github-btn.html?user=hungpham2511&repo=toppra&type=star&count=true&size=large&v=2"
-  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
-</p>
-
-
-
-
-
-    
-
-<p>
-<a class="badge" href="https://travis-ci.org/hungpham2511/toppra">
-    <img
-        alt="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
-        src="https://secure.travis-ci.org/hungpham2511/toppra.svg?branch=master"
-    />
-</a>
-</p>
-
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../../../index.html">Documentation overview</a><ul>
-  <li><a href="../../../index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
-      <input type="submit" value="Go" />
-    </form>
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
     </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          
+    <div class="header-center">
+      <a href="../../../../index.html"><div class="brand">toppra  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../../index.html">
+  
+  
+  <span class="sidebar-brand-text">toppra  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../../search.html">
+  <input class="sidebar-search" placeholder=Search name="q">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../notes.html">User guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../../auto_examples/index.html">Examples gallery</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label for="toctree-checkbox-1"><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../../auto_examples/plot_scalar_example.html">Retime an one dimensional path</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../auto_examples/plot_kinematics.html">Retime a path subject to kinematic constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../auto_examples/plot_kinematics_duration.html">Retime a path to a specific duration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../auto_examples/plot_straight_line.html">Retime a straight path</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../auto_examples/plot_robust_kinematics.html">Retime a path subject to robust kinematic constraints</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../python_api.html">Python API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../HISTORY.html">Changelog</a></li>
+</ul>
 
-          <div class="body" role="main">
-            
-  <h1>Source code for toppra.algorithm.reachabilitybased.desired_duration_algorithm</h1><div class="highlight"><pre>
+</div>
+</div>
+      </div>
+      
+    </div>
+  </aside>
+  <main class="main">
+    <div class="content">
+      <article role="main">
+        <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+        </label>
+        <h1>Source code for toppra.algorithm.reachabilitybased.desired_duration_algorithm</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">.reachability_algorithm</span> <span class="kn">import</span> <span class="n">ReachabilityAlgorithm</span>
 <span class="kn">from</span> <span class="nn">...constants</span> <span class="kn">import</span> <span class="n">LARGE</span><span class="p">,</span> <span class="n">SMALL</span>
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">algorithm</span> <span class="k">as</span> <span class="n">algo</span>
@@ -100,8 +148,8 @@
 
 
 <span class="k">def</span> <span class="nf">_compute_duration</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">deltas</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Compute the duration of the given parametrization.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">""" Compute the duration of the given parametrization.</span>
+<span class="sd">    """</span>
     <span class="n">sds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span>
     <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">deltas</span><span class="p">)):</span>
@@ -110,7 +158,7 @@
 
 
 <div class="viewcode-block" id="TOPPRAsd"><a class="viewcode-back" href="../../../../python_api.html#toppra.algorithm.TOPPRAsd">[docs]</a><span class="k">class</span> <span class="nc">TOPPRAsd</span><span class="p">(</span><span class="n">ReachabilityAlgorithm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;TOPPRA with specified duration.</span>
+    <span class="sd">"""TOPPRA with specified duration.</span>
 
 <span class="sd">    The key technical idea is to compute the **fastest** and the</span>
 <span class="sd">    **slowest** time parameterizations. Then use bisection search to</span>
@@ -119,20 +167,20 @@
 
 <span class="sd">    TODO: The current implementation is inefficient.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="nf">set_desired_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">desired_duration</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Set desired duration for the time-parametrization.</span>
+<div class="viewcode-block" id="TOPPRAsd.set_desired_duration"><a class="viewcode-back" href="../../../../python_api.html#toppra.algorithm.TOPPRAsd.set_desired_duration">[docs]</a>    <span class="k">def</span> <span class="nf">set_desired_duration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">desired_duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="sd">"""Set desired duration for the time-parametrization.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        desired_duration: float,</span>
-<span class="sd">            Abc</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">desired_duration</span> <span class="o">=</span> <span class="n">desired_duration</span>
+<span class="sd">        desired_duration: </span>
+<span class="sd">          The desired duration.</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">desired_duration</span> <span class="o">=</span> <span class="n">desired_duration</span></div>
 
-    <span class="k">def</span> <span class="nf">compute_parameterization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sd_start</span><span class="p">,</span> <span class="n">sd_end</span><span class="p">,</span> <span class="n">return_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Compute a path parameterization.</span>
+<div class="viewcode-block" id="TOPPRAsd.compute_parameterization"><a class="viewcode-back" href="../../../../python_api.html#toppra.algorithm.TOPPRAsd.compute_parameterization">[docs]</a>    <span class="k">def</span> <span class="nf">compute_parameterization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sd_start</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">sd_end</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">return_data</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">atol</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">):</span>
+        <span class="sd">"""Compute a path parameterization.</span>
 
 <span class="sd">        If there is no valid parameterizations, simply return None(s).</span>
 <span class="sd">        If the desired duration is not achievable, returns the fastest</span>
@@ -140,14 +188,14 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        sd_start: float</span>
+<span class="sd">        sd_start:</span>
 <span class="sd">            Starting path velocity. Must be positive.</span>
-<span class="sd">        sd_end: float</span>
+<span class="sd">        sd_end:</span>
 <span class="sd">            Goal path velocity. Must be positive.</span>
-<span class="sd">        return_data: bool, optional</span>
-<span class="sd">            If is True, also return matrix K which contains the controllable sets.</span>
-<span class="sd">        atol: float, optional</span>
-<span class="sd">            Absolute tolerance of duration.</span>
+<span class="sd">        return_data:</span>
+<span class="sd">            If is True, also return matrix K which contains the controllable sets. Default to False.</span>
+<span class="sd">        atol:</span>
+<span class="sd">            Absolute tolerance of duration. Default to 1e-5.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -160,11 +208,11 @@
 <span class="sd">        K: array</span>
 <span class="sd">            Shape (N+1, 2). Return if `return_data` is True. The controllable sets.</span>
 
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="n">sd_end</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">sd_start</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Path velocities must be positive&quot;</span>
+<span class="sd">        """</span>
+        <span class="k">assert</span> <span class="n">sd_end</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">sd_start</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"Path velocities must be positive"</span>
         <span class="n">K</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_controllable_sets</span><span class="p">(</span><span class="n">sd_end</span><span class="p">,</span> <span class="n">sd_end</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">K</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;The set of controllable velocities at the beginning is empty!&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"The set of controllable velocities at the beginning is empty!"</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_problem_data</span><span class="o">.</span><span class="n">return_code</span> <span class="o">=</span> <span class="n">algo</span><span class="o">.</span><span class="n">ParameterizationReturnCode</span><span class="o">.</span><span class="n">FailUncontrollable</span>
             <span class="k">if</span> <span class="n">return_data</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">K</span>
@@ -174,7 +222,7 @@
 
         <span class="n">x_start</span> <span class="o">=</span> <span class="n">sd_start</span> <span class="o">**</span> <span class="mi">2</span>
         <span class="k">if</span> <span class="n">x_start</span> <span class="o">+</span> <span class="n">SMALL</span> <span class="o">&lt;</span> <span class="n">K</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="n">K</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">SMALL</span> <span class="o">&lt;</span> <span class="n">x_start</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;The initial velocity is not controllable. </span><span class="si">{:f}</span><span class="s2"> not in (</span><span class="si">{:f}</span><span class="s2">, </span><span class="si">{:f}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"The initial velocity is not controllable. </span><span class="si">{:f}</span><span class="s2"> not in (</span><span class="si">{:f}</span><span class="s2">, </span><span class="si">{:f}</span><span class="s2">)"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">x_start</span><span class="p">,</span> <span class="n">K</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">K</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
             <span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_problem_data</span><span class="o">.</span><span class="n">return_code</span> <span class="o">=</span> <span class="n">algo</span><span class="o">.</span><span class="n">ParameterizationReturnCode</span><span class="o">.</span><span class="n">FailUncontrollable</span>
@@ -194,8 +242,8 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_N</span><span class="p">):</span>
             <span class="n">optim_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_forward_step</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">xs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">K</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
             <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">optim_res</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">fatal</span><span class="p">(</span><span class="s2">&quot;A numerical error occurs: The instance is controllable &quot;</span>
-                             <span class="s2">&quot;but forward pass fails.&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">fatal</span><span class="p">(</span><span class="s2">"A numerical error occurs: The instance is controllable "</span>
+                             <span class="s2">"but forward pass fails."</span><span class="p">)</span>
                 <span class="n">us</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
                 <span class="n">xs</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
                 <span class="n">v_vec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
@@ -206,7 +254,7 @@
                 <span class="c1"># numerical errors might violate this condition.</span>
                 <span class="n">xs</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">K</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="nb">max</span><span class="p">(</span><span class="n">K</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">xs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">deltas</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">us</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">SMALL</span><span class="p">))</span>
                 <span class="n">v_vec</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">optim_res</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;[Forward pass] u_</span><span class="si">{:d}</span><span class="s2"> = </span><span class="si">{:f}</span><span class="s2">, x_</span><span class="si">{:d}</span><span class="s2"> = </span><span class="si">{:f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">us</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">xs</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"[Forward pass] u_</span><span class="si">{:d}</span><span class="s2"> = </span><span class="si">{:f}</span><span class="s2">, x_</span><span class="si">{:d}</span><span class="s2"> = </span><span class="si">{:f}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">us</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">xs</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver_wrapper</span><span class="o">.</span><span class="n">close_solver</span><span class="p">()</span>
         <span class="c1"># compute the slowest parametrization</span>
         <span class="n">xs_slow</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
@@ -218,8 +266,8 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_N</span><span class="p">):</span>
             <span class="n">optim_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_forward_step</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">xs_slow</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">K</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">slow</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">optim_res</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">fatal</span><span class="p">(</span><span class="s2">&quot;A numerical error occurs: The instance is controllable &quot;</span>
-                             <span class="s2">&quot;but forward pass fails.&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">fatal</span><span class="p">(</span><span class="s2">"A numerical error occurs: The instance is controllable "</span>
+                             <span class="s2">"but forward pass fails."</span><span class="p">)</span>
                 <span class="n">us_slow</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
                 <span class="n">xs_slow</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
                 <span class="n">v_vec_slow</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
@@ -230,26 +278,26 @@
                 <span class="c1"># numerical errors might violate this condition.</span>
                 <span class="n">xs_slow</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">K</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="nb">max</span><span class="p">(</span><span class="n">K</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">xs_slow</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">deltas</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">us_slow</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">SMALL</span><span class="p">))</span>
                 <span class="n">v_vec_slow</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">optim_res</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;[Forward pass] u_</span><span class="si">{:d}</span><span class="s2"> = </span><span class="si">{:f}</span><span class="s2">, x_</span><span class="si">{:d}</span><span class="s2"> = </span><span class="si">{:f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">us_slow</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">xs_slow</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"[Forward pass] u_</span><span class="si">{:d}</span><span class="s2"> = </span><span class="si">{:f}</span><span class="s2">, x_</span><span class="si">{:d}</span><span class="s2"> = </span><span class="si">{:f}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">us_slow</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">xs_slow</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">solver_wrapper</span><span class="o">.</span><span class="n">close_solver</span><span class="p">()</span>
 
         <span class="c1"># desired parametrization xs_desired = alpha * xs + (1 - alpha) / xs_slow</span>
         <span class="n">duration</span> <span class="o">=</span> <span class="n">_compute_duration</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">deltas</span><span class="p">)</span>
         <span class="n">duration_slow</span> <span class="o">=</span> <span class="n">_compute_duration</span><span class="p">(</span><span class="n">xs_slow</span><span class="p">,</span> <span class="n">deltas</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">duration</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">desired_duration</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Desired duration </span><span class="si">{:f}</span><span class="s2"> seconds is not achievable.&quot;</span>
-                        <span class="s2">&quot; Returning the fastest parameterization with duration </span><span class="si">{:f}</span><span class="s2"> seconds&quot;</span>
-                        <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">desired_duration</span><span class="p">,</span> <span class="n">duration</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"Desired duration </span><span class="si">{:f}</span><span class="s2"> seconds is not achievable."</span>
+                        <span class="s2">" Returning the fastest parameterization with duration </span><span class="si">{:f}</span><span class="s2"> seconds"</span>
+                        <span class="s2">""</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">desired_duration</span><span class="p">,</span> <span class="n">duration</span><span class="p">))</span>
             <span class="n">alpha</span> <span class="o">=</span> <span class="mf">1.0</span>
         <span class="k">elif</span> <span class="n">duration_slow</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">desired_duration</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Desired duration </span><span class="si">{:f}</span><span class="s2"> seconds is not achievable.&quot;</span>
-                        <span class="s2">&quot; Returning the slowest parameterization with duration </span><span class="si">{:f}</span><span class="s2"> seconds&quot;</span>
-                        <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">desired_duration</span><span class="p">,</span> <span class="n">duration</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">"Desired duration </span><span class="si">{:f}</span><span class="s2"> seconds is not achievable."</span>
+                        <span class="s2">" Returning the slowest parameterization with duration </span><span class="si">{:f}</span><span class="s2"> seconds"</span>
+                        <span class="s2">""</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">desired_duration</span><span class="p">,</span> <span class="n">duration</span><span class="p">))</span>
             <span class="n">alpha</span> <span class="o">=</span> <span class="o">.</span><span class="mi">0</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Desired duration </span><span class="si">{:f}</span><span class="s2"> sec is achievable. Continue computing.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">desired_duration</span><span class="p">))</span>
-            <span class="n">alpha_low</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># here, low means a lower duration, and faster speed</span>
-            <span class="n">alpha_high</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Desired duration </span><span class="si">{:f}</span><span class="s2"> sec is achievable. Continue computing."</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">desired_duration</span><span class="p">))</span>
+            <span class="n">alpha_low</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># here, low means a lower duration, and faster speed</span>
+            <span class="n">alpha_high</span> <span class="o">=</span> <span class="mf">0.0</span>
             <span class="n">diff</span> <span class="o">=</span> <span class="mi">10</span>
             <span class="n">it</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">while</span> <span class="n">diff</span> <span class="o">&gt;</span> <span class="n">atol</span><span class="p">:</span>
@@ -263,7 +311,7 @@
                 <span class="k">else</span><span class="p">:</span>  <span class="c1"># duration_alpha &gt;= self.desired_duration</span>
                     <span class="n">alpha_high</span> <span class="o">=</span> <span class="n">alpha</span>
                     <span class="n">diff</span> <span class="o">=</span> <span class="n">duration_alpha</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">desired_duration</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;it: </span><span class="si">{:d}</span><span class="s2">. search range: [</span><span class="si">{:}</span><span class="s2">, </span><span class="si">{:}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">"it: </span><span class="si">{:d}</span><span class="s2">. search range: [</span><span class="si">{:}</span><span class="s2">, </span><span class="si">{:}</span><span class="s2">]"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="n">it</span><span class="p">,</span> <span class="n">alpha_low</span><span class="p">,</span> <span class="n">alpha_high</span><span class="p">))</span>
         <span class="n">xs_alpha</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">xs</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">xs_slow</span>
         <span class="n">us_alpha</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">us</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">us_slow</span>
@@ -280,10 +328,10 @@
         <span class="k">if</span> <span class="n">return_data</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">sdd_vec</span><span class="p">,</span> <span class="n">sd_vec</span><span class="p">,</span> <span class="n">v_vec_alpha</span><span class="p">,</span> <span class="n">K</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">sdd_vec</span><span class="p">,</span> <span class="n">sd_vec</span><span class="p">,</span> <span class="n">v_vec_alpha</span>
+            <span class="k">return</span> <span class="n">sdd_vec</span><span class="p">,</span> <span class="n">sd_vec</span><span class="p">,</span> <span class="n">v_vec_alpha</span></div>
 
     <span class="k">def</span> <span class="nf">_forward_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">K_next</span><span class="p">,</span> <span class="n">slow</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Compute the highest possible path velocity that is controllable.</span>
+        <span class="sd">""" Compute the highest possible path velocity that is controllable.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -303,7 +351,7 @@
 <span class="sd">        optim_var: array</span>
 <span class="sd">            Optimal variable, which has this format (u, x, v).</span>
 <span class="sd">            If this step fails, `optim_var` contains only nans.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="c1"># Immediate return</span>
         <span class="k">if</span> <span class="kc">None</span> <span class="ow">in</span> <span class="n">K_next</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_N</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">or</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">])</span>
@@ -325,28 +373,36 @@
             <span class="n">i</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">g_upper</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">K_next_min</span><span class="p">,</span> <span class="n">K_next_max</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">optim_var</span></div>
 </pre></div>
-
-          </div>
+      </article>
+      <footer>
+        
+        <div class="related-pages">
+          
           
         </div>
-      </div>
-    <div class="clearer"></div>
-  </div>
-    <div class="footer">
-      &copy;2020, Hung Pham.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.4.3</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
+
+        <div class="related-information">
+              Copyright &#169; 2020, Hung Pham
+            |
+            Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+              and
+              <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+              <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
+        </div>
+        
+      </footer>
     </div>
-
-    
-    <a href="https://github.com/hungpham2511/toppra" class="github">
-        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
-    </a>
-    
-
-    
-  </body>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </main>
+</div>
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../_static/scripts/main.js?digest=e931d09b2a40c1bb82b542effe772014573baf67"></script></body>
 </html>

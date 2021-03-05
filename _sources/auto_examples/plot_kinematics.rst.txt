@@ -24,7 +24,6 @@ In this example, we will see how can we retime a generic spline-based
 path subject to kinematic constraints. This is very simple to do with
 `toppra`, as we shall see below. First import the library.
 
-
 .. GENERATED FROM PYTHON SOURCE LINES 9-19
 
 .. code-block:: default
@@ -123,11 +122,11 @@ satisfaction.
 
  .. code-block:: none
 
-     INFO [algorithm.py : 106] No gridpoint specified. Automatically choose a gridpoint with 290 points
-     INFO [reachability_algorithm.py : 66] Solver wrapper not supplied. Choose solver wrapper automatically!
+     INFO [algorithm.py : 104] No gridpoint specified. Automatically choose a gridpoint with 290 points
+     INFO [reachability_algorithm.py : 65] Solver wrapper not supplied. Choose solver wrapper automatically!
      INFO [reachability_algorithm.py : 75] Select solver seidel
-     INFO [algorithm.py : 192] Successfully parametrize path. Duration: 3.525, previously 1.000)
-     INFO [algorithm.py : 193] Finish parametrization in 0.034 secs
+     INFO [algorithm.py : 191] Successfully parametrize path. Duration: 3.525, previously 1.000)
+     INFO [algorithm.py : 193] Finish parametrization in 0.016 secs
 
 
 
@@ -195,7 +194,7 @@ Optionally, we can inspect the output.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.244 seconds)
+   **Total running time of the script:** ( 0 minutes  0.421 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_kinematics.py:

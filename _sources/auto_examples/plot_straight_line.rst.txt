@@ -130,8 +130,8 @@ Create velocity bounds, then velocity constraint object
 
  .. code-block:: none
 
-    /home/circleci/repo/toppra/utils.py:27: DeprecationWarning: Call to deprecated function get_duration in module toppra.interpolator.
-      category=DeprecationWarning,
+    /home/circleci/repo/toppra/utils.py:23: DeprecationWarning: Call to deprecated function get_duration in module toppra.interpolator.
+      warnings.warn(
 
 
 
@@ -139,7 +139,7 @@ Create velocity bounds, then velocity constraint object
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.732 seconds)
+   **Total running time of the script:** ( 0 minutes  0.295 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_straight_line.py:

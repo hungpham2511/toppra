@@ -1,4 +1,4 @@
-# History
+# Changelog
 
 ## Unrelease
 
@@ -18,6 +18,10 @@
 
 ### Changed
 - [cpp] [#153] Fix variable mismatch in constraint::CartesianVelocityNorm
+
+### Improved Documentation
+
+- Switch to furo theme for better readability.
 
 ## 0.3.1 (Aug 23 2020)
 
@@ -78,4 +82,7 @@ Major release! Implement TOPPRA in C++ and several improvements to Python codeba
 [gh-79]: https://github.com/hungpham2511/toppra/pull/79
 [#117]: https://github.com/hungpham2511/toppra/pull/117
 [#129]: https://github.com/hungpham2511/toppra/pull/129
+[#143]: https://github.com/hungpham2511/toppra/pull/143
+[#146]: https://github.com/hungpham2511/toppra/pull/146
+[#158]: https://github.com/hungpham2511/toppra/pull/158
 [cm-0e022c]: https://github.com/hungpham2511/toppra/commit/0e022c53ab9db473485bd9fb6b8f34a7364efdf8
