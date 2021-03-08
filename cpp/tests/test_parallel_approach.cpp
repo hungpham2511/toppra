@@ -31,7 +31,7 @@ class ParallelApproach : public testing::Test {
  public:
 
   const int numJoints = 6;
-  const int gridN = 100;
+  const int gridN = 10000;
   toppra::GeometricPathPtr path;
   toppra::LinearConstraintPtrs constraints;
   toppra::Vector velLimitLower;
@@ -175,7 +175,7 @@ TEST_F(ParallelApproach, ToppraSeidelExample) {
     std::cout << "pd.parametrization \n " << pd.parametrization.transpose()
               << std::endl;
   if (printInfo)
-    std::cout << "pd.controllable_sets \n " << pd.controllable_sets.transpose()
+    std::cout << "pd.controllable_sets \n " << pd.controllable_sets
               << std::endl;
   if (printInfo)
     std::cout << "pd.feasible_sets \n " << pd.feasible_sets.transpose() << std::endl;
@@ -249,6 +249,10 @@ TEST_F(ParallelApproach, ToppraParallelExample) {
   if (printInfo) std::cout << "rc1 = " << int(rc1) << std::endl;
   ASSERT_EQ(rc1, toppra::ReturnCode::OK);
 
+  // toppra::ReturnCode rc2 = algo->computeFeasibleSets();
+  // if (printInfo) std::cout << "rc2 = " << int(rc2) << std::endl;
+  // ASSERT_EQ(rc2, toppra::ReturnCode::OK);
+
   toppra::ParametrizationData pd = algo->getParameterizationData();
   if (printInfo)
     std::cout << "pd.gridpoints \n " << pd.gridpoints.transpose() << std::endl;
@@ -256,7 +260,7 @@ TEST_F(ParallelApproach, ToppraParallelExample) {
     std::cout << "pd.parametrization \n " << pd.parametrization.transpose()
               << std::endl;
   if (printInfo)
-    std::cout << "pd.controllable_sets \n " << pd.controllable_sets.transpose()
+    std::cout << "pd.controllable_sets \n " << pd.controllable_sets
               << std::endl;
   if (printInfo)
     std::cout << "pd.feasible_sets \n " << pd.feasible_sets.transpose() << std::endl;

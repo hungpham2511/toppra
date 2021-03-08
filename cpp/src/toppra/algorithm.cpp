@@ -1,10 +1,19 @@
 #include <toppra/algorithm.hpp>
 
-#include <ctime>
 #include <algorithm>
 #include <cstddef>
 #include <iostream>
 #include "toppra/toppra.hpp"
+
+#include <ctime>
+#include <sys/time.h>
+
+unsigned long long GetCurrentTimeUsec()
+{
+  struct timeval tv;
+  gettimeofday(&tv,NULL);
+  return ((unsigned long long)tv.tv_sec * 1000000 + (unsigned long long)tv.tv_usec);
+}
 
 namespace toppra {
 
@@ -14,24 +23,24 @@ PathParametrizationAlgorithm::PathParametrizationAlgorithm(
 
 ReturnCode PathParametrizationAlgorithm::computePathParametrization(value_type vel_start,
                                                                     value_type vel_end) {
-  size_t be = clock();
+  size_t be = GetCurrentTimeUsec();
   initialize();
-  size_t en = clock();
-  printf("time of init: %luus\n", en - be);
+  size_t en = GetCurrentTimeUsec();
+  printf("time of init:                             %fms\n", (en - be)/1000.0);
   be = en;
   m_solver->setupSolver();
   Bound vel_ends;
   vel_ends.setConstant(vel_end);
   m_data.ret_code = computeControllableSets(vel_ends);
-  en = clock();
-  printf("time of computeControllableSets: %luus\n", en - be);
+  en = GetCurrentTimeUsec();
+  printf("time of computeControllableSets:          %fms\n", (en - be)/1000.0);
   be = en;
   if ((int)m_data.ret_code > 0) {
     return m_data.ret_code;
   }
   m_data.ret_code = computeForwardPass(vel_start);
-  en = clock();
-  printf("time of computeForwardPass: %luus\n", en - be);
+  en = GetCurrentTimeUsec();
+  printf("time of computeForwardPass:               %fms\n", (en - be)/1000.0);
   return m_data.ret_code;
 };
 
@@ -80,83 +89,92 @@ ReturnCode PathParametrizationAlgorithm::computeControllableSets(
 ReturnCode PathParametrizationAlgorithm::computePathParametrizationParallel(value_type vel_start,
                                                                             value_type vel_end) {
 
-  size_t be = clock();
+  size_t be = GetCurrentTimeUsec();
   initialize();
-  size_t en = clock();
-  printf("time of init: %luus\n", en - be);
+  size_t en = GetCurrentTimeUsec();
+  printf("time of init:                             %fms\n", (en - be)/1000.0);
   be = en;
 
   m_solver->setupSolver();
   Bound vel_ends;
   vel_ends.setConstant(vel_end);
   m_data.ret_code = computeControllableSetsParallel(vel_ends);
+  en = GetCurrentTimeUsec();
+  printf("time of computeControllableSetsParallel:  %fms\n", (en - be)/1000.0);
+  be = en;
   if ((int)m_data.ret_code > 0) {
     return m_data.ret_code;
   }
-  en = clock();
-  printf("time of computeControllableSetsParallel: %luus\n", en - be);
-  be = en;
 
   m_data.ret_code = computeForwardPass(vel_start);
-  en = clock();
-  printf("time of computeForwardPass: %luus\n", en - be);
+  en = GetCurrentTimeUsec();
+  printf("time of computeForwardPass:               %fms\n", (en - be)/1000.0);
   return m_data.ret_code;
 };
 
 ReturnCode PathParametrizationAlgorithm::computeControllableSetsParallel(
     const Bound &vel_ends) {
-  printf("computeControllableSetsParallel\n");
   ReturnCode ret = ReturnCode::OK;
   bool solver_ret;
-  Vector g_upper{2}, g_lower{2}, solution_upper[m_N], solution_lower[m_N];
+  Vector g_upper{2}, g_lower{2};
+  Vectors  solution_upper, solution_lower;
+  solution_upper.assign(m_N, Vector::Zero(2, 1));
+  solution_lower.assign(m_N, Vector::Zero(2, 1));
+
   g_upper << 1e-9, -1;
   g_lower << -1e-9, 1;
   m_data.controllable_sets.row(m_N) = vel_ends.cwiseAbs2();
 
-  for (std::size_t i = m_N - 1; i != (std::size_t)-1; i--) {
-    solver_ret = m_solver->solveStagewiseBatch(i, g_upper, solution_upper[i]);
+  size_t be = GetCurrentTimeUsec();
 
+  bool batch_ok = true;
+  printf("omp omp_get_max_threads %d\n", omp_get_max_threads());
+  #pragma omp parallel for schedule(dynamic)
+  for (int i = 0; i < m_N; i++) {
+    solver_ret = m_solver->solveStagewiseBatch(i, g_upper, solution_upper[i]);
     if (!solver_ret) {
       ret = ReturnCode::ERR_FAIL_CONTROLLABLE;
-      printf("Fail: controllable, upper problem, idx: %lu", i);
-      break;
+      printf("Fail: solveStagewiseBatch, upper problem, idx: %d\n", i);
+      batch_ok = false;
     }
 
     solver_ret = m_solver->solveStagewiseBatch(i, g_lower, solution_lower[i]);
-
     if (!solver_ret) {
       ret = ReturnCode::ERR_FAIL_CONTROLLABLE;
-      printf("Fail: controllable, lower problem, idx: %lu", i);
-      break;
+      printf("Fail: solveStagewiseBatch, lower problem, idx: %d\n", i);
+      batch_ok = false;
     }
   }
+  if (!batch_ok) return ret;
+
+  size_t en = GetCurrentTimeUsec();
+  printf("time of Batch:    %fms\n", (en - be)/1000.0);
+  be = en;
 
   Bound x_next;
-  for (std::size_t i = m_N - 1; i != (std::size_t)-1; i--) {
+  for (int i = m_N - 1; i != -1; i--) {
     x_next = m_data.controllable_sets.row(i + 1);
     solver_ret = m_solver->solveStagewiseBack(i, g_upper, x_next, solution_upper[i]);
-
     if (!solver_ret) {
       ret = ReturnCode::ERR_FAIL_CONTROLLABLE;
-      printf("Fail: controllable, upper problem, idx: %lu", i);
+      printf("Fail: solveStagewiseBack, upper problem, idx: %d\n", i);
       break;
     }
-
     m_data.controllable_sets(i, 1) = solution_upper[i][1];
 
     solver_ret = m_solver->solveStagewiseBack(i, g_lower, x_next, solution_lower[i]);
-
     if (!solver_ret) {
       ret = ReturnCode::ERR_FAIL_CONTROLLABLE;
-      printf("Fail: controllable, lower problem, idx: %lu", i);
+      printf("Fail: solveStagewiseBack, lower problem, idx: %d\n", i);
       break;
     }
-
     // For whatever reason, sometimes the solver return negative
     // solution despite having a set of positve bounds. This readjust
     // if the solution is negative.
     m_data.controllable_sets(i, 0) = std::max(0.0, solution_lower[i][1]);
   }
+  en = GetCurrentTimeUsec();
+  printf("time of Back:     %fms\n", (en - be)/1000.0);
   return ret;
 }
 

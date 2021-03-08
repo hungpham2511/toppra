@@ -179,6 +179,7 @@ void SeidelParallel::solve_lp2d_parallel(bool isback, const RowVector2 v, const 
   if (!isback) {
     ib = 0;
   } else {
+    // ib = 0;
     ib = nrows - 2;
   }
   for (int i = ib; i < nrows; ++i) {
@@ -275,14 +276,14 @@ bool SeidelParallel::solveStagewiseBatch(int i, const Vector& g, Vector& solutio
     return true;
   }
   TOPPRA_LOG_DEBUG("Seidel: solver fails (upper ? " << upper << ')');
-  // printf("Seidel: solver fails %s, i = %lu\n", upper?"upper":"down", i);
+  // printf("Seidel: solver fails %s, i = %d\n", upper?"upper":"down", i);
   return false;
 }
 
 
 bool SeidelParallel::solveStagewiseBack(int i, const Vector& g, const Bound& xNext, Vector& solution)
 {
-  printf("good\n");
+  // printf("good\n");
   assert (i <= N && 0 <= i);
 
   // handle x_next_min <= 2 delta u + x_i <= x_next_max
@@ -309,13 +310,14 @@ bool SeidelParallel::solveStagewiseBack(int i, const Vector& g, const Bound& xNe
   // is be selected depending on the sign of g[1]
   bool upper (g[1] > 0);
 
+  m_solution[i].optvar = solution;
   solve_lp2d_parallel(true, v, m_A[i], m_low.row(i), m_high.row(i), m_A_1d[i], m_solution[i]);
   if (m_solution[i].feasible) {
     solution = m_solution[i].optvar;
     return true;
   }
   TOPPRA_LOG_DEBUG("Seidel: solver fails (upper ? " << upper << ')');
-  // printf("Seidel: solver fails %s, i = %lu\n", upper?"upper":"down", i);
+  // printf("Seidel: solver fails %s, i = %d\n", upper?"upper":"down", i);
   return false;
 }
 

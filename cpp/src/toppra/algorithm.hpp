@@ -7,6 +7,8 @@
 #include <toppra/solver.hpp>
 #include <toppra/toppra.hpp>
 
+#include <omp.h>
+
 namespace toppra {
 
 /// Return code for Path Parametrization algorithm.
