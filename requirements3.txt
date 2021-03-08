@@ -2,7 +2,7 @@ PyYAML<=5.3.1
 msgpack<=1.0.1
 ipython
 ipdb
-numpy<1.20
+numpy
 
 # dev
 cvxopt

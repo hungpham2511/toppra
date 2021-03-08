@@ -1,14 +1,8 @@
 """
-toppra.constraint
+Constraints
 ----------------------
 
 Modules implementing different dynamics constraints.
-
-Constraint
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. autoclass:: toppra.constraint.Constraint
-   :members: compute_constraint_params, set_discretization_type, __repr__
 
 ConstraintType
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -72,8 +66,14 @@ RobustLinearConstraint
    :members:
    :show-inheritance:
 
-[internal]
-^^^^^^^^^^^^^
+[abstract]Constraint
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: toppra.constraint.Constraint
+   :members: compute_constraint_params, set_discretization_type, __repr__
+
+[internal]Methods
+^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: toppra.constraint.canlinear_colloc_to_interpolate
 
 """

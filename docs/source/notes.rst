@@ -1,6 +1,6 @@
 .. _notes:
 
-Usage Notes
+User guide
 =====================
 
 Configure logging
