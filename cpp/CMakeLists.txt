@@ -17,7 +17,7 @@ option(TOPPRA_DEBUG_ON "Set logging mode to on." OFF)
 option(TOPPRA_WARN_ON "Enable warning messages." ON)
 option(OPT_MSGPACK "Serialization using msgpack " OFF)
 # Bindings
-option(PYTHON_BINDINGS "Build bindings for Python" ON)
+option(PYTHON_BINDINGS "Build bindings for Python" OFF)
 set(PYTHON_VERSION 3.7 CACHE STRING "Build bindings for Python version")
 set(BUILD_WITH_PINOCCHIO_PYTHON false CACHE BOOL "Force compile with Pinocchio bindings")
 # This option is needed because sometime the flag

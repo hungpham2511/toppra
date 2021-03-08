@@ -1,5 +1,6 @@
 #include <toppra/algorithm.hpp>
 
+#include <ctime>
 #include <algorithm>
 #include <cstddef>
 #include <iostream>
@@ -13,15 +14,24 @@ PathParametrizationAlgorithm::PathParametrizationAlgorithm(
 
 ReturnCode PathParametrizationAlgorithm::computePathParametrization(value_type vel_start,
                                                                     value_type vel_end) {
+  size_t be = clock();
   initialize();
+  size_t en = clock();
+  printf("time of init: %luus\n", en - be);
+  be = en;
   m_solver->setupSolver();
   Bound vel_ends;
   vel_ends.setConstant(vel_end);
   m_data.ret_code = computeControllableSets(vel_ends);
+  en = clock();
+  printf("time of computeControllableSets: %luus\n", en - be);
+  be = en;
   if ((int)m_data.ret_code > 0) {
     return m_data.ret_code;
   }
   m_data.ret_code = computeForwardPass(vel_start);
+  en = clock();
+  printf("time of computeForwardPass: %luus\n", en - be);
   return m_data.ret_code;
 };
 
@@ -63,6 +73,89 @@ ReturnCode PathParametrizationAlgorithm::computeControllableSets(
     // solution despite having a set of positve bounds. This readjust
     // if the solution is negative.
     m_data.controllable_sets(i, 0) = std::max(0.0, solution[1]);
+  }
+  return ret;
+}
+
+ReturnCode PathParametrizationAlgorithm::computePathParametrizationParallel(value_type vel_start,
+                                                                            value_type vel_end) {
+
+  size_t be = clock();
+  initialize();
+  size_t en = clock();
+  printf("time of init: %luus\n", en - be);
+  be = en;
+
+  m_solver->setupSolver();
+  Bound vel_ends;
+  vel_ends.setConstant(vel_end);
+  m_data.ret_code = computeControllableSetsParallel(vel_ends);
+  if ((int)m_data.ret_code > 0) {
+    return m_data.ret_code;
+  }
+  en = clock();
+  printf("time of computeControllableSetsParallel: %luus\n", en - be);
+  be = en;
+
+  m_data.ret_code = computeForwardPass(vel_start);
+  en = clock();
+  printf("time of computeForwardPass: %luus\n", en - be);
+  return m_data.ret_code;
+};
+
+ReturnCode PathParametrizationAlgorithm::computeControllableSetsParallel(
+    const Bound &vel_ends) {
+  printf("computeControllableSetsParallel\n");
+  ReturnCode ret = ReturnCode::OK;
+  bool solver_ret;
+  Vector g_upper{2}, g_lower{2}, solution_upper[m_N], solution_lower[m_N];
+  g_upper << 1e-9, -1;
+  g_lower << -1e-9, 1;
+  m_data.controllable_sets.row(m_N) = vel_ends.cwiseAbs2();
+
+  for (std::size_t i = m_N - 1; i != (std::size_t)-1; i--) {
+    solver_ret = m_solver->solveStagewiseBatch(i, g_upper, solution_upper[i]);
+
+    if (!solver_ret) {
+      ret = ReturnCode::ERR_FAIL_CONTROLLABLE;
+      printf("Fail: controllable, upper problem, idx: %lu", i);
+      break;
+    }
+
+    solver_ret = m_solver->solveStagewiseBatch(i, g_lower, solution_lower[i]);
+
+    if (!solver_ret) {
+      ret = ReturnCode::ERR_FAIL_CONTROLLABLE;
+      printf("Fail: controllable, lower problem, idx: %lu", i);
+      break;
+    }
+  }
+
+  Bound x_next;
+  for (std::size_t i = m_N - 1; i != (std::size_t)-1; i--) {
+    x_next = m_data.controllable_sets.row(i + 1);
+    solver_ret = m_solver->solveStagewiseBack(i, g_upper, x_next, solution_upper[i]);
+
+    if (!solver_ret) {
+      ret = ReturnCode::ERR_FAIL_CONTROLLABLE;
+      printf("Fail: controllable, upper problem, idx: %lu", i);
+      break;
+    }
+
+    m_data.controllable_sets(i, 1) = solution_upper[i][1];
+
+    solver_ret = m_solver->solveStagewiseBack(i, g_lower, x_next, solution_lower[i]);
+
+    if (!solver_ret) {
+      ret = ReturnCode::ERR_FAIL_CONTROLLABLE;
+      printf("Fail: controllable, lower problem, idx: %lu", i);
+      break;
+    }
+
+    // For whatever reason, sometimes the solver return negative
+    // solution despite having a set of positve bounds. This readjust
+    // if the solution is negative.
+    m_data.controllable_sets(i, 0) = std::max(0.0, solution_lower[i][1]);
   }
   return ret;
 }

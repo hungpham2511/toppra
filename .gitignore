@@ -112,3 +112,4 @@ cpp/.clangd
 build*
 cpp/doc/CMakeFiles/*
 cpp/doc/doc/*
+temp/

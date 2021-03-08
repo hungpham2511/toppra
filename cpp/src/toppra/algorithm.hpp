@@ -91,6 +91,15 @@ class PathParametrizationAlgorithm {
   virtual ReturnCode computePathParametrization(value_type vel_start = 0,
                                                 value_type vel_end = 0);
 
+  /** Compute the time parametrization of the given path in parallel.
+   *
+   * \param vel_start
+   * \param vel_end
+   * \return Return code.
+   */
+  virtual ReturnCode computePathParametrizationParallel(value_type vel_start = 0,
+                                                        value_type vel_end = 0);
+
   /** Compute the sets of feasible squared velocities.
    */
   ReturnCode computeFeasibleSets();
@@ -122,6 +131,10 @@ class PathParametrizationAlgorithm {
   /** Compute the sets of controllable squared path velocities.
    */
   ReturnCode computeControllableSets(const Bound &vel_ends);
+
+  /** Compute the sets of controllable squared path velocities in parallel.
+   */
+  ReturnCode computeControllableSetsParallel(const Bound &vel_ends);
 
   /** To be implemented in child method. */
   LinearConstraintPtrs m_constraints;
