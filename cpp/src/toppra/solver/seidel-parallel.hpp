@@ -26,7 +26,7 @@ class SeidelParallel : public Solver {
         const Bound& x, const Bound& xNext,
         Vector& solution);
 
-    bool solveStagewiseBatch(int i, const Vector& g, Vector& solution);
+    bool solveStagewiseBatch(int i, const Vector& g);
     bool solveStagewiseBack(int i, const Vector& g, const Bound& xNext, Vector& solution);
 
   private:
@@ -42,7 +42,8 @@ class SeidelParallel : public Solver {
     MatricesX2 m_A_1d;
     MatrixX2 m_low, m_high;
 
-    std::vector<seidel::LpSol> m_solution;
+    std::vector<seidel::LpSol> m_solution_upper;
+    std::vector<seidel::LpSol> m_solution_lower;
 
 }; // class SeidelParallel
 

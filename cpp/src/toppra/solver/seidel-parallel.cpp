@@ -24,7 +24,7 @@ typename Coeffs::Scalar value(const Eigen::MatrixBase<Coeffs>& coeffs,
   return res;
 }
 
-constexpr value_type infi = 1e5;
+constexpr value_type infi = 1e6;
 
 namespace internal {
   // projective coefficients to the line
@@ -104,7 +104,10 @@ void SeidelParallel::initialize (const LinearConstraintPtrs& constraints, const 
   // init constraint coefficients for the 1d LPs
   m_A_1d.assign(N+1, MatrixX2::Zero(nC + 4, 2));
 
-  m_solution.assign(N+1, seidel::LpSol());
+  // m_solution.assign(N+1, seidel::LpSol());
+  m_solution_upper.assign(N+1, seidel::LpSol());
+  m_solution_lower.assign(N+1, seidel::LpSol());
+
 }
 
 
@@ -258,7 +261,8 @@ void SeidelParallel::solve_lp2d_parallel(bool isback, const RowVector2 v, const 
 #undef TOPPRA_SEIDEL_LP2D
 
 
-bool SeidelParallel::solveStagewiseBatch(int i, const Vector& g, Vector& solution)
+// bool SeidelParallel::solveStagewiseBatch(int i, const Vector& g, Vector& solution)
+bool SeidelParallel::solveStagewiseBatch(int i, const Vector& g)
 {
   assert (i <= N && 0 <= i);
 
@@ -269,12 +273,20 @@ bool SeidelParallel::solveStagewiseBatch(int i, const Vector& g, Vector& solutio
   // is be selected depending on the sign of g[1]
   bool upper (g[1] > 0);
 
-  solve_lp2d_parallel(false, v, m_A[i], m_low.row(i), m_high.row(i), m_A_1d[i], m_solution[i]);
-
-  if (m_solution[i].feasible) {
-    solution = m_solution[i].optvar;
-    return true;
+  if (upper) {
+    solve_lp2d_parallel(false, v, m_A[i], m_low.row(i), m_high.row(i), m_A_1d[i], m_solution_upper[i]);
+    if (m_solution_upper[i].feasible) {
+      // solution = m_solution_upper[i].optvar;
+      return true;
+    }
+  } else {
+    solve_lp2d_parallel(false, v, m_A[i], m_low.row(i), m_high.row(i), m_A_1d[i], m_solution_lower[i]);
+    if (m_solution_lower[i].feasible) {
+      // solution = m_solution_lower[i].optvar;
+      return true;
+    }
   }
+
   TOPPRA_LOG_DEBUG("Seidel: solver fails (upper ? " << upper << ')');
   // printf("Seidel: solver fails %s, i = %d\n", upper?"upper":"down", i);
   return false;
@@ -310,12 +322,23 @@ bool SeidelParallel::solveStagewiseBack(int i, const Vector& g, const Bound& xNe
   // is be selected depending on the sign of g[1]
   bool upper (g[1] > 0);
 
-  m_solution[i].optvar = solution;
-  solve_lp2d_parallel(true, v, m_A[i], m_low.row(i), m_high.row(i), m_A_1d[i], m_solution[i]);
-  if (m_solution[i].feasible) {
-    solution = m_solution[i].optvar;
-    return true;
+  if (upper) {
+    // m_solution_upper[i].optvar = solution;
+    solve_lp2d_parallel(true, v, m_A[i], m_low.row(i), m_high.row(i), m_A_1d[i], m_solution_upper[i]);
+    if (m_solution_upper[i].feasible) {
+      solution = m_solution_upper[i].optvar;
+      return true;
+    }
+  } else {
+    // m_solution_lower[i].optvar = solution;
+    solve_lp2d_parallel(true, v, m_A[i], m_low.row(i), m_high.row(i), m_A_1d[i], m_solution_lower[i]);
+    if (m_solution_lower[i].feasible) {
+      solution = m_solution_lower[i].optvar;
+      return true;
+    }
   }
+
+
   TOPPRA_LOG_DEBUG("Seidel: solver fails (upper ? " << upper << ')');
   // printf("Seidel: solver fails %s, i = %d\n", upper?"upper":"down", i);
   return false;

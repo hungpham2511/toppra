@@ -81,7 +81,7 @@ class Solver {
         const Bound& x, const Bound& xNext,
         Vector& solution) = 0;
 
-    virtual bool solveStagewiseBatch(int i, const Vector& g, Vector& solution){};
+    virtual bool solveStagewiseBatch(int i, const Vector& g){};
 
     virtual bool solveStagewiseBack(int i, const Vector& g, const Bound& xNext, Vector& solution){};
 
