@@ -13,14 +13,12 @@ class TestRunTopp(unittest.TestCase):
     """Test RunTopp()."""
 
     # setup test data only once as they aren't modified
-    paths = sorted(
-        glob.glob(
-            os.path.join(
-                os.path.dirname(os.path.abspath(__file__)),
-                "test_waypts_jnt_*.txt",
-            )
-        )
+    glob_regex = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        "test_data",
+        "test_waypts_jnt_*.txt",
     )
+    paths = sorted(glob.glob(glob_regex))
     waypts_list = [np.loadtxt(path) for path in paths]
 
     @staticmethod
