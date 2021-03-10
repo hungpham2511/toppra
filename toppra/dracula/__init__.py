@@ -98,6 +98,7 @@ class DraculaToppra:
         self.alim_coeffs = np.ones(alim.shape[0])  # IV for multiplication
         # declare attributes to be set later
         self.min_pair_dist = None
+        self.t_sum = None
         self.path_length_limit = None
 
     def lims_obeyed(self, traj, raise_2nd_order):
@@ -144,14 +145,14 @@ class DraculaToppra:
                 return False
         return True
 
-    def _estimate_path(self, t_sum_multiplier, pc_vel, pc_acc):
+    def _estimate_path(self, multiplier, pc_vel, pc_acc):
         """Estimate path length from reduced v/a limits.
 
         This sets up the path only after pc_vel and pc_acc
         have been established.
         """
         # check for duplicates
-        self.min_pair_dist, t_sum = _check_waypts(
+        self.min_pair_dist, self.t_sum = _check_waypts(
             self.waypts, pc_vel.vlim, pc_acc.alim
         )
         if self.min_pair_dist < JNT_DIST_EPS:  # issue a warning and try anyway
@@ -164,16 +165,14 @@ class DraculaToppra:
         # initial x for toppra's path, essentially normalised time on x axis
         # rescale by given speed limits.
         # only applies to ParametrizeSpline.
-        self.path_length_limit = 100 * t_sum  # empirical magic number
+        self.path_length_limit = 100 * self.t_sum  # empirical magic number
         # t_sum is the minimum time required to visit all given waypoints.
         # toppra generally needs a smaller number for controllabiility.
         # It will find that the needed total path length > t_sum in the end.
-        x_max = t_sum_multiplier * t_sum
-        if x_max < 0.15:
-            x_max = 0.15
+        x_max = 1 if multiplier is None else multiplier * self.t_sum
         x = np.linspace(0, x_max, self.waypts.shape[0])
         logger.debug(
-            f"t_sum = {t_sum}, t_sum_multiplier = {t_sum_multiplier}, "
+            f"t_sum = {self.t_sum}, t_sum_multiplier = {multiplier}, "
             f"estimated path length: {x_max}"
         )
         # specifying natural here doensn't make a difference
@@ -194,26 +193,37 @@ class DraculaToppra:
             * (self.alim - np.sign(self.alim) * A_LIM_EPS),
             discretization_scheme=constraint.DiscretizationType.Interpolation,
         )
-        # scaling to shorter path improves siedel stability
-        path = self._estimate_path(0.05, pc_vel, pc_acc)
-        # Use the default gridpoints=None to let
-        # interpolator.propose_gridpoints calculate gridpoints
-        # that sufficiently covers the path.
-        # this ensures the instance is controllable and avoids error:
-        #     "An error occurred when computing controllable velocities.
-        #     The path is not controllable, or is badly conditioned.
-        #     Error: Instance is not controllable"
-        # If using clamped as boundary condition, the default gridpoints error
-        # 1e-3 is OK and we don't need to calculate gridpoints.
-        # Boundary condition "natural" especially needs support by
-        # smaller error.
-        instance = algo.TOPPRA(
-            [pc_vel, pc_acc],
-            path,
-            solver_wrapper="seidel",
-            parametrizer="ParametrizeSpline",
-        )
-        return self._compute_and_check_traj(instance)
+        # Since scaling to a shorter path length improves siedel stability,
+        # prefer short path, try unity next, finally use 1 * t_sum
+        # which is unlikely to succceed but worth a try anyways if it got there
+        t_sum_multipliers = [0.03, None, 1]
+        for multiplier in t_sum_multipliers:
+            path = self._estimate_path(multiplier, pc_vel, pc_acc)
+            # Use the default gridpoints=None to let
+            # interpolator.propose_gridpoints calculate gridpoints
+            # that sufficiently covers the path.
+            # this ensures the instance is controllable and avoids error:
+            #     "An error occurred when computing controllable velocities.
+            #     The path is not controllable, or is badly conditioned.
+            #     Error: Instance is not controllable"
+            # If using clamped as boundary condition, the default gridpoints
+            # error1e-3 is OK and we don't need to calculate gridpoints.
+            # Boundary condition "natural" especially needs support by
+            # smaller error.
+            try:
+                instance = algo.TOPPRA(
+                    [pc_vel, pc_acc],
+                    path,
+                    solver_wrapper="seidel",
+                    parametrizer="ParametrizeSpline",
+                )
+                return self._compute_and_check_traj(
+                    instance, multiplier == t_sum_multipliers[-1]
+                )
+            except RuntimeError:
+                logger.error(f"t_sum_multiplier = {multiplier} failed")
+                if multiplier == t_sum_multipliers[-1]:
+                    raise  # raise on failure with the last candidate
 
     def compute_const_accel(self):
         """Compute optimised trajectory for ParametrizeConstAccel."""
@@ -235,22 +245,23 @@ class DraculaToppra:
         )
         return self._compute_and_check_traj(instance)
 
-    def _compute_and_check_traj(self, instance):
+    def _compute_and_check_traj(self, instance, print_values=False):
         traj = instance.compute_trajectory(0, 0)
         if traj is None:  # toppra has failed
-            if (
-                self.min_pair_dist < JNT_DIST_EPS
-            ):  # duplicates are probably why
+            if print_values:
+                if self.min_pair_dist < JNT_DIST_EPS:
+                    logger.error(
+                        "Duplicates not allowed in input waypoints. "
+                        "At least one pair of adjacent waypoints have "
+                        f"distance less than epsilon = {JNT_DIST_EPS}."
+                    )
                 logger.error(
-                    "Duplicates not allowed in input waypoints. "
-                    "At least one pair of adjacent waypoints have "
-                    f"distance less than epsilon = {JNT_DIST_EPS}."
+                    f"Failed waypts:\n{self.waypts}"
+                    f"\nvlim:\n{self.vlim}\nalim:\n{self.alim}"
+                    f"\nt_sum: {self.t_sum}, "
+                    f"path length: {instance.path.duration}"
                 )
-            logger.error(
-                f"Failed waypts:\n{self.waypts}"
-                f"\nvlim:\n{self.vlim}\nalim:\n{self.alim}"
-            )
-            raise RuntimeError("Toppra failed to compute trajectory.")
+            raise RuntimeError("Toppra failed to compute trajectory")
         return traj
 
     def truncate_traj(self, traj, parametrizer):
@@ -476,7 +487,9 @@ def run_topp_jnt_crt(
     impose_natural_bc(cs)
     logger.info(
         f"Finished optimising trajectory of {cs.x.size} knots "
-        f"with combined constraints, duration: {cs.x[-1]:.3f} s. "
+        f"with combined constraints, duration: {cs.x[-1]:.3f} s, "
+        f"(joint-space only: {cs_jnt.x[-1]:.3f} s, "
+        f"Cartesian-space only: {cs_crt.x[-1]:.3f})"
     )
     logger.warning(
         "To preserve constraints, continuity, and boundary conditions, this "
