@@ -149,6 +149,7 @@ class ParallelApproach : public testing::Test {
 
 };
 
+#ifdef BUILD_WITH_qpOASES
 TEST_F(ParallelApproach, ToppraQpOASESExample) {
   const bool printInfo = false;
 
@@ -234,7 +235,7 @@ TEST_F(ParallelApproach, ToppraQpOASESExample) {
     }
   }
 }
-
+#endif
 
 TEST_F(ParallelApproach, ToppraSeidelExample) {
   const bool printInfo = false;
