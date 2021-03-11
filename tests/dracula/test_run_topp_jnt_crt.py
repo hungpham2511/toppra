@@ -12,14 +12,12 @@ from toppra import dracula
 class TestRunToppJntCrt(unittest.TestCase):
     """Class for unit test."""
 
-    paths = sorted(
-        glob.glob(
-            os.path.join(
-                os.path.dirname(os.path.abspath(__file__)),
-                "test_waypts_crt_*.txt",
-            )
-        )
+    glob_regex = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        "test_data",
+        "test_waypts_crt_*.txt",
     )
+    paths = sorted(glob.glob(glob_regex))
     waypts_jnt_list = [
         np.loadtxt(path.replace("_crt_", "_jnt_")) for path in paths
     ]
