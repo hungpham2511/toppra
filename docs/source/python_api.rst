@@ -1,6 +1,6 @@
 .. _module_ref:
 
-Python API Reference
+Python API reference
 ================================
 
 .. automodule:: toppra.algorithm

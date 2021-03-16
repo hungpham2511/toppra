@@ -38,6 +38,7 @@ def strip_types(c):
 @task
 def build_docs(c):
     """Build documentation"""
+    c.run("cp HISTORY.md docs/source/HISTORY.md")
     c.run("cd docs && make html")
 
 

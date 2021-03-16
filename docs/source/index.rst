@@ -1,4 +1,4 @@
-:code:`toppra` : Path-parameterization for robots
+:code:`toppra` Path-parameterization for robots
 ===================================================
 
 |github release| |pypi| |circleci| 
@@ -11,11 +11,6 @@
 
 .. |circleci| image:: https://circleci.com/gh/hungpham2511/toppra/tree/develop.svg?style=svg
     :target: https://circleci.com/gh/hungpham2511/toppra/tree/develop
-
--------------------------------
-
-Overview
-----------------------
 
 `toppra` is a library for computing path parametrizations for
 geometric paths subject to certain forms of kinematic and dynamic
@@ -52,28 +47,17 @@ There are some additional features that you might find useful as well:
 3. Automatic grid-points selection.
 4. Python **and** C++ APIs.
  
-User Guide
-----------------------
+
+Have a look at the below pages for more details on toppra usage.
 
 .. toctree::
    :maxdepth: 1
 
    installation
-   auto_examples/index
    notes
-   HISTORY
-   ..
-      quickstart
-      tutorials
-
-   
-API Reference
-----------------------
-
-.. toctree::
-   :maxdepth: 1
-  
+   auto_examples/index
    python_api
+   HISTORY
 
 Bug reports and supports
 -------------------------

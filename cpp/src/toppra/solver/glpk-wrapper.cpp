@@ -72,7 +72,7 @@ void GLPKWrapper::initialize (const LinearConstraintPtrs& constraints, const Geo
 
 GLPKWrapper::~GLPKWrapper ()
 {
-  glp_delete_prob(m_lp);
+  if (m_lp != NULL) glp_delete_prob(m_lp);
 }
 
 bool GLPKWrapper::solveStagewiseOptim(std::size_t i,

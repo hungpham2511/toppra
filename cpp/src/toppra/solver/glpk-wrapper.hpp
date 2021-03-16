@@ -32,7 +32,7 @@ namespace solver {
  * */
 class GLPKWrapper : public Solver {
   public:
-    GLPKWrapper () : m_lp (NULL) {}
+    GLPKWrapper () = default;
 
     void initialize (const LinearConstraintPtrs& constraints, const GeometricPathPtr& path,
         const Vector& times);
@@ -45,7 +45,7 @@ class GLPKWrapper : public Solver {
     virtual ~GLPKWrapper();
 
   private:
-    glp_prob* m_lp;
+    glp_prob* m_lp = NULL;
 }; // class GLPKWrapper
 
 } // namespace solver

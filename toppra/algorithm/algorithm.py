@@ -6,6 +6,7 @@ This module defines the abstract data types that define TOPP algorithms.
 
 """
 from typing import Dict, Any, List, Tuple, Optional
+import typing as T
 import abc
 import enum
 import numpy as np
@@ -88,13 +89,18 @@ class ParameterizationAlgorithm(object):
 
     """
 
-    def __init__(self, constraint_list, path, gridpoints=None, parametrizer=None):
+    def __init__(self, constraint_list, path, gridpoints=None, parametrizer=None,
+                 gridpt_max_err_threshold: float=1e-3, gridpt_min_nb_points: int=100):
         self.constraints = constraint_list
         self.path = path  # Attr
         self._problem_data = ParameterizationData()
         # Handle gridpoints
         if gridpoints is None:
-            gridpoints = interpolator.propose_gridpoints(path, max_err_threshold=1e-3)
+            gridpoints = interpolator.propose_gridpoints(
+                path,
+                max_err_threshold=gridpt_max_err_threshold,
+                min_nb_points=gridpt_min_nb_points
+            )
             logger.info(
                 "No gridpoint specified. Automatically choose a gridpoint with %d points",
                 len(gridpoints)
@@ -113,7 +119,8 @@ class ParameterizationAlgorithm(object):
                 logger.fatal("Input gridpoints are not monotonically increasing.")
                 raise ValueError("Bad input gridpoints.")
         if parametrizer is None or parametrizer == "ParametrizeSpline":
-            self.parametrizer = tparam.ParametrizeSpline
+            # TODO: What is the best way to type parametrizer?
+            self.parametrizer: T.Any = tparam.ParametrizeSpline
         elif parametrizer == "ParametrizeConstAccel":
             self.parametrizer = tparam.ParametrizeConstAccel
 

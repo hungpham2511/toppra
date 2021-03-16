@@ -1,4 +1,27 @@
-# History
+# Changelog
+
+## Unrelease
+
+### Added
+- [python] Fixed build error when cython and numpy were not pre-installed
+- [python] Fix a bug that prevent user from using the ConstAccelParametrizer
+- [python] Allow specifying minimum nb of grid-points during automatic selection
+- [python] Minor performance tweak in reachability_algorithm.py
+- [ci] Fix python2.7 dependencies
+- [python] Minor bug fixed in the SimplePath class
+- [cpp] [#129][#129] Implement constant-acceleration trajectory parametrizer
+- [cpp] [#143][#143] Add PathParametrizationAlgorithm::setGridpoints
+- [cpp] [#146][#146] Add constraint::CartesianVelocityNorm
+- [cpp] [#158][#158] Add Seidel solver.
+- [cpp] Enhance Seidel solver numerical behaviour.
+- [cpp] [#161] Enable to construct spline from 1st and 2nd order derivatives at the curve endpoints
+
+### Changed
+- [cpp] [#153] Fix variable mismatch in constraint::CartesianVelocityNorm
+
+### Improved Documentation
+
+- Switch to furo theme for better readability.
 
 ## 0.3.1 (Aug 23 2020)
 
@@ -58,4 +81,8 @@ Major release! Implement TOPPRA in C++ and several improvements to Python codeba
 [gh-78]: https://github.com/hungpham2511/toppra/pull/78
 [gh-79]: https://github.com/hungpham2511/toppra/pull/79
 [#117]: https://github.com/hungpham2511/toppra/pull/117
+[#129]: https://github.com/hungpham2511/toppra/pull/129
+[#143]: https://github.com/hungpham2511/toppra/pull/143
+[#146]: https://github.com/hungpham2511/toppra/pull/146
+[#158]: https://github.com/hungpham2511/toppra/pull/158
 [cm-0e022c]: https://github.com/hungpham2511/toppra/commit/0e022c53ab9db473485bd9fb6b8f34a7364efdf8

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 
 project(toppra
-  VERSION 0.3.0
+  VERSION 0.3.1
   # Disable because not available in CMake 3.5
   #DESCRIPTION "Library computing the time-optimal path parameterization."
   LANGUAGES CXX)
@@ -14,6 +14,7 @@ option(BUILD_WITH_qpOASES "Compile the wrapper for qpOASES" OFF)
 option(BUILD_WITH_GLPK "Compile the wrapper for GLPK (GPL license)" OFF)
 # General options
 option(TOPPRA_DEBUG_ON "Set logging mode to on." OFF)
+option(TOPPRA_WARN_ON "Enable warning messages." ON)
 option(OPT_MSGPACK "Serialization using msgpack " OFF)
 # Bindings
 option(PYTHON_BINDINGS "Build bindings for Python" ON)

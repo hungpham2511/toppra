@@ -44,7 +44,7 @@ class SimplePath(AbstractGeometricPath):
     def __call__(self, xi, order=0):
         """Evaluate the path at given position."""
         ret = [poly.derivative(order)(xi) for poly in self._polys]
-        return np.array(ret)
+        return np.array(ret).T
 
     @property
     def dof(self):

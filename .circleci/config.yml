@@ -13,10 +13,10 @@ commands:
     parameters:
       python-version:
         type: string
-        default: "3.6"
+        default: "3.8"
       python-version-short:
         type: string
-        default: "36"
+        default: "38"
     steps:
       - run:
           name: Install dependencies
@@ -37,13 +37,14 @@ commands:
             cd ~/ && git clone https://github.com/msgpack/msgpack-c.git
             cd msgpack-c && git checkout cpp-3.2.1 && cmake -DMSGPACK_CXX11=ON -DMSGPACK_BUILD_EXAMPLES=OFF -DMSGPACK_CXX_ONLY=ON .
             sudo make install
-            
+
           working_directory: ~/
       - run:
           name: Build toppra C++ API
+          # Add DBoost_NO_BOOST_CMAKE=ON based on https://github.com/rdkit/rdkit/issues/3030 
           command: |
             export LD_LIBRARY_PATH=/opt/openrobots/lib:${LD_LIBRARY_PATH}
-            export CMAKE_PREFIX_PATH=/opt/openrobots
+            export CMAKE_PREFIX_PATH=/opt/openrobots:$CMAKE_PREFIX_PATH
             mkdir build && cd build && cmake \
               -DBUILD_WITH_PINOCCHIO=ON \
               -DBUILD_WITH_qpOASES=ON \
@@ -51,7 +52,10 @@ commands:
               -DPYTHON_BINDINGS=ON \
               -DPYTHON_VERSION=<< parameters.python-version >> \
               -DBUILD_WITH_PINOCCHIO_PYTHON=true \
-              -DOPT_MSGPACK=ON ..
+              -DOPT_MSGPACK=ON \
+              -DBoost_NO_BOOST_CMAKE=ON \
+              -DCMAKE_EXPORT_COMPILE_COMMANDS=1 \
+              ..
             make -j4
           working_directory: ~/repo/cpp
 
@@ -83,15 +87,15 @@ jobs:
           path: test-results
 
       - store_artifacts:
-          path: test-results  
+          path: test-results
 
-  # Test the cpp api and bindings on python3.6 The base image of this
+  # Test the cpp api and bindings on python3.8 The base image of this
   # job is Ubuntu 18.04, which is required to install pinocchio and
   # other deps.
-  cpp-python36:
+  cpp-python38:
     description: Build and test the full Python API
     docker:
-      - image: cimg/python:3.6
+      - image: cimg/python:3.8
     working_directory: ~/repo
     steps:
       - checkout
@@ -101,32 +105,31 @@ jobs:
           command: |
             ./tests/all_tests
           working_directory: ~/repo/cpp/build
-      - run:
-          name: Check codestyle (C++)
-          command: |
-            clang-tidy  src/**/*.cpp \
-            -checks=clang-analyzer-*,clang-analyzer-cplusplus*,cppcoreguidelines-*,performance-*,modernize-*,readability-,-cppcoreguidelines-pro-bounds-array-to-pointer-decay\
-            -warnings-as-errors=clang-analyzer-*,clang-analyzer-cplusplus*,cppcoreguidelines-*,modernize-*
-          working_directory: ~/repo/cpp
+          
+      # - run:
+      #     name: Check codestyle (C++)
+      #     command: |
+      #       clang-tidy  src/**/*.cpp \
+      #       -checks=clang-analyzer-*,clang-analyzer-cplusplus*,cppcoreguidelines-*,performance-*,modernize-*,readability-,-cppcoreguidelines-pro-bounds-array-to-pointer-decay \
+      #       -warnings-as-errors=clang-analyzer-*,clang-analyzer-cplusplus*,cppcoreguidelines-*,modernize-* -p build
+      #     working_directory: ~/repo/cpp
+
       - python/load-cache:
-          dependency-file: requirements3.txt
-      - python/install-deps:
-          dependency-file: requirements3.txt
-      - python/save-cache:
           dependency-file: requirements3.txt
       - run:
           name: Install Python API with bindings
           command: |
             pip install numpy cython invoke  # absolute minimum to run setup.py
-            invoke install-solvers
+            python -m invoke install-solvers  # require python because of circleci glitch
             pip install -e .[dev]
-
+      - python/save-cache:
+          dependency-file: requirements3.txt
       - run:
           name: Test Python API with bindings
           command: |
             export ROS_PACKAGE_PATH=/opt/openrobots/share
-            export PYTHONPATH=/opt/openrobots/lib/python3.6/site-packages:$PYTHONPATH
-            pytest tests --durations=3 --junitxml=test-reports/junit.xml
+            export PYTHONPATH=/opt/openrobots/lib/python3.8/site-packages:$PYTHONPATH
+            python -m pytest tests --durations=3 --junitxml=test-reports/junit.xml
 
       - store_test_results:
           path: test-reports
@@ -135,7 +138,7 @@ jobs:
           name: Build docs
           command: |
             export ROS_PACKAGE_PATH=/opt/openrobots/share
-            export PYTHONPATH=/opt/openrobots/lib/python3.6/site-packages:$PYTHONPATH
+            export PYTHONPATH=/opt/openrobots/lib/python3.8/site-packages:$PYTHONPATH
             pip install -r docs/requirements.txt
             invoke build-docs
 
@@ -147,7 +150,7 @@ jobs:
   # Publishthe built doc from the last build step
   publish-docs:
     docker:
-      - image: cimg/python:3.6
+      - image: cimg/python:3.8
     working_directory: ~/repo
     steps:
       - checkout
@@ -173,7 +176,7 @@ jobs:
 
   release:
     docker:
-      - image: cimg/python:3.6
+      - image: cimg/python:3.8
     working_directory: ~/repo
     steps:
       - checkout
@@ -197,12 +200,12 @@ workflows:
       - python:
           matrix:
             parameters:
-              python-version: ["27", "36", "37"]
+              python-version: ["36", "37"]
 
-      - cpp-python36
+      - cpp-python38
       - publish-docs:
           requires:
-            - cpp-python36
+            - cpp-python38
           filters:
             branches:
               only:

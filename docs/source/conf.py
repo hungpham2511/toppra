@@ -24,12 +24,6 @@ try:
 except ImportError:
     import pathlib
 
-# -- Pre-process ----------------------------------------------------------
-import shutil
-HISTORY_path = pathlib.Path(__file__).parent / "../../HISTORY.md"
-shutil.copyfile(HISTORY_path.as_posix(), "HISTORY.md")
-
-
 # -- General configuration ------------------------------------------------
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.coverage',
@@ -45,8 +39,9 @@ extensions = ['sphinx.ext.autodoc',
 ]
 
 sphinx_gallery_conf = {
-     'examples_dirs': '../../examples',   # path to your example scripts
-     'gallery_dirs': 'auto_examples',  # path to where to save gallery generated output
+    'examples_dirs': '../../examples',   # path to your example scripts
+    'gallery_dirs': 'auto_examples',  # path to where to save gallery generated output
+    'line_numbers': True
 }
 
 intersphinx_mapping = {
@@ -97,45 +92,44 @@ todo_include_todos = True
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
-# html_theme = "sphinx_rtd_theme"
+html_theme = 'furo'
 
-# Theme options are theme-specific and customize the look and feel of a theme
-# further.  For a list of options available for each theme, see the
-# documentation.
-#
-html_theme_options = {
-    'github_user': 'hungpham2511',
-    'github_repo': 'toppra',
-    'github_button': True,
-    'github_type': 'star',
-    'github_banner': True,
-    'travis_button': True,
-    'description': 'A robotic motion planning library for path-parametrization',
-    'fixed_sidebar': True,
-    "sidebar_width": "270px",
-    "page_width": "1240px",
-    "show_related": True
-}
+# # Theme options are theme-specific and customize the look and feel of a theme
+# # further.  For a list of options available for each theme, see the
+# # documentation.
+# #
+# html_theme_options = {
+#     'github_user': 'hungpham2511',
+#     'github_repo': 'toppra',
+#     'github_button': True,
+#     'github_type': 'star',
+#     'github_banner': True,
+#     'travis_button': True,
+#     'description': 'A robotic motion planning library for path-parametrization',
+#     'fixed_sidebar': True,
+#     "sidebar_width": "270px",
+#     "page_width": "1240px",
+#     "show_related": True
+# }
 
-html_static_path = ['_static']
+# html_static_path = ['_static']
 
 
-# Custom sidebar templates, must be a dictionary that maps document names
-# to template names.
-#
-# This is required for the alabaster theme
-# refs: http://alabaster.readthedocs.io/en/latest/installation.html#sidebars
-show_related = True
-html_sidebars = {
-    '**': [
-        'about.html',
-        'localtoc.html',
-        'relations.html',  # needs 'show_related': True theme option to display
-        'searchbox.html',
-    ]
-}
-sidebar_collapse = True
+# # Custom sidebar templates, must be a dictionary that maps document names
+# # to template names.
+# #
+# # This is required for the alabaster theme
+# # refs: http://alabaster.readthedocs.io/en/latest/installation.html#sidebars
+# show_related = True
+# html_sidebars = {
+#     '**': [
+#         'about.html',
+#         'localtoc.html',
+#         'relations.html',  # needs 'show_related': True theme option to display
+#         'searchbox.html',
+#     ]
+# }
+# sidebar_collapse = True
 
 htmlhelp_basename = 'TOPP-RAdoc'
 

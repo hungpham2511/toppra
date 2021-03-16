@@ -64,7 +64,13 @@ class PathParametrizationAlgorithm {
    *
    * If is zero, will attempt to detect automatically the most suitable grid.
    */
-  void setN(int N) { m_N = N; };
+  void setN(int N) { m_N = N; m_initialized = false; };
+
+  /** \brief Set the gridpoints (points with the path intervals)
+   *
+   * If not set manually, then N equally distributed points is used.
+   */
+  void setGridpoints(const Vector& gridpoints);
 
   /** \brief Set the LP/QP solver
    *
@@ -74,7 +80,7 @@ class PathParametrizationAlgorithm {
 
   /** \brief Get output or result of algorithm.
    */
-  ParametrizationData getParameterizationData() const { return m_data; };
+  const ParametrizationData& getParameterizationData() const { return m_data; };
 
   /** Compute the time parametrization of the given path.
    *
@@ -88,6 +94,14 @@ class PathParametrizationAlgorithm {
   /** Compute the sets of feasible squared velocities.
    */
   ReturnCode computeFeasibleSets();
+
+  /** Set initial bounds on \f$ \dot{s}^2.
+   * This is helpfull when the solver encounters numerical issues.
+   */
+  void setInitialXBounds (const Bound& xbound)
+  {
+    m_initXBound = xbound;
+  }
 
   virtual ~PathParametrizationAlgorithm() {}
 
@@ -122,6 +136,16 @@ class PathParametrizationAlgorithm {
   int m_N = 100;
 
   int m_initialized = false;
+
+  /** Set initial bounds on \f$ \dot{s}^2.
+   * \sa setInitialXBounds
+   * \todo The hard-coded bound below avoids numerical issues in LP / QP solvers
+   * when \f$ x \f$ becomes too big. This issue should be addressed in the
+   * solver wrapper themselfves as numerical behaviors is proper to each
+   * individual solver.
+   * See https://github.com/hungpham2511/toppra/issues/156
+   */
+  Bound m_initXBound = {0, 100};
 };
 
 }  // namespace toppra

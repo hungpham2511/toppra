@@ -1,15 +1,9 @@
 """
-toppra.interpolator
+Path Interpolator
 -----------------------
 
 This module implements clases to represent geometric paths and
 trajectories.
-
-AbstractGeometricPath
-^^^^^^^^^^^^^^^^^^^^^^
-
-.. autoclass:: toppra.interpolator.AbstractGeometricPath
-   :members: __call__, dof, path_interval, waypoints
 
 SplineInterplator
 ^^^^^^^^^^^^^^^^^^^
@@ -26,9 +20,14 @@ simplepath.SimplePath
 .. autoclass:: toppra.simplepath.SimplePath
    :members: __call__, dof, path_interval
 
-[internal]
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[abstract]AbstractGeometricPath
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+.. autoclass:: toppra.interpolator.AbstractGeometricPath
+   :members: __call__, dof, path_interval, waypoints
+
+[internal]Methods
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autofunction:: toppra.interpolator.propose_gridpoints
 
 
@@ -47,7 +46,8 @@ if FOUND_OPENRAVE:
 
 
 def propose_gridpoints(
-    path, max_err_threshold=1e-4, max_iteration=100, max_seg_length=0.05
+        path, max_err_threshold=1e-4, max_iteration=100, max_seg_length=0.05,
+        min_nb_points=100
 ):
     r"""Generate gridpoints that sufficiently cover the given path.
 
@@ -102,9 +102,20 @@ def propose_gridpoints(
             if max_err > max_err_threshold:
                 add_new_points = True
                 gridpoints_ept.append(gp_mid)
+                continue
+
         gridpoints_ept = sorted(gridpoints_ept)
         if not add_new_points:
             break
+
+    while len(gridpoints_ept) < min_nb_points:
+        new_pts = []
+        for idx in range(len(gridpoints_ept) - 1):
+            gp_mid = 0.5 * (gridpoints_ept[idx] + gridpoints_ept[idx + 1])
+            new_pts.append(gp_mid)
+        gridpoints_ept.extend(new_pts)
+        gridpoints_ept = sorted(gridpoints_ept)
+
     if iteration == max_iteration - 1:
         raise ValueError("Unable to find a good gridpoint for this path.")
     return gridpoints_ept
@@ -138,7 +149,9 @@ class AbstractGeometricPath(object):
         :
             The evaluated joint positions, velocity or
             accelerations. The shape of the result depends on the
-            shape of the input.
+            shape of the input, it is either (N, m) where N is the
+            number of path positions and m is the number of
+            degree-of-freedom, or (m,).
 
         """
         raise NotImplementedError

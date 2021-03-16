@@ -16,7 +16,7 @@ ReturnCode TOPPRA::computeForwardPass(value_type vel_start) {
   TOPPRA_LOG_DEBUG("computeForwardPass");
   ReturnCode ret = ReturnCode::OK;
   bool solver_ret;
-  Vector g_upper{2}, solution;
+  Vector g_upper{2}, solution{2};
   Matrix H;
   auto deltas = m_solver->deltas();
   Bound x, x_next;

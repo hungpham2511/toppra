@@ -5,11 +5,15 @@ set(SOURCE_FILES
   toppra/constraint/linear_joint_velocity.cpp
   toppra/constraint/linear_joint_acceleration.cpp
   toppra/constraint/joint_torque.cpp
+  toppra/constraint/cartesian_velocity_norm.cpp
 
   toppra/solver.cpp
+  toppra/solver/seidel.cpp
 
   toppra/geometric_path.cpp
   toppra/geometric_path/piecewise_poly_path.cpp
+  toppra/parametrizer/const_accel.cpp
+  toppra/parametrizer.cpp
 
   toppra/algorithm.cpp
   toppra/algorithm/toppra.cpp
@@ -46,6 +50,9 @@ endforeach()
 if (TOPPRA_DEBUG_ON)
   target_compile_definitions(toppra PRIVATE TOPPRA_DEBUG_ON)
 endif()
+if (TOPPRA_WARN_ON)
+  target_compile_definitions(toppra PRIVATE TOPPRA_WARN_ON)
+endif()
 if (OPT_MSGPACK)
   target_compile_definitions(toppra PRIVATE TOPPRA_OPT_MSGPACK)
 endif()
@@ -65,6 +72,7 @@ install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/toppra/export.hpp
 
   toppra/geometric_path.hpp
+  toppra/parametrizer.hpp
   toppra/toppra.hpp
 
   toppra/solver.hpp
@@ -77,15 +85,22 @@ install(FILES
   toppra/constraint/linear_joint_velocity.hpp
   toppra/constraint/linear_joint_acceleration.hpp
   toppra/constraint/joint_torque.hpp
+  toppra/constraint/cartesian_velocity_norm.hpp
   DESTINATION include/toppra/constraint)
 install(FILES
   toppra/geometric_path/piecewise_poly_path.hpp
   DESTINATION include/toppra/geometric_path)
-
+install(FILES
+  toppra/parametrizer/const_accel.hpp
+  DESTINATION include/toppra/parametrizer)
 install(FILES
   toppra/constraint/joint_torque/pinocchio.hpp
   DESTINATION include/toppra/constraint/joint_torque)
 install(FILES
+  toppra/constraint/cartesian_velocity_norm/pinocchio.hpp
+  DESTINATION include/toppra/constraint/cartesian_velocity_norm)
+install(FILES
   toppra/solver/qpOASES-wrapper.hpp
   toppra/solver/glpk-wrapper.hpp
+  toppra/solver/seidel.hpp
   DESTINATION include/toppra/solver)
