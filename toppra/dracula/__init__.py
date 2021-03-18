@@ -22,7 +22,7 @@ ta.setup_logging("INFO")
 # min epsilon for treating two angles the same, positive float
 JNT_DIST_EPS = 2e-3  # nominally defined as L2 norm in joint space, i.e. in rad
 # toppra does not respect velocity limit precisely
-V_LIM_EPS = 0.12
+V_LIM_EPS = 0.20
 A_LIM_EPS = 0.07
 # https://frankaemika.github.io/docs/control_parameters.html#constants
 V_MAX = np.array([2.1750, 2.1750, 2.1750, 2.1750, 2.6100, 2.6100, 2.6100])
@@ -53,6 +53,7 @@ def _dump_input_data(**kwargs):
     path = os.path.join(DATA_DIR, f"{t}.npz")
     np.savez(path, **kwargs)
     logger.info(f"Debug environment detected, input data saved to: {path}")
+    return path
 
 
 def _check_waypts(waypts, vlim, alim):
@@ -82,15 +83,15 @@ class DraculaToppra:
     def __init__(self, waypts, vlim, alim):
         """Initialise with session data and perform common initial prep."""
         if any(map(os.getenv, ["SIM_ROBOT", "TOPPRA_DEBUG"])):
-            _dump_input_data(waypts=waypts, vlim=vlim, alim=alim)
+            self.path = _dump_input_data(waypts=waypts, vlim=vlim, alim=alim)
         # check vlim and alim are sufficiently large, at least eps
-        assert (np.abs(vlim.flatten()) > V_LIM_EPS).all(), (
-            f"vlim magnitude must be larger than V_LIM_EPS = {V_LIM_EPS}:"
-            f"\n{vlim}"
+        assert (np.abs(vlim.flatten()) > V_LIM_EPS + 0.06).all(), (
+            f"vlim magnitude must be at least 0.06 larger than "
+            f"V_LIM_EPS = {V_LIM_EPS}:\n{vlim}"
         )
-        assert (np.abs(alim.flatten()) > A_LIM_EPS).all(), (
-            f"alim magnitude must be larger than A_LIM_EPS = {A_LIM_EPS}:"
-            f"\n{alim}"
+        assert (np.abs(alim.flatten()) > A_LIM_EPS + 0.06).all(), (
+            f"alim magnitude must be at least 0.06 larger than "
+            f"A_LIM_EPS = {A_LIM_EPS}:\n{alim}"
         )
         self.waypts = waypts.copy()
         self.vlim = vlim
@@ -224,6 +225,7 @@ class DraculaToppra:
                 logger.error(f"t_sum_multiplier = {multiplier} failed")
                 if multiplier == t_sum_multipliers[-1]:
                     raise  # raise on failure with the last candidate
+        raise RuntimeError  # for linter, never gets here
 
     def compute_const_accel(self):
         """Compute optimised trajectory for ParametrizeConstAccel."""
@@ -261,7 +263,10 @@ class DraculaToppra:
                     f"\nt_sum: {self.t_sum}, "
                     f"path length: {instance.path.duration}"
                 )
-            raise RuntimeError("Toppra failed to compute trajectory")
+            raise RuntimeError(
+                "Toppra failed to compute trajectory. "
+                f"Report this bug to developer with data dump: {self.path}"
+            )
         return traj
 
     def truncate_traj(self, traj, parametrizer):

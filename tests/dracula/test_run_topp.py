@@ -41,7 +41,7 @@ class TestRunTopp(unittest.TestCase):
     def test_run_topp_spline_static_data(self):
         """Test run_topp_spline() using static test data."""
         print("Starting test_run_topp_spline_static_data")
-        for coeff in [1, 0.5, 0.1]:
+        for coeff in [1, 0.5, 0.12]:
             print(f"Testing with limit reduction coefficient: {coeff}...")
             for i, waypts in enumerate(self.waypts_list):
                 print(f"Testing waypoints file {i}...")
@@ -56,7 +56,7 @@ class TestRunTopp(unittest.TestCase):
     def test_run_topp_const_accel_static_data(self):
         """Test run_topp_const_accel() using static test data."""
         print("Starting test_run_topp_const_accel_static_data")
-        for coeff in [1, 0.5, 0.1]:
+        for coeff in [1, 0.5, 0.12]:
             print(f"Testing with limit reduction coefficient: {coeff}...")
             for i, waypts in enumerate(self.waypts_list):
                 print(f"Testing waypoints file {i}...")
