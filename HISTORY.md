@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- [python] Fixed build error for numpy versions <= 1.20
 
 
 ## 0.4.0 (Mar 16 2021)
