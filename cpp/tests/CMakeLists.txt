@@ -2,14 +2,14 @@
 # Now simply link against gtest or gtest_main as needed. Eg
 set(TEST_SOURCES
   gtest_main.cpp
-  test_constraints.cpp
-  test_solver.cpp
-  test_poly_geometric_path.cpp
-  test_hermite_spline.cpp
-  test_cubic_spline.cpp
-  test_algorithm.cpp
-  test_parametrizer.cpp
-  test_toppra_approach.cpp
+  # test_constraints.cpp
+  # test_solver.cpp
+  # test_poly_geometric_path.cpp
+  # test_hermite_spline.cpp
+  # test_cubic_spline.cpp
+  # test_algorithm.cpp
+  # test_parametrizer.cpp
+  # test_toppra_approach.cpp
   test_parallel_approach.cpp
   )
 

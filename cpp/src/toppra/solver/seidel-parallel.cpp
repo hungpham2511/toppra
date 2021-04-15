@@ -24,7 +24,8 @@ typename Coeffs::Scalar value(const Eigen::MatrixBase<Coeffs>& coeffs,
   return res;
 }
 
-constexpr value_type infi = 1e6;
+// constexpr value_type infi = 1e6;
+constexpr value_type infi = std::numeric_limits<value_type>::infinity();
 
 namespace internal {
   // projective coefficients to the line
@@ -82,6 +83,11 @@ void SeidelParallel::initialize (const LinearConstraintPtrs& constraints, const 
 
   for (int i = 0; i < N+1; ++i) {
     m_low (i, 1) = std::max(m_low (i, 1), 0.0);
+  }
+
+  for (int i = 0; i < N+1; ++i) {
+    m_low (i, 0) = -1e13;
+    m_high (i, 0) = 1e13;
   }
 
   for (const Solver::BoxConstraintParams& p : m_constraintsParams.box) {

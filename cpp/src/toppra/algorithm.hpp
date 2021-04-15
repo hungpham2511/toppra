@@ -160,7 +160,7 @@ class PathParametrizationAlgorithm {
    * individual solver.
    * See https://github.com/hungpham2511/toppra/issues/156
    */
-  Bound m_initXBound = {0, 100};
+  Bound m_initXBound = {0, std::numeric_limits<value_type>::infinity()};
 };
 
 }  // namespace toppra

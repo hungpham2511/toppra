@@ -32,7 +32,7 @@ class ParallelApproach : public testing::Test {
  public:
 
   const int numJoints = 6;
-  const int gridN = 10000;
+  const int gridN = 1000;
   toppra::GeometricPathPtr path;
   toppra::LinearConstraintPtrs constraints;
   toppra::Vector velLimitLower;

@@ -128,7 +128,8 @@ ReturnCode PathParametrizationAlgorithm::computeControllableSetsParallel(
   size_t be = GetCurrentTimeUsec();
 
   bool batch_ok = true;
-  printf("omp omp_get_max_threads %d\n", omp_get_max_threads());
+  omp_set_num_threads(6);
+  printf("omp_get_max_threads %d\n", omp_get_max_threads());
   #pragma omp parallel for schedule(dynamic)
   for (int i = 0; i < m_N; i++) {
     // solver_ret = m_solver->solveStagewiseBatch(i, g_upper, solution_upper[i]);
