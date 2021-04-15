@@ -1,6 +1,9 @@
 # Changelog
 
-## Unrelease
+## Unreleased
+
+
+## 0.4.0 (Mar 16 2021)
 
 ### Added
 - [python] Fixed build error when cython and numpy were not pre-installed

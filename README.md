@@ -6,6 +6,7 @@
 
 - [Overview](#overview)
 - [Supports](#supports)
+- [Slack](https://join.slack.com/t/toppracommunity/shared_invite/zt-npyxpszp-3msp6MZhE5wNcjdrB~fWFg)
 - [Citing `toppra`](#citing--toppra-)
 
 
@@ -33,6 +34,8 @@ given constraints can be found.
 ## Bug tracking
 Please report any issues, questions or feature request via 
 [Github issues tracker](https://github.com/hungpham2511/toppra/issues).
+
+Have a quick question? Try asking in our slack channel.
 
 ## Contributions
 Pull Requests are welcome! Create a Pull Request and we will review
