@@ -6,7 +6,6 @@
 
 - [Overview](#overview)
 - [Supports](#supports)
-- [Slack](https://join.slack.com/t/toppracommunity/shared_invite/zt-npyxpszp-3msp6MZhE5wNcjdrB~fWFg)
 - [Citing `toppra`](#citing--toppra-)
 
 
