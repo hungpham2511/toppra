@@ -13,6 +13,7 @@ set(SOURCE_FILES
   toppra/geometric_path.cpp
   toppra/geometric_path/piecewise_poly_path.cpp
   toppra/parametrizer/const_accel.cpp
+  toppra/parametrizer/spline.cpp
   toppra/parametrizer.cpp
 
   toppra/algorithm.cpp
@@ -91,6 +92,7 @@ install(FILES
   toppra/geometric_path/piecewise_poly_path.hpp
   DESTINATION include/toppra/geometric_path)
 install(FILES
+  toppra/parametrizer/spline.hpp
   toppra/parametrizer/const_accel.hpp
   DESTINATION include/toppra/parametrizer)
 install(FILES
