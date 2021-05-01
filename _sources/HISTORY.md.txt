@@ -3,6 +3,8 @@
 ## Unreleased
 - [python] Fixed build error for numpy versions <= 1.20
 
+### Added
+- [cpp] Implement spline parametrizer
 
 ## 0.4.0 (Mar 16 2021)
 
