@@ -62,7 +62,11 @@ class PathParametrizationAlgorithm {
 
   /** \brief Set the level of discretization used by the solver.
    *
-   * If is zero, will attempt to detect automatically the most suitable grid.
+   * If is zero, will attempt to detect automatically the most
+   * suitable grid.  
+   * 
+   * TODO: Automatic gridpoint selection is not implemented in the CPP
+   * API.
    */
   void setN(int N) { m_N = N; m_initialized = false; };
 
