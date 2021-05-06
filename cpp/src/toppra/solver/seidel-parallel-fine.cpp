@@ -97,114 +97,7 @@ LpSol SeidelParallelFine::solve_lp2d(const RowVector2& v, const MatrixX3& A,
   // print all input to the algorithm
   TOPPRA_SEIDEL_LP2D(DEBUG, "");
 
-  // handle fixed bounds (low, high). The following convention is
-  // adhered to: fixed bounds are assigned the numbers: -1, -2, -3,
-  // -4 according to the following order: low[0], high[0], low[1],
-  // high[1].
-  // for (int i = 0; i < 2; ++i) {
-  //   if (low[i] > high[i]) {
-  //     // If the difference between low and high is sufficiently small, then
-  //     // return infeasible.
-  //     if (   low[i] - high[i] > std::max(std::abs(low[i]),std::abs(high[i]))* REL_TOLERANCE
-  //         || low[i] == infinity
-  //         || high[i] == -infinity) {
-  //       TOPPRA_SEIDEL_LP2D(WARN,
-  //           "-> incoherent bounds. high - low = " << (high - low).transpose());
-  //       return INFEASIBLE;
-  //     }
-  //     // Otherwise, assume variable i is static. Thus we are left with a 1D LP.
-  //     int j = 1-i;
-  //     sol.optvar[i] = (low[i]+high[i])/2;
-  //     A_1d.topRows(nrows) << A.col(j), A.col(2) + sol.optvar[i] * A.col(i);
-  //     A_1d.middleRows<2>(nrows) << -1,   low[j],
-  //                                   1, -high[j];
-
-  //     LpSol1d sol_1d = solve_lp1d({ v[j], 0. }, A_1d.topRows(nrows+2));
-  //     if (!sol_1d.feasible) {
-  //       TOPPRA_SEIDEL_LP2D(WARN, "-> infeasible");
-  //       return INFEASIBLE;
-  //     }
-  //     sol.optvar[j] = sol_1d.optvar;
-  //     sol.feasible = true;
-  //     sol.optval = v * sol.optvar;
-  //     return sol;
-  //   }
-
-  //   cur_optvar[i]   = v[i] > 0 ? high[i] : low[i];
-  // }
-  // TOPPRA_LOG_DEBUG("cur_optvar = " << cur_optvar.transpose());
-
-  // pre-process the inequalities, remove those that are redundant
-
-  // // handle other constraints in a, b, c
-  // for (int i = 0; i < nrows; ++i) {
-  //   // if current optimal variable satisfies the i-th constraint, continue
-  //   if (value(A.row(i), cur_optvar) < ABS_TOLERANCE)
-  //     continue;
-  //   // otherwise, project all constraints on the line defined by (a[i], b[i], c[i])
-  //   // project the origin (0, 0) onto the new constraint
-  //   // let ax + by + c=0 b the new constraint
-  //   // let zero_prj be the projected point, one has
-  //   //     zero_prj =  1 / (a^2 + b^2) [a  -b] [-c]
-  //   //                                 [b   a] [ 0]
-  //   // this can be derived using perpendicularity
-  //   Vector2 zero_prj (A.row(i).head<2>());
-  //   zero_prj *= - A(i,2) / zero_prj.squaredNorm();
-
-  //   // Let x = zero_prj + d_tan * t
-  //   // where t is the variable of the future 1D LP.
-  //   Vector2 d_tan { -A(i,1), A(i,0) }; // vector parallel to the line
-  //   Vector2 v_1d { v * d_tan, 0 };
-
-  //   // Size of the 1D LP: 4 + k
-  //   // Compute the constraint parameters of the 1D LP corresponding to the
-  //   // linear constraints.
-  //   for (int j = 0; j < i; ++j)
-  //     project_linear_constraint(A.row(j),
-  //             d_tan, zero_prj, A_1d.row(j));
-  //   //A_1d.topRows(k) << A.topRows(k) * d_tan, value(A.topRows(k), zero_prj);
-  //   // Compute the constraint parameters of the 1D LP corresponding to the
-  //   // 4 bound constraints.
-  //   // handle low <= x
-  //   project_linear_constraint(RowVector3 { -1., 0., low[0] },
-  //       d_tan, zero_prj, A_1d.row(i));
-  //   // handle x <= high
-  //   project_linear_constraint(RowVector3 { 1., 0., -high[0] },
-  //       d_tan, zero_prj, A_1d.row(i+1));
-  //   // handle low <= y
-  //   project_linear_constraint(RowVector3 { 0., -1., low[1] },
-  //       d_tan, zero_prj, A_1d.row(i+2));
-  //   // handle y <= high
-  //   project_linear_constraint(RowVector3 { 0., 1., -high[1] },
-  //       d_tan, zero_prj, A_1d.row(i+3));
-
-  //   // solve the projected, 1 dimensional LP
-  //   TOPPRA_LOG_DEBUG("SeidelParallelFine LP 2D activate constraint " << i);
-  //   LpSol1d sol_1d = solve_lp1d(v_1d, A_1d.topRows(4+i));
-  //   TOPPRA_LOG_DEBUG("SeidelParallelFine LP 1D solution:\n" << sol_1d);
-
-  //   if (!sol_1d.feasible) {
-  //     TOPPRA_SEIDEL_LP2D(WARN, "-> infeasible");
-  //     return INFEASIBLE;
-  //   }
-
-  //   // feasible, wrapping up
-  //   // compute the current optimal solution
-  //   cur_optvar = zero_prj + sol_1d.optvar * d_tan;
-  //   TOPPRA_LOG_DEBUG("i = " << i << ". cur_optvar = " << cur_optvar.transpose());
-  //   // record the active constraint's index
-  // }
-
-  // // Sanity check for debugging purpose.
-  // for (int i = 0; i < nrows; ++i) {
-  //   value_type v = value(A.row(i), cur_optvar);
-  //   if (v > 0) {
-  //     TOPPRA_LOG_DEBUG("SeidelParallelFine 2D: contraint " << i << " violated (" << v << " should be <= 0).");
-  //   }
-  // }
-
-
-  // handle other constraints in a, b, c
+  // handle constraints in a, b, c
   for (int i = 0; i < nrows; ++i) {
     // if current optimal variable satisfies the i-th constraint, continue
     if (value(A.row(i), cur_optvar) < ABS_TOLERANCE)
@@ -217,6 +110,7 @@ LpSol SeidelParallelFine::solve_lp2d(const RowVector2& v, const MatrixX3& A,
     double minu, maxu;
     double minx, maxx;
 
+    // handle fixed bounds (low, high). 
     if (ai * bi < 0) {
       maxx = (-ci - ai * high[0]) / bi;
       if (maxx < high[1]) {
@@ -264,13 +158,6 @@ LpSol SeidelParallelFine::solve_lp2d(const RowVector2& v, const MatrixX3& A,
         }
         if (maxx < minx) {
           TOPPRA_SEIDEL_LP2D(WARN, "-> infeasible");
-          printf("cur_optvar = %f %f\n", cur_optvar[0], cur_optvar[1]);
-          printf("i=%d, j=%d\n", i, j);
-          printf("ai=%f bi=%f ci=%f\n", ai, bi, ci);
-          printf("aj=%f bj=%f cj=%f\n", aj, bj, cj);
-          printf("cross=%f direction=%f\n", cross, direction);
-          printf("crossu=%f crossx=%f\n", crossu, crossx);
-          printf("debug1: minu=%f maxu=%f minx=%f maxx=%f\n", minu, maxu, minx, maxx);
           return INFEASIBLE;
         }
       } else if (direction < -TINY) {
@@ -282,34 +169,21 @@ LpSol SeidelParallelFine::solve_lp2d(const RowVector2& v, const MatrixX3& A,
         }
         if (maxx < minx) {
           TOPPRA_SEIDEL_LP2D(WARN, "-> infeasible");
-          printf("cur_optvar = %f %f\n", cur_optvar[0], cur_optvar[1]);
-          printf("i=%d, j=%d\n", i, j);
-          printf("ai=%f bi=%f ci=%f\n", ai, bi, ci);
-          printf("aj=%f bj=%f cj=%f\n", aj, bj, cj);
-          printf("cross=%f direction=%f\n", cross, direction);
-          printf("crossu=%f crossx=%f\n", crossu, crossx);
-          printf("debug2: minu=%f maxu=%f minx=%f maxx=%f\n", minu, maxu, minx, maxx);
           return INFEASIBLE;
         }
       } else {
         // otherwise two line is parallel
         if (-ci / bi * bj + cj > 0) {
           TOPPRA_SEIDEL_LP2D(WARN, "-> infeasible");
-          printf("cur_optvar = %f %f\n", cur_optvar[0], cur_optvar[1]);
-          printf("i=%d, j=%d\n", i, j);
-          printf("ai=%f bi=%f ci=%f\n", ai, bi, ci);
-          printf("aj=%f bj=%f cj=%f\n", aj, bj, cj);
-          printf("cross=%f direction=%f\n", cross, direction);
-          printf("debug3: minu=%f maxu=%f minx=%f maxx=%f\n", minu, maxu, minx, maxx);
           return INFEASIBLE;
         }
       }
     }
 
-    if (maxx < minx) {
-      TOPPRA_SEIDEL_LP2D(WARN, "-> infeasible");
-      return INFEASIBLE;
-    }
+    // if (maxx < minx) {
+    //   TOPPRA_SEIDEL_LP2D(WARN, "-> infeasible");
+    //   return INFEASIBLE;
+    // }
 
     if (v[1] > 0) {
       cur_optvar[0] = maxu;
