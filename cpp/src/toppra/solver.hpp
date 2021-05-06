@@ -81,6 +81,10 @@ class Solver {
         const Bound& x, const Bound& xNext,
         Vector& solution) = 0;
 
+    virtual bool solveStagewiseBatch(int i, const Vector& g){};
+
+    virtual bool solveStagewiseBack(int i, const Vector& g, const Bound& xNext, Vector& solution){};
+
     /// \brief Initialize the solver
     /// \note Child classes should call the parent implementation.
     virtual void initialize (const LinearConstraintPtrs& constraints, const GeometricPathPtr& path,

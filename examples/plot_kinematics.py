@@ -26,7 +26,7 @@ def generate_new_problem(seed=9):
     np.random.seed(seed)
     way_pts = np.random.randn(N_samples, dof)
     return (
-        np.linspace(0, 1, 5),
+        np.linspace(0, 1, N_samples),
         way_pts,
         10 + np.random.rand(dof) * 20,
         10 + np.random.rand(dof) * 2,

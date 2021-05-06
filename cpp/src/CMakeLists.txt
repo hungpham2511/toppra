@@ -9,6 +9,8 @@ set(SOURCE_FILES
 
   toppra/solver.cpp
   toppra/solver/seidel.cpp
+  toppra/solver/seidel-parallel.cpp
+  toppra/solver/seidel-parallel-fine.cpp
 
   toppra/geometric_path.cpp
   toppra/geometric_path/piecewise_poly_path.cpp

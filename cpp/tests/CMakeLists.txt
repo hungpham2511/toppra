@@ -11,6 +11,7 @@ set(TEST_SOURCES
   test_parametrizer.cpp
   test_spline_parametrizer.cpp
   test_toppra_approach.cpp
+  test_parallel_approach.cpp
   )
 
 add_executable(all_tests ${TEST_SOURCES})
