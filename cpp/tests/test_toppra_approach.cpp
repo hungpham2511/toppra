@@ -149,4 +149,7 @@ TEST_F(Approach, ToppraCompleteExample) {
       ASSERT_LE(path_acc2_(jointID, i), accLimitUpper(jointID) * (1 + RTOL));
     }
   }
+
+  bool ok = ca->plot_parametrization(41);
+  ASSERT_TRUE(ok);
 }
