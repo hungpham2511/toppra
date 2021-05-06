@@ -1,9 +1,11 @@
 # Changelog
 
 ## Unreleased
-- [python] Fixed build error for numpy versions <= 1.20
+
+## 0.4.1 (May 06 2021)
 
 ### Added
+- [python] Fixed build error for numpy versions <= 1.20
 - [cpp] Implement spline parametrizer
 
 ## 0.4.0 (Mar 16 2021)
