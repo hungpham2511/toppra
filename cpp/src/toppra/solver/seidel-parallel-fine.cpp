@@ -97,6 +97,44 @@ LpSol SeidelParallelFine::solve_lp2d(const RowVector2& v, const MatrixX3& A,
   // print all input to the algorithm
   TOPPRA_SEIDEL_LP2D(DEBUG, "");
 
+  // handle fixed bounds (low, high). The following convention is
+  // adhered to: fixed bounds are assigned the numbers: -1, -2, -3,
+  // -4 according to the following order: low[0], high[0], low[1],
+  // high[1].
+  for (int i = 0; i < 2; ++i) {
+    if (low[i] > high[i]) {
+      // If the difference between low and high is sufficiently small, then
+      // return infeasible.
+      if (   low[i] - high[i] > std::max(std::abs(low[i]),std::abs(high[i]))* REL_TOLERANCE
+          || low[i] == infinity
+          || high[i] == -infinity) {
+        TOPPRA_SEIDEL_LP2D(WARN,
+            "-> incoherent bounds. high - low = " << (high - low).transpose());
+        return INFEASIBLE;
+      }
+      // Otherwise, assume variable i is static. Thus we are left with a 1D LP.
+      int j = 1-i;
+      sol.optvar[i] = (low[i]+high[i])/2;
+      A_1d.topRows(nrows) << A.col(j), A.col(2) + sol.optvar[i] * A.col(i);
+      A_1d.middleRows<2>(nrows) << -1,   low[j],
+                                    1, -high[j];
+
+      LpSol1d sol_1d = solve_lp1d({ v[j], 0. }, A_1d.topRows(nrows+2));
+      if (!sol_1d.feasible) {
+        TOPPRA_SEIDEL_LP2D(WARN, "-> infeasible");
+        return INFEASIBLE;
+      }
+      sol.optvar[j] = sol_1d.optvar;
+      sol.feasible = true;
+      sol.optval = v * sol.optvar;
+      return sol;
+    }
+
+    cur_optvar[i]   = v[i] > 0 ? high[i] : low[i];
+  }
+
+  TOPPRA_LOG_DEBUG("cur_optvar = " << cur_optvar.transpose());
+
   // handle constraints in a, b, c
   for (int i = 0; i < nrows; ++i) {
     // if current optimal variable satisfies the i-th constraint, continue
@@ -143,6 +181,8 @@ LpSol SeidelParallelFine::solve_lp2d(const RowVector2& v, const MatrixX3& A,
       }
     }
 
+    bool paraflag = false;
+    // #pragma omp parallel for schedule(dynamic) shared(minu, minx, maxu, maxx)
     for (int j = 0; j < i; j++) {
       double aj = A(j, 0);
       double bj = A(j, 1);
@@ -156,10 +196,10 @@ LpSol SeidelParallelFine::solve_lp2d(const RowVector2& v, const MatrixX3& A,
           maxu = crossu;
           maxx = crossx;
         }
-        if (maxx < minx) {
-          TOPPRA_SEIDEL_LP2D(WARN, "-> infeasible");
-          return INFEASIBLE;
-        }
+        // if (maxx < minx) {
+        //   TOPPRA_SEIDEL_LP2D(WARN, "-> infeasible");
+        //   return INFEASIBLE;
+        // }
       } else if (direction < -TINY) {
         double crossu = (bi * cj - bj * ci) / cross;
         double crossx = (ci * aj - cj * ai) / cross;
@@ -167,23 +207,24 @@ LpSol SeidelParallelFine::solve_lp2d(const RowVector2& v, const MatrixX3& A,
           minu = crossu;
           minx = crossx;
         }
-        if (maxx < minx) {
-          TOPPRA_SEIDEL_LP2D(WARN, "-> infeasible");
-          return INFEASIBLE;
-        }
+        // if (maxx < minx) {
+        //   TOPPRA_SEIDEL_LP2D(WARN, "-> infeasible");
+        //   return INFEASIBLE;
+        // }
       } else {
         // otherwise two line is parallel
         if (-ci / bi * bj + cj > 0) {
-          TOPPRA_SEIDEL_LP2D(WARN, "-> infeasible");
-          return INFEASIBLE;
+          // TOPPRA_SEIDEL_LP2D(WARN, "-> infeasible");
+          paraflag = true;
+          // return INFEASIBLE;
         }
       }
     }
 
-    // if (maxx < minx) {
-    //   TOPPRA_SEIDEL_LP2D(WARN, "-> infeasible");
-    //   return INFEASIBLE;
-    // }
+    if (maxx < minx || paraflag) {
+      TOPPRA_SEIDEL_LP2D(WARN, "-> infeasible");
+      return INFEASIBLE;
+    }
 
     if (v[1] > 0) {
       cur_optvar[0] = maxu;
