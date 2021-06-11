@@ -80,7 +80,7 @@ def _check_waypts(waypts, vlim, alim):
 class DraculaToppra:
     """Class for an optimisation session. Use the functional wrappers."""
 
-    def __init__(self, waypts, vlim, alim):
+    def __init__(self, waypts, qlim, vlim, alim):
         """Initialise with session data and perform common initial prep."""
         if any(map(os.getenv, ["SIM_ROBOT", "TOPPRA_DEBUG"])):
             self.path = _dump_input_data(waypts=waypts, vlim=vlim, alim=alim)
@@ -94,6 +94,7 @@ class DraculaToppra:
             f"A_LIM_EPS = {A_LIM_EPS}:\n{alim}"
         )
         self.waypts = waypts.copy()
+        self.qlim = qlim
         self.vlim = vlim
         self.alim = alim
         self.alim_coeffs = np.ones(alim.shape[0])  # IV for multiplication
@@ -145,6 +146,35 @@ class DraculaToppra:
                 self.alim_coeffs *= 1 / (1 + excess_percent_joint)
                 return False
         return True
+
+    def joint_limits_obeyed(self, traj, multiplier):
+        lims_obeyed = True
+        t_max = 1 if multiplier is None else multiplier * self.t_sum
+        t_sample = np.arange(0, t_max, 0.001)
+        q_sample = traj(t_sample)
+
+        t_index = 0
+        waypt_copy = [self.waypts[0]]
+        for ii in range(1, self.waypts.shape[0]):
+            t_waypt = -1
+            closest_dist = 1e6
+            for t_test in range(t_index, len(q_sample)):
+                q_dist = np.linalg.norm(q_sample[t_test] - self.waypts[ii])
+                if q_dist < closest_dist:
+                    closest_dist = q_dist
+                    t_waypt = t_test
+
+            i, j = np.where(~(
+                (self.qlim[:, 0] < q_sample[t_index:t_waypt + 1]) &
+                (q_sample[t_index:t_waypt + 1] < self.qlim[:, 1])))
+            if i.size or j.size:
+                # t_index + i are violating knot points
+                lims_obeyed = False
+                waypt_copy += [(self.waypts[ii-1] + self.waypts[ii])/2.]
+            t_index = t_waypt
+            waypt_copy += [self.waypts[ii]]
+        self.waypts = np.array(waypt_copy)
+        return lims_obeyed
 
     def _estimate_path(self, multiplier, pc_vel, pc_acc):
         """Estimate path length from reduced v/a limits.
@@ -200,6 +230,12 @@ class DraculaToppra:
         t_sum_multipliers = [0.03, None, 1]
         for multiplier in t_sum_multipliers:
             path = self._estimate_path(multiplier, pc_vel, pc_acc)
+            while not self.joint_limits_obeyed(path, multiplier):
+                logger.info(
+                    f"Path violates joint limits. Re-estimating."
+                )
+                logger.debug(f"waypts = {self.waypts}")
+                path = self._estimate_path(multiplier, pc_vel, pc_acc)
             # Use the default gridpoints=None to let
             # interpolator.propose_gridpoints calculate gridpoints
             # that sufficiently covers the path.
@@ -333,7 +369,7 @@ class DraculaToppra:
         return traj
 
 
-def run_topp_spline(waypts, vlim, alim, verify_lims=True, return_cs=False):
+def run_topp_spline(waypts, qlim, vlim, alim, verify_lims=True, return_cs=False):
     """Call toppra obeying velocity and acceleration limits and naturalness.
 
     Use of run_topp_const_accel() or run_topp_jnt_crt() is encouraged for
@@ -343,13 +379,14 @@ def run_topp_spline(waypts, vlim, alim, verify_lims=True, return_cs=False):
     Return natural cubic spline coefficients by default.
     Required args:
         waypts          ndarray, (N, dof)
+        qlim            ndarray, (dof, 2)
         vlim            ndarray, (dof, 2)
         alim            ndarray, (dof, 2)
     Optional args:
         verify_lims     bool
         return_cs       cs
     """
-    topp = DraculaToppra(waypts, vlim, alim)
+    topp = DraculaToppra(waypts, qlim, vlim, alim)
     traj = topp.compute_spline_varying_alim()
     if verify_lims:  # flag for checking if vlim is obeyed
         logger.info("Verifying that given limits are strictly obeyed...")
