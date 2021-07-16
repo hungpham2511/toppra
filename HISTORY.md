@@ -2,15 +2,19 @@
 
 ## Unreleased
 
+- [cpp] Replace for loop in piecewise poly path to find index by std::lower_bound.
+
 ## 0.4.1 (May 06 2021)
 
 ### Added
+
 - [python] Fixed build error for numpy versions <= 1.20
 - [cpp] Implement spline parametrizer
 
 ## 0.4.0 (Mar 16 2021)
 
 ### Added
+
 - [python] Fixed build error when cython and numpy were not pre-installed
 - [python] Fix a bug that prevent user from using the ConstAccelParametrizer
 - [python] Allow specifying minimum nb of grid-points during automatic selection
@@ -25,6 +29,7 @@
 - [cpp] [#161] Enable to construct spline from 1st and 2nd order derivatives at the curve endpoints
 
 ### Changed
+
 - [cpp] [#153] Fix variable mismatch in constraint::CartesianVelocityNorm
 
 ### Improved Documentation
@@ -34,6 +39,7 @@
 ## 0.3.1 (Aug 23 2020)
 
 ### Added
+
 - [docs] Use example gallery to show examples.
 - [cpp] Implement serialization/deserialization for piecewise poly trajectory.
 - [cpp] Provide Python bindings for PiecewisePolyPath, TOPPRA and constraint classes.
@@ -43,6 +49,7 @@
 - [python] [#117] Post-processing is now done via parametrizer classes.
 
 ### Changed
+
 - [python]Add some type annotations to parameterizer.py
 - [python]Support older interpolation method.
 - [cpp] Minor improvement to PiecewisePolyPath.
@@ -52,7 +59,6 @@
 - [cpp] Clamp velocities to be within controllable sets.
 - [ci] [#117] Improve CI pipeline to test on several python versions
 - [ci] [#139] Automate publish to PyPI server
-
 
 ## 0.3.0 (May 3 2020)
 
@@ -84,13 +90,21 @@ Major release! Implement TOPPRA in C++ and several improvements to Python codeba
 - Auto-gridpoints feature (#73)
 
 ## <0.2.3
+
 - Many commits and features.
 
 [gh-78]: https://github.com/hungpham2511/toppra/pull/78
+
 [gh-79]: https://github.com/hungpham2511/toppra/pull/79
+
 [#117]: https://github.com/hungpham2511/toppra/pull/117
+
 [#129]: https://github.com/hungpham2511/toppra/pull/129
+
 [#143]: https://github.com/hungpham2511/toppra/pull/143
+
 [#146]: https://github.com/hungpham2511/toppra/pull/146
+
 [#158]: https://github.com/hungpham2511/toppra/pull/158
+
 [cm-0e022c]: https://github.com/hungpham2511/toppra/commit/0e022c53ab9db473485bd9fb6b8f34a7364efdf8
