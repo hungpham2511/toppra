@@ -2,13 +2,18 @@
 <html class="no-js">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" />
 
-    <meta name="generator" content="sphinx-3.5.4, furo 2021.04.11.beta34"/>
+    <meta name="generator" content="sphinx-4.1.1, furo 2021.07.05.beta38"/>
         <title>Quickstart - toppra documentation</title>
-      <link rel="stylesheet" href="_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
-    <link rel="stylesheet" href="_static/pygments.css">
-    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="_static/pygments_dark.css">
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css" />
     
 
 
@@ -37,11 +42,7 @@
   --color-code-foreground: #d0d0d0;
   
   }
-</style><link rel="stylesheet" type="text/css" href="_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="_static/gallery-rendered-html.css" />
-    <link rel="stylesheet" href="_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
+</style><link media="(prefers-color-scheme: dark)" rel="stylesheet" href="_static/pygments_dark.css"></head>
   <body dir="">
     
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
@@ -138,9 +139,9 @@
         <label class="toc-overlay-icon toc-content-icon" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
-        <div class="section" id="quickstart">
+        <section id="quickstart">
 <h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="represent-geometric-path-and-trajectory">
+<section id="represent-geometric-path-and-trajectory">
 <h2>Represent geometric path and trajectory<a class="headerlink" href="#represent-geometric-path-and-trajectory" title="Permalink to this headline">¶</a></h2>
 <p>In TOPP-RA, both geometric paths <span class="math notranslate nohighlight">\(\mathbf q(s)_{s \in [0, 1]}\)</span>
 and parametrized trajectories <span class="math notranslate nohighlight">\(\mathbf q(t)_{t \in [0, T]}\)</span> are
@@ -149,12 +150,12 @@ represented by classes that implement the abstract interface
 <a class="reference internal" href="python_api.html#toppra.interpolator.AbstractGeometricPath.__call__" title="toppra.interpolator.AbstractGeometricPath.__call__"><code class="xref py py-func docutils literal notranslate"><span class="pre">__call__()</span></code></a> which can be used to evaluate
 the configuration, first-derivatives and second-derivatives
 respectively.</p>
-<div class="section" id="spline-interpolator">
+<section id="spline-interpolator">
 <h3>Spline Interpolator<a class="headerlink" href="#spline-interpolator" title="Permalink to this headline">¶</a></h3>
 <p>In the examples, the child class <a class="reference internal" href="python_api.html#toppra.SplineInterpolator" title="toppra.SplineInterpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">toppra.SplineInterpolator</span></code></a> is
 used extensively, due to the expressiveness and convenience offered by
 cubic spline. Note that this class is implemented as a thin wrapper
-over <cite>scipy</cite>’s <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.CubicSpline.html#scipy.interpolate.CubicSpline" title="(in SciPy v1.6.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">CubicSpline</span></code></a>. Therefore, it
+over <cite>scipy</cite>’s <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/reference/generated/scipy.interpolate.CubicSpline.html#scipy.interpolate.CubicSpline" title="(in SciPy v1.7.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">CubicSpline</span></code></a>. Therefore, it
 requires <cite>scipy</cite> to work
 properly. <a class="reference internal" href="python_api.html#toppra.SplineInterpolator" title="toppra.SplineInterpolator"><code class="xref py py-class docutils literal notranslate"><span class="pre">SplineInterpolator</span></code></a>’s usage is simple.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">toppra</span>
@@ -176,10 +177,12 @@ properly. <a class="reference internal" href="python_api.html#toppra.SplineInter
 </pre></div>
 </div>
 <p>You will see the following plot show up.</p>
-<div class="figure align-default" id="id1">
+<figure class="align-default" id="id1">
 <img alt="_images/geometric_path.png" src="_images/geometric_path.png"/>
-<p class="caption"><span class="caption-text">Geometric path plot.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Geometric path plot.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>The derivatives can be inspected by calling <cite>path(positions, order)</cite>
 using <cite>order=1</cite> for the first derivative and <cite>order=2</cite> for the second
 derivative respectively.</p>
@@ -187,15 +190,15 @@ derivative respectively.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">q_ddot</span> <span class="o">=</span> <span class="n">path</span><span class="p">(</span><span class="n">s_sampled</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="implement-your-own-interpolator">
+</section>
+<section id="implement-your-own-interpolator">
 <h3>Implement your own Interpolator<a class="headerlink" href="#implement-your-own-interpolator" title="Permalink to this headline">¶</a></h3>
 <p>TOPP-RA can handle custom Interpolators easily, as long as it conforms
 to the abstract interface of
 <a class="reference internal" href="python_api.html#toppra.interpolator.AbstractGeometricPath" title="toppra.interpolator.AbstractGeometricPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">toppra.interpolator.AbstractGeometricPath</span></code></a>.</p>
-</div>
-</div>
-<div class="section" id="retime-geometric-paths-with-parametrization">
+</section>
+</section>
+<section id="retime-geometric-paths-with-parametrization">
 <h2>Retime geometric paths with parametrization<a class="headerlink" href="#retime-geometric-paths-with-parametrization" title="Permalink to this headline">¶</a></h2>
 <p>The parametrization step, given a fixed time-parametrization
 <span class="math notranslate nohighlight">\(s(t)\)</span> and a geometric path <span class="math notranslate nohighlight">\(\mathbf{p}(s)\)</span>, is defined
@@ -231,17 +234,19 @@ can be used with <code class="xref py py-class docutils literal notranslate"><sp
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">path_new</span><span class="o">.</span><span class="n">plot_parametrization</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="figure align-default" id="id2">
+<figure class="align-default" id="id2">
 <img alt="_images/interpolate_param.png" src="_images/interpolate_param.png"/>
-<p class="caption"><span class="caption-text">Parametrization.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Parametrization.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">path_new</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 <span class="go">array([0., 0.])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">path_new</span><span class="o">.</span><span class="n">path_interval</span>
 <span class="go">array([0.        , 1.91666667])</span>
 </pre></div>
 </div>
-<div class="section" id="trapezoidal-reparametrization">
+<section id="trapezoidal-reparametrization">
 <h3>Trapezoidal Reparametrization<a class="headerlink" href="#trapezoidal-reparametrization" title="Permalink to this headline">¶</a></h3>
 <p>It’s common in automation and robotics to use trapezoidal velocity
 profile, or S-curve to make a movement more <em>graceful</em>. This can be
@@ -254,16 +259,18 @@ easily implemented using the constant acceleration reparametrizer
 <span class="gp">&gt;&gt;&gt; </span><span class="n">path_new</span><span class="o">.</span><span class="n">plot_parametrization</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="figure align-default" id="id3">
+<figure class="align-default" id="id3">
 <img alt="_images/trapezoidal.png" src="_images/trapezoidal.png"/>
-<p class="caption"><span class="caption-text">Parametrization.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Parametrization.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>TODO: It will be useful to have a collection of generators that
 generate these velocity profiles, based on the desired maximum
 velocity, duration, et cetera.</p>
-</div>
-</div>
-<div class="section" id="time-optimal-retime-with-kinematics-constraints">
+</section>
+</section>
+<section id="time-optimal-retime-with-kinematics-constraints">
 <h2>Time-optimal retime with kinematics constraints<a class="headerlink" href="#time-optimal-retime-with-kinematics-constraints" title="Permalink to this headline">¶</a></h2>
 <p>The <cite>toppra</cite> algorithm returns the velocity profile, or the
 time-parametrization profile that is optimal. The resulting trajectory
@@ -297,12 +304,14 @@ path as below for a 2-dof robot.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">path_new</span><span class="o">.</span><span class="n">plot_parametrization</span><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="figure align-default" id="id4">
+<figure class="align-default" id="id4">
 <img alt="_images/retime.png" src="_images/retime.png"/>
-<p class="caption"><span class="caption-text">Parametrization.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
-</div>
-</div>
-</div>
+<figcaption>
+<p><span class="caption-text">Parametrization.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
 
       </article>
       <footer>
@@ -362,13 +371,13 @@ path as below for a 2-dof robot.</p>
       
     </aside>
   </main>
-</div>
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/scripts/main.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    <script src="_static/scripts/main.js?digest=e931d09b2a40c1bb82b542effe772014573baf67"></script></body>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
+    </body>
 </html>

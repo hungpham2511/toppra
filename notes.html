@@ -2,13 +2,18 @@
 <html class="no-js">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Examples gallery" href="auto_examples/index.html" /><link rel="prev" title="Installation" href="installation.html" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Examples gallery" href="auto_examples/index.html" /><link rel="prev" title="Installation" href="installation.html" />
 
-    <meta name="generator" content="sphinx-3.5.4, furo 2021.04.11.beta34"/>
+    <meta name="generator" content="sphinx-4.1.1, furo 2021.07.05.beta38"/>
         <title>User guide - toppra documentation</title>
-      <link rel="stylesheet" href="_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
-    <link rel="stylesheet" href="_static/pygments.css">
-    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="_static/pygments_dark.css">
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css" />
     
 
 
@@ -37,11 +42,7 @@
   --color-code-foreground: #d0d0d0;
   
   }
-</style><link rel="stylesheet" type="text/css" href="_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="_static/gallery-rendered-html.css" />
-    <link rel="stylesheet" href="_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
+</style><link media="(prefers-color-scheme: dark)" rel="stylesheet" href="_static/pygments_dark.css"></head>
   <body dir="">
     
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
@@ -138,29 +139,27 @@
         <label class="toc-overlay-icon toc-content-icon" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
-        <div class="section" id="user-guide">
+        <section id="user-guide">
 <span id="notes"></span><h1>User guide<a class="headerlink" href="#user-guide" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="configure-logging">
+<section id="configure-logging">
 <h2>Configure logging<a class="headerlink" href="#configure-logging" title="Permalink to this headline">¶</a></h2>
 <p>By default, <cite>toppra</cite> does not configure any of the <cite>toppra…</cite>
 loggers. Thus no log messages will be printed by default. A simple
 logger that only print to the console can be setup easily.</p>
-<div class="highlight-python notranslate"><div class="table-wrapper"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">toppra</span> <span class="k">as</span> <span class="nn">ta</span>
-<span class="n">ta</span><span class="o">.</span><span class="n">setup_logging</span><span class="p">(</span><span class="s2">"INFO"</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="kn">import</span> <span class="nn">toppra</span> <span class="k">as</span> <span class="nn">ta</span>
+<span class="linenos">2</span><span class="n">ta</span><span class="o">.</span><span class="n">setup_logging</span><span class="p">(</span><span class="s2">"INFO"</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div></div>
 </div>
-<div class="section" id="how-many-grid-points-should-be-used">
+</section>
+<section id="how-many-grid-points-should-be-used">
 <h2>How many grid-points should be used?<a class="headerlink" href="#how-many-grid-points-should-be-used" title="Permalink to this headline">¶</a></h2>
 <p>A very important parameter in solving path parameterization instances
 with <cite>toppra</cite> is the number of the gridpoints. Below is how to create
 an instance with 1000 uniform gridpoints.</p>
-<div class="highlight-python notranslate"><div class="table-wrapper"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">gridpoints</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>  <span class="c1"># 1000 points</span>
-<span class="n">instance</span> <span class="o">=</span> <span class="n">algo</span><span class="o">.</span><span class="n">TOPPRA</span><span class="p">([</span><span class="n">pc_vel</span><span class="p">,</span> <span class="n">pc_acc</span><span class="p">],</span> <span class="n">path</span><span class="p">,</span> <span class="n">gridpoints</span><span class="o">=</span><span class="n">gridpoints</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">gridpoints</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>  <span class="c1"># 1000 points</span>
+<span class="linenos">2</span><span class="n">instance</span> <span class="o">=</span> <span class="n">algo</span><span class="o">.</span><span class="n">TOPPRA</span><span class="p">([</span><span class="n">pc_vel</span><span class="p">,</span> <span class="n">pc_acc</span><span class="p">],</span> <span class="n">path</span><span class="p">,</span> <span class="n">gridpoints</span><span class="o">=</span><span class="n">gridpoints</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div></div>
+</div>
 <p>Generally, more gridpoints give you better solution quality, but also
 increase solution time. Often the increase in solution time is linear,
 that is if it takes 5ms to solve an instance with 100 gridpoints, then
@@ -170,51 +169,46 @@ has 200 gridpoints.</p>
 least a few times the number of waypoints in the given path. This is
 not a hard rule, depending on whether the waypoints naturally form a
 smooth curve or whether they vary wildly.</p>
-</div>
-<div class="section" id="automatic-grid-points-selection">
+</section>
+<section id="automatic-grid-points-selection">
 <h2>Automatic grid-points selection<a class="headerlink" href="#automatic-grid-points-selection" title="Permalink to this headline">¶</a></h2>
 <p>By default, <cite>toppra</cite> (python) will try to determine the best set of
 gridpoints by doing a bisection search until a threshold level is
 reached. This is the behavior if the gridpoints are not given.</p>
-<div class="highlight-python notranslate"><div class="table-wrapper"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">instance</span> <span class="o">=</span> <span class="n">algo</span><span class="o">.</span><span class="n">TOPPRA</span><span class="p">([</span><span class="n">pc_vel</span><span class="p">,</span> <span class="n">pc_acc</span><span class="p">],</span> <span class="n">path</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">instance</span> <span class="o">=</span> <span class="n">algo</span><span class="o">.</span><span class="n">TOPPRA</span><span class="p">([</span><span class="n">pc_vel</span><span class="p">,</span> <span class="n">pc_acc</span><span class="p">],</span> <span class="n">path</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div></div>
+</div>
 <p>If there is a minimum requirement on the path quality in term of the
 number of gridpoints, use the keyword arguments
 <cite>gridpt_max_err_threshold</cite> and <cite>gridpt_min_nb_points</cite>. The default
 values are respectively <cite>1e-3</cite> and <cite>100</cite> points. To require the
 algorithm to select at least 500 points:</p>
-<div class="highlight-python notranslate"><div class="table-wrapper"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">instance</span> <span class="o">=</span> <span class="n">algo</span><span class="o">.</span><span class="n">TOPPRA</span><span class="p">([</span><span class="n">pc_vel</span><span class="p">,</span> <span class="n">pc_acc</span><span class="p">],</span> <span class="n">path</span><span class="p">,</span>
-   <span class="n">gridpt_max_err_threshold</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
-   <span class="n">gridpt_min_nb_points</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">instance</span> <span class="o">=</span> <span class="n">algo</span><span class="o">.</span><span class="n">TOPPRA</span><span class="p">([</span><span class="n">pc_vel</span><span class="p">,</span> <span class="n">pc_acc</span><span class="p">],</span> <span class="n">path</span><span class="p">,</span>
+<span class="linenos">2</span>   <span class="n">gridpt_max_err_threshold</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
+<span class="linenos">3</span>   <span class="n">gridpt_min_nb_points</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div></div>
 </div>
-<div class="section" id="using-different-parametrizers">
+</section>
+<section id="using-different-parametrizers">
 <h2>Using different parametrizers<a class="headerlink" href="#using-different-parametrizers" title="Permalink to this headline">¶</a></h2>
 <p>After performing the path parametrization step, i.e., computing the
 velocity profile, there are multiple ways that one could use to find
 the final trajectory. This can be set using the <cite>parametrizer</cite> keyword
 argument as in the below example</p>
-<div class="highlight-python notranslate"><div class="table-wrapper"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="n">instance</span> <span class="o">=</span> <span class="n">algo</span><span class="o">.</span><span class="n">TOPPRA</span><span class="p">(</span>
-    <span class="p">[</span><span class="n">pc_vel</span><span class="p">,</span> <span class="n">pc_acc</span><span class="p">],</span> <span class="n">path</span><span class="p">,</span>
-    <span class="n">parametrizer</span><span class="o">=</span><span class="s2">"ParametrizeConstAccel"</span><span class="p">,</span>
-<span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">instance</span> <span class="o">=</span> <span class="n">algo</span><span class="o">.</span><span class="n">TOPPRA</span><span class="p">(</span>
+<span class="linenos">2</span>    <span class="p">[</span><span class="n">pc_vel</span><span class="p">,</span> <span class="n">pc_acc</span><span class="p">],</span> <span class="n">path</span><span class="p">,</span>
+<span class="linenos">3</span>    <span class="n">parametrizer</span><span class="o">=</span><span class="s2">"ParametrizeConstAccel"</span><span class="p">,</span>
+<span class="linenos">4</span><span class="p">)</span>
 </pre></div>
-</td></tr></table></div></div>
+</div>
 <p>This uses the constant acceleration parametrizer. See the related
 docstring for more details. The default parametrizer is
 <cite>ParametrizeSpline</cite>, which will be used if the keyword argument is not
 set. This parametrizer will try to fit a spline on the original
 waypoints using the joint velocities calculated from the velocity
 profile.</p>
-</div>
-<div class="section" id="minimum-requirement-on-path-smoothness">
+</section>
+<section id="minimum-requirement-on-path-smoothness">
 <h2>Minimum requirement on path smoothness<a class="headerlink" href="#minimum-requirement-on-path-smoothness" title="Permalink to this headline">¶</a></h2>
 <p>TOPPRA requires the input path to be sufficiently smooth to work
 properly. An example of a noisy path that will be very difficult to
@@ -224,8 +218,8 @@ work with can be seen below:</p>
 it can lead to large fluctuation if the waypoints change rapidly. In
 this case, it is recommended to smooth the waypoints prior to using
 toppra using for example <cite>scipy.interpolation</cite>.</p>
-</div>
-<div class="section" id="derivation-of-kinematical-quantities">
+</section>
+<section id="derivation-of-kinematical-quantities">
 <span id="derivationkinematics"></span><h2>Derivation of kinematical quantities<a class="headerlink" href="#derivation-of-kinematical-quantities" title="Permalink to this headline">¶</a></h2>
 <p>In <cite>toppra</cite> we deal with geometric paths, which are mathematically
 functions <span class="math notranslate nohighlight">\(\mathbf p(s)\)</span>. Here <span class="math notranslate nohighlight">\(s\)</span> is the path position
@@ -238,8 +232,8 @@ represented by a child class inherited from the abstract
 \[\begin{split}\mathbf q(t) &amp;= \mathbf p(s(t)) \\
 \dot{\mathbf p}(t) &amp;= \mathbf p'(s) \dot s(t) \\
 \ddot{\mathbf p}(t) &amp;= \mathbf p'(s) \ddot s(t) + \mathbf p''(s) \dot s(t)^2\end{split}\]</div></div>
-</div>
-</div>
+</section>
+</section>
 
       </article>
       <footer>
@@ -313,13 +307,13 @@ represented by a child class inherited from the abstract
       
     </aside>
   </main>
-</div>
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/scripts/main.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
-    <script src="_static/scripts/main.js?digest=e931d09b2a40c1bb82b542effe772014573baf67"></script></body>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
+    </body>
 </html>

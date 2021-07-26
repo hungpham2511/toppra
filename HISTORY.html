@@ -2,13 +2,18 @@
 <html class="no-js">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Python API reference" href="python_api.html" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="prev" title="Python API reference" href="python_api.html" />
 
-    <meta name="generator" content="sphinx-3.5.4, furo 2021.04.11.beta34"/>
+    <meta name="generator" content="sphinx-4.1.1, furo 2021.07.05.beta38"/>
         <title>Changelog - toppra documentation</title>
-      <link rel="stylesheet" href="_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
-    <link rel="stylesheet" href="_static/pygments.css">
-    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="_static/pygments_dark.css">
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css" />
     
 
 
@@ -37,11 +42,7 @@
   --color-code-foreground: #d0d0d0;
   
   }
-</style><link rel="stylesheet" type="text/css" href="_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="_static/gallery-rendered-html.css" />
-    <link rel="stylesheet" href="_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
+</style><link media="(prefers-color-scheme: dark)" rel="stylesheet" href="_static/pygments_dark.css"></head>
   <body dir="">
     
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
@@ -138,24 +139,27 @@
         <label class="toc-overlay-icon toc-content-icon" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
-        <div class="section" id="changelog">
+        <section id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="unreleased">
+<section id="unreleased">
 <h2>Unreleased<a class="headerlink" href="#unreleased" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="may-06-2021">
+<ul class="simple">
+<li><p>[cpp] Replace for loop in piecewise poly path to find index by std::lower_bound.</p></li>
+</ul>
+</section>
+<section id="may-06-2021">
 <h2>0.4.1 (May 06 2021)<a class="headerlink" href="#may-06-2021" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="added">
+<section id="added">
 <h3>Added<a class="headerlink" href="#added" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>[python] Fixed build error for numpy versions &lt;= 1.20</p></li>
 <li><p>[cpp] Implement spline parametrizer</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="mar-16-2021">
+</section>
+</section>
+<section id="mar-16-2021">
 <h2>0.4.0 (Mar 16 2021)<a class="headerlink" href="#mar-16-2021" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id1">
+<section id="id1">
 <h3>Added<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>[python] Fixed build error when cython and numpy were not pre-installed</p></li>
@@ -171,23 +175,23 @@
 <li><p>[cpp] Enhance Seidel solver numerical behaviour.</p></li>
 <li><p>[cpp] [#161] Enable to construct spline from 1st and 2nd order derivatives at the curve endpoints</p></li>
 </ul>
-</div>
-<div class="section" id="changed">
+</section>
+<section id="changed">
 <h3>Changed<a class="headerlink" href="#changed" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>[cpp] [#153] Fix variable mismatch in constraint::CartesianVelocityNorm</p></li>
 </ul>
-</div>
-<div class="section" id="improved-documentation">
+</section>
+<section id="improved-documentation">
 <h3>Improved Documentation<a class="headerlink" href="#improved-documentation" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Switch to furo theme for better readability.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="aug-23-2020">
+</section>
+</section>
+<section id="aug-23-2020">
 <h2>0.3.1 (Aug 23 2020)<a class="headerlink" href="#aug-23-2020" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id2">
+<section id="id2">
 <h3>Added<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>[docs] Use example gallery to show examples.</p></li>
@@ -198,8 +202,8 @@
 <li><p>[python] <a class="reference external" href="https://github.com/hungpham2511/toppra/pull/117">#117</a> Provide an option to allow Python 2.7 usage</p></li>
 <li><p>[python] <a class="reference external" href="https://github.com/hungpham2511/toppra/pull/117">#117</a> Post-processing is now done via parametrizer classes.</p></li>
 </ul>
-</div>
-<div class="section" id="id3">
+</section>
+<section id="id3">
 <h3>Changed<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>[python]Add some type annotations to parameterizer.py</p></li>
@@ -212,20 +216,20 @@
 <li><p>[ci] <a class="reference external" href="https://github.com/hungpham2511/toppra/pull/117">#117</a> Improve CI pipeline to test on several python versions</p></li>
 <li><p>[ci] [#139] Automate publish to PyPI server</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="may-3-2020">
+</section>
+</section>
+<section id="may-3-2020">
 <h2>0.3.0 (May 3 2020)<a class="headerlink" href="#may-3-2020" title="Permalink to this headline">¶</a></h2>
 <p>Major release! Implement TOPPRA in C++ and several improvements to Python codebase.</p>
-<div class="section" id="id4">
+<section id="id4">
 <h3>Added<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>[cpp] Add solver wrapper based on GLPK.</p></li>
 <li><p>[cpp] Initial cpp TOPPRA implementation: compute parametrization, feasible sets, qpOASES solver wrapper.</p></li>
 <li><p>[python] Implement a new trajectory class for specified velocities.</p></li>
 </ul>
-</div>
-<div class="section" id="id5">
+</section>
+<section id="id5">
 <h3>Changed<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>[python] Improve documentation for <code class="docutils literal notranslate"><span class="pre">toppra.constraint</span></code></p></li>
@@ -237,27 +241,27 @@
 <li><p>[python] <a class="reference external" href="https://github.com/hungpham2511/toppra/pull/78">#78</a> Improve documentation structure.</p></li>
 <li><p>[python] <a class="reference external" href="https://github.com/hungpham2511/toppra/pull/79">#79</a> Improve documentation structure.</p></li>
 </ul>
-</div>
-<div class="section" id="removed">
+</section>
+<section id="removed">
 <h3>Removed<a class="headerlink" href="#removed" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Dropping support for Python2.7. Adding type annotation compatible to Python 3.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="jan-25-2020">
+</section>
+</section>
+<section id="jan-25-2020">
 <h2>0.2.3 (Jan 25 2020)<a class="headerlink" href="#jan-25-2020" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Auto-gridpoints feature (#73)</p></li>
 </ul>
-</div>
-<div class="section" id="id6">
+</section>
+<section id="id6">
 <h2>&lt;0.2.3<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Many commits and features.</p></li>
 </ul>
-</div>
-</div>
+</section>
+</section>
 
       </article>
       <footer>
@@ -341,11 +345,11 @@
       
     </aside>
   </main>
-</div>
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/scripts/main.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="_static/scripts/main.js?digest=e931d09b2a40c1bb82b542effe772014573baf67"></script></body>
+    </body>
 </html>

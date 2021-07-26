@@ -2,13 +2,18 @@
 <html class="no-js">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="User guide" href="notes.html" /><link rel="prev" title="toppra Path-parameterization for robots" href="index.html" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="User guide" href="notes.html" /><link rel="prev" title="toppra Path-parameterization for robots" href="index.html" />
 
-    <meta name="generator" content="sphinx-3.5.4, furo 2021.04.11.beta34"/>
+    <meta name="generator" content="sphinx-4.1.1, furo 2021.07.05.beta38"/>
         <title>Installation - toppra documentation</title>
-      <link rel="stylesheet" href="_static/styles/furo.css?digest=59ab60ac09ea94ccfe6deddff6d715cce948a6fc">
-    <link rel="stylesheet" href="_static/pygments.css">
-    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="_static/pygments_dark.css">
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css" />
     
 
 
@@ -37,11 +42,7 @@
   --color-code-foreground: #d0d0d0;
   
   }
-</style><link rel="stylesheet" type="text/css" href="_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="_static/gallery-rendered-html.css" />
-    <link rel="stylesheet" href="_static/styles/furo-extensions.css?digest=d391b54134226e4196576da3bdb6dddb7e05ba2b"></head>
+</style><link media="(prefers-color-scheme: dark)" rel="stylesheet" href="_static/pygments_dark.css"></head>
   <body dir="">
     
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
@@ -138,11 +139,11 @@
         <label class="toc-overlay-icon toc-content-icon" for="__toc">
           <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
         </label>
-        <div class="section" id="installation">
+        <section id="installation">
 <span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="installing-python-api">
+<section id="installing-python-api">
 <h2>Installing Python API<a class="headerlink" href="#installing-python-api" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="basic-installation">
+<section id="basic-installation">
 <h3>Basic installation<a class="headerlink" href="#basic-installation" title="Permalink to this headline">¶</a></h3>
 <p>Run the below command to run the stable version of the Python API</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install git+https://github.com/hungpham2511/toppra
@@ -156,8 +157,8 @@
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python examples/plot_kinematics.py
 </pre></div>
 </div>
-</div>
-<div class="section" id="installing-other-solver-backends">
+</section>
+<section id="installing-other-solver-backends">
 <h3>Installing other solver backends<a class="headerlink" href="#installing-other-solver-backends" title="Permalink to this headline">¶</a></h3>
 <p>The default installation comes with an implementation of the seidel LP
 solver, specialized for parametrization problem. Other backends are
@@ -171,14 +172,14 @@ extra requirements:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install .<span class="o">[</span>dev<span class="o">]</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="installing-c-api">
+</section>
+</section>
+<section id="installing-c-api">
 <h2>Installing C++ API<a class="headerlink" href="#installing-c-api" title="Permalink to this headline">¶</a></h2>
 <p>See <a class="reference external" href="https://github.com/hungpham2511/toppra/blob/develop/cpp/README.md">cpp/README.md</a>
 for more details.</p>
-</div>
-<div class="section" id="building-docs">
+</section>
+<section id="building-docs">
 <h2>Building docs<a class="headerlink" href="#building-docs" title="Permalink to this headline">¶</a></h2>
 <p>The latest documentation is available at
 <a class="reference external" href="https://hungpham2511.github.io/toppra">https://hungpham2511.github.io/toppra</a>.</p>
@@ -190,8 +191,8 @@ make livehtml
 </pre></div>
 </div>
 <p>The C++ API has its own doxygen-based API.</p>
-</div>
-<div class="section" id="testing">
+</section>
+<section id="testing">
 <h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
 <p>The Python API test suites use <code class="code docutils literal notranslate"><span class="pre">pytest</span></code> for running unittests,
 you will need to install the <cite>dev</cite> extra (See above) and run <cite>pytest</cite>
@@ -204,8 +205,8 @@ pytest -v
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>./tests/all_tests
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
       </article>
       <footer>
@@ -281,11 +282,11 @@ pytest -v
       
     </aside>
   </main>
-</div>
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/scripts/main.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="_static/scripts/main.js?digest=e931d09b2a40c1bb82b542effe772014573baf67"></script></body>
+    </body>
 </html>
