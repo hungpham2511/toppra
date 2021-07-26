@@ -144,20 +144,15 @@ Vectors PiecewisePolyPath::eval(const Vector &positions, int order) const {
 }
 
 size_t PiecewisePolyPath::findSegmentIndex(value_type pos) const {
-  size_t seg_index = -1;
-  for (size_t i = 0; i < m_coefficients.size(); i++) {
-    if (m_breakpoints[i] <= pos && pos <= m_breakpoints[i + 1]) {
-      seg_index = i;
-      break;
-    }
-  }
-  if (seg_index == -1) {
+  if (pos > m_breakpoints[m_breakpoints.size()-1] || pos < m_breakpoints[0]) {
     std::ostringstream oss;
     oss << "Position " << pos << " is outside of range [ " << m_breakpoints[0]
       << ", " << m_breakpoints[m_breakpoints.size()-1] << ']';
     throw std::runtime_error(oss.str());
   }
-  return seg_index;
+  auto it = std::upper_bound(m_breakpoints.begin(), m_breakpoints.end(), pos);
+  auto idx = std::distance(m_breakpoints.begin(), it)-1;
+  return std::min(static_cast<size_t>(std::max(idx, long{0})), m_coefficients.size() - 1);
 }
 
 void PiecewisePolyPath::checkInputArgs() {
