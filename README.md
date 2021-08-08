@@ -44,7 +44,7 @@ your proposal!
 
 `toppra` was originally developed by [Hung
 Pham](https://hungpham2511.github.com/) (Eureka Robotics, former CRI
-Group) and [Phạm Quang Cường](https://personal.ntu.edu.sg/cuong/)
+Group) and [Phạm Quang Cưong](https://personal.ntu.edu.sg/cuong/)
 (Eureka Robotics, CRI Group) with major contributions from talented
 contributors:
 - [Joseph Mirabel](https://github.com/jmirabel) (C++ API)
@@ -58,7 +58,7 @@ The development is also generously supported by [Eureka Robotics](https://eureka
 # Citing toppra
 If you use this library for your research, we encourage you to 
 
-1. reference the accompanying paper [«A new approach to Time-Optimal Path Parameterization based on Reachability Analysis»](https://www.researchgate.net/publication/318671280_A_New_Approach_to_Time-Optimal_Path_Parameterization_Based_on_Reachability_Analysis),
-   *IEEE Transactions on Robotics*, vol. 34(3), pp. 645–659, 2018.
+1. reference the accompanying paper [A new approach to Time-Optimal Path Parameterization based on Reachability Analysis](https://www.researchgate.net/publication/318671280_A_New_Approach_to_Time-Optimal_Path_Parameterization_Based_on_Reachability_Analysis),
+   *IEEE Transactions on Robotics*, vol. 34(3), pp. 645-659, 2018.
 2. put a star on this repository.
 
