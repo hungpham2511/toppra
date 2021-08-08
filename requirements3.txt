@@ -1,10 +1,17 @@
 PyYAML<=5.3.1
 msgpack<=1.0.1
+
+# Build
+numpy
+cython
+
+# misc
+invoke
+strip_hints
 ipython
 ipdb
-numpy
 
-# dev
+# development and testings
 cvxopt
 cvxpy
 pandas
@@ -14,3 +21,5 @@ pytest
 pylint
 invoke
 mypy
+pylint
+
