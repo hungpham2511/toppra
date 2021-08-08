@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 
 project(toppra
-  VERSION 0.4.1
+  VERSION 0.4.2
   # Disable because not available in CMake 3.5
   #DESCRIPTION "Library computing the time-optimal path parameterization."
   LANGUAGES CXX)
