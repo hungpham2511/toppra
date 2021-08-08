@@ -26,7 +26,13 @@ given constraints can be found.
 **Documentation and tutorials** are available
 [here](https://hungpham2511.github.io/toppra/index.html).
 
-To install from source for development,
+You can install the package with pip:
+
+``` shell
+pip install toppra
+```
+
+To install from source for development:
 
 ``` shell
 pip install -r requirement3.txt
