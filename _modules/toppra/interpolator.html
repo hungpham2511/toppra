@@ -374,17 +374,17 @@
         <span class="sd">"""Tuple[ndarray, ndarray] or None: The path's waypoints if applicable. None otherwise."""</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_positions</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss_sam</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]):</span>
         <span class="sd">"""Evaluate the path values."""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="n">path_positions</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="n">ss_sam</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">evald</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_positions</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="nf">evald</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss_sam</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]):</span>
         <span class="sd">"""Evaluate the path first-derivatives."""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="n">path_positions</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="n">ss_sam</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">evaldd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_positions</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="nf">evaldd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ss_sam</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]):</span>
         <span class="sd">"""Evaluate the path second-derivatives."""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="n">path_positions</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="n">ss_sam</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="RaveTrajectoryWrapper"><a class="viewcode-back" href="../../python_api.html#toppra.RaveTrajectoryWrapper">[docs]</a><span class="k">class</span> <span class="nc">RaveTrajectoryWrapper</span><span class="p">(</span><span class="n">AbstractGeometricPath</span><span class="p">):</span>
