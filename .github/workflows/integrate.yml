@@ -5,7 +5,7 @@ on: [push]
 
 jobs:
 
-  build:
+  test:
 
     runs-on: ubuntu-latest
     strategy:
@@ -26,6 +26,21 @@ jobs:
 
       - name: Test with tox
         run: tox
+
+  build-wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v2
+        name: Install Python
+        with:
+          python-version: '3.8'
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.1.1
@@ -58,10 +73,9 @@ jobs:
             dist
 
   release:
-    needs: ["build-sdist", "build"]
+    needs: ["build-sdist", "build-wheels", "test"]
     runs-on: ubuntu-latest
     environment: PYPI_PASSWORD
-    # if: github.ref == 'refs/heads/fix-ci'
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     steps:
       - run: echo "Deploying to pypi on branch $GITHUB_REF"
