@@ -26,7 +26,12 @@ given constraints can be found.
 **Documentation and tutorials** are available
 [here](https://hungpham2511.github.io/toppra/index.html).
 
-**Development roadmap** Please check our the Issues tracker.
+To install from source for development,
+
+``` shell
+pip install -r requirement3.txt
+pip install -e .
+```
 
 # Support
 

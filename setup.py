@@ -42,6 +42,7 @@ PACKAGES = ["toppra",
 
 ext_1 = Extension(SRC_DIR + "._CythonUtils",
                   [SRC_DIR + "/_CythonUtils.pyx"],
+                  extra_compile_args=['-O1'],
                   libraries=[],
                   include_dirs=[np.get_include()])
 
@@ -82,32 +83,36 @@ class install2(install):
 
 
 if __name__ == "__main__":
-    setup(install_requires=REQUIRES,
-          # Dependencies installed when running `pip install .`
-          setup_requires=["numpy", "cython"],
-
-          # Dependencies installed when running `pip install -e .[dev]`
-          extras_require={
-              'dev': DEV_REQUIRES
-          },
-          packages=PACKAGES,
-          zip_safe=False,
-          name=NAME,
-          version=VERSION,
-          description=DESCR,
-          long_description=LONG_DESCRIPTION,
-          long_description_content_type='text/markdown',
-          author=AUTHOR,
-          author_email=EMAIL,
-          url=URL,
-          license=LICENSE,
+    setup(
+        # Dependencies installed when running `pip install .`
+        install_requires=REQUIRES,
+        setup_requires=["numpy", "cython"],
+        extras_require={
+            # Dependencies installed when running `pip install -e .[dev]`
+            
+            # NOTE: This is deprecated in favour of the simpler workflow
+            # of installing from requirements3.txt before installing
+            # this pkg.
+            'dev': DEV_REQUIRES  
+        },
+        packages=PACKAGES,
+        zip_safe=False,
+        name=NAME,
+        version=VERSION,
+        description=DESCR,
+        long_description=LONG_DESCRIPTION,
+        long_description_content_type='text/markdown',
+        author=AUTHOR,
+        author_email=EMAIL,
+        url=URL,
+        license=LICENSE,
 
           # This is used to build the Cython modules. Will be run
-          # automatically if not found by pip. Otherwise run
-          #
-          #      python setup.py build
-          #
-          # to trigger manually.
+        # automatically if not found by pip. Otherwise run
+        #
+        #      python setup.py build
+        #
+        # to trigger manually.
           cmdclass={"build_ext": build_ext, "install": install2},
-          ext_modules=cythonize(EXTENSIONS)
-          )
+        ext_modules=cythonize(EXTENSIONS)
+    )
