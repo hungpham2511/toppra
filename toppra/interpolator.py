@@ -178,17 +178,17 @@ class AbstractGeometricPath(object):
         """Tuple[ndarray, ndarray] or None: The path's waypoints if applicable. None otherwise."""
         return None
 
-    def eval(self, path_positions: Union[float, np.ndarray]):
+    def eval(self, ss_sam: Union[float, np.ndarray]):
         """Evaluate the path values."""
-        return self.__call__(path_positions, 0)
+        return self.__call__(ss_sam, 0)
 
-    def evald(self, path_positions: Union[float, np.ndarray]):
+    def evald(self, ss_sam: Union[float, np.ndarray]):
         """Evaluate the path first-derivatives."""
-        return self.__call__(path_positions, 1)
+        return self.__call__(ss_sam, 1)
 
-    def evaldd(self, path_positions: Union[float, np.ndarray]):
+    def evaldd(self, ss_sam: Union[float, np.ndarray]):
         """Evaluate the path second-derivatives."""
-        return self.__call__(path_positions, 2)
+        return self.__call__(ss_sam, 2)
 
 
 class RaveTrajectoryWrapper(AbstractGeometricPath):
