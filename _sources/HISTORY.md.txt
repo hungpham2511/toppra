@@ -1,7 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.4.2 (Aug 08 2021)
 - [cpp] Replace for loop in piecewise poly path to find index by std::lower_bound.
+
+
 ## 0.4.1 (May 06 2021)
 
 ### Added
