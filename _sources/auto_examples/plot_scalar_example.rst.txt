@@ -118,7 +118,7 @@ Setup the problem instance and solve it.
 
      INFO [algorithm.py : 104] No gridpoint specified. Automatically choose a gridpoint with 129 points
      INFO [algorithm.py : 191] Successfully parametrize path. Duration: 4.084, previously 1.000)
-     INFO [algorithm.py : 193] Finish parametrization in 0.006 secs
+     INFO [algorithm.py : 193] Finish parametrization in 0.007 secs
 
 
 
@@ -165,7 +165,7 @@ We can now visualize the result
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.443 seconds)
+   **Total running time of the script:** ( 0 minutes  0.409 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_scalar_example.py:
