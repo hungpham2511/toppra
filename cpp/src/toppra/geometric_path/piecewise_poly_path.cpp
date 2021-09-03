@@ -153,7 +153,7 @@ size_t PiecewisePolyPath::findSegmentIndex(value_type pos) const {
   }
   auto it = std::upper_bound(m_breakpoints.begin(), m_breakpoints.end(), pos);
   auto idx = std::distance(m_breakpoints.begin(), it)-1;
-  return std::min<size_t>(std::max<size_t>(idx, 0), m_coefficients.size() - 1);
+  return std::min<size_t>(std::max<size_t>(idx, decltype(idx)(0) ), m_coefficients.size() - 1);
 }
 
 void PiecewisePolyPath::checkInputArgs() {
