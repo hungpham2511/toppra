@@ -83,7 +83,7 @@ class PiecewisePolyPath : public GeometricPath {
   void checkInputArgs(const Vectors &positions, const Vector &times,
                       const std::array<BoundaryCond, 2> &bc_type);
   void computeDerivativesCoefficients();
-  const Matrix &getCoefficient(int seg_index, int order) const;
+  const Matrix &getCoefficient(size_t seg_index, int order) const;
   Matrices m_coefficients, m_coefficients_1, m_coefficients_2;
   std::vector<value_type> m_breakpoints;
   int m_degree;
