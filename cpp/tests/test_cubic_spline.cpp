@@ -1,6 +1,7 @@
 #include <toppra/geometric_path/piecewise_poly_path.hpp>
 #include <toppra/toppra.hpp>
 #include <iostream>
+#include <array>
 #include <algorithm>
 #include "gtest/gtest.h"
 #include "utils.hpp"

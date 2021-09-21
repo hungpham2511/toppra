@@ -1,5 +1,6 @@
 #include <toppra/parametrizer/spline.hpp>
 #include <toppra/geometric_path/piecewise_poly_path.hpp>
+#include <array>
 
 namespace toppra {
 

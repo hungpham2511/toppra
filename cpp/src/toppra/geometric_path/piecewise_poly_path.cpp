@@ -3,6 +3,7 @@
 #include <toppra/geometric_path/piecewise_poly_path.hpp>
 #include <toppra/toppra.hpp>
 #include <Eigen/Dense>
+#include <array>
 
 #ifdef TOPPRA_OPT_MSGPACK
 #include <msgpack.hpp>
@@ -13,7 +14,7 @@ namespace toppra {
 Matrix differentiateCoefficients(const Matrix &coefficients) {
   Matrix deriv(coefficients.rows(), coefficients.cols());
   deriv.setZero();
-  for (size_t i = 1; i < coefficients.rows(); i++) {
+  for (Eigen::Index i = 1; i < coefficients.rows(); i++) {
     deriv.row(i) = coefficients.row(i - 1) * (coefficients.rows() - i);
   }
   return deriv;
@@ -21,9 +22,9 @@ Matrix differentiateCoefficients(const Matrix &coefficients) {
 
 PiecewisePolyPath::PiecewisePolyPath(const Matrices & coefficients,
                                      std::vector<value_type> breakpoints)
-    : GeometricPath (coefficients[0].cols()),
+    : GeometricPath (int(coefficients[0].cols())),
       m_coefficients(coefficients), m_breakpoints(std::move(breakpoints)),
-      m_degree(coefficients[0].rows() - 1) {
+      m_degree(int(coefficients[0].rows()) - 1) {
 
   checkInputArgs();
   computeDerivativesCoefficients();
@@ -43,21 +44,21 @@ void PiecewisePolyPath::computeCubicSplineCoefficients(const Vectors &positions,
         const std::array<BoundaryCond, 2> &bc_type, Matrices &coefficients) {
     // h(i) = t(i+1) - t(i)
     Vector h (times.rows() - 1);
-    for (size_t i = 0; i < h.rows(); i++){
+    for (auto i = 0u; i < h.rows(); i++){
         h(i) = times(i + 1) - times(i);
     }
 
     // Construct the tri-diagonal matrix A based on spline continuity criteria
     Matrix A = Matrix::Zero(times.rows(), times.rows());
-    for (size_t i = 1; i < A.rows() - 1; i++) {
+    for (auto i = 1u; i < A.rows() - 1; i++) {
         A.row(i).segment(i - 1, 3) << h(i - 1), 2 * (h(i - 1) + h(i)), h(i);
     }
 
     // Construct B based on spline continuity criteria
     Vectors B (positions.at(0).rows());
-    for (size_t i = 0; i < B.size(); i++) {
+    for (auto i = 0u; i < B.size(); i++) {
         B[i].resize(times.rows());
-        for (size_t j = 1; j < A.rows() - 1; j++) {
+        for (auto j = 1u; j < A.rows() - 1; j++) {
             B[i](j) = 3 * (positions[j + 1](i) - positions[j](i)) / h(j) -
                       3 * (positions[j](i) - positions[j - 1](i)) / h(j - 1);
         }
@@ -66,20 +67,20 @@ void PiecewisePolyPath::computeCubicSplineCoefficients(const Vectors &positions,
     // Insert boundary conditions to A and B
     if (bc_type[0].order == 1) {
         A.row(0).segment(0, 2) << 2 * h(0), h(0);
-        for (size_t i = 0; i < B.size(); i++) {
+        for (auto i = 0u; i < B.size(); i++) {
             B[i](0) = 3 * (positions[1](i) - positions[0](i)) / h(0) - 3 * bc_type[0].values(i);
         }
     }
     else if (bc_type[0].order == 2) {
         A(0, 0) = 2;
-        for (size_t i = 0; i < B.size(); i++) {
+        for (auto i = 0u; i < B.size(); i++) {
             B[i](0) = bc_type[0].values(i);
         }
     }
 
     if (bc_type[1].order == 1) {
         A.row(A.rows() - 1).segment(A.cols() - 2, 2) << h(h.rows() - 1), 2 * h(h.rows() - 1);
-        for (size_t i = 0; i < B.size(); i++) {
+        for (auto i = 0u; i < B.size(); i++) {
             B[i](B[i].rows() - 1) =
                     3 * bc_type[1].values(i) -
                     3 * (positions[positions.size() - 1](i) - positions[positions.size() - 2](i)) / h(h.rows() - 1);
@@ -87,22 +88,22 @@ void PiecewisePolyPath::computeCubicSplineCoefficients(const Vectors &positions,
     }
     else if (bc_type[1].order == 2) {
         A(A.rows() - 1, A.cols() - 1) = 2;
-        for (size_t i = 0; i < B.size(); i++) {
+        for (auto i = 0u; i < B.size(); i++) {
             B[i](B[i].rows() - 1) = bc_type[1].values(i);
         }
     }
 
     // Solve AX = B
     Vectors X (positions[0].rows());
-    for (size_t i = 0; i < X.size(); i++) {
+    for (auto i = 0u; i < X.size(); i++) {
         X[i].resize(times.rows());
         X[i] = A.colPivHouseholderQr().solve(B[i]);
     }
 
     // Insert spline coefficients
-    for (size_t i = 0; i < coefficients.size() ; i++) {
+    for (auto i = 0u; i < coefficients.size() ; i++) {
         coefficients[i].resize(4, positions[0].rows());
-        for (size_t j = 0; j < coefficients[i].cols(); j++) {
+        for (auto j = 0u; j < coefficients[i].cols(); j++) {
             coefficients[i](0, j) = (X[j](i + 1) - X[j](i)) / (3 * h(i));
             coefficients[i](1, j) = X[j](i);
             coefficients[i](2, j) = (positions[i + 1](j) - positions[i](j)) / h(i) -
@@ -137,7 +138,7 @@ Vectors PiecewisePolyPath::eval(const Vector &positions, int order) const {
   assert(order < 3 && order >= 0);
   Vectors outputs;
   outputs.resize(positions.size());
-  for (size_t i = 0; i < positions.size(); i++) {
+  for (auto i = 0u; i < positions.size(); i++) {
     outputs[i] = eval_single(positions(i), order);
   }
   return outputs;
@@ -151,8 +152,10 @@ size_t PiecewisePolyPath::findSegmentIndex(value_type pos) const {
     throw std::runtime_error(oss.str());
   }
   auto it = std::upper_bound(m_breakpoints.begin(), m_breakpoints.end(), pos);
-  auto idx = std::distance(m_breakpoints.begin(), it)-1;
-  return std::min(static_cast<size_t>(std::max(idx, long{0})), m_coefficients.size() - 1);
+  auto idx = std::distance(m_breakpoints.begin(), it) - 1;
+  if(idx < 0)
+    return 0;
+  return std::min<size_t>(idx, m_coefficients.size() - 1);
 }
 
 void PiecewisePolyPath::checkInputArgs() {
@@ -183,7 +186,7 @@ void PiecewisePolyPath::checkInputArgs(const Vectors &positions, const Vector &t
         }
     }
     Vector dtimes (times.rows() - 1);
-    for (size_t i = 1; i < times.rows(); i++) {
+    for (auto i = 1u; i < times.rows(); i++) {
         dtimes(i - 1) = times(i) - times(i - 1);
         if (dtimes(i - 1) <= 0) {
             throw std::runtime_error("'times' must be a strictly increasing sequence.");
@@ -191,7 +194,7 @@ void PiecewisePolyPath::checkInputArgs(const Vectors &positions, const Vector &t
     }
 
     // Validate boundary conditions
-    int expected_deriv_size = positions[0].size();
+    size_t expected_deriv_size = positions[0].size();
     for (const BoundaryCond &bc: bc_type) {
         if (bc.order != 1 && bc.order != 2) {
             throw std::runtime_error("The specified derivative order must be 1 or 2.");
@@ -215,16 +218,16 @@ void PiecewisePolyPath::computeDerivativesCoefficients() {
   }
 }
 
-const Matrix &PiecewisePolyPath::getCoefficient(int seg_index, int order) const {
-  if (order == 0) {
-    return m_coefficients.at(seg_index);
-  } else if (order == 1) {
-    return m_coefficients_1.at(seg_index);
-  } else if (order == 2) {
-    return m_coefficients_2.at(seg_index);
-  } else {
-    return m_coefficients_2.at(seg_index);
+const Matrix &PiecewisePolyPath::getCoefficient(size_t seg_index, int order) const {
+  switch (order)
+  {
+    case 0: return m_coefficients.at(seg_index);
+    case 1: return m_coefficients_1.at(seg_index);
+    case 2: return m_coefficients_2.at(seg_index);
+    default: break;
   }
+
+  return m_coefficients_2.at(seg_index);
 }
 
 void PiecewisePolyPath::serialize(std::ostream &O) const {
@@ -293,7 +296,7 @@ void PiecewisePolyPath::initAsHermite(const Vectors &positions,
   assert(positions.size() == times.size());
   assert(velocities.size() == times.size());
   TOPPRA_LOG_DEBUG("Constructing new Hermite polynomial");
-  m_configSize = m_dof = positions[0].size();
+  m_configSize = m_dof = int(positions[0].size());
   m_degree = 3;  // cubic spline
   m_breakpoints = times;
   for (std::size_t i = 0; i < times.size() - 1; i++) {

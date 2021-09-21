@@ -1,7 +1,8 @@
 #ifndef TOPPRA_SOLVER_SEIDEL_HPP
 #define TOPPRA_SOLVER_SEIDEL_HPP
 
-#include <memory.h>
+#include <memory>
+#include <array>
 #include <toppra/solver.hpp>
 
 namespace toppra {
