@@ -5,15 +5,15 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Changelog" href="HISTORY.html" /><link rel="prev" title="Retime a path subject to robust kinematic constraints" href="auto_examples/plot_robust_kinematics.html" />
 
-    <meta name="generator" content="sphinx-4.1.2, furo 2021.07.31.beta41"/>
+    <meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
         <title>Python API reference - toppra documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=daa650a7760fac3eee23aa959745d2c866b74cb3" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="_static/gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="_static/gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="_static/gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=93475b62d1c3bc01323a0eefdc14a62d77b12690" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
     
     
 
@@ -36,9 +36,11 @@
   
     }
   }
-</style>
-    <link media="(prefers-color-scheme: dark)" rel="stylesheet" href="_static/pygments_dark.css"></head>
+</style></head>
   <body>
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
     
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
@@ -179,7 +181,7 @@
   </aside>
   <div class="main">
     <div class="content">
-      <article role="main">
+      <div class="article-container">
         <div class="content-icon-container">
           <div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
@@ -194,7 +196,8 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <section id="module-toppra.algorithm">
+        <article role="main">
+          <section id="module-toppra.algorithm">
 <span id="python-api-reference"></span><span id="module-ref"></span><h1>Python API reference<a class="headerlink" href="#module-toppra.algorithm" title="Permalink to this headline">¶</a></h1>
 <section id="parametrization-algorithms">
 <h2>Parametrization algorithms<a class="headerlink" href="#parametrization-algorithms" title="Permalink to this headline">¶</a></h2>
@@ -530,7 +533,7 @@ None If unable to parameterize.</p>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="toppra.algorithm.ParameterizationAlgorithm.constraints">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">constraints</span></span><em class="property"><span class="pre">:</span> <span class="pre">List[toppra.constraint.constraint.Constraint]</span></em><a class="headerlink" href="#toppra.algorithm.ParameterizationAlgorithm.constraints" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">constraints</span></span><em class="property"><span class="pre">:</span> <span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#toppra.constraint.Constraint" title="toppra.constraint.constraint.Constraint"><span class="pre">toppra.constraint.constraint.Constraint</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#toppra.algorithm.ParameterizationAlgorithm.constraints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constraints of interests.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -545,7 +548,7 @@ None If unable to parameterize.</p>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="toppra.algorithm.ParameterizationAlgorithm.problem_data">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">problem_data</span></span><em class="property"><span class="pre">:</span> <span class="pre">toppra.algorithm.algorithm.ParameterizationData</span></em><a class="headerlink" href="#toppra.algorithm.ParameterizationAlgorithm.problem_data" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">problem_data</span></span><em class="property"><span class="pre">:</span> <a class="reference internal" href="#toppra.algorithm.ParameterizationData" title="toppra.algorithm.algorithm.ParameterizationData"><span class="pre">toppra.algorithm.algorithm.ParameterizationData</span></a></em><a class="headerlink" href="#toppra.algorithm.ParameterizationAlgorithm.problem_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Data obtained when solving the path parametrization.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -781,7 +784,7 @@ degree-of-freedom, or (m,).</p>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="toppra.interpolator.AbstractGeometricPath.dof">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">dof</span></span><em class="property"><span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#toppra.interpolator.AbstractGeometricPath.dof" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">dof</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></em><a class="headerlink" href="#toppra.interpolator.AbstractGeometricPath.dof" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the degrees-of-freedom of the path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -1731,7 +1734,8 @@ variable.  Otherwise return a array that contains <cite>numpy.nan</cite>.</p>
 </section>
 </section>
 
-      </article>
+        </article>
+      </div>
       <footer>
         
         <div class="related-pages">
@@ -1758,13 +1762,11 @@ variable.  Otherwise return a array that contains <cite>numpy.nan</cite>.</p>
         </div>
 
         <div class="related-information">
-              Copyright &#169; 2020, Hung Pham
-            |
+              Copyright &#169; 2020, Hung Pham |
             Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
               and
               <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
-              <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
-            |
+              <a href="https://github.com/pradyunsg/furo">Furo theme</a>. |
             <a class="muted-link" href="_sources/python_api.rst.txt"
                rel="nofollow">
               Show Source
@@ -1842,6 +1844,6 @@ variable.  Otherwise return a array that contains <cite>numpy.nan</cite>.</p>
     <script src="_static/scripts/main.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "document", "processHtmlClass": "math|output_area"}}</script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     </body>
 </html>
