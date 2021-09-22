@@ -29,6 +29,8 @@ if(BUILD_WITH_GLPK)
 endif()
 
 add_library(toppra ${SOURCE_FILES})
+set_property(TARGET toppra PROPERTY POSITION_INDEPENDENT_CODE ON)
+
 FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/toppra)
 generate_export_header(toppra
   EXPORT_FILE_NAME toppra/export.hpp
