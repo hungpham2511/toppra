@@ -166,7 +166,7 @@ We can now visualize the result
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.568 seconds)
+   **Total running time of the script:** ( 0 minutes  0.599 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_scalar_example.py:
