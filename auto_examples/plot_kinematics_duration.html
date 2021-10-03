@@ -5,14 +5,14 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Retime a straight path" href="plot_straight_line.html" /><link rel="prev" title="Retime a path subject to kinematic constraints" href="plot_kinematics.html" />
 
-    <meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
+    <meta name="generator" content="sphinx-4.2.0, furo 2021.09.22"/>
         <title>Retime a path to a specific duration - toppra documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/gallery-rendered-html.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=150e365fa939648e89c22f6d7d13c72a1657915a" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
     
     
@@ -263,7 +263,7 @@ INFO [reachability_algorithm.py : 75] Select solver seidel
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span> INFO [desired_duration_algorithm.py : 158] Desired duration 60.000000 sec is achievable. Continue computing.
  INFO [algorithm.py : 191] Successfully parametrize path. Duration: 60.000, previously 1.000)
- INFO [algorithm.py : 193] Finish parametrization in 0.072 secs
+ INFO [algorithm.py : 193] Finish parametrization in 0.047 secs
 /home/circleci/repo/toppra/utils.py:23: DeprecationWarning: Call to deprecated function get_duration in module toppra.interpolator.
   warnings.warn(
 </pre></div>
@@ -275,8 +275,7 @@ INFO [reachability_algorithm.py : 75] Select solver seidel
 <span class="linenos">60</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<img alt="plot kinematics duration" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_kinematics_duration_001.png"/>
-<p>Compute the feasible sets and the controllable sets for viewing.
+<img alt="plot kinematics duration" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_kinematics_duration_001.png" srcset="../_images/sphx_glr_plot_kinematics_duration_001.png"/><p>Compute the feasible sets and the controllable sets for viewing.
 Note that these steps are not necessary.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos">65</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">X</span></a> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">compute_feasible_sets</span><span class="p">()</span>
 <span class="linenos">66</span> <a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">K</span></a> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">compute_controllable_sets</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
@@ -296,12 +295,11 @@ Note that these steps are not necessary.</p>
 <span class="linenos">80</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<img alt="Path-position path-velocity plot" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_kinematics_duration_002.png"/>
-<p class="sphx-glr-script-out">Out:</p>
+<img alt="Path-position path-velocity plot" class="sphx-glr-single-img" src="../_images/sphx_glr_plot_kinematics_duration_002.png" srcset="../_images/sphx_glr_plot_kinematics_duration_002.png"/><p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>INFO [desired_duration_algorithm.py : 158] Desired duration 60.000000 sec is achievable. Continue computing.
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.605 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.508 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-plot-kinematics-duration-py">
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/26fc9ac50a1c6ed5af7aa00bd8dfa0e6/plot_kinematics_duration.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">plot_kinematics_duration.py</span></code></a></p>

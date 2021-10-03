@@ -119,9 +119,10 @@ Retime a path subject to robust kinematic constraints
 
 
 
-.. image:: /auto_examples/images/sphx_glr_plot_robust_kinematics_001.png
-    :alt: Path-position path-velocity plot
-    :class: sphx-glr-single-img
+.. image-sg:: /auto_examples/images/sphx_glr_plot_robust_kinematics_001.png
+   :alt: Path-position path-velocity plot
+   :srcset: /auto_examples/images/sphx_glr_plot_robust_kinematics_001.png
+   :class: sphx-glr-single-img
 
 
 
@@ -142,9 +143,10 @@ Retime a path subject to robust kinematic constraints
 
 
 
-.. image:: /auto_examples/images/sphx_glr_plot_robust_kinematics_002.png
-    :alt: plot robust kinematics
-    :class: sphx-glr-single-img
+.. image-sg:: /auto_examples/images/sphx_glr_plot_robust_kinematics_002.png
+   :alt: plot robust kinematics
+   :srcset: /auto_examples/images/sphx_glr_plot_robust_kinematics_002.png
+   :class: sphx-glr-single-img
 
 
 .. rst-class:: sphx-glr-script-out
@@ -154,7 +156,7 @@ Retime a path subject to robust kinematic constraints
  .. code-block:: none
 
      INFO [algorithm.py : 191] Successfully parametrize path. Duration: 37.417, previously 1.000)
-     INFO [algorithm.py : 193] Finish parametrization in 2.333 secs
+     INFO [algorithm.py : 193] Finish parametrization in 2.155 secs
 
 
 
@@ -162,7 +164,7 @@ Retime a path subject to robust kinematic constraints
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  8.354 seconds)
+   **Total running time of the script:** ( 0 minutes  7.583 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_robust_kinematics.py:
