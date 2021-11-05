@@ -61,6 +61,13 @@ Vectors ConstAccel::eval_impl(const Vector& times, int order) const {
   Vector ss, vs, us;
   TOPPRA_LOG_DEBUG("eval_impl. order=" << order);
   bool ret = evalParams(times, ss, vs, us);
+  auto path_interval = m_path->pathInterval();
+  // Clamp all elements of ss to within the bounds of the path
+  for (std::size_t i = 0; i < ss.size(); i++) {
+    if (ss[i] > path_interval[1]) {
+      ss[i] = path_interval[1];
+    }
+  }
   assert(ret);
   switch (order) {
     case 0:

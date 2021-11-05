@@ -100,3 +100,30 @@ TEST_F(ParametrizeConstAccel, Correctness) {
     }
   }
 }
+
+TEST(ParametrizeConstAccelNoFixture, BoundsViolation) {
+    toppra::Vectors positions = {
+      toppra::Vector::Zero(1),
+      toppra::Vector::Zero(1)
+    };
+    toppra::Vectors velocities = {
+      toppra::Vector::Zero(1),
+      toppra::Vector::Zero(1)
+    };
+
+    double PATH_LEN = 25363210.115759313106536865234375;
+
+    toppra::Vector times = toppra::Vector::LinSpaced(2, 0, PATH_LEN);
+    auto std_times = std::vector<double>(times.data(), times.data() + times.size());
+
+    auto path = toppra::PiecewisePolyPath::constructHermite(positions, velocities, std_times);
+    auto ppath = std::make_shared<toppra::PiecewisePolyPath>(path);
+
+    toppra::Vector gridpoints = toppra::Vector::LinSpaced(10, 0, PATH_LEN);
+    toppra::Vector vsquared{10};
+    vsquared << 0, 0.1, 0.2, 0.3, 0.5, 0.5, 0.3, 0.2, 0.1, 0.0;
+    auto p = toppra::parametrizer::ConstAccel(ppath, gridpoints, vsquared);
+
+    auto bound = p.pathInterval();
+    auto qs = p.eval_single(bound[1]);
+}
