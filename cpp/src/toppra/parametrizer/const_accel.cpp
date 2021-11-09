@@ -61,13 +61,25 @@ Vectors ConstAccel::eval_impl(const Vector& times, int order) const {
   Vector ss, vs, us;
   TOPPRA_LOG_DEBUG("eval_impl. order=" << order);
   bool ret = evalParams(times, ss, vs, us);
-  auto path_interval = m_path->pathInterval();
-  // Clamp all elements of ss to within the bounds of the path
-  for (std::size_t i = 0; i < ss.size(); i++) {
-    if (ss[i] > path_interval[1]) {
-      ss[i] = path_interval[1];
+
+  auto interval = pathInterval_impl();
+  for (std::size_t i = 0; i < times.size(); ++i)
+  {
+    if ((times[i] < interval[0]) || (times[i] > interval[1]))
+    {
+      std::ostringstream oss;
+      oss << "Time " << times[i] << " is outside of range [ " << interval[0]
+        << ", " << interval[1] << ']';
+      throw std::runtime_error(oss.str());
     }
   }
+
+  // Even if the times are within the bounds of the parametrizer, numerical
+  // errors can still push our values outside the bounds of the path, so
+  // we clamp values of ss to the path interval
+  auto path_interval = m_path->pathInterval();
+  ss = ss.cwiseMax(path_interval[0]).cwiseMin(path_interval[1]);
+
   assert(ret);
   switch (order) {
     case 0:

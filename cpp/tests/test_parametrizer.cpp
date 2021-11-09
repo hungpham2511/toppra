@@ -125,5 +125,10 @@ TEST(ParametrizeConstAccelNoFixture, BoundsViolation) {
     auto p = toppra::parametrizer::ConstAccel(ppath, gridpoints, vsquared);
 
     auto bound = p.pathInterval();
-    auto qs = p.eval_single(bound[1]);
+
+    const double EPS = 1e-8;
+    EXPECT_NO_THROW(p.eval_single(bound[0]));
+    EXPECT_THROW(p.eval_single(bound[0] - EPS), std::runtime_error);
+    EXPECT_NO_THROW(p.eval_single(bound[1]));
+    EXPECT_THROW(p.eval_single(bound[1] + EPS), std::runtime_error);
 }
