@@ -111,7 +111,7 @@ TEST(ParametrizeConstAccelNoFixture, BoundsViolation) {
       toppra::Vector::Zero(1)
     };
 
-    double PATH_LEN = 25363210.115759313106536865234375;
+    double PATH_LEN = 3.51363644474459757560680;
 
     toppra::Vector times = toppra::Vector::LinSpaced(2, 0, PATH_LEN);
     auto std_times = std::vector<double>(times.data(), times.data() + times.size());
