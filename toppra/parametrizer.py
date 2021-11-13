@@ -91,7 +91,7 @@ class ParametrizeConstAccel(AbstractGeometricPath):
             out = (np.multiply(self._path(ss, 2), vs[:, np.newaxis] ** 2) +
                    np.multiply(self._path(ss, 1), us[:, np.newaxis]))
         else:
-            raise ToppraError("Order %d is not supported." % order)
+            raise ToppraError(f"Order {order} is not supported.")
         if scalar:
             return out[0]
         return out

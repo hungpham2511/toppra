@@ -5,8 +5,7 @@ on: [push]
 
 jobs:
 
-  test:
-
+  python:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -27,8 +26,78 @@ jobs:
       - name: Test with tox
         run: tox
 
+  cpp:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          # This is because of pinocchio version on apt
+          - python-version: 3.6
+            os: ubuntu-18.04
+          - python-version: 3.8
+            os: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dep
+        run: |
+          echo "deb [arch=amd64] http://robotpkg.openrobots.org/packages/debian/pub $(lsb_release -sc) robotpkg" \
+            | sudo tee /etc/apt/sources.list.d/robotpkg.list
+          curl http://robotpkg.openrobots.org/packages/debian/robotpkg.key \
+            | sudo apt-key add -
+
+          sudo apt update
+
+          PY_VER_LONG=${{ matrix.python-version }}
+          PY_VER="${PY_VER_LONG:0:1}${PY_VER_LONG:2:1}"
+          sudo apt install -y cmake \
+            clang-tidy \
+            libeigen3-dev \
+            robotpkg-pinocchio \
+            robotpkg-qpoases \
+            libglpk-dev \
+            robotpkg-py${PY_VER}-pinocchio \
+            robotpkg-py${PY_VER}-example-robot-data
+
+          cd ~/ && git clone https://github.com/pybind/pybind11
+          cd pybind11 && git checkout v2.5.0
+          mkdir build && cd build && cmake -DPYBIND11_TEST=false .. && sudo make install
+
+      - name: Build
+        run: |
+          export LD_LIBRARY_PATH=/opt/openrobots/lib:${LD_LIBRARY_PATH}
+          export CMAKE_PREFIX_PATH=/opt/openrobots:$CMAKE_PREFIX_PATH
+          mkdir -p cpp/build
+          cd cpp/build
+          cmake \
+            -DBUILD_WITH_PINOCCHIO=ON \
+            -DBUILD_WITH_qpOASES=ON \
+            -DBUILD_WITH_GLPK=ON \
+            -DPYTHON_BINDINGS=ON \
+            -DPYTHON_VERSION=${{ matrix.python-version }} \
+            -DBUILD_WITH_PINOCCHIO_PYTHON=true \
+            -DBoost_NO_BOOST_CMAKE=ON \
+          ..
+          make -j4
+      - name: Test
+        run: |
+          cd cpp/build
+          ./tests/all_tests
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install tox tox-gh-actions
+
+      - name: Test with tox
+        run: tox
+
   build-wheels:
-    name: Build wheels on ${{ matrix.os }}
+    name: Build wheels
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -73,7 +142,7 @@ jobs:
             dist
 
   release:
-    needs: ["build-sdist", "build-wheels", "test"]
+    needs: ["build-sdist", "build-wheels", "python", "cpp"]
     runs-on: ubuntu-latest
     environment: PYPI_PASSWORD
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
