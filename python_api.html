@@ -5,15 +5,15 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Changelog" href="HISTORY.html" /><link rel="prev" title="Retime a path subject to robust kinematic constraints" href="auto_examples/plot_robust_kinematics.html" />
 
-    <meta name="generator" content="sphinx-4.2.0, furo 2021.09.22"/>
+    <meta name="generator" content="sphinx-4.3.0, furo 2021.11.12.1"/>
         <title>Python API reference - toppra documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=150e365fa939648e89c22f6d7d13c72a1657915a" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=cb850144ff767e23c5b2a31c47cdfe5847ae013d" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=0af69da206d614734f649b27d4cdc2dd6c31f41d" />
     
     
 
@@ -205,7 +205,7 @@
 <h3>TOPPRA<a class="headerlink" href="#toppra" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="toppra.algorithm.TOPPRA">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">toppra.algorithm.</span></span><span class="sig-name descname"><span class="pre">TOPPRA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constraint_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gridpoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver_wrapper</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parametrizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/algorithm/reachabilitybased/time_optimal_algorithm.html#TOPPRA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.algorithm.TOPPRA" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">toppra.algorithm.</span></span><span class="sig-name descname"><span class="pre">TOPPRA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constraint_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gridpoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver_wrapper</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parametrizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/algorithm/reachabilitybased/time_optimal_algorithm.html#TOPPRA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.algorithm.TOPPRA" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">toppra.algorithm.reachabilitybased.reachability_algorithm.ReachabilityAlgorithm</span></code></p>
 <p>Time-Optimal Path Parameterization based on Reachability
 Analysis (TOPPRA).</p>
@@ -224,14 +224,14 @@ Analysis (TOPPRA).</p>
 and end points must agree with the geometric path’s
 <cite>path_interval</cite>. If omited a gridpoint will be automatically
 selected.</p></li>
-<li><p><strong>solver_wrapper</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – <p>Name of the solver wrapper to use. Possible value are:</p>
+<li><p><strong>solver_wrapper</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – <p>Name of the solver wrapper to use. Possible value are:</p>
 <ul>
 <li><p>’seidel’</p></li>
 <li><p>’hotqpoases’</p></li>
 </ul>
 <p>For more details see the solverwrappers documentation.</p>
 </p></li>
-<li><p><strong>parametrizer</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – Name of the output parametrizer to use.</p></li>
+<li><p><strong>parametrizer</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – Name of the output parametrizer to use.</p></li>
 </ul>
 </dd>
 </dl>
@@ -255,9 +255,9 @@ np.nan.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sd_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Starting path velocity. Must be positive.</p></li>
-<li><p><strong>sd_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Goal path velocity. Must be positive.</p></li>
-<li><p><strong>return_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – If is True, also return matrix K which contains the controllable sets.</p></li>
+<li><p><strong>sd_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – Starting path velocity. Must be positive.</p></li>
+<li><p><strong>sd_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – Goal path velocity. Must be positive.</p></li>
+<li><p><strong>return_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – If is True, also return matrix K which contains the controllable sets.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -281,13 +281,13 @@ nan(s) if failed.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sd_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Starting path velocity.</p></li>
-<li><p><strong>sd_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Goal path velocity.</p></li>
+<li><p><strong>sd_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Starting path velocity.</p></li>
+<li><p><strong>sd_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Goal path velocity.</p></li>
 <li><p><strong>return_data</strong> – If true, return a dict containing the internal data.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference internal" href="#toppra.interpolator.AbstractGeometricPath" title="toppra.interpolator.AbstractGeometricPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractGeometricPath</span></code></a>]</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference internal" href="#toppra.interpolator.AbstractGeometricPath" title="toppra.interpolator.AbstractGeometricPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractGeometricPath</span></code></a>]</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Time-parameterized joint position trajectory or
@@ -301,7 +301,7 @@ None If unable to parameterize.</p>
 <h3>TOPPRAsd<a class="headerlink" href="#topprasd" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="toppra.algorithm.TOPPRAsd">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">toppra.algorithm.</span></span><span class="sig-name descname"><span class="pre">TOPPRAsd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constraint_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gridpoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver_wrapper</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parametrizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/algorithm/reachabilitybased/desired_duration_algorithm.html#TOPPRAsd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.algorithm.TOPPRAsd" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">toppra.algorithm.</span></span><span class="sig-name descname"><span class="pre">TOPPRAsd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constraint_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gridpoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver_wrapper</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parametrizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/algorithm/reachabilitybased/desired_duration_algorithm.html#TOPPRAsd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.algorithm.TOPPRAsd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">toppra.algorithm.reachabilitybased.reachability_algorithm.ReachabilityAlgorithm</span></code></p>
 <p>TOPPRA with specified duration.</p>
 <p>The key technical idea is to compute the <strong>fastest</strong> and the
@@ -319,10 +319,10 @@ or the slowest parameterizations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sd_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Starting path velocity. Must be positive.</p></li>
-<li><p><strong>sd_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Goal path velocity. Must be positive.</p></li>
-<li><p><strong>return_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – If is True, also return matrix K which contains the controllable sets. Default to False.</p></li>
-<li><p><strong>atol</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Absolute tolerance of duration. Default to 1e-5.</p></li>
+<li><p><strong>sd_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Starting path velocity. Must be positive.</p></li>
+<li><p><strong>sd_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Goal path velocity. Must be positive.</p></li>
+<li><p><strong>return_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – If is True, also return matrix K which contains the controllable sets. Default to False.</p></li>
+<li><p><strong>atol</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Absolute tolerance of duration. Default to 1e-5.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -344,13 +344,13 @@ or the slowest parameterizations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sd_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Starting path velocity.</p></li>
-<li><p><strong>sd_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Goal path velocity.</p></li>
+<li><p><strong>sd_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Starting path velocity.</p></li>
+<li><p><strong>sd_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Goal path velocity.</p></li>
 <li><p><strong>return_data</strong> – If true, return a dict containing the internal data.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference internal" href="#toppra.interpolator.AbstractGeometricPath" title="toppra.interpolator.AbstractGeometricPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractGeometricPath</span></code></a>]</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference internal" href="#toppra.interpolator.AbstractGeometricPath" title="toppra.interpolator.AbstractGeometricPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractGeometricPath</span></code></a>]</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Time-parameterized joint position trajectory or
@@ -364,7 +364,7 @@ None If unable to parameterize.</p>
 <dd><p>Set desired duration for the time-parametrization.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>desired_duration</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – The desired duration.</p>
+<dd class="field-odd"><p><strong>desired_duration</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – The desired duration.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -374,27 +374,27 @@ None If unable to parameterize.</p>
 <h3>ParameterizationReturnCode<a class="headerlink" href="#parameterizationreturncode" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="toppra.algorithm.ParameterizationReturnCode">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">toppra.algorithm.</span></span><span class="sig-name descname"><span class="pre">ParameterizationReturnCode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/algorithm/algorithm.html#ParameterizationReturnCode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.algorithm.ParameterizationReturnCode" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">toppra.algorithm.</span></span><span class="sig-name descname"><span class="pre">ParameterizationReturnCode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/algorithm/algorithm.html#ParameterizationReturnCode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.algorithm.ParameterizationReturnCode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return codes from a parametrization attempt.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="toppra.algorithm.ParameterizationReturnCode.Ok">
-<span class="sig-name descname"><span class="pre">Ok</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'Ok:</span> <span class="pre">Successful</span> <span class="pre">parametrization'</span></em><a class="headerlink" href="#toppra.algorithm.ParameterizationReturnCode.Ok" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">Ok</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Ok:</span> <span class="pre">Successful</span> <span class="pre">parametrization'</span></em><a class="headerlink" href="#toppra.algorithm.ParameterizationReturnCode.Ok" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="toppra.algorithm.ParameterizationReturnCode.ErrUnknown">
-<span class="sig-name descname"><span class="pre">ErrUnknown</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'Error:</span> <span class="pre">Unknown</span> <span class="pre">issue'</span></em><a class="headerlink" href="#toppra.algorithm.ParameterizationReturnCode.ErrUnknown" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">ErrUnknown</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Error:</span> <span class="pre">Unknown</span> <span class="pre">issue'</span></em><a class="headerlink" href="#toppra.algorithm.ParameterizationReturnCode.ErrUnknown" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="toppra.algorithm.ParameterizationReturnCode.ErrShortPath">
-<span class="sig-name descname"><span class="pre">ErrShortPath</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'Error:</span> <span class="pre">Input</span> <span class="pre">path</span> <span class="pre">is</span> <span class="pre">very</span> <span class="pre">short'</span></em><a class="headerlink" href="#toppra.algorithm.ParameterizationReturnCode.ErrShortPath" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">ErrShortPath</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Error:</span> <span class="pre">Input</span> <span class="pre">path</span> <span class="pre">is</span> <span class="pre">very</span> <span class="pre">short'</span></em><a class="headerlink" href="#toppra.algorithm.ParameterizationReturnCode.ErrShortPath" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="toppra.algorithm.ParameterizationReturnCode.FailUncontrollable">
-<span class="sig-name descname"><span class="pre">FailUncontrollable</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'Error:</span> <span class="pre">Instance</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">controllable'</span></em><a class="headerlink" href="#toppra.algorithm.ParameterizationReturnCode.FailUncontrollable" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">FailUncontrollable</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Error:</span> <span class="pre">Instance</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">controllable'</span></em><a class="headerlink" href="#toppra.algorithm.ParameterizationReturnCode.FailUncontrollable" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="toppra.algorithm.ParameterizationReturnCode.ErrForwardPassFail">
-<span class="sig-name descname"><span class="pre">ErrForwardPassFail</span></span><em class="property"> <span class="pre">=</span> <span class="pre">'Error:</span> <span class="pre">Forward</span> <span class="pre">pass</span> <span class="pre">fail.</span> <span class="pre">Numerical</span> <span class="pre">errors</span> <span class="pre">occured'</span></em><a class="headerlink" href="#toppra.algorithm.ParameterizationReturnCode.ErrForwardPassFail" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">ErrForwardPassFail</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Error:</span> <span class="pre">Forward</span> <span class="pre">pass</span> <span class="pre">fail.</span> <span class="pre">Numerical</span> <span class="pre">errors</span> <span class="pre">occured'</span></em><a class="headerlink" href="#toppra.algorithm.ParameterizationReturnCode.ErrForwardPassFail" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 </dd></dl>
 </section>
@@ -402,11 +402,11 @@ None If unable to parameterize.</p>
 <h3>ParameterizationData<a class="headerlink" href="#parameterizationdata" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="toppra.algorithm.ParameterizationData">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">toppra.algorithm.</span></span><span class="sig-name descname"><span class="pre">ParameterizationData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">arg</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/algorithm/algorithm.html#ParameterizationData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.algorithm.ParameterizationData" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">toppra.algorithm.</span></span><span class="sig-name descname"><span class="pre">ParameterizationData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">arg</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/algorithm/algorithm.html#ParameterizationData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.algorithm.ParameterizationData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Internal data and output.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="toppra.algorithm.ParameterizationData.K">
-<span class="sig-name descname"><span class="pre">K</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#toppra.algorithm.ParameterizationData.K" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">K</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#toppra.algorithm.ParameterizationData.K" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shape (N+1, 2). Controllable sets.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -416,7 +416,7 @@ None If unable to parameterize.</p>
 </dd></dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="toppra.algorithm.ParameterizationData.X">
-<span class="sig-name descname"><span class="pre">X</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#toppra.algorithm.ParameterizationData.X" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">X</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#toppra.algorithm.ParameterizationData.X" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shape (N+1, 2). Feasible sets.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -426,7 +426,7 @@ None If unable to parameterize.</p>
 </dd></dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="toppra.algorithm.ParameterizationData.gridpoints">
-<span class="sig-name descname"><span class="pre">gridpoints</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#toppra.algorithm.ParameterizationData.gridpoints" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">gridpoints</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#toppra.algorithm.ParameterizationData.gridpoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shape (N+1, 1). Gridpoints</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -436,7 +436,7 @@ None If unable to parameterize.</p>
 </dd></dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="toppra.algorithm.ParameterizationData.return_code">
-<span class="sig-name descname"><span class="pre">return_code</span></span><em class="property"><span class="pre">:</span> <a class="reference internal" href="#toppra.algorithm.ParameterizationReturnCode" title="toppra.algorithm.algorithm.ParameterizationReturnCode"><span class="pre">toppra.algorithm.algorithm.ParameterizationReturnCode</span></a></em><a class="headerlink" href="#toppra.algorithm.ParameterizationData.return_code" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">return_code</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#toppra.algorithm.ParameterizationReturnCode" title="toppra.algorithm.algorithm.ParameterizationReturnCode"><span class="pre">toppra.algorithm.algorithm.ParameterizationReturnCode</span></a></em><a class="headerlink" href="#toppra.algorithm.ParameterizationData.return_code" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return code of the last parametrization attempt.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -446,7 +446,7 @@ None If unable to parameterize.</p>
 </dd></dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="toppra.algorithm.ParameterizationData.sd_vec">
-<span class="sig-name descname"><span class="pre">sd_vec</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#toppra.algorithm.ParameterizationData.sd_vec" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">sd_vec</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#toppra.algorithm.ParameterizationData.sd_vec" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shape (N+1, 1). Path velocities</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -456,7 +456,7 @@ None If unable to parameterize.</p>
 </dd></dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="toppra.algorithm.ParameterizationData.sdd_vec">
-<span class="sig-name descname"><span class="pre">sdd_vec</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#toppra.algorithm.ParameterizationData.sdd_vec" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">sdd_vec</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><span class="pre">numpy.ndarray</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#toppra.algorithm.ParameterizationData.sdd_vec" title="Permalink to this definition">¶</a></dt>
 <dd><p>Shape (N+1, 1). Path acceleration</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -470,7 +470,7 @@ None If unable to parameterize.</p>
 <h3>[abstract]ParameterizationAlgorithm<a class="headerlink" href="#abstract-parameterizationalgorithm" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="toppra.algorithm.ParameterizationAlgorithm">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">toppra.algorithm.</span></span><span class="sig-name descname"><span class="pre">ParameterizationAlgorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constraint_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gridpoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parametrizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gridpt_max_err_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gridpt_min_nb_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/algorithm/algorithm.html#ParameterizationAlgorithm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.algorithm.ParameterizationAlgorithm" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">toppra.algorithm.</span></span><span class="sig-name descname"><span class="pre">ParameterizationAlgorithm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constraint_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gridpoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parametrizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gridpt_max_err_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gridpt_min_nb_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/algorithm/algorithm.html#ParameterizationAlgorithm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.algorithm.ParameterizationAlgorithm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base parametrization algorithm class.</p>
 <p>This class specifies the generic behavior for parametrization algorithms.  For details on how
 to <em>construct</em> a <a class="reference internal" href="#toppra.algorithm.ParameterizationAlgorithm" title="toppra.algorithm.ParameterizationAlgorithm"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParameterizationAlgorithm</span></code></a> instance, as well as configure it, refer
@@ -493,7 +493,7 @@ to the specific class.</p>
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="toppra.algorithm.ParameterizationAlgorithm.compute_parameterization">
-<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">compute_parameterization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sd_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sd_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/algorithm/algorithm.html#ParameterizationAlgorithm.compute_parameterization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.algorithm.ParameterizationAlgorithm.compute_parameterization" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">compute_parameterization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sd_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sd_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/algorithm/algorithm.html#ParameterizationAlgorithm.compute_parameterization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.algorithm.ParameterizationAlgorithm.compute_parameterization" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the path parameterization subject to starting and ending conditions.</p>
 <p>After this method terminates, the attribute
 <a class="reference internal" href="#toppra.algorithm.ParameterizationAlgorithm.problem_data" title="toppra.algorithm.ParameterizationAlgorithm.problem_data"><code class="xref py py-attr docutils literal notranslate"><span class="pre">problem_data</span></code></a> will contain algorithm output, as well
@@ -502,9 +502,9 @@ output.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sd_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Starting path velocity. Must be positive.</p></li>
-<li><p><strong>sd_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Goal path velocity. Must be positive.</p></li>
-<li><p><strong>return_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – If true also return the problem data.</p></li>
+<li><p><strong>sd_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Starting path velocity. Must be positive.</p></li>
+<li><p><strong>sd_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Goal path velocity. Must be positive.</p></li>
+<li><p><strong>return_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – If true also return the problem data.</p></li>
 </ul>
 </dd>
 </dl>
@@ -517,13 +517,13 @@ output.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sd_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Starting path velocity.</p></li>
-<li><p><strong>sd_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Goal path velocity.</p></li>
+<li><p><strong>sd_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Starting path velocity.</p></li>
+<li><p><strong>sd_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – Goal path velocity.</p></li>
 <li><p><strong>return_data</strong> – If true, return a dict containing the internal data.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference internal" href="#toppra.interpolator.AbstractGeometricPath" title="toppra.interpolator.AbstractGeometricPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractGeometricPath</span></code></a>]</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference internal" href="#toppra.interpolator.AbstractGeometricPath" title="toppra.interpolator.AbstractGeometricPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractGeometricPath</span></code></a>]</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>Time-parameterized joint position trajectory or
@@ -533,11 +533,11 @@ None If unable to parameterize.</p>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="toppra.algorithm.ParameterizationAlgorithm.constraints">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">constraints</span></span><em class="property"><span class="pre">:</span> <span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#toppra.constraint.Constraint" title="toppra.constraint.constraint.Constraint"><span class="pre">toppra.constraint.constraint.Constraint</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#toppra.algorithm.ParameterizationAlgorithm.constraints" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">constraints</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#toppra.constraint.Constraint" title="toppra.constraint.constraint.Constraint"><span class="pre">toppra.constraint.constraint.Constraint</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#toppra.algorithm.ParameterizationAlgorithm.constraints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constraints of interests.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference internal" href="#toppra.constraint.Constraint" title="toppra.constraint.constraint.Constraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">Constraint</span></code></a>]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference internal" href="#toppra.constraint.Constraint" title="toppra.constraint.constraint.Constraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">Constraint</span></code></a>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -548,7 +548,7 @@ None If unable to parameterize.</p>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="toppra.algorithm.ParameterizationAlgorithm.problem_data">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">problem_data</span></span><em class="property"><span class="pre">:</span> <a class="reference internal" href="#toppra.algorithm.ParameterizationData" title="toppra.algorithm.algorithm.ParameterizationData"><span class="pre">toppra.algorithm.algorithm.ParameterizationData</span></a></em><a class="headerlink" href="#toppra.algorithm.ParameterizationAlgorithm.problem_data" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">problem_data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#toppra.algorithm.ParameterizationData" title="toppra.algorithm.algorithm.ParameterizationData"><span class="pre">toppra.algorithm.algorithm.ParameterizationData</span></a></em><a class="headerlink" href="#toppra.algorithm.ParameterizationAlgorithm.problem_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Data obtained when solving the path parametrization.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -567,7 +567,7 @@ trajectories.</p>
 <h3>SplineInterplator<a class="headerlink" href="#splineinterplator" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="toppra.SplineInterpolator">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">toppra.</span></span><span class="sig-name descname"><span class="pre">SplineInterpolator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ss_waypoints</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">waypoints</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bc_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'not-a-knot'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/interpolator.html#SplineInterpolator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.SplineInterpolator" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">toppra.</span></span><span class="sig-name descname"><span class="pre">SplineInterpolator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ss_waypoints</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">waypoints</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bc_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'not-a-knot'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/interpolator.html#SplineInterpolator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.SplineInterpolator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Interpolate the given waypoints by cubic spline.</p>
 <p>This interpolator is implemented as a simple wrapper over scipy’s
 CubicSpline class.</p>
@@ -596,8 +596,8 @@ end are clamped at zero.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path_positions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em> or </em><em>np.ndarray</em>) – Path positions to evaluate the interpolator.</p></li>
-<li><p><strong>order</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – <p>Order of the evaluation call.</p>
+<li><p><strong>path_positions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em> or </em><em>np.ndarray</em>) – Path positions to evaluate the interpolator.</p></li>
+<li><p><strong>order</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – <p>Order of the evaluation call.</p>
 <ul>
 <li><p>0: position</p></li>
 <li><p>1: first-order derivative</p></li>
@@ -617,17 +617,17 @@ degree-of-freedom, or (m,).</p>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="toppra.SplineInterpolator.dof">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">dof</span></span><a class="headerlink" href="#toppra.SplineInterpolator.dof" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dof</span></span><a class="headerlink" href="#toppra.SplineInterpolator.dof" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the degrees-of-freedom of the path.</p>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="toppra.SplineInterpolator.path_interval">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">path_interval</span></span><a class="headerlink" href="#toppra.SplineInterpolator.path_interval" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path_interval</span></span><a class="headerlink" href="#toppra.SplineInterpolator.path_interval" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the start and end points.</p>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="toppra.SplineInterpolator.waypoints">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">waypoints</span></span><a class="headerlink" href="#toppra.SplineInterpolator.waypoints" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">waypoints</span></span><a class="headerlink" href="#toppra.SplineInterpolator.waypoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the waypoints.</p>
 <p>The first element is the positions, the second element is the
 array of waypoints.</p>
@@ -643,7 +643,7 @@ array of waypoints.</p>
 <h3>RaveTrajectoryWrapper<a class="headerlink" href="#ravetrajectorywrapper" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="toppra.RaveTrajectoryWrapper">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">toppra.</span></span><span class="sig-name descname"><span class="pre">RaveTrajectoryWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robot</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/interpolator.html#RaveTrajectoryWrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.RaveTrajectoryWrapper" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">toppra.</span></span><span class="sig-name descname"><span class="pre">RaveTrajectoryWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">robot</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/interpolator.html#RaveTrajectoryWrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.RaveTrajectoryWrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>An interpolator that wraps OpenRAVE’s <code class="xref py py-class docutils literal notranslate"><span class="pre">GenericTrajectory</span></code>.</p>
 <p>Only trajectories using quadratic interpolation or cubic
 interpolation are supported.  The trajectory is represented as a
@@ -657,8 +657,8 @@ object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path_positions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em> or </em><em>np.ndarray</em>) – Path positions to evaluate the interpolator.</p></li>
-<li><p><strong>order</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – <p>Order of the evaluation call.</p>
+<li><p><strong>path_positions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em> or </em><em>np.ndarray</em>) – Path positions to evaluate the interpolator.</p></li>
+<li><p><strong>order</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – <p>Order of the evaluation call.</p>
 <ul>
 <li><p>0: position</p></li>
 <li><p>1: first-order derivative</p></li>
@@ -678,21 +678,21 @@ degree-of-freedom, or (m,).</p>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="toppra.RaveTrajectoryWrapper.dof">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">dof</span></span><a class="headerlink" href="#toppra.RaveTrajectoryWrapper.dof" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dof</span></span><a class="headerlink" href="#toppra.RaveTrajectoryWrapper.dof" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the degrees-of-freedom of the path.</p>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="toppra.RaveTrajectoryWrapper.path_interval">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">path_interval</span></span><a class="headerlink" href="#toppra.RaveTrajectoryWrapper.path_interval" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path_interval</span></span><a class="headerlink" href="#toppra.RaveTrajectoryWrapper.path_interval" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the start and end points.</p>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="toppra.RaveTrajectoryWrapper.waypoints">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">waypoints</span></span><a class="headerlink" href="#toppra.RaveTrajectoryWrapper.waypoints" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">waypoints</span></span><a class="headerlink" href="#toppra.RaveTrajectoryWrapper.waypoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>The path’s waypoints if applicable. None otherwise.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>Tuple[ndarray, ndarray] or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+<dd class="field-odd"><p>Tuple[ndarray, ndarray] or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)">None</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -702,7 +702,7 @@ degree-of-freedom, or (m,).</p>
 <h3>simplepath.SimplePath<a class="headerlink" href="#simplepath-simplepath" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="toppra.simplepath.SimplePath">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">toppra.simplepath.</span></span><span class="sig-name descname"><span class="pre">SimplePath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/simplepath.html#SimplePath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.simplepath.SimplePath" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">toppra.simplepath.</span></span><span class="sig-name descname"><span class="pre">SimplePath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/simplepath.html#SimplePath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.simplepath.SimplePath" title="Permalink to this definition">¶</a></dt>
 <dd><p>A class for representing continuous multi-dimentional function.</p>
 <p>This geometric path is specified by positions, velocities
 (optional) and acceleration (optional). Internally a scipy.PPoly
@@ -714,7 +714,7 @@ on the input.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a>) – “Time instances” of the waypoints.</p></li>
 <li><p><strong>y</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a>) – Function values at waypoints.</p></li>
-<li><p><strong>yd</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a>]) – First-derivatives. If not given (None) will be computed
+<li><p><strong>yd</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a>]) – First-derivatives. If not given (None) will be computed
 automatically.</p></li>
 </ul>
 </dd>
@@ -726,12 +726,12 @@ automatically.</p></li>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="toppra.simplepath.SimplePath.dof">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">dof</span></span><a class="headerlink" href="#toppra.simplepath.SimplePath.dof" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dof</span></span><a class="headerlink" href="#toppra.simplepath.SimplePath.dof" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the degrees-of-freedom of the path.</p>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="toppra.simplepath.SimplePath.path_interval">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">path_interval</span></span><a class="headerlink" href="#toppra.simplepath.SimplePath.path_interval" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path_interval</span></span><a class="headerlink" href="#toppra.simplepath.SimplePath.path_interval" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the starting and ending path positions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -748,7 +748,7 @@ automatically.</p></li>
 <h3>[abstract]AbstractGeometricPath<a class="headerlink" href="#abstract-abstractgeometricpath" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="toppra.interpolator.AbstractGeometricPath">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">toppra.interpolator.</span></span><span class="sig-name descname"><span class="pre">AbstractGeometricPath</span></span><a class="reference internal" href="_modules/toppra/interpolator.html#AbstractGeometricPath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.interpolator.AbstractGeometricPath" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">toppra.interpolator.</span></span><span class="sig-name descname"><span class="pre">AbstractGeometricPath</span></span><a class="reference internal" href="_modules/toppra/interpolator.html#AbstractGeometricPath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.interpolator.AbstractGeometricPath" title="Permalink to this definition">¶</a></dt>
 <dd><p>Abstract base class that represents geometric paths.</p>
 <p>Derive geometric paths classes should implement the below abstract
 methods. These methods are expected in different steps of the
@@ -760,8 +760,8 @@ algorithm.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path_positions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em> or </em><em>np.ndarray</em>) – Path positions to evaluate the interpolator.</p></li>
-<li><p><strong>order</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – <p>Order of the evaluation call.</p>
+<li><p><strong>path_positions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em> or </em><em>np.ndarray</em>) – Path positions to evaluate the interpolator.</p></li>
+<li><p><strong>order</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – <p>Order of the evaluation call.</p>
 <ul>
 <li><p>0: position</p></li>
 <li><p>1: first-order derivative</p></li>
@@ -784,17 +784,17 @@ degree-of-freedom, or (m,).</p>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="toppra.interpolator.AbstractGeometricPath.dof">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">dof</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></em><a class="headerlink" href="#toppra.interpolator.AbstractGeometricPath.dof" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dof</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></em><a class="headerlink" href="#toppra.interpolator.AbstractGeometricPath.dof" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the degrees-of-freedom of the path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="toppra.interpolator.AbstractGeometricPath.path_interval">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">path_interval</span></span><a class="headerlink" href="#toppra.interpolator.AbstractGeometricPath.path_interval" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path_interval</span></span><a class="headerlink" href="#toppra.interpolator.AbstractGeometricPath.path_interval" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the starting and ending path positions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -807,11 +807,11 @@ degree-of-freedom, or (m,).</p>
 </dd></dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="toppra.interpolator.AbstractGeometricPath.waypoints">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">waypoints</span></span><a class="headerlink" href="#toppra.interpolator.AbstractGeometricPath.waypoints" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">waypoints</span></span><a class="headerlink" href="#toppra.interpolator.AbstractGeometricPath.waypoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>The path’s waypoints if applicable. None otherwise.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>Tuple[ndarray, ndarray] or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)">None</a></p>
+<dd class="field-odd"><p>Tuple[ndarray, ndarray] or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)">None</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -841,9 +841,9 @@ gridpoint is optimally distributed.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<a class="reference internal" href="#toppra.interpolator.AbstractGeometricPath" title="toppra.interpolator.AbstractGeometricPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractGeometricPath</span></code></a>) – Input geometric path.</p></li>
-<li><p><strong>max_err_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – Maximum worstcase error thrshold allowable.</p></li>
-<li><p><strong>max_iteration</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Maximum number of iterations.</p></li>
-<li><p><strong>max_seg_length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – All segments length should be smaller than this value.</p></li>
+<li><p><strong>max_err_threshold</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – Maximum worstcase error thrshold allowable.</p></li>
+<li><p><strong>max_iteration</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Maximum number of iterations.</p></li>
+<li><p><strong>max_seg_length</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – All segments length should be smaller than this value.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -863,21 +863,21 @@ gridpoint is optimally distributed.</p>
 <h3>ConstraintType<a class="headerlink" href="#constrainttype" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="toppra.constraint.ConstraintType">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">toppra.constraint.</span></span><span class="sig-name descname"><span class="pre">ConstraintType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/constraint/constraint.html#ConstraintType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.constraint.ConstraintType" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">toppra.constraint.</span></span><span class="sig-name descname"><span class="pre">ConstraintType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/constraint/constraint.html#ConstraintType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.constraint.ConstraintType" title="Permalink to this definition">¶</a></dt>
 <dd><p>Type of path parametrization constraint.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="toppra.constraint.ConstraintType.CanonicalConic">
-<span class="sig-name descname"><span class="pre">CanonicalConic</span></span><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#toppra.constraint.ConstraintType.CanonicalConic" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">CanonicalConic</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#toppra.constraint.ConstraintType.CanonicalConic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Linear constraints with linear conic inequalities.</p>
 </dd></dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="toppra.constraint.ConstraintType.CanonicalLinear">
-<span class="sig-name descname"><span class="pre">CanonicalLinear</span></span><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#toppra.constraint.ConstraintType.CanonicalLinear" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">CanonicalLinear</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#toppra.constraint.ConstraintType.CanonicalLinear" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simple linear constraints with only linear inequalities</p>
 </dd></dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="toppra.constraint.ConstraintType.Unknown">
-<span class="sig-name descname"><span class="pre">Unknown</span></span><em class="property"> <span class="pre">=</span> <span class="pre">-1</span></em><a class="headerlink" href="#toppra.constraint.ConstraintType.Unknown" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">Unknown</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#toppra.constraint.ConstraintType.Unknown" title="Permalink to this definition">¶</a></dt>
 <dd><p>Unknown</p>
 </dd></dl>
 </dd></dl>
@@ -886,18 +886,18 @@ gridpoint is optimally distributed.</p>
 <h3>DiscretizationType<a class="headerlink" href="#discretizationtype" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="toppra.constraint.DiscretizationType">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">toppra.constraint.</span></span><span class="sig-name descname"><span class="pre">DiscretizationType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/constraint/constraint.html#DiscretizationType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.constraint.DiscretizationType" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">toppra.constraint.</span></span><span class="sig-name descname"><span class="pre">DiscretizationType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/constraint/constraint.html#DiscretizationType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.constraint.DiscretizationType" title="Permalink to this definition">¶</a></dt>
 <dd><p>Enum to mark different Discretization Scheme for constraint.</p>
 <p>In general, the difference in speed is not too large. Should use
 Interpolation if possible.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="toppra.constraint.DiscretizationType.Collocation">
-<span class="sig-name descname"><span class="pre">Collocation</span></span><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#toppra.constraint.DiscretizationType.Collocation" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">Collocation</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#toppra.constraint.DiscretizationType.Collocation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Smaller problem size, but lower accuracy.</p>
 </dd></dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="toppra.constraint.DiscretizationType.Interpolation">
-<span class="sig-name descname"><span class="pre">Interpolation</span></span><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#toppra.constraint.DiscretizationType.Interpolation" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">Interpolation</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#toppra.constraint.DiscretizationType.Interpolation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Larger problem size, but higher accuracy.</p>
 </dd></dl>
 </dd></dl>
@@ -906,7 +906,7 @@ Interpolation if possible.</p>
 <h3>LinearConstraint<a class="headerlink" href="#linearconstraint" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="toppra.constraint.LinearConstraint">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">toppra.constraint.</span></span><span class="sig-name descname"><span class="pre">LinearConstraint</span></span><a class="reference internal" href="_modules/toppra/constraint/linear_constraint.html#LinearConstraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.constraint.LinearConstraint" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">toppra.constraint.</span></span><span class="sig-name descname"><span class="pre">LinearConstraint</span></span><a class="reference internal" href="_modules/toppra/constraint/linear_constraint.html#LinearConstraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.constraint.LinearConstraint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#toppra.constraint.Constraint" title="toppra.constraint.constraint.Constraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">toppra.constraint.constraint.Constraint</span></code></a></p>
 <p>A core type of constraints.</p>
 <p>Also known as Second-order Constraint.</p>
@@ -970,7 +970,7 @@ least implement the method <a class="reference internal" href="#toppra.constrain
 <h3>JointVelocityConstraint<a class="headerlink" href="#jointvelocityconstraint" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="toppra.constraint.JointVelocityConstraint">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">toppra.constraint.</span></span><span class="sig-name descname"><span class="pre">JointVelocityConstraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vlim</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/constraint/linear_joint_velocity.html#JointVelocityConstraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.constraint.JointVelocityConstraint" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">toppra.constraint.</span></span><span class="sig-name descname"><span class="pre">JointVelocityConstraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vlim</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/constraint/linear_joint_velocity.html#JointVelocityConstraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.constraint.JointVelocityConstraint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#toppra.constraint.LinearConstraint" title="toppra.constraint.linear_constraint.LinearConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">toppra.constraint.linear_constraint.LinearConstraint</span></code></a></p>
 <p>A Joint Velocity Constraint class.</p>
 <dl class="field-list simple">
@@ -1014,13 +1014,13 @@ are given by vlim[j, 0] and vlim[j, 1] respectively.</p>
 <h3>JointVelocityConstraintVarying<a class="headerlink" href="#jointvelocityconstraintvarying" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="toppra.constraint.JointVelocityConstraintVarying">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">toppra.constraint.</span></span><span class="sig-name descname"><span class="pre">JointVelocityConstraintVarying</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vlim_func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/constraint/linear_joint_velocity.html#JointVelocityConstraintVarying"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.constraint.JointVelocityConstraintVarying" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">toppra.constraint.</span></span><span class="sig-name descname"><span class="pre">JointVelocityConstraintVarying</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vlim_func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/constraint/linear_joint_velocity.html#JointVelocityConstraintVarying"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.constraint.JointVelocityConstraintVarying" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#toppra.constraint.LinearConstraint" title="toppra.constraint.linear_constraint.LinearConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">toppra.constraint.linear_constraint.LinearConstraint</span></code></a></p>
 <p>A Joint Velocity Constraint class.</p>
 <p>This class handle velocity constraints that vary along the path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>vlim_func</strong> (<em>(</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>) </em><em>-&gt; np.ndarray</em>) – A function that receives a scalar (float) and produce an array
+<dd class="field-odd"><p><strong>vlim_func</strong> (<em>(</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>) </em><em>-&gt; np.ndarray</em>) – A function that receives a scalar (float) and produce an array
 with shape (dof, 2). The lower and upper velocity bounds of
 the j-th joint are given by out[j, 0] and out[j, 1]
 respectively.</p>
@@ -1061,7 +1061,7 @@ respectively.</p>
 <h3>SecondOrderConstraints<a class="headerlink" href="#secondorderconstraints" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="toppra.constraint.SecondOrderConstraint">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">toppra.constraint.</span></span><span class="sig-name descname"><span class="pre">SecondOrderConstraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inv_dyn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraint_F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraint_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dof</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_term</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discretization_scheme</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/constraint/linear_second_order.html#SecondOrderConstraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.constraint.SecondOrderConstraint" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">toppra.constraint.</span></span><span class="sig-name descname"><span class="pre">SecondOrderConstraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inv_dyn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraint_F</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraint_g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dof</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_term</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discretization_scheme</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/constraint/linear_second_order.html#SecondOrderConstraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.constraint.SecondOrderConstraint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#toppra.constraint.LinearConstraint" title="toppra.constraint.linear_constraint.LinearConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">toppra.constraint.linear_constraint.LinearConstraint</span></code></a></p>
 <p>This class implements the linear Second-Order constraint.</p>
 <p>Conventionally, a <a class="reference internal" href="#toppra.constraint.SecondOrderConstraint" title="toppra.constraint.SecondOrderConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">SecondOrderConstraint</span></code></a> is given by the
@@ -1123,7 +1123,7 @@ the constrained vector <span class="math notranslate nohighlight">\(\mathbf w\)<
 F(\mathbf q, s)\)</span>. See above for more details.</p></li>
 <li><p><strong>constraint_g</strong> (<em>(</em><em>np.ndarray</em><em>) </em><em>-&gt; np.ndarray</em>) – The constraint coefficient function <span class="math notranslate nohighlight">\(\mathbf
 g(\mathbf q, s)\)</span>. See above for more details.</p></li>
-<li><p><strong>dof</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The dimension of the joint position.</p></li>
+<li><p><strong>dof</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – The dimension of the joint position.</p></li>
 <li><p><strong>custom_term</strong> ((<code class="xref py py-class docutils literal notranslate"><span class="pre">Interpolator</span></code>, float) -&gt; np.ndarray) – This function receives as input a geometric path and a
 float path position, then returns an additive term. See
 the above note for more details.</p></li>
@@ -1159,7 +1159,7 @@ the above note for more details.</p></li>
 </dd></dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="toppra.constraint.SecondOrderConstraint.joint_torque_constraint">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">joint_torque_constraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inv_dyn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taulim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">joint_friction</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/constraint/linear_second_order.html#SecondOrderConstraint.joint_torque_constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.constraint.SecondOrderConstraint.joint_torque_constraint" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">joint_torque_constraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inv_dyn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taulim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">joint_friction</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/constraint/linear_second_order.html#SecondOrderConstraint.joint_torque_constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.constraint.SecondOrderConstraint.joint_torque_constraint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize a Joint Torque constraint.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1179,7 +1179,7 @@ in the i-th joint.</p></li>
 <h3>JointTorqueConstraint<a class="headerlink" href="#jointtorqueconstraint" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="toppra.constraint.JointTorqueConstraint">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">toppra.constraint.</span></span><span class="sig-name descname"><span class="pre">JointTorqueConstraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inv_dyn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau_lim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs_coef</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discretization_scheme</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">DiscretizationType.Collocation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/constraint/joint_torque.html#JointTorqueConstraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.constraint.JointTorqueConstraint" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">toppra.constraint.</span></span><span class="sig-name descname"><span class="pre">JointTorqueConstraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inv_dyn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau_lim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs_coef</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discretization_scheme</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">DiscretizationType.Collocation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/constraint/joint_torque.html#JointTorqueConstraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.constraint.JointTorqueConstraint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#toppra.constraint.LinearConstraint" title="toppra.constraint.linear_constraint.LinearConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">toppra.constraint.linear_constraint.LinearConstraint</span></code></a></p>
 <p>Joint Torque Constraint.</p>
 <p>A joint torque constraint is given by</p>
@@ -1249,7 +1249,7 @@ higher computational cost.</p></li>
 <h3>JointAccelerationConstraint<a class="headerlink" href="#jointaccelerationconstraint" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="toppra.constraint.JointAccelerationConstraint">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">toppra.constraint.</span></span><span class="sig-name descname"><span class="pre">JointAccelerationConstraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discretization_scheme</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">DiscretizationType.Interpolation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/constraint/linear_joint_acceleration.html#JointAccelerationConstraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.constraint.JointAccelerationConstraint" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">toppra.constraint.</span></span><span class="sig-name descname"><span class="pre">JointAccelerationConstraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discretization_scheme</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">DiscretizationType.Interpolation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/constraint/linear_joint_acceleration.html#JointAccelerationConstraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.constraint.JointAccelerationConstraint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#toppra.constraint.LinearConstraint" title="toppra.constraint.linear_constraint.LinearConstraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">toppra.constraint.linear_constraint.LinearConstraint</span></code></a></p>
 <p>The Joint Acceleration Constraint class.</p>
 <p>A joint acceleration constraint is given by</p>
@@ -1315,7 +1315,7 @@ higher computational cost.</p></li>
 <h3>RobustLinearConstraint<a class="headerlink" href="#robustlinearconstraint" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="toppra.constraint.RobustLinearConstraint">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">toppra.constraint.</span></span><span class="sig-name descname"><span class="pre">RobustLinearConstraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cnst</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ellipsoid_axes_lengths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discretization_scheme</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">DiscretizationType.Collocation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/constraint/conic_constraint.html#RobustLinearConstraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.constraint.RobustLinearConstraint" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">toppra.constraint.</span></span><span class="sig-name descname"><span class="pre">RobustLinearConstraint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cnst</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ellipsoid_axes_lengths</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discretization_scheme</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">DiscretizationType.Collocation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/constraint/conic_constraint.html#RobustLinearConstraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.constraint.RobustLinearConstraint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">toppra.constraint.conic_constraint.ConicConstraint</span></code></p>
 <p>The simple canonical conic constraint.</p>
 <p>This constraint can be seen as a robustified version of a
@@ -1346,7 +1346,7 @@ non-negative.</p></li>
 <h3>[abstract]Constraint<a class="headerlink" href="#abstract-constraint" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="toppra.constraint.Constraint">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">toppra.constraint.</span></span><span class="sig-name descname"><span class="pre">Constraint</span></span><a class="reference internal" href="_modules/toppra/constraint/constraint.html#Constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.constraint.Constraint" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">toppra.constraint.</span></span><span class="sig-name descname"><span class="pre">Constraint</span></span><a class="reference internal" href="_modules/toppra/constraint/constraint.html#Constraint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.constraint.Constraint" title="Permalink to this definition">¶</a></dt>
 <dd><p>The base constraint class.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="toppra.constraint.Constraint.__repr__">
@@ -1380,15 +1380,15 @@ non-negative.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>np.ndarray</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a>) – Shape (N + 1, m). See notes.</p></li>
-<li><p><strong>b</strong> (<em>np.ndarray</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a>) – Shape (N + 1, m). See notes.</p></li>
-<li><p><strong>c</strong> (<em>np.ndarray</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a>) – Shape (N + 1, m). See notes.</p></li>
-<li><p><strong>F</strong> (<em>np.ndarray</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a>) – Shape (N + 1, k, m). See notes.</p></li>
-<li><p><strong>g</strong> (<em>np.ndarray</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a>) – Shape (N + 1, k,). See notes</p></li>
-<li><p><strong>ubound</strong> (<em>np.ndarray</em><em>, or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a>) – Shape (N + 1, 2). See notes.</p></li>
-<li><p><strong>xbound</strong> (<em>np.ndarray</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a>) – Shape (N + 1, 2). See notes.</p></li>
+<li><p><strong>a</strong> (<em>np.ndarray</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><em>None</em></a>) – Shape (N + 1, m). See notes.</p></li>
+<li><p><strong>b</strong> (<em>np.ndarray</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><em>None</em></a>) – Shape (N + 1, m). See notes.</p></li>
+<li><p><strong>c</strong> (<em>np.ndarray</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><em>None</em></a>) – Shape (N + 1, m). See notes.</p></li>
+<li><p><strong>F</strong> (<em>np.ndarray</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><em>None</em></a>) – Shape (N + 1, k, m). See notes.</p></li>
+<li><p><strong>g</strong> (<em>np.ndarray</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><em>None</em></a>) – Shape (N + 1, k,). See notes</p></li>
+<li><p><strong>ubound</strong> (<em>np.ndarray</em><em>, or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><em>None</em></a>) – Shape (N + 1, 2). See notes.</p></li>
+<li><p><strong>xbound</strong> (<em>np.ndarray</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><em>None</em></a>) – Shape (N + 1, 2). See notes.</p></li>
 <li><p><strong>gridpoints</strong> (<em>np.ndarray</em>) – Shape (N+1,). The path discretization.</p></li>
-<li><p><strong>identical</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, matrices F and g are identical at all gridpoint.</p></li>
+<li><p><strong>identical</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, matrices F and g are identical at all gridpoint.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1415,7 +1415,7 @@ quadratic solvers, wrapped in solver wrappers.</p>
 <h3>SolverWrapper<a class="headerlink" href="#solverwrapper" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="toppra.solverwrapper.SolverWrapper">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">toppra.solverwrapper.</span></span><span class="sig-name descname"><span class="pre">SolverWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constraint_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_discretization</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/solverwrapper/solverwrapper.html#SolverWrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.solverwrapper.SolverWrapper" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">toppra.solverwrapper.</span></span><span class="sig-name descname"><span class="pre">SolverWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constraint_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_discretization</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/solverwrapper/solverwrapper.html#SolverWrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.solverwrapper.SolverWrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>The base class for all solver wrappers.</p>
 <p>All SolverWrapper have to implement a core method needed by all
 Reachability Analysis-based algorithms:
@@ -1470,14 +1470,14 @@ quadratic problem without the quadratic term.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>i</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The stage index.</p></li>
+<li><p><strong>i</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – The stage index.</p></li>
 <li><p><strong>H</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a> or None) – Shape (d, d). The coefficient of the quadratic objective
 function. If is None, set the quadratic term to zero.</p></li>
 <li><p><strong>g</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a>) – Shape (d,). The linear term.</p></li>
-<li><p><strong>x_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_next_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_next_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_next_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_next_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1495,7 +1495,7 @@ variable.  Otherwise return a array that contains <cite>numpy.nan</cite>.</p>
 <h3>hotqpOASESSolverWrapper<a class="headerlink" href="#hotqpoasessolverwrapper" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="toppra.solverwrapper.hotqpOASESSolverWrapper">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">toppra.solverwrapper.</span></span><span class="sig-name descname"><span class="pre">hotqpOASESSolverWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constraint_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_discretization</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaling_solverwrapper</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/solverwrapper/hot_qpoases_solverwrapper.html#hotqpOASESSolverWrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.solverwrapper.hotqpOASESSolverWrapper" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">toppra.solverwrapper.</span></span><span class="sig-name descname"><span class="pre">hotqpOASESSolverWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constraint_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_discretization</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaling_solverwrapper</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/solverwrapper/hot_qpoases_solverwrapper.html#hotqpOASESSolverWrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.solverwrapper.hotqpOASESSolverWrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p><cite>qpOASES</cite> solver wrapper with hot-start.</p>
 <p>This wrapper takes advantage of the warm-start capability of the
 qpOASES quadratic programming solver. It uses two different
@@ -1513,10 +1513,10 @@ with PrintLevel.NONE</p>
 <li><p><strong>constraint_list</strong> (<a class="reference internal" href="#toppra.constraint.Constraint" title="toppra.constraint.Constraint"><code class="xref py py-class docutils literal notranslate"><span class="pre">Constraint</span></code></a> []) – The constraints the robot is subjected to.</p></li>
 <li><p><strong>path</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Interpolator</span></code>) – The geometric path.</p></li>
 <li><p><strong>path_discretization</strong> (<em>array</em>) – The discretized path positions.</p></li>
-<li><p><strong>disable_check</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Disable check for solution validity. Improve speed by about
+<li><p><strong>disable_check</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – Disable check for solution validity. Improve speed by about
 20% but entails the possibility that failure is not reported
 correctly.</p></li>
-<li><p><strong>scaling_solverwrapper</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – If is True, try to scale the data of each optimization before
+<li><p><strong>scaling_solverwrapper</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – If is True, try to scale the data of each optimization before
 running.  Important: Currently scaling is always done
 regardless of the value of this variable. To be fixed.</p></li>
 </ul>
@@ -1543,14 +1543,14 @@ quadratic problem without the quadratic term.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>i</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The stage index.</p></li>
+<li><p><strong>i</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – The stage index.</p></li>
 <li><p><strong>H</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a> or None) – Shape (d, d). The coefficient of the quadratic objective
 function. If is None, set the quadratic term to zero.</p></li>
 <li><p><strong>g</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a>) – Shape (d,). The linear term.</p></li>
-<li><p><strong>x_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_next_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_next_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_next_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_next_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1568,7 +1568,7 @@ variable.  Otherwise return a array that contains <cite>numpy.nan</cite>.</p>
 <h3>qpOASESSolverWrapper<a class="headerlink" href="#qpoasessolverwrapper" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="toppra.solverwrapper.qpOASESSolverWrapper">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">toppra.solverwrapper.</span></span><span class="sig-name descname"><span class="pre">qpOASESSolverWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constraint_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_discretization</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/solverwrapper/qpoases_solverwrapper.html#qpOASESSolverWrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.solverwrapper.qpOASESSolverWrapper" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">toppra.solverwrapper.</span></span><span class="sig-name descname"><span class="pre">qpOASESSolverWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constraint_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_discretization</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/solverwrapper/qpoases_solverwrapper.html#qpOASESSolverWrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.solverwrapper.qpOASESSolverWrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>A solver wrapper using <cite>qpOASES</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1595,14 +1595,14 @@ quadratic problem without the quadratic term.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>i</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The stage index.</p></li>
+<li><p><strong>i</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – The stage index.</p></li>
 <li><p><strong>H</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a> or None) – Shape (d, d). The coefficient of the quadratic objective
 function. If is None, set the quadratic term to zero.</p></li>
 <li><p><strong>g</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a>) – Shape (d,). The linear term.</p></li>
-<li><p><strong>x_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_next_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_next_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_next_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_next_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1620,7 +1620,7 @@ variable.  Otherwise return a array that contains <cite>numpy.nan</cite>.</p>
 <h3>seidelWrapper<a class="headerlink" href="#seidelwrapper" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="toppra.solverwrapper.seidelWrapper">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">toppra.solverwrapper.</span></span><span class="sig-name descname"><span class="pre">seidelWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">list</span> <span class="pre">constraint_list</span></em>, <em class="sig-param"><span class="pre">path</span></em>, <em class="sig-param"><span class="pre">path_discretization</span></em><span class="sig-paren">)</span><a class="headerlink" href="#toppra.solverwrapper.seidelWrapper" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">toppra.solverwrapper.</span></span><span class="sig-name descname"><span class="pre">seidelWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list</span> <span class="pre">constraint_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_discretization</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#toppra.solverwrapper.seidelWrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>A solver wrapper that implements Seidel’s LP algorithm.</p>
 <p>This wrapper can only be used if there is only Canonical Linear
 Constraints.</p>
@@ -1635,7 +1635,7 @@ Constraints.</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="toppra.solverwrapper.seidelWrapper.solve_stagewise_optim">
-<span class="sig-name descname"><span class="pre">solve_stagewise_optim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">self</span></em>, <em class="sig-param"><span class="pre">unsigned</span> <span class="pre">int</span> <span class="pre">i</span></em>, <em class="sig-param"><span class="pre">H</span></em>, <em class="sig-param"><span class="pre">ndarray</span> <span class="pre">g</span></em>, <em class="sig-param"><span class="pre">double</span> <span class="pre">x_min</span></em>, <em class="sig-param"><span class="pre">double</span> <span class="pre">x_max</span></em>, <em class="sig-param"><span class="pre">double</span> <span class="pre">x_next_min</span></em>, <em class="sig-param"><span class="pre">double</span> <span class="pre">x_next_max</span></em><span class="sig-paren">)</span><a class="headerlink" href="#toppra.solverwrapper.seidelWrapper.solve_stagewise_optim" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">solve_stagewise_optim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unsigned</span> <span class="pre">int</span> <span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndarray</span> <span class="pre">g</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">double</span> <span class="pre">x_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">double</span> <span class="pre">x_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">double</span> <span class="pre">x_next_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">double</span> <span class="pre">x_next_max</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#toppra.solverwrapper.seidelWrapper.solve_stagewise_optim" title="Permalink to this definition">¶</a></dt>
 <dd><p>Solve a stage-wise linear optimization problem.</p>
 <p>The linear optimization problem is described below.</p>
 <div class="math-wrapper"><div class="math notranslate nohighlight">
@@ -1648,13 +1648,13 @@ LP. This optimization is currently not implemented.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>i</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The stage index. See notes for details on each variable.</p></li>
-<li><p><strong>H</strong> (<em>array</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><em>None</em></a>) – This term is not used and is neglected.</p></li>
+<li><p><strong>i</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – The stage index. See notes for details on each variable.</p></li>
+<li><p><strong>H</strong> (<em>array</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><em>None</em></a>) – This term is not used and is neglected.</p></li>
 <li><p><strong>g</strong> (<em>(</em><em>d</em><em>,</em><em>)</em><em>array</em>) – The linear term.</p></li>
-<li><p><strong>x_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_next_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_next_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_next_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_next_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1663,7 +1663,7 @@ variable.  Since NaN is also a valid double, this list
 contains NaN if the optimization problem is infeasible.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>double C array or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.9)">list</a></p>
+<dd class="field-odd"><p>double C array or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.10)">list</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1673,7 +1673,7 @@ contains NaN if the optimization problem is infeasible.</p>
 <h3>ecosWrapper<a class="headerlink" href="#ecoswrapper" title="Permalink to this headline">¶</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="toppra.solverwrapper.ecosWrapper">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">toppra.solverwrapper.</span></span><span class="sig-name descname"><span class="pre">ecosWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constraint_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_discretization</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/solverwrapper/ecos_solverwrapper.html#ecosWrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.solverwrapper.ecosWrapper" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">toppra.solverwrapper.</span></span><span class="sig-name descname"><span class="pre">ecosWrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">constraint_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_discretization</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/toppra/solverwrapper/ecos_solverwrapper.html#ecosWrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#toppra.solverwrapper.ecosWrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>A solver wrapper that handles linear and conic-quadratic constraints using ECOS.</p>
 <p><a class="reference internal" href="#toppra.solverwrapper.ecosWrapper" title="toppra.solverwrapper.ecosWrapper"><code class="xref py py-class docutils literal notranslate"><span class="pre">ecosWrapper</span></code></a> and <code class="xref py py-class docutils literal notranslate"><span class="pre">cvxpyWrapper</span></code> are the only
 wrappers that can handle conic-quadratic constraints, which are
@@ -1710,14 +1710,14 @@ quadratic problem without the quadratic term.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>i</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – The stage index.</p></li>
+<li><p><strong>i</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – The stage index.</p></li>
 <li><p><strong>H</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a> or None) – Shape (d, d). The coefficient of the quadratic objective
 function. If is None, set the quadratic term to zero.</p></li>
 <li><p><strong>g</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.21)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></a>) – Shape (d,). The linear term.</p></li>
-<li><p><strong>x_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_next_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
-<li><p><strong>x_next_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_next_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
+<li><p><strong>x_next_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a>) – If not specified, set to NaN.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1763,11 +1763,9 @@ variable.  Otherwise return a array that contains <cite>numpy.nan</cite>.</p>
 
         <div class="related-information">
               Copyright &#169; 2020, Hung Pham |
-            Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
-              and
-              <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
-              <a href="https://github.com/pradyunsg/furo">Furo theme</a>. |
-            <a class="muted-link" href="_sources/python_api.rst.txt"
+          Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+          <a href="https://github.com/pradyunsg/furo">Furo theme</a>.
+            | <a class="muted-link" href="_sources/python_api.rst.txt"
                rel="nofollow">
               Show Source
             </a>
@@ -1841,9 +1839,9 @@ variable.  Otherwise return a array that contains <cite>numpy.nan</cite>.</p>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/scripts/main.js"></script>
+    <script src="_static/scripts/furo.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     </body>
 </html>
