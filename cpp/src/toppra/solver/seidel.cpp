@@ -323,8 +323,8 @@ bool Seidel::solveStagewiseOptim(std::size_t i,
         m_A_ordered.row(cur_row++) = m_A[i].row(k);
       }
   } else {
-    for (int i = 0; i < m_A[i].rows(); ++i)
-      m_index_map[i] = i;
+    for (int k = 0; k < m_A[i].rows(); ++k)
+      m_index_map[k] = k;
     m_A_ordered = m_A[i];
   }
 

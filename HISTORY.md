@@ -3,6 +3,7 @@
 ## Unreleased
 
 - [cpp] Minor PR to make the cpp part compiles on windows64 (msvc). Thanks @ahoarau.
+- [cpp] Fixed incorrect variable bug in seidel solver.
 - [python] Fix linting error that causes CI failure
 - [ci] Do integration testing in gh action instead of circle CI
 
