@@ -21,9 +21,7 @@ def deprecated(func):
     @functools.wraps(func)
     def new_func(*args, **kwargs):
         warnings.warn(
-            "Call to deprecated function {} in module {}.".format(
-                func.__name__, func.__module__
-            ),
+            f"Call to deprecated function {func.__name__} in module {func.__module__}.",
             category=DeprecationWarning,
         )
         return func(*args, **kwargs)
@@ -153,7 +151,7 @@ def smooth_singularities(parametrization_instance, us, xs, vs=None):
     uds = np.diff(us, n=1)
     for i in range(parametrization_instance.N - 3):
         if uds[i] < 0 < uds[i + 1] and uds[i + 2] < 0:
-            logger.debug("Found potential singularity at {:d}".format(i))
+            logger.debug("Found potential singularity at %d", i)
             singular_indices.append(i)
     logger.debug("Found singularities at %s", singular_indices)
 
