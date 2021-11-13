@@ -5,6 +5,7 @@
 - [cpp] Minor PR to make the cpp part compiles on windows64 (msvc). Thanks @ahoarau.
 - [python] Fix linting error that causes CI failure
 - [ci] Do integration testing in gh action instead of circle CI
+- [ci] Remove Circle CI and use Github Action for all testings
 
 ## 0.4.2 (Aug 08 2021)
 - [cpp] Replace for loop in piecewise poly path to find index by std::lower_bound.
