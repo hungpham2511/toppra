@@ -419,7 +419,7 @@ class SplineInterpolator(AbstractGeometricPath):
             return self.cspld(path_positions)
         if order == 2:
             return self.cspldd(path_positions)
-        raise ValueError("Invalid order %s" % order)
+        raise ValueError(f"Invalid order {order}")
 
     @property
     def waypoints(self):
@@ -624,7 +624,7 @@ class PolynomialPath(AbstractGeometricPath):
             return self.evald(path_positions)
         if order == 2:
             return self.evaldd(path_positions)
-        raise ValueError("Invalid order %s" % order)
+        raise ValueError(f"Invalid order {order}")
 
     @property
     def dof(self):

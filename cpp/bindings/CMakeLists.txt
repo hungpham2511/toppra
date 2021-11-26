@@ -13,7 +13,9 @@ if(${PYTHON_BINDINGS})
   message(STATUS "Installing Python bindings to ${TOPPRA_PYTHON_SOURCE_DIR}")
 
   # Build bindings ###################################################
+  find_package(Python COMPONENTS Interpreter Development)
   find_package(pybind11 REQUIRED)
+  ## Ref: https://pybind11.readthedocs.io/en/stable/cmake/index.html
   message(STATUS "Found ${PYTHON_INCLUDE_DIR} ${PYTHON_EXECUTABLE}")
   pybind11_add_module(toppra_int toppra_int.cpp bindings.cpp
     constraints.cpp paths.cpp)
