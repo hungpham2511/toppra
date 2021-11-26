@@ -62,16 +62,17 @@ Vectors ConstAccel::eval_impl(const Vector& times, int order) const {
   TOPPRA_LOG_DEBUG("eval_impl. order=" << order);
   bool ret = evalParams(times, ss, vs, us);
 
+  // Check that the requested evaluation times are within
+  // bounds. Small tolerances (based on TOPPRA_ABS_TOL and
+  // TOPPRA_REL_TOL) are allowed. This quantity is small (~1e-8 sec)
+  // so it has almost nil effect on the physical trajectory quality.
   auto interval = pathInterval_impl();
-  for (std::size_t i = 0; i < times.size(); ++i)
+  if ((times.array() < (interval[0] * (1 - TOPPRA_REL_TOL) - TOPPRA_ABS_TOL)).any()) {
+    throw std::runtime_error("Request time instances out of numerical lower bounds.");
+  }
+  else if ((times.array() > (interval[1] * (1 + TOPPRA_REL_TOL) + TOPPRA_ABS_TOL)).any())
   {
-    if ((times[i] < interval[0]) || (times[i] > interval[1]))
-    {
-      std::ostringstream oss;
-      oss << "Time " << times[i] << " is outside of range [ " << interval[0]
-        << ", " << interval[1] << ']';
-      throw std::runtime_error(oss.str());
-    }
+    throw std::runtime_error("Request time instances out of numerical upper bounds.");
   }
 
   // Even if the times are within the bounds of the parametrizer, numerical
