@@ -62,13 +62,13 @@ TEST_F(ParametrizeConstAccel, Correctness) {
 
   // evaluation
   toppra::Vector ts = toppra::Vector{4};
-  ts << -1, 0, 3, 9;
+  ts << 1, 0, 3, 8;
   auto qs = p.eval(ts);
   auto qds = p.eval(ts, 1);
   auto qdds = p.eval(ts, 2);
   toppra::Vector q0, qd0, qdd0;
 
-  // test a few data points
+  // test for t = 0
   {
     // t = 0
     toppra::value_type t = 0, u = 0.15, v = 0, s = 0;
@@ -99,4 +99,39 @@ TEST_F(ParametrizeConstAccel, Correctness) {
       ASSERT_NEAR(qdds[2][i], qdd0[i], TEST_PRECISION);
     }
   }
+}
+
+TEST(ParametrizeConstAccelNoFixture, BoundsViolation) {
+    toppra::Vectors positions = {
+      toppra::Vector::Zero(1),
+      toppra::Vector::Zero(1)
+    };
+    toppra::Vectors velocities = {
+      toppra::Vector::Zero(1),
+      toppra::Vector::Zero(1)
+    };
+
+    double PATH_LEN = 3.51363644474459757560680;
+
+    toppra::Vector times = toppra::Vector::LinSpaced(2, 0, PATH_LEN);
+    auto std_times = std::vector<double>(times.data(), times.data() + times.size());
+
+    auto path = toppra::PiecewisePolyPath::constructHermite(positions, velocities, std_times);
+    auto ppath = std::make_shared<toppra::PiecewisePolyPath>(path);
+
+    toppra::Vector gridpoints = toppra::Vector::LinSpaced(10, 0, PATH_LEN);
+    toppra::Vector vsquared{10};
+    vsquared << 0, 0.1, 0.2, 0.3, 0.5, 0.5, 0.3, 0.2, 0.1, 0.0;
+    auto p = toppra::parametrizer::ConstAccel(ppath, gridpoints, vsquared);
+
+    auto bound = p.pathInterval();
+
+    // Assert different ways that the evaluation attempt can fail
+    const double EPS = 1.5e-8;
+    const double REL_EPS = 1e-6;
+    EXPECT_NO_THROW(p.eval_single(bound[0]));
+    EXPECT_NO_THROW(p.eval_single(bound[0] - EPS / 2));
+    EXPECT_THROW(p.eval_single(bound[0] - EPS), std::runtime_error);
+    EXPECT_NO_THROW(p.eval_single(bound[1]));
+    EXPECT_THROW(p.eval_single(bound[1] * (1 + REL_EPS) + 2 * EPS), std::runtime_error);
 }

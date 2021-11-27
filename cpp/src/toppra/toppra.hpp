@@ -24,9 +24,10 @@
 #endif
 
 // Use for checking if a quantity is very close to zero
-#ifndef TOPPRA_NEARLY_ZERO
 #define TOPPRA_NEARLY_ZERO 1e-8
-#endif
+#define TOPPRA_REL_TOL 1e-6
+#define TOPPRA_ABS_TOL 1e-8
+
 
 /// The TOPP-RA namespace
 namespace toppra {
