@@ -57,6 +57,8 @@ class Parametrizer : public GeometricPath {
   GeometricPathPtr m_path;
   // Input gridpoints
   Vector m_gridpoints;
+  // Input vsquared
+  Vector m_vsquared;
   // Input path velocities (not squared)
   Vector m_vs;
 

@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <fstream>
 #include <cmath>
 #include <cstddef>
 #include <cstdlib>
@@ -137,6 +138,95 @@ Bound ConstAccel::pathInterval_impl() const {
   Bound b;
   b << m_ts[0], m_ts[m_ts.size() - 1];
   return b;
+}
+
+bool ConstAccel::plot_parametrization(const int n_sample) {
+  // reimplements the function plot_parametrization() from the file toppra/parametrizer.py 
+  Vector _ss = this->m_gridpoints;
+  Vector _velocities = this->m_vsquared;
+  Bound pi = this->pathInterval();
+  Vector ts = Vector::LinSpaced(n_sample, pi(0), pi(1));
+  Vector ss, vs, us;
+  bool ok = this->evalParams(ts, ss, vs, us);
+  if(!ok){
+    return false;
+  }
+  Vectors qs = m_path->eval(ss);
+  Vector ss_dense = Vector::LinSpaced(n_sample, _ss(0), _ss(_ss.size()-1));
+  Vectors _ss_dense = m_path->eval(ss_dense);
+
+  //write python code to the file
+  std::ofstream myfile;
+  myfile.open("plot_parametrization.py");
+  myfile << "import numpy as np\n";
+  myfile << "import matplotlib.pyplot as plt\n";
+  writeVectorToFile(myfile, ts, "ts");
+  writeVectorToFile(myfile, ss, "ss");
+  writeVectorToFile(myfile, vs, "vs");
+  writeVectorsToFile(myfile, qs, "qs");
+  writeVectorToFile(myfile, this->m_ts, "_ts");
+  writeVectorToFile(myfile, _ss, "_ss");
+  writeVectorToFile(myfile, _velocities, "_velocities");
+  writeVectorToFile(myfile, ss_dense, "ss_dense");
+  writeVectorsToFile(myfile, _ss_dense, "_ss_dense");
+  myfile << "plt.subplot(2, 2, 1)\n";
+  myfile << "plt.plot(ts, ss, label=\"s(t)\")\n";
+  myfile << "plt.plot(_ts, _ss, \"o\", label=\"input\")\n";
+  myfile << "plt.title(\"path(time)\")\n";
+  myfile << "plt.legend()\n";
+  myfile << "plt.subplot(2, 2, 2)\n";
+  myfile << "plt.plot(ss, vs, label=\"v(s)\")\n";
+  myfile << "plt.plot(_ss, _velocities, \"o\", label=\"input\")\n";
+  myfile << "plt.title(\"velocity(path)\")\n";
+  myfile << "plt.legend()\n";
+  myfile << "plt.subplot(2, 2, 3)\n";
+  myfile << "plt.plot(ts, qs)\n";
+  myfile << "plt.title(\"retimed path\")\n";
+  myfile << "plt.subplot(2, 2, 4)\n";
+  myfile << "plt.plot(ss_dense, _ss_dense)\n";
+  myfile << "plt.title(\"original path\")\n";
+  myfile << "plt.tight_layout()\n";
+  myfile << "plt.show()\n";
+  myfile.close();
+
+  //execute python file
+  system("python plot_parametrization.py");
+
+  return true;
+}
+
+void ConstAccel::writeVectorToFile(std::ofstream& myfile, const Vector& vector, const std::string & name) const {
+  const double factor = 10000;
+  myfile << name << " = np.array([";
+  for(size_t i=0; i<vector.size(); i++){
+    myfile << factor*vector(i);
+    if(i<vector.size()-1){
+      myfile << ", ";
+    }
+  }
+  myfile << "])\n";
+  myfile << name << " = " << name << " / " << std::to_string(factor) << "\n";
+}
+
+void ConstAccel::writeVectorsToFile(std::ofstream& myfile, const Vectors& vectors, const std::string & name) const {
+  const double factor = 10000;
+  myfile << name << " = np.array([";
+  for (size_t i = 0; i < vectors.size(); i++) {
+    Vector vector = vectors.at(i);
+    myfile << "[";
+    for (size_t j = 0; j < vector.size(); j++) {
+      myfile << factor*vector(j);
+      if(j<vector.size()-1){
+        myfile << ", ";
+      }
+    }
+    myfile << "]";
+    if(i<vectors.size()-1){
+      myfile << ", ";
+    }
+  }
+  myfile << "])\n";
+  myfile << name << " = " << name << " / " << std::to_string(factor) << "\n";
 }
 
 }  // namespace parametrizer

@@ -5,7 +5,7 @@ namespace toppra {
 
 Parametrizer::Parametrizer(GeometricPathPtr path, const Vector& gridpoints,
                            const Vector& vsquared)
-    : m_path(path), m_gridpoints(gridpoints) {
+    : m_path(path), m_gridpoints(gridpoints), m_vsquared(vsquared) {
   assert(gridpoints.size() == vsquared.size());
   m_vs.resize(vsquared.size());
   for (std::size_t i = 0; i < gridpoints.size(); i++) {
