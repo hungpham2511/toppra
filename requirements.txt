@@ -8,7 +8,7 @@ matplotlib<3.0.0
 
 cvxpy==0.4.11
 CVXcanon==0.1.1
-cvxopt==1.2.5
+cvxopt==1.2.7
 pandas
 tabulate
 pytest==4.6.11
