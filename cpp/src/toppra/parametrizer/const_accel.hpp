@@ -16,6 +16,8 @@ class ConstAccel : public Parametrizer {
  public:
   ConstAccel(GeometricPathPtr path, const Vector &gridpoints, const Vector &vsquared);
 
+  const Vector get_m_ts() {return m_ts;}
+ 
  private:
   /** Return joint derivatives at specified times. */
   Vectors eval_impl(const Vector &times, int order = 0) const override;
