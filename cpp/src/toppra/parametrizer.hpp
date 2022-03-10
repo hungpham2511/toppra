@@ -52,6 +52,8 @@ class Parametrizer : public GeometricPath {
 
   virtual ~Parametrizer() {}
 
+  virtual const Vector& getTimes() const = 0;
+
  protected:
   // Input geometric path
   GeometricPathPtr m_path;
