@@ -5,6 +5,7 @@
 - [cpp] Minor PR to make the cpp part compiles on windows64 (msvc). Thanks @ahoarau.
 - [cpp] Fixed out of bounds issue in parametrizer::ConstAccel.
 - [cpp] Fixed incorrect variable bug in seidel solver.
+- [cpp] [#187] Expose waypoint times in parametizers.
 - [python] Fix linting error that causes CI failure
 - [ci] Do integration testing in gh action instead of circle CI
 - [ci] Remove Circle CI and use Github Action for all testings
