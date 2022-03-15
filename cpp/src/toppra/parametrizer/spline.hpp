@@ -27,6 +27,9 @@ public:
      * @param vsquared the path velocity squared with shape (N+1,).
     */
     Spline(GeometricPathPtr path, const Vector &gridpoints, const Vector &vsquared);
+
+    const Vector& getTimes() const override { return m_ts; }
+
 private:
     /** Return joint derivatives at specified times. */
     Vectors eval_impl(const Vector &times, int order = 0) const override;
