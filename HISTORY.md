@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.5.0 (July 08 2021)
 
 - [cpp] Minor PR to make the cpp part compiles on windows64 (msvc). Thanks @ahoarau.
 - [cpp] Fixed out of bounds issue in parametrizer::ConstAccel.

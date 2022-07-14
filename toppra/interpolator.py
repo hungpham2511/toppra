@@ -180,15 +180,15 @@ class AbstractGeometricPath(object):
 
     def eval(self, ss_sam: Union[float, np.ndarray]):
         """Evaluate the path values."""
-        return self.__call__(ss_sam, 0)
+        return self(ss_sam, 0)
 
     def evald(self, ss_sam: Union[float, np.ndarray]):
         """Evaluate the path first-derivatives."""
-        return self.__call__(ss_sam, 1)
+        return self(ss_sam, 1)
 
     def evaldd(self, ss_sam: Union[float, np.ndarray]):
         """Evaluate the path second-derivatives."""
-        return self.__call__(ss_sam, 2)
+        return self(ss_sam, 2)
 
 
 class RaveTrajectoryWrapper(AbstractGeometricPath):
