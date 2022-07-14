@@ -21,7 +21,8 @@ ReturnCode TOPPRA::computeForwardPass(value_type vel_start) {
   auto deltas = m_solver->deltas();
   Bound x, x_next;
   m_data.parametrization(0) = vel_start;
-  for (std::size_t i = 0; i < m_N; i++) {
+  for (std::size_t i = 0; i < m_data.parametrization.size() - 1; i++) {
+    TOPPRA_LOG_DEBUG("i: " << i);
     g_upper << -2 * deltas(i), -1;
     x.setConstant(m_data.parametrization(i));
     x_next = m_data.controllable_sets.row(i + 1);
