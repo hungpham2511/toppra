@@ -7,6 +7,8 @@
 #include <toppra/solver.hpp>
 #include <toppra/toppra.hpp>
 
+#include <omp.h>
+
 namespace toppra {
 
 /// Return code for Path Parametrization algorithm.
@@ -95,6 +97,15 @@ class PathParametrizationAlgorithm {
   virtual ReturnCode computePathParametrization(value_type vel_start = 0,
                                                 value_type vel_end = 0);
 
+  /** Compute the time parametrization of the given path in parallel.
+   *
+   * \param vel_start
+   * \param vel_end
+   * \return Return code.
+   */
+  virtual ReturnCode computePathParametrizationParallel(value_type vel_start = 0,
+                                                        value_type vel_end = 0);
+
   /** Compute the sets of feasible squared velocities.
    */
   ReturnCode computeFeasibleSets();
@@ -127,6 +138,10 @@ class PathParametrizationAlgorithm {
    */
   ReturnCode computeControllableSets(const Bound &vel_ends);
 
+  /** Compute the sets of controllable squared path velocities in parallel.
+   */
+  ReturnCode computeControllableSetsParallel(const Bound &vel_ends);
+
   /** To be implemented in child method. */
   LinearConstraintPtrs m_constraints;
   GeometricPathPtr m_path;
@@ -149,7 +164,7 @@ class PathParametrizationAlgorithm {
    * individual solver.
    * See https://github.com/hungpham2511/toppra/issues/156
    */
-  Bound m_initXBound = {0, 100};
+  Bound m_initXBound = {0, std::numeric_limits<value_type>::infinity()};
 };
 
 }  // namespace toppra

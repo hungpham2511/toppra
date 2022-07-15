@@ -5,6 +5,16 @@
 #include <iostream>
 #include "toppra/toppra.hpp"
 
+#include <ctime>
+#include <sys/time.h>
+
+unsigned long long GetCurrentTimeUsec()
+{
+  struct timeval tv;
+  gettimeofday(&tv,NULL);
+  return ((unsigned long long)tv.tv_sec * 1000000 + (unsigned long long)tv.tv_usec);
+}
+
 namespace toppra {
 
 PathParametrizationAlgorithm::PathParametrizationAlgorithm(
@@ -13,15 +23,24 @@ PathParametrizationAlgorithm::PathParametrizationAlgorithm(
 
 ReturnCode PathParametrizationAlgorithm::computePathParametrization(value_type vel_start,
                                                                     value_type vel_end) {
+  size_t be = GetCurrentTimeUsec();
   initialize();
+  size_t en = GetCurrentTimeUsec();
+  printf("time of init:                             %fms\n", (en - be)/1000.0);
+  be = en;
   m_solver->setupSolver();
   Bound vel_ends;
   vel_ends.setConstant(vel_end);
   m_data.ret_code = computeControllableSets(vel_ends);
+  en = GetCurrentTimeUsec();
+  printf("time of computeControllableSets:          %fms\n", (en - be)/1000.0);
+  be = en;
   if ((int)m_data.ret_code > 0) {
     return m_data.ret_code;
   }
   m_data.ret_code = computeForwardPass(vel_start);
+  en = GetCurrentTimeUsec();
+  printf("time of computeForwardPass:               %fms\n", (en - be)/1000.0);
   return m_data.ret_code;
 };
 
@@ -64,6 +83,101 @@ ReturnCode PathParametrizationAlgorithm::computeControllableSets(
     // if the solution is negative.
     m_data.controllable_sets(i, 0) = std::max(0.0, solution[1]);
   }
+  return ret;
+}
+
+ReturnCode PathParametrizationAlgorithm::computePathParametrizationParallel(value_type vel_start,
+                                                                            value_type vel_end) {
+
+  size_t be = GetCurrentTimeUsec();
+  initialize();
+  size_t en = GetCurrentTimeUsec();
+  printf("time of init:                             %fms\n", (en - be)/1000.0);
+  be = en;
+
+  m_solver->setupSolver();
+  Bound vel_ends;
+  vel_ends.setConstant(vel_end);
+  m_data.ret_code = computeControllableSetsParallel(vel_ends);
+  en = GetCurrentTimeUsec();
+  printf("time of computeControllableSetsParallel:  %fms\n", (en - be)/1000.0);
+  be = en;
+  if ((int)m_data.ret_code > 0) {
+    return m_data.ret_code;
+  }
+
+  m_data.ret_code = computeForwardPass(vel_start);
+  en = GetCurrentTimeUsec();
+  printf("time of computeForwardPass:               %fms\n", (en - be)/1000.0);
+  return m_data.ret_code;
+};
+
+ReturnCode PathParametrizationAlgorithm::computeControllableSetsParallel(
+    const Bound &vel_ends) {
+  ReturnCode ret = ReturnCode::OK;
+  bool solver_ret;
+  Vector g_upper{2}, g_lower{2}, solution;
+  // Vectors  solution_upper, solution_lower;
+  // solution_upper.assign(m_N, Vector::Zero(2, 1));
+  // solution_lower.assign(m_N, Vector::Zero(2, 1));
+
+  g_upper << 1e-9, -1;
+  g_lower << -1e-9, 1;
+  m_data.controllable_sets.row(m_N) = vel_ends.cwiseAbs2();
+
+  size_t be = GetCurrentTimeUsec();
+
+  bool batch_ok = true;
+  omp_set_num_threads(6);
+  printf("omp_get_max_threads %d\n", omp_get_max_threads());
+  #pragma omp parallel for schedule(dynamic)
+  for (int i = 0; i < m_N; i++) {
+    // solver_ret = m_solver->solveStagewiseBatch(i, g_upper, solution_upper[i]);
+    solver_ret = m_solver->solveStagewiseBatch(i, g_upper);
+    if (!solver_ret) {
+      ret = ReturnCode::ERR_FAIL_CONTROLLABLE;
+      printf("Fail: solveStagewiseBatch, upper problem, idx: %d\n", i);
+      batch_ok = false;
+    }
+
+    // solver_ret = m_solver->solveStagewiseBatch(i, g_lower, solution_lower[i]);
+    solver_ret = m_solver->solveStagewiseBatch(i, g_lower);
+    if (!solver_ret) {
+      ret = ReturnCode::ERR_FAIL_CONTROLLABLE;
+      printf("Fail: solveStagewiseBatch, lower problem, idx: %d\n", i);
+      batch_ok = false;
+    }
+  }
+  if (!batch_ok) return ret;
+
+  size_t en = GetCurrentTimeUsec();
+  printf("time of Batch:    %fms\n", (en - be)/1000.0);
+  be = en;
+
+  Bound x_next;
+  for (int i = m_N - 1; i != -1; i--) {
+    x_next = m_data.controllable_sets.row(i + 1);
+    solver_ret = m_solver->solveStagewiseBack(i, g_upper, x_next, solution);
+    if (!solver_ret) {
+      ret = ReturnCode::ERR_FAIL_CONTROLLABLE;
+      printf("Fail: solveStagewiseBack, upper problem, idx: %d\n", i);
+      break;
+    }
+    m_data.controllable_sets(i, 1) = solution[1];
+
+    solver_ret = m_solver->solveStagewiseBack(i, g_lower, x_next, solution);
+    if (!solver_ret) {
+      ret = ReturnCode::ERR_FAIL_CONTROLLABLE;
+      printf("Fail: solveStagewiseBack, lower problem, idx: %d\n", i);
+      break;
+    }
+    // For whatever reason, sometimes the solver return negative
+    // solution despite having a set of positve bounds. This readjust
+    // if the solution is negative.
+    m_data.controllable_sets(i, 0) = std::max(0.0, solution[1]);
+  }
+  en = GetCurrentTimeUsec();
+  printf("time of Back:     %fms\n", (en - be)/1000.0);
   return ret;
 }
 
