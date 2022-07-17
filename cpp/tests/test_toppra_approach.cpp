@@ -48,7 +48,7 @@ TEST_F(Approach, ToppraCompleteExample) {
   std::vector<toppra::value_type> steps;
   steps = std::vector<toppra::value_type>{0, 1, 2};
   toppra::PiecewisePolyPath hermite =
-      toppra::PiecewisePolyPath::constructHermite(positions, velocities, steps);
+      toppra::PiecewisePolyPath::CubicHermiteSpline(positions, velocities, steps);
   toppra::GeometricPathPtr path;
   path = std::make_shared<toppra::PiecewisePolyPath>(hermite);
 

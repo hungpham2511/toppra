@@ -1,17 +1,41 @@
 #ifndef TOPPRA_PIECEWISE_POLY_PATH_HPP
 #define TOPPRA_PIECEWISE_POLY_PATH_HPP
 
+#include <array>
 #include <toppra/geometric_path.hpp>
 #include <toppra/toppra.hpp>
 #include <toppra/export.hpp>
 
 namespace toppra {
 
-/// Boundary condition
+
 struct BoundaryCond {
-    int order;
-    Vector values;
+  BoundaryCond() = default;
+
+  /**
+   * @brief Construct a new BoundaryCond object with a manually specified derivative.
+   * 
+   * @param order Order of the specified derivative.
+   * @param values Vector of values. Must have the same size as the path.
+   */
+  BoundaryCond(int order, const std::vector<value_type> &values);  
+
+  BoundaryCond(int order, const Vector values);
+
+  /**
+   * @brief Construct a new Boundary Cond object with well-known boundary condition.
+   * 
+   * @param bc_type Possible values: not-a-knot, clamped, natural.
+   */
+  BoundaryCond(std::string bc_type); 
+
+  enum Type { NotAKnot, Clamped, Natural, Manual};
+  Type bc_type = NotAKnot;
+  int order = 0;
+  Vector values;
 };
+
+using BoundaryCondFull = std::array<BoundaryCond, 2>;
 
 
 /**
@@ -99,18 +123,9 @@ class PiecewisePolyPath : public GeometricPath {
    * @param bc_type Boundary condition. Currently on fixed boundary condition.
    * @return PiecewisePolyPath
    */
-  static PiecewisePolyPath CubicSpline(const Vectors &positions, const Vector &times, const std::array<BoundaryCond, 2> &bc_type){
-    return PiecewisePolyPath(positions, times, bc_type);
-  }
+  static PiecewisePolyPath CubicSpline(const Vectors &positions, const Vector &times, BoundaryCondFull bc_type);
 
 private:
-  /**
-   * \brief Construct a new piecewise 3rd degree polynomial.
-   * @param positions Vectors of path positions at given times.
-   * @param times Vector of times in a strictly increasing order.
-   * @param bc_type Boundary conditions at the curve start and end.
-   */
-  PiecewisePolyPath(const Vectors &positions, const Vector &times, const std::array<BoundaryCond, 2> &bc_type);
 
   /**
    * @brief Calculate coefficients for Hermite spline.
@@ -123,13 +138,17 @@ private:
                      const std::vector<value_type> times);
 
 protected:
-  void computeCubicSplineCoefficients(const Vectors &positions, const Vector &times,
-          const std::array<BoundaryCond, 2> &bc_type, Matrices &coefficients);
+  static void computeCubicSplineCoefficients(const Vectors &positions,
+                                             const Vector &times,
+                                             const BoundaryCondFull &bc_type,
+                                             Matrices &coefficients);
+  // static void checkInputArgs(const Vectors &positions, const Vector &times,
+                            //  const BoundaryCondFull &bc_type);
+
+  // Cubic spline
   void reset();
   size_t findSegmentIndex(value_type pos) const;
   void checkInputArgs();
-  void checkInputArgs(const Vectors &positions, const Vector &times,
-                      const std::array<BoundaryCond, 2> &bc_type);
   void computeDerivativesCoefficients();
   const Matrix &getCoefficient(size_t seg_index, int order) const;
   Matrices m_coefficients, m_coefficients_1, m_coefficients_2;

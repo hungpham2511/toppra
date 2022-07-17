@@ -116,7 +116,7 @@ TEST(ParametrizeConstAccelNoFixture, BoundsViolation) {
     toppra::Vector times = toppra::Vector::LinSpaced(2, 0, PATH_LEN);
     auto std_times = std::vector<double>(times.data(), times.data() + times.size());
 
-    auto path = toppra::PiecewisePolyPath::constructHermite(positions, velocities, std_times);
+    auto path = toppra::PiecewisePolyPath::CubicHermiteSpline(positions, velocities, std_times);
     auto ppath = std::make_shared<toppra::PiecewisePolyPath>(path);
 
     toppra::Vector gridpoints = toppra::Vector::LinSpaced(10, 0, PATH_LEN);
