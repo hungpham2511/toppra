@@ -326,4 +326,13 @@ PiecewisePolyPath PiecewisePolyPath::constructHermite(
   return path;
 }
 
+PiecewisePolyPath PiecewisePolyPath::CubicHermiteSpline(
+    const Vectors &positions, const Vectors &velocities,
+    const std::vector<value_type> times) {
+  PiecewisePolyPath path;
+  path.initAsHermite(positions, velocities, times);
+  return path;
+}
+
+
 } // namespace toppra

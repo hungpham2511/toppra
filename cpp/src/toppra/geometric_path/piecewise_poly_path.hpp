@@ -3,14 +3,16 @@
 
 #include <toppra/geometric_path.hpp>
 #include <toppra/toppra.hpp>
+#include <toppra/export.hpp>
 
 namespace toppra {
 
 /// Boundary condition
-typedef struct {
+struct BoundaryCond {
     int order;
     Vector values;
-} BoundaryCond;
+};
+
 
 /**
  * \brief Piecewise polynomial geometric path.
@@ -39,14 +41,6 @@ class PiecewisePolyPath : public GeometricPath {
    * @param breakpoints Vector of breakpoints.
    */
   PiecewisePolyPath(const Matrices &coefficients, std::vector<value_type> breakpoints);
-
-  /**
-   * \brief Construct a new piecewise 3rd degree polynomial.
-   * @param positions Vectors of path positions at given times.
-   * @param times Vector of times in a strictly increasing order.
-   * @param bc_type Boundary conditions at the curve start and end.
-   */
-  PiecewisePolyPath(const Vectors &positions, const Vector &times, const std::array<BoundaryCond, 2> &bc_type);
 
   /**
    * /brief Evaluate the path at given position.
@@ -82,9 +76,14 @@ class PiecewisePolyPath : public GeometricPath {
    * @param times Path positions or times. This is the independent variable.
    * @return PiecewisePolyPath
    */
-  static PiecewisePolyPath constructHermite(const Vectors &positions,
-                                            const Vectors &velocities,
-                                            const std::vector<value_type> times);
+  static PiecewisePolyPath
+  CubicHermiteSpline(const Vectors &positions, const Vectors &velocities,
+                     const std::vector<value_type> times);
+
+  TOPPRA_DEPRECATED static PiecewisePolyPath
+  constructHermite(const Vectors &positions, const Vectors &velocities,
+                   const std::vector<value_type> times);
+
 
   /**
    * @brief Construct a cubic spline.
@@ -97,16 +96,33 @@ class PiecewisePolyPath : public GeometricPath {
    *
    * @param positions Robot joints corresponding to the given times. 
    * @param times Path positions or times. This is the independent variable.
-   * @param bc_type Boundary condition.
+   * @param bc_type Boundary condition. Currently on fixed boundary condition.
    * @return PiecewisePolyPath
    */
   static PiecewisePolyPath CubicSpline(const Vectors &positions, const Vector &times, const std::array<BoundaryCond, 2> &bc_type){
     return PiecewisePolyPath(positions, times, bc_type);
   }
 
- protected:
+private:
+  /**
+   * \brief Construct a new piecewise 3rd degree polynomial.
+   * @param positions Vectors of path positions at given times.
+   * @param times Vector of times in a strictly increasing order.
+   * @param bc_type Boundary conditions at the curve start and end.
+   */
+  PiecewisePolyPath(const Vectors &positions, const Vector &times, const std::array<BoundaryCond, 2> &bc_type);
+
+  /**
+   * @brief Calculate coefficients for Hermite spline.
+   * 
+   * @param positions See the constructor.
+   * @param velocities 
+   * @param times 
+   */
   void initAsHermite(const Vectors &positions, const Vectors &velocities,
                      const std::vector<value_type> times);
+
+protected:
   void computeCubicSplineCoefficients(const Vectors &positions, const Vector &times,
           const std::array<BoundaryCond, 2> &bc_type, Matrices &coefficients);
   void reset();

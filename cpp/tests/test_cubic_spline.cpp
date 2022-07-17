@@ -33,7 +33,8 @@ protected:
 
     void ConstructCubicSpline(const Vectors &positions, const Vector &times,
                               const std::array<BoundaryCond, 2> &bc_type) {
-        path = toppra::PiecewisePolyPath(positions, times, bc_type);
+
+      path = toppra::PiecewisePolyPath::CubicSpline(positions, times, bc_type);
     }
 
     void AssertSplineKnots() {

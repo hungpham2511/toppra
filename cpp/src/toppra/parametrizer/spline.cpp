@@ -39,7 +39,10 @@ Spline::Spline(GeometricPathPtr path, const Vector& gridpoints, const Vector& vs
         init_bc.order = final_bc.order = 1;
         init_bc.values = m_path->eval_single(path_interval[0], 1) * m_vs[0];
         final_bc.values = m_path->eval_single(path_interval[1], 1) * m_vs[m_vs.rows() - 1];
-        m_path = std::make_shared<PiecewisePolyPath>(q_grid, m_ts, std::array<BoundaryCond, 2>{init_bc, final_bc});
+
+        m_path =
+            std::make_shared<PiecewisePolyPath>(PiecewisePolyPath::CubicSpline(
+                q_grid, m_ts, std::array<BoundaryCond, 2>{init_bc, final_bc}));
 }
 
 Vectors Spline::eval_impl(const Vector &times, int order) const {
