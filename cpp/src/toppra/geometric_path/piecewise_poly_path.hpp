@@ -66,11 +66,43 @@ class PiecewisePolyPath : public GeometricPath {
   void deserialize(std::istream &I) override;
 
   /**
-   * \brief Construct a new Hermite polynomial.
+   * @brief Construct a piecewise Cubic Hermite polynomial.
+   *
+   * See https://en.wikipedia.org/wiki/Cubic_Hermite_spline for a good
+   * description of this interplation scheme.
+   *
+   * This function is implemented based on scipy.interpolate.CubicHermiteSpline.
+   *
+   * Note that path generates by this function is not guaranteed to have
+   * continuous acceleration, or the path second-order derivative.
+   *
+   * @param positions Robot joints corresponding to the given times. Must have
+   * the same size as times.
+   * @param velocities Robot joint velocities.
+   * @param times Path positions or times. This is the independent variable.
+   * @return PiecewisePolyPath
    */
   static PiecewisePolyPath constructHermite(const Vectors &positions,
                                             const Vectors &velocities,
                                             const std::vector<value_type> times);
+
+  /**
+   * @brief Construct a cubic spline.
+   *
+   * Interpolate the given joint positions with a spline that is twice
+   * continuously differentiable. This means the position, velocity and
+   * acceleration are guaranteed to be continous but not jerk.
+   *
+   * This method is modelled after scipy.interpolate.CubicSpline.
+   *
+   * @param positions Robot joints corresponding to the given times. 
+   * @param times Path positions or times. This is the independent variable.
+   * @param bc_type Boundary condition.
+   * @return PiecewisePolyPath
+   */
+  static PiecewisePolyPath CubicSpline(const Vectors &positions, const Vector &times, const std::array<BoundaryCond, 2> &bc_type){
+    return PiecewisePolyPath(positions, times, bc_type);
+  }
 
  protected:
   void initAsHermite(const Vectors &positions, const Vectors &velocities,
