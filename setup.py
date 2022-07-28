@@ -6,10 +6,10 @@ import numpy as np
 import sys
 
 NAME = "toppra"
-with open("VERSION", "r") as file_:
+with open("VERSION", "r", encoding='UTF-8') as file_:
     VERSION = file_.read()
 DESCR = "toppra: time-optimal parametrization of trajectories for robots subject to constraints."
-with open("README.md", "r") as file_:
+with open("README.md", "r", encoding='UTF-8') as file_:
     LONG_DESCRIPTION = file_.read()
 
 URL = "https://github.com/hungpham2511/toppra"
