@@ -43,9 +43,31 @@ public:
   virtual Vectors eval(const Vector &positions, int order = 0) const;
 
   /**
-   * \brief Evaluate and propose gridpoints.
-   *
-   *
+     \brief Generate gridpoints that sufficiently cover the given path.
+     
+     This function operates in multiple passes through the geometric
+     path from the start to the end point. In each pass, for each
+     segment, the maximum interpolation error is estimated using the
+     following equation:
+
+        err_{est} = 0.5 * \mathrm{max}(\mathrm{abs}(p'' * d_{segment} ^ 2))
+
+     Here `p''` is the second derivative of the path and d_segment is
+     the length of the segment. If the estimated error `err_{test}` is
+     greater than the given threshold `max_err_threshold` then the
+     segment is divided in two half.
+     
+     Intuitively, at positions with higher curvature, there must be
+     more points in order to improve approximation
+     quality. Theoretically toppra performs the best when the proposed
+     gridpoint is optimally distributed.
+
+     @param maxErrThreshold Maximum worstcase error thrshold allowable.
+     @param maxIteration Maximum number of iterations.
+     @param maxSegLength All segments length should be smaller than this value.
+     @param minNbPoints Minimum number of points.
+     @return The proposed gridpoints.
+
    */
   Vector proposeGridpoints(double maxErrThreshold=1e-4, int maxIteration=100, double maxSegLength=0.05, int minNbPoints=100) const;
 

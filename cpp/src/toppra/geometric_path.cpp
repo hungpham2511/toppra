@@ -20,7 +20,7 @@ Vector GeometricPath::proposeGridpoints(double max_err_threshold, int max_iterat
   int nb_gridpoints = 2;
 
   // Add points according to error threshold
-  for (auto iter=0; iter < max_iteration; iter++){
+  for (int iter=0; iter < max_iteration; iter++){
     bool add_new_points = false;
     for (auto point = gridpoints.begin(); std::next(point, 1) != gridpoints.end(); point++){
 
@@ -34,6 +34,7 @@ Vector GeometricPath::proposeGridpoints(double max_err_threshold, int max_iterat
         continue;
       }
 
+      // maximum interpolation error
       auto max_err = (0.5 * eval_single(p_mid, 2) * dist * dist).cwiseAbs().maxCoeff();
       if (max_err > max_err_threshold){
         gridpoints.emplace_after(point, p_mid);
