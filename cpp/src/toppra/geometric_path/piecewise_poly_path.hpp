@@ -25,7 +25,7 @@ struct BoundaryCond {
   /**
    * @brief Construct a new Boundary Cond object with well-known boundary condition.
    * 
-   * @param bc_type Possible values: not-a-knot, clamped, natural.
+   * @param bc_type Possible values: not-a-knot, clamped, natural and manual.
    */
   BoundaryCond(std::string bc_type); 
 
