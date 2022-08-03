@@ -14,34 +14,39 @@ enum DiscretizationType {
     Interpolation, ///< larger problem size, but higher accuracy.
 };
 
-/** \brief Abstract interface for the constraints.
+/** \brief Abstract interface for constraints used in TOPPRA.
  *
- *  Also known as Second-order Constraint.
+ * This class of constraint is also known as Second-order Constraint.
  *
- *  A Canonical Linear Constraint has the following form:
- *  \f{eqnarray}
- *      \mathbf a_i u + \mathbf b_i x + \mathbf c_i &= v \\
- *      \mathbf F_i v & \leq \mathbf g_i                \\
- *      x^b_{i, 0} \leq x & \leq x^b_{i, 1} \\
- *      u^b_{i, 0} \leq u & \leq u^b_{i, 1}
- *  \f}
+ * A Canonical Linear Constraint has the following form:
+ * \f{eqnarray}
+ *     \mathbf a_i u + \mathbf b_i x + \mathbf c_i &= v \\
+ *     \mathbf F_i v & \leq \mathbf g_i                \\
+ *     x^b_{i, 0} \leq x & \leq x^b_{i, 1} \\
+ *     u^b_{i, 0} \leq u & \leq u^b_{i, 1}
+ * \f}
  *
- *  Alternatively, if \f$ \mathbf F_i \f$ is constant for all values
- *  of \f$i\f$, then we can consider the simpler constraint:
- *  \f[
- *      \mathbf{F} v \leq \mathbf g
- *  \f]
+ * Here \f$u\f$ and \f$x\f$ represent the path acceleration and path velocity
+ * square. \f$v$\f is an auxilliary variable that represents either the robot
+ * joint/taskspace velocity, acceleration or torque, or just the squared path
+ * velocity term only.
  *
- *  In this case, the returned value of \f$F\f$ by
- *  LinearConstraint::computeParams has shape (k, m) instead of (N, k, m),
- *  \f$ g \f$ (k) instead of (N, k) and the class attribute
- *  LinearConstraint::constantF will be \c true.
+ * Alternatively, if \f$ \mathbf F_i \f$ is constant for all values
+ * of \f$i\f$, then we can consider the simpler constraint:
+ * \f[
+ *     \mathbf{F} v \leq \mathbf g
+ * \f]
  *
- *  \note Derived classes should at least implement the method
- *  LinearConstraint::computeParams_impl.
+ * In this case, the returned value of \f$F\f$ by
+ * LinearConstraint::computeParams has shape (k, m) instead of (N, k, m),
+ * \f$ g \f$ (k) instead of (N, k) and the class attribute
+ * LinearConstraint::constantF will be \c true.
  *
- *  \sa JointAccelerationConstraint, JointVelocityConstraint,
- *  CanonicalLinearSecondOrderConstraint
+ * \note Derived classes should at least implement the method
+ * LinearConstraint::computeParams_impl.
+ *
+ * \sa JointAccelerationConstraint, JointVelocityConstraint,
+ * CanonicalLinearSecondOrderConstraint
  *
  * */
 class LinearConstraint {

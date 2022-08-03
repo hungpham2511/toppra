@@ -30,6 +30,8 @@ export LD_LIBRARY_PATH=/opt/openrobots/lib:${LD_LIBRARY_PATH}
 export CMAKE_PREFIX_PATH=/opt/openrobots
 ```
 
+Add `-DBUILD_WITH_PINOCCHIO=ON` to the cmake command.
+
 To run the tests
 
 ``` sh
