@@ -60,7 +60,10 @@ void exposePaths(py::module m)
       .def(py::init<const toppra::Matrices&, std::vector<toppra::value_type>>())
       .def("__str__", [](const PiecewisePolyPath& p) -> std::string { return "PiecewisePolyPath(...)"; })
       .def("__repr__", [](const PiecewisePolyPath& p) -> std::string { return "PiecewisePolyPath(...)"; })
-      .def_static("constructHermite", &PiecewisePolyPath::constructHermite);
+      .def_static("constructHermite", &PiecewisePolyPath::constructHermite)
+      .def_static("CubicHermiteSpline", &PiecewisePolyPath::CubicHermiteSpline)
+      .def_static("CubicSpline", &PiecewisePolyPath::CubicSpline)
+      ;
 }
 }  // namespace python
 }  // namespace toppra

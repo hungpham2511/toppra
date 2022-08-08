@@ -1,6 +1,6 @@
 #ifndef TOPPRA_TEST_UTILS_HPP
 #define TOPPRA_TEST_UTILS_HPP
-
+#include <toppra/toppra.hpp>
 namespace toppra {
 
 using vvvectors = std::vector<std::vector<value_type> >;
