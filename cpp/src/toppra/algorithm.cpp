@@ -123,8 +123,21 @@ void PathParametrizationAlgorithm::initialize() {
     throw std::logic_error("You must set a solver first.");
   Bound I (m_path->pathInterval());
 
-  if (m_data.gridpoints.size() == 0)
-    m_data.gridpoints = Vector::LinSpaced(m_N + 1, I(0), I(1));
+  // Intiialize the gridpoints based on N
+  if (m_data.gridpoints.size() == 0) {
+
+    // If the number of gridpoint is set to 0, try to find automatically a reasonable gridpoint
+    if (m_N == 0){
+      m_data.gridpoints = m_path->proposeGridpoints();
+      m_N = m_data.gridpoints.size() - 1;
+    }
+
+    // Otherwise use linearly spaced gridpoints
+    else
+      m_data.gridpoints = Vector::LinSpaced(m_N + 1, I(0), I(1));
+
+    TOPPRA_LOG_DEBUG("gridpoints used:" << m_data.gridpoints.transpose());
+  }
   else if (m_data.gridpoints.size() != m_N + 1)
     throw std::invalid_argument("number of gridpoints does not match attribute N.");
 
