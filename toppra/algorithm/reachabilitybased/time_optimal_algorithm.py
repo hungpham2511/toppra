@@ -40,7 +40,7 @@ class TOPPRA(ReachabilityAlgorithm):
     Notes
     -----
     In addition to the given constraints, there are additional
-    constraints on the solutions enforced by the solver-warpper.
+    constraints on the solutions enforced by the solver-wrapper.
     Therefore, different parametrizations are returned for different
     solver wrappers. However, the difference should be very small,
     especially for well-conditioned problems.
