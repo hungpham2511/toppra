@@ -269,7 +269,8 @@ class hotqpOASESSolverWrapper(SolverWrapper):
             ):
                 logger.fatal(
                     f"(0, 0) satisfies all constraints => error due to numerical errors, \
-                        {self._A}, {self._lA}, {self._hA}, {self._l}, {self._h}"
+                        %s, %s, %s, %s, %s",  self._A, self._lA, self._hA, self._l, self._h
+
                 )
             else:
                 logger.debug("(0, 0) does not satisfy all constraints.")
