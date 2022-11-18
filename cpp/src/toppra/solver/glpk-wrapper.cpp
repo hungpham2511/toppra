@@ -1,12 +1,15 @@
 #include <toppra/solver/glpk-wrapper.hpp>
 
-#include <glpk.h>
+#ifdef BUILD_WITH_GLPK
+# include <glpk.h>
+#endif
 
 #include <iostream>
 
 namespace toppra {
 namespace solver {
 
+#ifdef BUILD_WITH_GLPK
 void intersection (const Bound& a, const Bound& b, Bound& c)
 {
   c[0] = std::max(a[0], b[0]);
@@ -42,10 +45,12 @@ void set_row_bnds(glp_prob* lp, int i, const value_type& l, const value_type& u)
   glp_set_row_bnds(lp, i, bnd_type(l,u), l, u);
 }
 void set_row_bnds(glp_prob* lp, int i, const Bound& b) { set_row_bnds(lp, i, b[0], b[1]); }
+#endif
 
 void GLPKWrapper::initialize (const LinearConstraintPtrs& constraints, const GeometricPathPtr& path,
         const Vector& times)
 {
+#ifdef BUILD_WITH_GLPK
   Solver::initialize (constraints, path, times);
   if (m_lp != NULL) glp_delete_prob(m_lp);
   m_lp = glp_create_prob();
@@ -68,11 +73,19 @@ void GLPKWrapper::initialize (const LinearConstraintPtrs& constraints, const Geo
 
   glp_add_rows(m_lp, nC);
   glp_set_row_name(m_lp, 1, "x_next");
+#else
+  TOPPRA_UNUSED(constraints);
+  TOPPRA_UNUSED(path);
+  TOPPRA_UNUSED(times);
+  throw std::invalid_argument("TOPPRA was not built with GLPK support.");
+#endif
 }
 
 GLPKWrapper::~GLPKWrapper ()
 {
+#ifdef BUILD_WITH_GLPK
   if (m_lp != NULL) glp_delete_prob(m_lp);
+#endif
 }
 
 bool GLPKWrapper::solveStagewiseOptim(std::size_t i,
@@ -80,6 +93,7 @@ bool GLPKWrapper::solveStagewiseOptim(std::size_t i,
         const Bound& x, const Bound& xNext,
         Vector& solution)
 {
+#ifdef BUILD_WITH_GLPK
   if (H.size() > 0)
     throw std::invalid_argument("GLPK can only solve LPs.");
 
@@ -165,6 +179,15 @@ bool GLPKWrapper::solveStagewiseOptim(std::size_t i,
   }
   TOPPRA_LOG_DEBUG("GLPK failed. glp_simplex return value: " << ret);
   return false;
+#else
+  TOPPRA_UNUSED(i);
+  TOPPRA_UNUSED(H);
+  TOPPRA_UNUSED(g);
+  TOPPRA_UNUSED(x);
+  TOPPRA_UNUSED(xNext);
+  TOPPRA_UNUSED(solution);
+  throw std::invalid_argument("TOPPRA was not built with GLPK support.");
+#endif
 }
 
 } // namespace solver

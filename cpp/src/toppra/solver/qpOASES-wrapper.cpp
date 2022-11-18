@@ -1,11 +1,14 @@
 #include <toppra/solver/qpOASES-wrapper.hpp>
 
+#ifdef BUILD_WITH_qpOASES
 #include <qpOASES.hpp>
+#endif
 #include <toppra/toppra.hpp>
 
 namespace toppra {
 namespace solver {
 struct qpOASESWrapper::Impl {
+#ifdef BUILD_WITH_qpOASES
   qpOASES::SQProblem qp;
 
   Impl(Eigen::Index nV, Eigen::Index nC)
@@ -16,6 +19,7 @@ struct qpOASESWrapper::Impl {
 
     qp.setOptions( options );
   }
+#endif
 };
 
 value_type qpOASESWrapper::m_defaultBoundary = 1e16;
@@ -30,6 +34,7 @@ qpOASESWrapper::qpOASESWrapper () {}
 void qpOASESWrapper::initialize (const LinearConstraintPtrs& constraints, const GeometricPathPtr& path,
         const Vector& times)
 {
+#ifdef BUILD_WITH_qpOASES
   Solver::initialize (constraints, path, times);
   m_boundary = m_defaultBoundary;
 
@@ -45,6 +50,12 @@ void qpOASESWrapper::initialize (const LinearConstraintPtrs& constraints, const 
   m_hA = -Vector::Ones(nC);
 
   m_impl = std::unique_ptr<Impl>(new Impl(nV, nC));
+#else
+  TOPPRA_UNUSED(constraints);
+  TOPPRA_UNUSED(path);
+  TOPPRA_UNUSED(times);
+  throw std::invalid_argument("TOPPRA was not built with qpOASES support.");
+#endif
 }
 
 qpOASESWrapper::~qpOASESWrapper ()
@@ -56,6 +67,7 @@ bool qpOASESWrapper::solveStagewiseOptim(std::size_t i,
         const Bound& x, const Bound& xNext,
         Vector& solution)
 {
+#ifdef BUILD_WITH_qpOASES
   TOPPRA_LOG_DEBUG("stage: i="<<i);
   Eigen::Index N (nbStages());
   assert (i <= N);
@@ -170,6 +182,15 @@ bool qpOASESWrapper::solveStagewiseOptim(std::size_t i,
   TOPPRA_LOG_DEBUG("qpOASES failed. Error code: " <<
       qpOASES::MessageHandling::getErrorCodeMessage(res) << " (" << res << ')');
   return false;
+#else
+  TOPPRA_UNUSED(i);
+  TOPPRA_UNUSED(H);
+  TOPPRA_UNUSED(g);
+  TOPPRA_UNUSED(x);
+  TOPPRA_UNUSED(xNext);
+  TOPPRA_UNUSED(solution);
+  throw std::invalid_argument("TOPPRA was not built with qpOASES support.");
+#endif
 }
 
 } // namespace solver
