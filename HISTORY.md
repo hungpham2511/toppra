@@ -1,6 +1,6 @@
 # Changelog
 
-## unreleased
+## 0.5.2 (Nov 19 2022)
 - [cpp] always define all installed symbols.
 
 ## 0.5.0 (July 08 2021)
