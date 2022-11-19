@@ -9,6 +9,8 @@ set(SOURCE_FILES
 
   toppra/solver.cpp
   toppra/solver/seidel.cpp
+  toppra/solver/qpOASES-wrapper.cpp
+  toppra/solver/glpk-wrapper.cpp
 
   toppra/geometric_path.cpp
   toppra/geometric_path/piecewise_poly_path.cpp
@@ -18,15 +20,7 @@ set(SOURCE_FILES
 
   toppra/algorithm.cpp
   toppra/algorithm/toppra.cpp
-  )
-if(BUILD_WITH_qpOASES)
-    list(APPEND SOURCE_FILES
-        toppra/solver/qpOASES-wrapper.cpp)
-endif()
-if(BUILD_WITH_GLPK)
-    list(APPEND SOURCE_FILES
-        toppra/solver/glpk-wrapper.cpp)
-endif()
+)
 
 add_library(toppra ${SOURCE_FILES})
 set_property(TARGET toppra PROPERTY POSITION_INDEPENDENT_CODE ON)

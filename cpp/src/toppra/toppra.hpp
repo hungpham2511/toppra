@@ -24,6 +24,8 @@
 #define TOPPRA_LOG_WARN(X) ((void)0)
 #endif
 
+#define TOPPRA_UNUSED(x) (void)(x)
+
 // Use for checking if a quantity is very close to zero
 #define TOPPRA_NEARLY_ZERO 1e-8
 #define TOPPRA_REL_TOL 1e-6

@@ -1,5 +1,8 @@
 # Changelog
 
+## unreleased
+- [cpp] always define all installed symbols.
+
 ## 0.5.0 (July 08 2021)
 
 - [cpp] Minor PR to make the cpp part compiles on windows64 (msvc). Thanks @ahoarau.
