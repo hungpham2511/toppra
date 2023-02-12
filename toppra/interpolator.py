@@ -33,6 +33,7 @@ simplepath.SimplePath
 
 """
 from typing import List, Union
+import typing as T
 import logging
 import numpy as np
 from scipy.interpolate import UnivariateSpline, CubicSpline, PPoly
@@ -381,12 +382,19 @@ class SplineInterpolator(AbstractGeometricPath):
 
     """
 
-    def __init__(self, ss_waypoints, waypoints, bc_type="not-a-knot"):
+    def __init__(
+        self, 
+        ss_waypoints, 
+        waypoints, 
+        bc_type: str="not-a-knot"
+    ) -> None:
         super(SplineInterpolator, self).__init__()
         self.ss_waypoints = np.array(ss_waypoints)  # type: np.ndarray
         self._q_waypoints = np.array(waypoints)  # type: np.ndarray
         assert self.ss_waypoints.shape[0] == self._q_waypoints.shape[0]
 
+        self.cspl: T.Union[T.Callable[[T.Any], T.Any], CubicSpline]
+        self.cspld: T.Union[T.Callable[[T.Any], T.Any], CubicSpline]
         if len(ss_waypoints) == 1:
 
             def _1dof_cspl(s):
@@ -589,8 +597,7 @@ class PolynomialPath(AbstractGeometricPath):
     coeff[i, 0] + coeff[i, 1] s + coeff[i, 2] s^2 + ...
     """
 
-    def __init__(self, coeff, s_start=0.0, s_end=1.0):
-        # type: (np.ndarray, float, float) -> None
+    def __init__(self, coeff, s_start=0.0, s_end=1.0) -> None:
         """Initialize the polynomial path.
 
         Parameters
@@ -603,15 +610,18 @@ class PolynomialPath(AbstractGeometricPath):
             Ending path position.
         """
         super(PolynomialPath, self).__init__()
-        self.coeff = np.array(coeff)
+
+        self.coeff = coeff
         self.s_end = s_end
         self.s_start = s_start
         if np.isscalar(self.coeff[0]):
+            self._dof = 1
             self.poly = [np.polynomial.Polynomial(self.coeff)]
-            self.coeff = self.coeff.reshape(1, -1)
+            self.coeff = np.array(self.coeff).reshape(1, -1)
         else:
+            self._dof = len(self.coeff)
             self.poly = [
-                np.polynomial.Polynomial(self.coeff[i]) for i in range(self.dof)
+                np.polynomial.Polynomial(self.coeff[i]) for i in range(self._dof)
             ]
 
         self.polyd = [poly.deriv() for poly in self.poly]
@@ -628,7 +638,7 @@ class PolynomialPath(AbstractGeometricPath):
 
     @property
     def dof(self):
-        return self.coeff.shape[0]
+        return self._dof
 
     @property
     def duration(self):

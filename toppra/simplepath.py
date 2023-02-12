@@ -1,4 +1,4 @@
-from typing import List, Union, Optional
+from typing import List, Union, Optional, Tuple
 import numpy as np
 from scipy.interpolate import BPoly
 from .interpolator import AbstractGeometricPath
@@ -30,8 +30,8 @@ class SimplePath(AbstractGeometricPath):
         self,
         x: np.ndarray,
         y: np.ndarray,
-        yd: np.ndarray = None,
-    ):
+        yd: Optional[np.ndarray] = None,
+    ) -> None:
         if len(y.shape) == 1:
             y = y.reshape(-1, 1)
         if yd is not None and len(yd.shape) == 1:
@@ -47,15 +47,15 @@ class SimplePath(AbstractGeometricPath):
         return np.array(ret).T
 
     @property
-    def dof(self):
+    def dof(self) -> int:
         return self._y.shape[1]
 
     @property
-    def path_interval(self):
+    def path_interval(self) -> np.ndarray:
         return np.array([self._x[0], self._x[-1]], dtype=float)
 
     @property
-    def waypoints(self):
+    def waypoints(self) -> np.ndarray:
         return self._y
 
     def _autofill_yd(self):
