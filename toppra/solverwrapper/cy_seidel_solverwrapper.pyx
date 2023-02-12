@@ -416,6 +416,9 @@ cdef class seidelWrapper:
         double [:, ::1] a_arr, b_arr, c_arr  # mmviews of coefficients of the 2D Lp
         double [:, :] low_arr, high_arr    # mmviews of coefficients of the 2D Lp
         double scaling # path scaling
+
+        double [:] bx_c  # mmviews of coefficients of the 1D Lp
+
         
     # @cython.profile(True)
     def __init__(self, list constraint_list, path, path_discretization):
@@ -519,6 +522,9 @@ cdef class seidelWrapper:
         self.active_c_down = np.zeros(2, dtype=int)
         self.v = np.zeros(3)
 
+        # cache for b*x + c to solve 1d LP when x_min == x_max
+        self.bx_c  = np.zeros(self.nC)
+
     def get_no_vars(self):
         return self.nV
 
@@ -619,6 +625,26 @@ cdef class seidelWrapper:
         # objective function
         self.v[0] = - g[0]
         self.v[1] = - g[1]
+
+        if x_min == x_max:
+            # solve 1D Lp
+            for ic in range(self.nC):
+                self.bx_c[ic] = self.b_arr[i, ic] * x_min + self.c_arr[i, ic]
+            solution = cy_solve_lp1d(self.v[0:2], self.nC + 2, self.a_arr[i], self.bx_c, low_arr[0], high_arr[0])
+
+            if solution.result == 0:
+                # print("upper solver fails")
+                var[0] = NAN
+                var[1] = NAN
+            else:
+                var[0] = solution.optvar[0]
+                var[1] = x_min
+                # TODO is the following correct?
+                if g[1] > 0:  
+                    self.active_c_up[0] = solution.active_c[0]
+                else:
+                    self.active_c_down[0] = solution.active_c[0]
+
 
         # warmstarting feature: one in two solvers, upper and lower,
         # is be selected depending on the sign of g[1]
