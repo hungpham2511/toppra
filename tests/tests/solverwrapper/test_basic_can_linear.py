@@ -79,14 +79,17 @@ def basic_init_fixture(request):
     print("\n [TearDown] Finish PP Fixture")
 
 
-@pytest.mark.parametrize("solver_name", ['cvxpy', 'qpOASES', "ecos", 'hotqpOASES', 'seidel'])
-@pytest.mark.parametrize("i", [3, 10, 30])
-@pytest.mark.parametrize("H", [np.array([[1.5, 0], [0, 1.0]]), np.zeros((2, 2)), None])
-@pytest.mark.parametrize("g", [np.array([0.2, -1]), np.array([0.5, 1]), np.array([2.0, 1])])
-@pytest.mark.parametrize("x_ineq", [(0.1, 1), (0.2, 0.2), (0.4, 0.3), (np.nan, np.nan)])
+@pytest.mark.parametrize("solver_name", ['cvxpy', 'qpOASES', "ecos", 'hotqpOASES', 'seidel', 'seidel_opt'])
+@pytest.mark.parametrize("i", [3, 10, 30, 40])
+@pytest.mark.parametrize("H", [np.array([[1.5, 0], [0, 1.0]]), np.zeros((2, 2)), None, None])
+@pytest.mark.parametrize("g", [np.array([0.2, -1]), np.array([0.5, 1]), np.array([2.0, 1]), np.array([0.3, 2])])
+@pytest.mark.parametrize("x_ineq", [(0.1, 1), (0.2, 0.2), (0.4, 0.3), (np.nan, np.nan), (0.3, 0.3)])
 @pytest.mark.skipif(not FOUND_CXPY, reason="This test requires cvxpy to validate results.")
 def test_basic_correctness(basic_init_fixture, solver_name, i, H, g, x_ineq):
     """Basic test case for solver wrappers.
+
+    this test tests the behavior of seidelWrapper which solves 1D LP instead of 2D LP
+    when solve_lp1d flag is given and x_min == x_max.
 
     The input fixture `basic_init_fixture` has two constraints, one
     velocity and one acceleration. Hence, in this test, I directly
@@ -108,7 +111,10 @@ def test_basic_correctness(basic_init_fixture, solver_name, i, H, g, x_ineq):
         solver = ecosWrapper(constraints, path, path_discretization)
     elif solver_name == 'seidel' and H is None:
         from toppra.solverwrapper.cy_seidel_solverwrapper import seidelWrapper
-        solver = seidelWrapper(constraints, path, path_discretization)
+        solver = seidelWrapper(constraints, path, path_discretization, solve_lp1d=0)
+    elif solver_name == 'seidel_opt' and H is None:
+        from toppra.solverwrapper.cy_seidel_solverwrapper import seidelWrapper
+        solver = seidelWrapper(constraints, path, path_discretization, solve_lp1d=1)
     else:
         return True  # Skip all other tests
 
