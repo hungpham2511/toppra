@@ -386,7 +386,7 @@ class SplineInterpolator(AbstractGeometricPath):
         self, 
         ss_waypoints, 
         waypoints, 
-        bc_type: T.Literal["not-a-knot", "clamped", "natural", "periodic"]="not-a-knot"
+        bc_type: str="not-a-knot"
     ) -> None:
         super(SplineInterpolator, self).__init__()
         self.ss_waypoints = np.array(ss_waypoints)  # type: np.ndarray
