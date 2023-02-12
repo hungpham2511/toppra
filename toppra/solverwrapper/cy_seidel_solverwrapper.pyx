@@ -541,7 +541,7 @@ cdef class seidelWrapper:
     # @cython.profile(True)
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    cpdef solve_stagewise_optim(self, unsigned int i, H, np.ndarray g, double x_min, double x_max, double x_next_min, double x_next_max):
+    cpdef solve_stagewise_optim(self, unsigned int i, H, np.ndarray g, double x_min, double x_max, double x_next_min, double x_next_max, int use_lp1d = 0):
         """Solve a stage-wise linear optimization problem.
 
         The linear optimization problem is described below.
@@ -626,11 +626,12 @@ cdef class seidelWrapper:
         self.v[0] = - g[0]
         self.v[1] = - g[1]
 
-        if x_min == x_max:
+        if x_min == x_max and use_lp1d > 0:
             # solve 1D Lp
             for ic in range(self.nC):
                 self.bx_c[ic] = self.b_arr[i, ic] * x_min + self.c_arr[i, ic]
-            solution = cy_solve_lp1d(self.v[0:2], self.nC + 2, self.a_arr[i], self.bx_c, low_arr[0], high_arr[0])
+            self.v[1] = - g[1] * x_min
+            solution = cy_solve_lp1d(self.v[0:2], self.nC, self.a_arr[i], self.bx_c, low_arr[0], high_arr[0])
 
             if solution.result == 0:
                 # print("upper solver fails")
@@ -644,7 +645,7 @@ cdef class seidelWrapper:
                     self.active_c_up[0] = solution.active_c[0]
                 else:
                     self.active_c_down[0] = solution.active_c[0]
-
+            return var
 
         # warmstarting feature: one in two solvers, upper and lower,
         # is be selected depending on the sign of g[1]
