@@ -33,6 +33,7 @@ simplepath.SimplePath
 
 """
 from typing import List, Union
+import typing as T
 import logging
 import numpy as np
 from scipy.interpolate import UnivariateSpline, CubicSpline, PPoly
@@ -381,12 +382,19 @@ class SplineInterpolator(AbstractGeometricPath):
 
     """
 
-    def __init__(self, ss_waypoints, waypoints, bc_type="not-a-knot"):
+    def __init__(
+        self, 
+        ss_waypoints, 
+        waypoints, 
+        bc_type: T.Literal["not-a-knot", "clamped", "natural", "periodic"]="not-a-knot"
+    ) -> None:
         super(SplineInterpolator, self).__init__()
         self.ss_waypoints = np.array(ss_waypoints)  # type: np.ndarray
         self._q_waypoints = np.array(waypoints)  # type: np.ndarray
         assert self.ss_waypoints.shape[0] == self._q_waypoints.shape[0]
 
+        self.cspl: T.Union[T.Callable[[T.Any], T.Any], CubicSpline]
+        self.cspld: T.Union[T.Callable[[T.Any], T.Any], CubicSpline]
         if len(ss_waypoints) == 1:
 
             def _1dof_cspl(s):
