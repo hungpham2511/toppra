@@ -1,4 +1,4 @@
-from typing import List, Union, Optional, Tuple, Literal
+from typing import List, Union, Optional, Tuple
 import numpy as np
 from scipy.interpolate import BPoly
 from .interpolator import AbstractGeometricPath
