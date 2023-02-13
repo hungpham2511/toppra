@@ -437,7 +437,7 @@ cdef class seidelWrapper:
         path_discretization: array
             The discretized path positions.
         solve_lp1d: int
-            if solve_lp1d > 0, Solve 1D LP instead of 2D LP when possible (x_min == x_max)
+            if solve_lp1d > 0, solve 1D LP instead of the full 2D LP when possible: when x_min == x_max, solve for u as the variable.
         """
         self.constraints = constraint_list
         self.path = path
