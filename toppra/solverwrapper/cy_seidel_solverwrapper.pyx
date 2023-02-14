@@ -416,9 +416,13 @@ cdef class seidelWrapper:
         double [:, ::1] a_arr, b_arr, c_arr  # mmviews of coefficients of the 2D Lp
         double [:, :] low_arr, high_arr    # mmviews of coefficients of the 2D Lp
         double scaling # path scaling
+
+        INT_t _solve_lp1d  # flag to solve 1d instead of 2d LP
+        double [:] bx_c  # mmviews of coefficients of the 1D Lp
+
         
     # @cython.profile(True)
-    def __init__(self, list constraint_list, path, path_discretization):
+    def __init__(self, list constraint_list, path, path_discretization, solve_lp1d = 0):
         """ A solver wrapper that implements Seidel's LP algorithm.
 
         This wrapper can only be used if there is only Canonical Linear
@@ -432,6 +436,8 @@ cdef class seidelWrapper:
             The geometric path.
         path_discretization: array
             The discretized path positions.
+        solve_lp1d: int
+            if solve_lp1d > 0, solve 1D LP instead of the full 2D LP when possible: when x_min == x_max, solve for u as the variable.
         """
         self.constraints = constraint_list
         self.path = path
@@ -439,6 +445,8 @@ cdef class seidelWrapper:
         self.path_discretization = path_discretization
         self.N = len(path_discretization) - 1  # Number of stages. Number of point is _N + 1
         self.deltas = path_discretization[1:] - path_discretization[:-1]
+
+        self._solve_lp1d = solve_lp1d
         cdef unsigned int cur_index, j, i, k
 
         # handle constraint parameters
@@ -519,6 +527,9 @@ cdef class seidelWrapper:
         self.active_c_down = np.zeros(2, dtype=int)
         self.v = np.zeros(3)
 
+        # cache for b*x + c to solve 1d LP when x_min == x_max
+        self.bx_c  = np.zeros(self.nC)
+
     def get_no_vars(self):
         return self.nV
 
@@ -545,9 +556,6 @@ cdef class seidelWrapper:
             \\text{s.t.  } & [u, x] \\text{ is feasible at stage } i \\\\
                            & x_{min} \leq x \leq x_{max}             \\\\
                            & x_{next, min} \leq x + 2 \Delta_i u \leq x_{next, max},
-
-        TODO if x_min == x_max, one can solve an LP instead of a 2D
-        LP. This optimization is currently not implemented.
 
         Parameters
         ----------
@@ -619,6 +627,27 @@ cdef class seidelWrapper:
         # objective function
         self.v[0] = - g[0]
         self.v[1] = - g[1]
+
+        if x_min == x_max and self._solve_lp1d > 0:
+            # solve 1D Lp
+            for ic in range(self.nC):
+                self.bx_c[ic] = self.b_arr[i, ic] * x_min + self.c_arr[i, ic]
+            self.v[1] = - g[1] * x_min
+            solution = cy_solve_lp1d(self.v[0:2], self.nC, self.a_arr[i], self.bx_c, low_arr[0], high_arr[0])
+
+            if solution.result == 0:
+                # print("upper solver fails")
+                var[0] = NAN
+                var[1] = NAN
+            else:
+                var[0] = solution.optvar[0]
+                var[1] = x_min
+                # TODO is the following correct?
+                if g[1] > 0:  
+                    self.active_c_up[0] = solution.active_c[0]
+                else:
+                    self.active_c_down[0] = solution.active_c[0]
+            return var
 
         # warmstarting feature: one in two solvers, upper and lower,
         # is be selected depending on the sign of g[1]

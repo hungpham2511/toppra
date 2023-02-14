@@ -121,7 +121,7 @@ class ReachabilityAlgorithm(ParameterizationAlgorithm):
             from toppra.solverwrapper.cy_seidel_solverwrapper import seidelWrapper
 
             self.solver_wrapper = seidelWrapper(
-                self.constraints, self.path, self.gridpoints
+                self.constraints, self.path, self.gridpoints, solve_lp1d=True
             )
         else:
             raise NotImplementedError(
