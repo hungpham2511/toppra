@@ -184,7 +184,7 @@ class ParameterizationAlgorithm(object):
         t0 = time.time()
         self.compute_parameterization(sd_start, sd_end)
         if self.problem_data.return_code != ParameterizationReturnCode.Ok:
-            logger.warn("Fail to parametrize path. Return code: %s", self.problem_data.return_code)
+            logger.warning("Fail to parametrize path. Return code: %s", self.problem_data.return_code)
             return None
 
         outputtraj = self.parametrizer(self.path, self.problem_data.gridpoints, self.problem_data.sd_vec)

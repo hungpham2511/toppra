@@ -25,7 +25,7 @@ def create_acceleration_pc_fixtures(request):
         return data, accel_const
 
     if dof == 2:
-        coeff = [[1., 2, 3], [-2., -3., 4., 5.]]
+        coeff = [[1., 2, 3, 0.0], [-2., -3., 4., 5.]]
         pi = ta.PolynomialPath(coeff)
         ss = np.linspace(0, 0.75, 4)
         alim = np.array([[-1., 2], [-2., 2]])
