@@ -145,7 +145,7 @@ class LinearConstraint {
      * */
     LinearConstraint(Eigen::Index k, Eigen::Index m, bool constantF,
         bool uBound, bool xBound)
-      : m_discretizationType (Collocation)
+      : m_discretizationType (Interpolation)
       , m_k (k), m_m (m)
       , m_constantF (constantF)
       , m_hasUbounds (uBound)
