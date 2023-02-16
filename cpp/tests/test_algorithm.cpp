@@ -75,6 +75,10 @@ class ProblemInstance : public testing::Test {
             -toppra::Vector::Ones(nDof), toppra::Vector::Ones(nDof)),
         std::make_shared<toppra::constraint::LinearJointAcceleration>(
             -0.2 * toppra::Vector::Ones(nDof), 0.2 * toppra::Vector::Ones(nDof))};
+    // Change the discretiation type to collocation to make it similar to 
+    // the python impl outputs
+    for (auto vi: v)
+      vi->discretizationType(toppra::DiscretizationType::Collocation);
   };
 
   std::shared_ptr<toppra::PiecewisePolyPath> path;

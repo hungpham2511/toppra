@@ -1,3 +1,4 @@
+#include "toppra/constraint.hpp"
 #include <toppra/constraint/linear_joint_velocity.hpp>
 
 #ifdef BUILD_WITH_PINOCCHIO
@@ -36,6 +37,7 @@ TEST_F(Constraint, LinearJointVelocity) {
   Vector lb (-Vector::Ones(nDof)),
          ub ( Vector::Ones(nDof));
   constraint::LinearJointVelocity ljv (lb, ub);
+  ljv.discretizationType(toppra::Collocation);
 
   EXPECT_TRUE(ljv.constantF());
   EXPECT_EQ(ljv.discretizationType(), Collocation);
