@@ -66,10 +66,13 @@ public:
      @param maxIteration Maximum number of iterations.
      @param maxSegLength All segments length should be smaller than this value.
      @param minNbPoints Minimum number of points.
+     @param initialGridpoints Initial gridpoints to start the algorithm from. If
+            not provided, the path interval is used. If not empty, it must start
+            and end with the path interval limits.
      @return The proposed gridpoints.
 
    */
-  Vector proposeGridpoints(double maxErrThreshold=1e-4, int maxIteration=100, double maxSegLength=0.05, int minNbPoints=100) const;
+  Vector proposeGridpoints(double maxErrThreshold=1e-4, int maxIteration=100, double maxSegLength=0.05, int minNbPoints=100, Vector initialGridpoints = Vector()) const;
 
   /**
    * \brief Dimension of the configuration space

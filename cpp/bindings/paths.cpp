@@ -44,6 +44,13 @@ void exposePaths(py::module m)
             ss << b.cast<std::string>();
             p.deserialize(ss);
           })
+      .def("proposeGridpoints", &GeometricPath::proposeGridpoints,
+          py::arg("maxErrThreshold") = 1e-4,
+          py::arg("maxIteration") = 100,
+          py::arg("maxSegLength") = 0.05,
+          py::arg("minNbPoints") = 100,
+          py::arg("initialGridpoints") = Vector()
+       )
 
       .def_property_readonly("dof", &GeometricPath::dof)
       .def_property_readonly("path_interval", &GeometricPath::pathInterval)
