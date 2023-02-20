@@ -119,7 +119,7 @@ def retime_active_joints_kinematics(
     )
     _t1 = time.time()
 
-    traj_ra, aux_traj = instance.compute_trajectory(0, 0)
+    traj_ra = instance.compute_trajectory(0, 0)
     _t2 = time.time()
     logger.debug(
         "t_setup={:.5f}ms, t_solve={:.5f}ms, t_total={:.5f}ms".format(

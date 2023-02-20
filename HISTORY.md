@@ -2,6 +2,7 @@
 
 ### Added
 - [python] seidelWrapper solves 1d LP instead of 2d LP when x_min == x_max and solve_1d > 0
+- [python] Fixed planning_utils.py to follow the latest api of toppra.algorithm.ParameterizationAlgorithm
 
 ## 0.5.2 (Nov 19 2022)
 - [cpp] always define all installed symbols.
