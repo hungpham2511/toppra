@@ -44,12 +44,17 @@ PYBIND11_MODULE(toppra_int, m) {
       .def_readwrite("feasible_sets", &toppra::ParametrizationData::feasible_sets)
       .def_readwrite("ret_code", &toppra::ParametrizationData::ret_code);
 
-  py::class_<algorithm::TOPPRA>(m, "TOPPRA")
-      .def(py::init<LinearConstraintPtrs, const GeometricPathPtr &>())
+  py::class_<PathParametrizationAlgorithm>(m, "PathParametrizationAlgorithm")
+      .def("setN", &algorithm::TOPPRA::setN)
+      .def("setGridpoints", &PathParametrizationAlgorithm::setGridpoints)
+      .def("solver", &PathParametrizationAlgorithm::solver)
+      .def("setInitialXBounds", &PathParametrizationAlgorithm::setInitialXBounds)
       .def("computePathParametrization", &algorithm::TOPPRA::computePathParametrization,
            py::arg("vel_start") = 0, py::arg("vel_end") = 0)
-      .def("setN", &algorithm::TOPPRA::setN)
       .def_property_readonly("parametrizationData", &algorithm::TOPPRA::getParameterizationData);
+
+  py::class_<algorithm::TOPPRA, PathParametrizationAlgorithm>(m, "TOPPRA")
+      .def(py::init<LinearConstraintPtrs, const GeometricPathPtr &>());
 }
 }  // namespace python
 }  // namespace toppra

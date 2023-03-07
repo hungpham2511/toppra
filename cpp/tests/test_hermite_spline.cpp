@@ -56,5 +56,47 @@ TEST(SplineHermite, ProposeGridpoints) {
   
 }
 
+TEST(SplineHermite, ProposeGridpointsWithInitialGridpoints) {
+  Vectors pos = makeVectors({{0, 0}, {1, 1}, {0, 2}});
+  Vectors vec = makeVectors({{1, 1}, {0, 0}, {1, 2}});
+  PiecewisePolyPath path =
+      PiecewisePolyPath::constructHermite(pos, vec, {0, 0.5, 1});
+
+  Vector initialGridpoints(1);
+
+  // Wrong size
+  initialGridpoints << 0;
+  EXPECT_ANY_THROW(path.proposeGridpoints(1e-4, 100, 0.05, 100, initialGridpoints));
+
+  initialGridpoints.resize(3);
+
+  // Not monotonically increasing
+  initialGridpoints << 0, -0.1, 1;
+  EXPECT_ANY_THROW(path.proposeGridpoints(1e-4, 100, 0.05, 100, initialGridpoints));
+
+  // Last value is not the end of the interval
+  initialGridpoints << 0, -0.1, 0.9;
+  EXPECT_ANY_THROW(path.proposeGridpoints(1e-4, 100, 0.05, 100, initialGridpoints));
+
+  // Suitable initial gridpoints
+  initialGridpoints << 0, 0.1, 1;
+  auto gridpoint = path.proposeGridpoints(1e-4, 100, 0.05, 100, initialGridpoints);
+
+  // Basic assertion
+  EXPECT_TRUE(gridpoint.size() > 0);
+  PRINT(gridpoint);
+
+  // Gridpoints must be increasing
+  auto N = gridpoint.size();
+  Vector gridpoint_diff {N - 1};
+  gridpoint_diff = gridpoint.tail(N - 1) - gridpoint.head(N - 1);
+  EXPECT_TRUE(gridpoint_diff.minCoeff() > 0);
+  
+  // Gridpoints must contain the initial gridpoints.
+  EXPECT_DOUBLE_EQ(gridpoint[0], 0);
+  EXPECT_TRUE((gridpoint.array() == 0.1).any());
+  EXPECT_DOUBLE_EQ(gridpoint[N-1], 1);
+}
+
 
 }  // namespace toppra
