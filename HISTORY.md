@@ -1,9 +1,17 @@
 # Changelog
 
+## 0.6.0 (Mar 08 2023)
+
 ### Added
 - [python] seidelWrapper solves 1d LP instead of 2d LP when x_min == x_max and solve_1d > 0
 - [python] Fixed planning_utils.py to follow the latest api of toppra.algorithm.ParameterizationAlgorithm
 - [cpp] add initial gridpoints to proposeGridpoints method.
+
+### Changed
+- fix: the f-string bug when hot_qpoases solver failed (#208)
+- feat(solver): Make seidel solver(cython) solves 1D LP when possible (#223)
+- feat(cpp,constraint): Make Interpolation the default method (#225)
+- fix(util): toppra.compute_trajectory() does not return aux data. (#224)
 
 ## 0.5.2 (Nov 19 2022)
 - [cpp] always define all installed symbols.
