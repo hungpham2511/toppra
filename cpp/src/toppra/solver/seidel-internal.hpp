@@ -60,6 +60,8 @@ constexpr value_type infinity = std::numeric_limits<value_type>::infinity();
 
 #define TOPPRA_SEIDEL_LP1D(w,X)                         \
   TOPPRA_LOG_##w("Seidel LP 1D:\n"                      \
+      << "max  v * [ x, 1 ]\n"                          \
+      << "s.t. A * [ x, 1 ] <= 0\n"                     \
       << "v: " << v << '\n'                             \
       << "A:\n" << A << '\n'                            \
       << X);
@@ -84,19 +86,24 @@ LpSol1d solve_lp1d(const RowVector2& v, const Eigen::MatrixBase<Derived>& A)
   bool maximize { v[0] > 0 };
 
   for (int i = 0; i < A.rows(); ++i) {
-    // If a[i] is very small, then consider the constraint as constant.
-    // TODO: Shouldn't we check instead that a[i] is much smaller that b[i] ?
-    // For the following problem, what solution should be returned ?
-    // max   x
-    // s.t.      x -   2 <= 0
-    //       eps*x - eps <= 0
-    // For eps small, the code below skips the second constraint and returns 2.
-    if (std::abs(a[i]) < ABS_TOLERANCE) {
-      if (b[i] > ABS_TOLERANCE) {
-        TOPPRA_SEIDEL_LP1D(WARN, "-> constraint " << i << " infeasible.");
-        return INFEASIBLE_1D;
+    // Contraint: a[i] * x + b[i] <= 0
+    // a[i] -> a and b[i] -> b in this comment
+    //
+    // case a == 0.0:
+    //   feasible iif b < ABS_TOLERANCE (tolerate a small violation)
+    // otherwise
+    //   if a>0 b<0 then x <= +|b/a| so handled as a normal constraint
+    //   if a<0 b<0 then x >= -|b/a| so handled as a normal constraint
+    //
+    //   if a>0 b>0 then x <= -|b/a| so infeasible if |b/a| > 1/REL_TOLERANCE
+    //   if a<0 b>0 then x >= +|b/a| so infeasible if |b/a| > 1/REL_TOLERANCE
+    if (b[i] * REL_TOLERANCE > std::abs(a[i])) {
+      TOPPRA_SEIDEL_LP1D(WARN, "-> constraint " << i << " infeasible.");
+      if (std::abs(a[i]) == 0.0 && b[i] < ABS_TOLERANCE) {
+        TOPPRA_LOG_WARN("but considered feasible because a["<<i<<"]==0 and b["<<i<<"]"<<ABS_TOLERANCE<<".");
+        continue;
       }
-      continue;
+      return INFEASIBLE_1D;
     }
     if (a[i] > 0) {
       if (a[i] * cur_max + b[i] > 0) { // Constraint bounds x from above
