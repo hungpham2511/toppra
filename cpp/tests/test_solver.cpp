@@ -126,7 +126,7 @@ TEST_F(Solver, consistency)
 
 #include <toppra/solver/seidel-internal.hpp>
 
-TEST(SeidelFunctions, seidel_1d) {
+TEST(SeidelFunctions_1D, basic_problems) {
   using namespace toppra::solver;
 
   // absolute largest value that a variable can have. This bound should
@@ -165,7 +165,7 @@ TEST(SeidelFunctions, seidel_1d) {
          eps, -eps;
     auto sol = seidel::solve_lp1d(v, A);
     EXPECT_TRUE(sol.feasible);
-    EXPECT_DOUBLE_EQ(2, sol.optvar);
+    EXPECT_DOUBLE_EQ(1, sol.optvar);
   }
 
   {
@@ -179,31 +179,7 @@ TEST(SeidelFunctions, seidel_1d) {
     A << eps, -eps*eps;
     auto sol = seidel::solve_lp1d(v, A);
     EXPECT_TRUE(sol.feasible);
-    EXPECT_DOUBLE_EQ(seidel::infinity, sol.optvar);
-  }
-
-  { // Incoherent bounds.
-    /*
-     * max   x
-     * s.t.  x - 3 <= 0
-     *      -x + 4 <= 0
-     */
-    A.resize(2, 2);
-    A << 1, -3,
-        -1,  4;
-    auto sol = seidel::solve_lp1d(v, A);
-    EXPECT_FALSE(sol.feasible);
-  }
-
-  { // Incoherent bounds.
-    /*
-     * max   x
-     * s.t.  x + inf <= 0
-     */
-    A.resize(1, 2);
-    A << 1, seidel::infinity;
-    auto sol = seidel::solve_lp1d(v, A);
-    EXPECT_FALSE(sol.feasible);
+    EXPECT_DOUBLE_EQ(eps, sol.optvar);
   }
 
   v = {-1, 0};
@@ -272,6 +248,104 @@ TEST(SeidelFunctions, seidel_1d) {
     EXPECT_TRUE(sol.feasible);
     EXPECT_DOUBLE_EQ(1, sol.optvar);
   }
+
+}
+
+TEST(SeidelFunctions_1D, infeasible_due_to_incoherent_bounds) {
+  using namespace toppra::solver;
+
+  RowVector2 v = {1.0, 0.0};
+  MatrixX2 A;
+
+  seidel::LpSol1d sol;
+
+  /*
+   * max   x
+   * s.t.  x - 3 <= 0
+   *      -x + 4 <= 0
+   */
+  A.resize(2, 2);
+  A << 1, -3,
+      -1,  4;
+  sol = seidel::solve_lp1d(v, A);
+  EXPECT_FALSE(sol.feasible);
+  
+
+  /*
+   * max   x
+   * s.t.  x + inf <= 0
+   */
+  A.resize(1, 2);
+  A << 1, seidel::infinity;
+  sol = seidel::solve_lp1d(v, A);
+  EXPECT_FALSE(sol.feasible);
+
+  /*
+   * max   x
+   * s.t.  eps * x + 1 <= 0
+   */
+  A.resize(1, 2);
+  A << seidel::TINY / 2, 1;
+  sol = seidel::solve_lp1d(v, A);
+  EXPECT_FALSE(sol.feasible);
+  
+}
+
+TEST(SeidelFunctions_1D, feasible_with_a_and_b_small) {
+  using namespace toppra::solver;
+
+  RowVector2 v;
+  MatrixX2 A (15, 2);
+
+  v = { -0.00751465,          0 };
+  A <<
+      0.037101,    -8.44815,
+     -0.037101,     8.44815,
+  -4.31079e-15, 1.19016e-13,
+   9.67369e-07,    -7.82478,
+   7.96657e-07,    -9.38511,
+             0,         -20,
+   7.11301e-07,    -5.16528,
+   7.11301e-07,    -5.16528,
+   4.31079e-15,         -20,
+  -9.67369e-07,    -12.1752,
+  -7.96657e-07,    -10.6149,
+       1.18346, -seidel::infinity,
+      -1.18346, -seidel::infinity,
+    0.00751465,    -8.44949,
+   -0.00751465,    -91.5505;
+  auto sol = seidel::solve_lp1d(v, A);
+  EXPECT_TRUE(sol.feasible);
+  std::cout << sol.feasible << '\n'
+    << sol.optvar << '\n';
+}
+
+TEST(SeidelFunctions_1D, feasible_but_with_tolerated_constraint_violation) {
+  using namespace toppra::solver;
+
+  RowVector2 v;
+  MatrixX2 A (15, 2);
+
+  v << -0.087204,         0;
+  A <<
+   0.000686645,    0.722398,
+  -0.000686645,    -2.91642,
+             0, 1.77636e-15,
+   1.11022e-16,    -5.33333,
+   5.55112e-17,    -7.33333,
+             0,         -20,
+   1.11022e-16,    -3.33333,
+   1.11022e-16,    -3.33333,
+             0,         -20,
+  -1.11022e-16,    -14.6667,
+  -5.55112e-17,    -12.6667,
+      -13.8428, -seidel::infinity,
+       13.8428, -seidel::infinity,
+      0.087204,     0.72237,
+     -0.087204,    -100.722;
+
+  auto sol = seidel::solve_lp1d(v, A);
+  EXPECT_TRUE(sol.feasible);
 }
 
 TEST(SeidelFunctions, seidel_2d) {
