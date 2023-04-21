@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- [cpp]: fix numerical issue in Seidel solver for 1D problems. (#232)
+
 ## 0.6.0 (Mar 08 2023)
 
 ### Added
