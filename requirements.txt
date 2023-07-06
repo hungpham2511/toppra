@@ -1,7 +1,7 @@
 cython>=0.22.0
 PyYAML
 numpy
-scipy==0.18.0
+scipy==1.10.0
 coloredlogs
 enum34
 matplotlib<3.0.0
