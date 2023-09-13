@@ -29,7 +29,7 @@ ReturnCode TOPPRA::computeForwardPass(value_type vel_start) {
     solver_ret = m_solver->solveStagewiseOptim(i, H, g_upper, x, x_next, solution);
     if (!solver_ret) {
       ret = ReturnCode::ERR_FAIL_FORWARD_PASS;
-      TOPPRA_LOG_DEBUG("Fail: forward pass, idx: " << i);
+      TOPPRA_LOG_WARN("Fail: forward pass, idx: " << i);
       break;
     }
     /// \todo This can be optimized further by solving a 1D problem instead of 2D

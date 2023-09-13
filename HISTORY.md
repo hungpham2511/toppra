@@ -5,6 +5,7 @@
 ### Changed
 
 - [cpp]: fix numerical issue in Seidel solver for 1D problems. (#232)
+- [cpp]: warn when solver fails. (#241)
 
 ## 0.6.0 (Mar 08 2023)
 
