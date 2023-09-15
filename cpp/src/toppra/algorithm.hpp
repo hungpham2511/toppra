@@ -2,6 +2,7 @@
 #define TOPPRA_ALGORITHM_HPP
 
 #include <stdexcept>
+#include <sstream>
 #include <toppra/constraint.hpp>
 #include <toppra/geometric_path.hpp>
 #include <toppra/solver.hpp>
@@ -90,7 +91,8 @@ class PathParametrizationAlgorithm {
    *
    * \param vel_start
    * \param vel_end
-   * \return Return code.
+   * \return Return code. When not ReturnCode::OK,
+   *         check PathParametrizationAlgorithm::getErrorMessage
    */
   virtual ReturnCode computePathParametrization(value_type vel_start = 0,
                                                 value_type vel_end = 0);
@@ -105,6 +107,13 @@ class PathParametrizationAlgorithm {
   void setInitialXBounds (const Bound& xbound)
   {
     m_initXBound = xbound;
+  }
+
+  /** Get the error message when PathParametrizationAlgorithm::computePathParametrization
+   * failed.
+   */
+  std::string getErrorMessage() const {
+    return m_errorStream.str();
   }
 
   virtual ~PathParametrizationAlgorithm() {}
@@ -131,6 +140,8 @@ class PathParametrizationAlgorithm {
   LinearConstraintPtrs m_constraints;
   GeometricPathPtr m_path;
   SolverPtr m_solver;
+
+  std::stringstream m_errorStream;
 
   /// Struct containing algorithm output.
   ParametrizationData m_data;

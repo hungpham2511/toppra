@@ -201,3 +201,43 @@ TYPED_TEST(ProblemInstance, ParametrizeOutputTrajectory) {
               this->path->eval_single(this->path->pathInterval()[1])[i]);
   }
 }
+
+class FakeFailingSolver : public toppra::Solver {
+  public:
+    bool solveStagewiseOptim(std::size_t i,
+        const toppra::Matrix& H, const toppra::Vector& g,
+        const toppra::Bound& x, const toppra::Bound& xNext,
+        toppra::Vector& solution) {
+      return false;
+    }
+};
+
+TEST(ErrorMessageWhenFailing, ControllableSets) {
+  int nDof = 2;
+  toppra::Matrix coeff0{4, 2}, coeff1{4, 2}, coeff2{4, 2};
+  coeff0 << -0.500000, -0.500000, 1.500000, 0.500000, 0.000000, 3.000000, 0.000000,
+      0.000000;
+  coeff1 << -0.500000, -0.500000, 0.000000, -1.000000, 1.500000, 2.500000, 1.000000,
+      3.000000;
+  coeff2 << -0.500000, -0.500000, -1.500000, -2.500000, 0.000000, -1.000000, 2.000000,
+      4.000000;
+  toppra::Matrices coefficents = {coeff0, coeff1, coeff2};
+  auto path = std::make_shared<toppra::PiecewisePolyPath>(coefficents, std::vector<double>{0, 1, 2, 3});
+  auto v = toppra::LinearConstraintPtrs{
+      std::make_shared<toppra::constraint::LinearJointVelocity>(
+          -toppra::Vector::Ones(nDof), toppra::Vector::Ones(nDof)),
+      std::make_shared<toppra::constraint::LinearJointAcceleration>(
+          -0.2 * toppra::Vector::Ones(nDof), 0.2 * toppra::Vector::Ones(nDof))};
+  // Change the discretiation type to collocation to make it similar to 
+  // the python impl outputs
+  for (auto vi: v)
+    vi->discretizationType(toppra::DiscretizationType::Collocation);
+
+  toppra::algorithm::TOPPRA problem{v, path};
+  problem.setN(50);
+  problem.solver(std::make_shared<FakeFailingSolver>());
+  auto ret_code = problem.computePathParametrization();
+
+  std::string starts_with {"Failed to compute controllable set"};
+  ASSERT_EQ(problem.getErrorMessage().substr(0, starts_with.size()), starts_with);
+}
