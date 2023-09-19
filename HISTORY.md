@@ -1,11 +1,16 @@
 # Changelog
 
-## Unreleased
+## 0.6.2 (Sept 19 2023)
+
+### Changed
+
+- [cpp]: warn when solver fails. (#241)
+
+## 0.6.1
 
 ### Changed
 
 - [cpp]: fix numerical issue in Seidel solver for 1D problems. (#232)
-- [cpp]: warn when solver fails. (#241)
 
 ## 0.6.0 (Mar 08 2023)
 
