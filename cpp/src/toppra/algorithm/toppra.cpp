@@ -14,7 +14,6 @@ TOPPRA::TOPPRA(LinearConstraintPtrs constraints, const GeometricPathPtr &path)
 
 ReturnCode TOPPRA::computeForwardPass(value_type vel_start) {
   TOPPRA_LOG_DEBUG("computeForwardPass");
-  ReturnCode ret = ReturnCode::OK;
   bool solver_ret;
   Vector g_upper{2}, solution{2};
   Matrix H;
@@ -28,9 +27,14 @@ ReturnCode TOPPRA::computeForwardPass(value_type vel_start) {
     x_next = m_data.controllable_sets.row(i + 1);
     solver_ret = m_solver->solveStagewiseOptim(i, H, g_upper, x, x_next, solution);
     if (!solver_ret) {
-      ret = ReturnCode::ERR_FAIL_FORWARD_PASS;
-      TOPPRA_LOG_DEBUG("Fail: forward pass, idx: " << i);
-      break;
+      TOPPRA_LOG_WARN("Fail: forward pass, idx: " << i);
+      m_errorStream <<
+        "Forward pass failed at idx " << i <<
+        "\ng_upper = " << g_upper.transpose() <<
+        "\nx = " << x <<
+        "\nx_next = " << x_next <<
+        '\n';
+      return ReturnCode::ERR_FAIL_FORWARD_PASS;
     }
     /// \todo This can be optimized further by solving a 1D problem instead of 2D
     // Claim the output to be within the controllable sets.
@@ -42,7 +46,7 @@ ReturnCode TOPPRA::computeForwardPass(value_type vel_start) {
                               << "]=" << m_data.parametrization(i + 1));
   }
 
-  return ret;
+  return ReturnCode::OK;
 };
 
 }  // namespace algorithm

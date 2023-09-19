@@ -342,7 +342,13 @@ bool Seidel::solveStagewiseOptim(std::size_t i,
         active_c[k] = m_index_map[lpsol.active_c[k]];
     return true;
   }
-  TOPPRA_LOG_DEBUG("Seidel: solver fails (upper ? " << upper << ')');
+  TOPPRA_LOG_WARN("Seidel: solver fails"
+      "\ni = " << i <<
+      "\ng = " << g.transpose() <<
+      "\nx = " << x.transpose() <<
+      "\nxNext = " << xNext.transpose() <<
+      "\n"
+  );
   return false;
 }
 

@@ -28,7 +28,6 @@ ReturnCode PathParametrizationAlgorithm::computePathParametrization(value_type v
 ReturnCode PathParametrizationAlgorithm::computeControllableSets(
     const Bound &vel_ends) {
   TOPPRA_LOG_DEBUG("computeControllableSets");
-  ReturnCode ret = ReturnCode::OK;
   bool solver_ret;
   Vector g_upper{2}, g_lower{2}, solution;
   g_upper << 1e-9, -1;
@@ -43,9 +42,14 @@ ReturnCode PathParametrizationAlgorithm::computeControllableSets(
     solver_ret = m_solver->solveStagewiseOptim(i, H, g_upper, x, x_next, solution);
 
     if (!solver_ret) {
-      ret = ReturnCode::ERR_FAIL_CONTROLLABLE;
       TOPPRA_LOG_DEBUG("Fail: controllable, upper problem, idx: " << i);
-      break;
+      m_errorStream <<
+        "Failed to compute controllable set, upper problem, at idx " << i <<
+        "\ng_upper = " << g_upper.transpose() <<
+        "\nx = " << x <<
+        "\nx_next = " << x_next <<
+        '\n';
+      return ReturnCode::ERR_FAIL_CONTROLLABLE;
     }
 
     m_data.controllable_sets(i, 1) = solution[1];
@@ -54,9 +58,14 @@ ReturnCode PathParametrizationAlgorithm::computeControllableSets(
 
     TOPPRA_LOG_DEBUG("down: " << solution.transpose());
     if (!solver_ret) {
-      ret = ReturnCode::ERR_FAIL_CONTROLLABLE;
       TOPPRA_LOG_DEBUG("Fail: controllable, lower problem, idx: " << i);
-      break;
+      m_errorStream <<
+        "Failed to compute controllable set, lower problem, at idx " << i <<
+        "\ng_lower = " << g_lower.transpose() <<
+        "\nx = " << x <<
+        "\nx_next = " << x_next <<
+        '\n';
+      return ReturnCode::ERR_FAIL_CONTROLLABLE;
     }
 
     // For whatever reason, sometimes the solver return negative
@@ -64,12 +73,11 @@ ReturnCode PathParametrizationAlgorithm::computeControllableSets(
     // if the solution is negative.
     m_data.controllable_sets(i, 0) = std::max(0.0, solution[1]);
   }
-  return ret;
+  return ReturnCode::OK;
 }
 
 ReturnCode PathParametrizationAlgorithm::computeFeasibleSets() {
   initialize();
-  ReturnCode ret = ReturnCode::OK;
   bool solver_ret;
   Vector g_upper{2}, g_lower{2}, solution;
   g_upper << 1e-9, -1;
@@ -83,9 +91,14 @@ ReturnCode PathParametrizationAlgorithm::computeFeasibleSets() {
     solver_ret = m_solver->solveStagewiseOptim(i, H, g_upper, x, x_next, solution);
 
     if (!solver_ret) {
-      ret = ReturnCode::ERR_FAIL_FEASIBLE;
-      TOPPRA_LOG_DEBUG("Fail: controllable, upper problem, idx: " << i);
-      break;
+      TOPPRA_LOG_DEBUG("Fail: feasible, upper problem, idx: " << i);
+      m_errorStream <<
+        "Failed to compute feasible set, upper problem, at idx " << i <<
+        "\ng_upper = " << g_upper.transpose() <<
+        "\nx = " << x <<
+        "\nx_next = " << x_next <<
+        '\n';
+      return ReturnCode::ERR_FAIL_FEASIBLE;
     }
 
     m_data.feasible_sets(i, 1) = solution[1];
@@ -93,14 +106,19 @@ ReturnCode PathParametrizationAlgorithm::computeFeasibleSets() {
     solver_ret = m_solver->solveStagewiseOptim(i, H, g_lower, x, x_next, solution);
 
     if (!solver_ret) {
-      ret = ReturnCode::ERR_FAIL_FEASIBLE;
-      TOPPRA_LOG_DEBUG("Fail: controllable, lower problem, idx: " << i);
-      break;
+      TOPPRA_LOG_DEBUG("Fail: feasible, lower problem, idx: " << i);
+      m_errorStream <<
+        "Failed to compute feasible set, lower problem, at idx " << i <<
+        "\ng_lower = " << g_lower.transpose() <<
+        "\nx = " << x <<
+        "\nx_next = " << x_next <<
+        '\n';
+      return ReturnCode::ERR_FAIL_FEASIBLE;
     }
 
     m_data.feasible_sets(i, 0) = solution[1];
   }
-  return ret;
+  return ReturnCode::OK;
 }
 
 void PathParametrizationAlgorithm::setGridpoints(const Vector& gridpoints)
@@ -118,6 +136,7 @@ void PathParametrizationAlgorithm::setGridpoints(const Vector& gridpoints)
 }
 
 void PathParametrizationAlgorithm::initialize() {
+  m_errorStream = std::stringstream();
   if (m_initialized) return;
   if (!m_solver)
     throw std::logic_error("You must set a solver first.");

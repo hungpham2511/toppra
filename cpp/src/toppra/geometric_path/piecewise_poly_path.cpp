@@ -1,11 +1,14 @@
+#include <toppra/geometric_path/piecewise_poly_path.hpp>
+
 #include <iostream>
+#include <iomanip>
 #include <ostream>
 #include <stdexcept>
 #include <string>
-#include <toppra/geometric_path/piecewise_poly_path.hpp>
-#include <toppra/toppra.hpp>
-#include <Eigen/Dense>
 #include <array>
+
+#include <Eigen/Dense>
+#include <toppra/toppra.hpp>
 
 #ifdef TOPPRA_OPT_MSGPACK
 #include <msgpack.hpp>
@@ -238,10 +241,11 @@ Vectors PiecewisePolyPath::eval(const Vector &positions, int order) const {
 }
 
 size_t PiecewisePolyPath::findSegmentIndex(value_type pos) const {
-  if (pos > m_breakpoints[m_breakpoints.size()-1] || pos < m_breakpoints[0]) {
+  if (pos > m_breakpoints.back() || pos < m_breakpoints[0]) {
+    constexpr auto max_precision {std::numeric_limits<value_type>::digits10 + 1};
     std::ostringstream oss;
-    oss << "Position " << pos << " is outside of range [ " << m_breakpoints[0]
-      << ", " << m_breakpoints[m_breakpoints.size()-1] << ']';
+    oss << std::setprecision(max_precision) << "Position " << pos <<
+      " is outside of range [ " << m_breakpoints[0] << ", " << m_breakpoints.back() << ']';
     throw std::runtime_error(oss.str());
   }
   auto it = std::upper_bound(m_breakpoints.begin(), m_breakpoints.end(), pos);
