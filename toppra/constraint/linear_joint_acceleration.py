@@ -102,3 +102,53 @@ class JointAccelerationConstraint(LinearConstraint):
             )
         else:
             raise NotImplementedError("Other form of discretization not supported!")
+
+
+class JointAccelerationConstraintVarying(LinearConstraint):
+    """_summary_
+
+    Args:
+        LinearConstraint (_type_): _description_
+    """
+
+    def __init__(self, alim_func):
+        super(JointAccelerationConstraintVarying, self).__init__()
+        self.dof = alim_func(0).shape[0]
+        self._format_string = "    Varying Acceleration limit: \n"
+        self.alim_func = alim_func
+
+    def compute_constraint_params(self, path, gridpoints):
+        if path.dof != self.get_dof():
+            raise ValueError(
+                "Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
+                    self.get_dof(), path.dof
+                )
+            )
+        qs = path((gridpoints), 1)
+        qss = path((gridpoints), 2)
+        alim_grid = np.array([self.alim_func(s) for s in gridpoints])
+        _, _, xbound_ = _create_acceleration_constraint_varying(qs, qss, alim_grid)
+        if self.discretization_type == DiscretizationType.Collocation:
+            return (
+                ps_vec,
+                pss_vec,
+                np.zeros_like(ps_vec),
+                F_single,
+                g_single,
+                None,
+                None,
+            )
+        elif self.discretization_type == DiscretizationType.Interpolation:
+            return canlinear_colloc_to_interpolate(
+                ps_vec,
+                pss_vec,
+                np.zeros_like(ps_vec),
+                F_single,
+                g_single,
+                None,
+                None,
+                gridpoints,
+                identical=True,
+            )
+        else:
+            raise NotImplementedError("Other form of discretization not supported!")
