@@ -28,6 +28,12 @@ class LinearJointAcceleration : public LinearConstraint {
       check();
     }
 
+    /**
+      \brief Computes the acceleration limit at time \c time.
+
+      The result must be stored into attributes
+      LinearJointAcceleration::m_lower and LinearJointAcceleration::m_upper.
+      */
     virtual void computeAccelerationLimits(value_type time) { (void)time; }
 
     Vector m_lower, m_upper;
