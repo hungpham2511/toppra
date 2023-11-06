@@ -29,22 +29,36 @@ void LinearJointAcceleration::computeParams_impl(const GeometricPath& path,
 
   Eigen::Index ndofs (nbVariables());
 
-  // Compute F and g
-  Matrix& _F = F[0];
-  _F.   topRows(ndofs).setIdentity();
-  _F.bottomRows(ndofs).setZero();
-  _F.bottomRows(ndofs).diagonal().setConstant(-1);
-  Vector& _g = g[0];
-  _g.head(ndofs) =  m_upper;
-  _g.tail(ndofs) = -m_lower;
+  if (constantF()) {
+    // Compute F and g
+    Matrix& _F = F[0];
+    _F.topRows(ndofs).setIdentity();
+    _F.bottomRows(ndofs).setZero();
+    _F.bottomRows(ndofs).diagonal().setConstant(-1);
+    Vector& _g = g[0];
+    _g.head(ndofs) =  m_upper;
+    _g.tail(ndofs) = -m_lower;
+  }
 
   assert(ndofs == path.dof());
   for (std::size_t i = 0; i < N_1; ++i) {
+    computeAccelerationLimits(times[i]);
+
     a[i] = path.eval_single(times[i], 1);
     assert(a[i].size() == ndofs);
     b[i] = path.eval_single(times[i], 2);
     assert(b[i].size() == ndofs);
     c[i].setZero();
+
+    if (!constantF()) {
+      Matrix& _F = F[i];
+      _F.topRows(ndofs).setIdentity();
+      _F.bottomRows(ndofs).setZero();
+      _F.bottomRows(ndofs).diagonal().setConstant(-1);
+      Vector& _g = g[i];
+      _g.head(ndofs) =  m_upper;
+      _g.tail(ndofs) = -m_lower;
+    }
   }
 }
 

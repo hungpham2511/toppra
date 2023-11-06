@@ -19,6 +19,25 @@ class LinearJointAcceleration : public LinearConstraint {
 
     virtual std::ostream& print(std::ostream& os) const;
 
+  protected:
+    LinearJointAcceleration (const int nDof)
+      : LinearConstraint (nDof * 2, nDof, false, false, false)
+      , m_lower (nDof)
+      , m_upper (nDof)
+    {
+      check();
+    }
+
+    /**
+      \brief Computes the acceleration limit at time \c time.
+
+      The result must be stored into attributes
+      LinearJointAcceleration::m_lower and LinearJointAcceleration::m_upper.
+      */
+    virtual void computeAccelerationLimits(value_type time) { (void)time; }
+
+    Vector m_lower, m_upper;
+
   private:
     void check();
 
@@ -28,7 +47,6 @@ class LinearJointAcceleration : public LinearConstraint {
         Matrices& F, Vectors& g,
         Bounds& ubound, Bounds& xbound);
 
-    Vector m_lower, m_upper;
 }; // class LinearJointAcceleration
 } // namespace constraint
 } // namespace toppra

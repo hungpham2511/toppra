@@ -60,6 +60,13 @@ JointAccelerationConstraint
    :special-members:
    :show-inheritance:
 
+JointAccelerationConstraintVarying
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: toppra.constraint.JointAccelerationConstraintVarying
+   :members:
+   :special-members:
+   :show-inheritance:
+
 RobustLinearConstraint
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: toppra.constraint.RobustLinearConstraint
@@ -79,7 +86,10 @@ RobustLinearConstraint
 """
 from .constraint import ConstraintType, DiscretizationType, Constraint
 from .joint_torque import JointTorqueConstraint
-from .linear_joint_acceleration import JointAccelerationConstraint
+from .linear_joint_acceleration import (
+    JointAccelerationConstraint,
+    JointAccelerationConstraintVarying,
+)
 from .linear_joint_velocity import (
     JointVelocityConstraint,
     JointVelocityConstraintVarying,

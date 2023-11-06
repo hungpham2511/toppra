@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- feat(constraint): time varying acceleration constraint (#213)
+
 ## 0.6.2 (Sept 19 2023)
 
 ### Changed
