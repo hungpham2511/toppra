@@ -60,6 +60,13 @@ JointAccelerationConstraint
    :special-members:
    :show-inheritance:
 
+JointAccelerationConstraintVarying
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: toppra.constraint.JointAccelerationConstraintVarying
+   :members:
+   :special-members:
+   :show-inheritance:
+
 RobustLinearConstraint
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: toppra.constraint.RobustLinearConstraint
