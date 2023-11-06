@@ -46,7 +46,7 @@ class JointAccelerationConstraint(LinearConstraint):
         super(JointAccelerationConstraint, self).__init__()
         alim = np.array(alim, dtype=float)
         if np.isnan(alim).any():
-            raise ValueError("Bad velocity given: %s" % alim)
+            raise ValueError("Bad acceleration given: %s" % alim)
         if len(alim.shape) == 1:
             self.alim = np.vstack((-np.array(alim), np.array(alim))).T
         else:
@@ -105,10 +105,17 @@ class JointAccelerationConstraint(LinearConstraint):
 
 
 class JointAccelerationConstraintVarying(LinearConstraint):
-    """_summary_
+    """A Joint acceleration Constraint class.
 
-    Args:
-        LinearConstraint (_type_): _description_
+    This class handle acceleration constraints that vary along the path.
+
+    Parameters
+    ----------
+    alim_func: (float) -> np.ndarray
+        A function that receives a scalar (float) and produce an array
+        with shape (dof, 2). The lower and upper acceleration bounds of
+        the j-th joint are given by out[j, 0] and out[j, 1]
+        respectively.
     """
 
     def __init__(self, alim_func):
@@ -116,25 +123,36 @@ class JointAccelerationConstraintVarying(LinearConstraint):
         self.dof = alim_func(0).shape[0]
         self._format_string = "    Varying Acceleration limit: \n"
         self.alim_func = alim_func
+        self.identical = False
 
     def compute_constraint_params(self, path, gridpoints):
-        if path.dof != self.get_dof():
+        if path.dof != self.dof:
             raise ValueError(
                 "Wrong dimension: constraint dof ({:d}) not equal to path dof ({:d})".format(
-                    self.get_dof(), path.dof
+                    self.dof, path.dof
                 )
             )
-        qs = path((gridpoints), 1)
-        qss = path((gridpoints), 2)
+        ps_vec = (path(gridpoints, order=1)).reshape((-1, path.dof))
+        pss_vec = (path(gridpoints, order=2)).reshape((-1, path.dof))
+        dof = path.dof
+        n_grid = gridpoints.shape[0]
+
+        stacked_eyes = np.vstack((np.eye(dof), -np.eye(dof)))
+        f_vec = np.repeat(stacked_eyes[np.newaxis, :, :], n_grid, axis=0)
+
+        # compute accel limits over gridpoints
         alim_grid = np.array([self.alim_func(s) for s in gridpoints])
-        _, _, xbound_ = _create_acceleration_constraint_varying(qs, qss, alim_grid)
+        g_vec = np.zeros((n_grid, dof * 2))
+        g_vec[:, 0:dof] = alim_grid[:, :, 1]
+        g_vec[:, dof:] = -alim_grid[:, :, 0]
+
         if self.discretization_type == DiscretizationType.Collocation:
             return (
                 ps_vec,
                 pss_vec,
                 np.zeros_like(ps_vec),
-                F_single,
-                g_single,
+                f_vec,
+                g_vec,
                 None,
                 None,
             )
@@ -143,12 +161,12 @@ class JointAccelerationConstraintVarying(LinearConstraint):
                 ps_vec,
                 pss_vec,
                 np.zeros_like(ps_vec),
-                F_single,
-                g_single,
+                f_vec,
+                g_vec,
                 None,
                 None,
                 gridpoints,
-                identical=True,
+                identical=False,
             )
         else:
             raise NotImplementedError("Other form of discretization not supported!")
