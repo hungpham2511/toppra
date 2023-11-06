@@ -42,7 +42,7 @@ void LinearJointAcceleration::computeParams_impl(const GeometricPath& path,
 
   assert(ndofs == path.dof());
   for (std::size_t i = 0; i < N_1; ++i) {
-    computeAccelerationLimits(gridpoints[i]);
+    computeAccelerationLimits(times[i]);
 
     a[i] = path.eval_single(times[i], 1);
     assert(a[i].size() == ndofs);
