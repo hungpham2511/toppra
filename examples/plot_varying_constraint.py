@@ -53,9 +53,7 @@ def alim_func(t):
         alim = np.vstack((-np.array(alim), np.array(alim))).T
     else:
         alim = np.array(alim, dtype=float)
-    temp = alim * (0.25 + np.sin(np.pi * t))
-    print(temp)
-    return temp
+    return alim * (0.25 + np.sin(np.pi * t))
 
 
 ################################################################################
