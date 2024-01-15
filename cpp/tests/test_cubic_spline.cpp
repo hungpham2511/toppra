@@ -76,7 +76,7 @@ Vectors CubicSpline::positions;
 Vector CubicSpline::times;
 
 TEST_F(CubicSpline, ClampedSpline) {
-  BoundaryCond bc{1, {0, 0, 0, 0, 0, 0}};
+  BoundaryCond bc{1, std::vector<value_type>{0, 0, 0, 0, 0, 0}};
   BoundaryCondFull bc_type{bc, bc};
   ConstructCubicSpline(positions, times, bc_type);
   AssertSplineKnots();
@@ -92,7 +92,7 @@ TEST_F(CubicSpline, ClampedSplineString) {
 }
 
 TEST_F(CubicSpline, NaturalSpline) {
-  BoundaryCond bc{2, {0, 0, 0, 0, 0, 0}};
+  BoundaryCond bc{2, std::vector<value_type>{0, 0, 0, 0, 0, 0}};
   BoundaryCondFull bc_type{bc, bc};
   ConstructCubicSpline(positions, times, bc_type);
   AssertSplineKnots();
@@ -100,8 +100,8 @@ TEST_F(CubicSpline, NaturalSpline) {
 }
 
 TEST_F(CubicSpline, FirstOrderBoundaryConditions) {
-  BoundaryCondFull bc_type{BoundaryCond{1, {1.25, 0, 4.12, 1.75, 7.43, 5.31}},
-                           BoundaryCond{1, {3.51, 5.32, 4.63, 0, -3.12, 3.53}}};
+  BoundaryCondFull bc_type{BoundaryCond{1, std::vector<value_type>{1.25, 0, 4.12, 1.75, 7.43, 5.31}},
+                           BoundaryCond{1, std::vector<value_type>{3.51, 5.32, 4.63, 0, -3.12, 3.53}}};
   ConstructCubicSpline(positions, times, bc_type);
   AssertSplineKnots();
   AssertSplineBoundaryConditions(bc_type);
@@ -109,8 +109,8 @@ TEST_F(CubicSpline, FirstOrderBoundaryConditions) {
 
 TEST_F(CubicSpline, SecondOrderBoundaryConditions) {
   BoundaryCondFull bc_type{
-      BoundaryCond{2, {1.52, -4.21, 7.21, 9.31, -1.53, 7.54}},
-      BoundaryCond{2, {-5.12, 8.21, 9.12, 5.12, 24.12, 9.42}}};
+      BoundaryCond{2, std::vector<value_type>{1.52, -4.21, 7.21, 9.31, -1.53, 7.54}},
+      BoundaryCond{2, std::vector<value_type>{-5.12, 8.21, 9.12, 5.12, 24.12, 9.42}}};
   ConstructCubicSpline(positions, times, bc_type);
   AssertSplineKnots();
   AssertSplineBoundaryConditions(bc_type);
@@ -118,8 +118,8 @@ TEST_F(CubicSpline, SecondOrderBoundaryConditions) {
 
 TEST_F(CubicSpline, FirstOrderAndSecondOrderBoundaryConditions) {
   BoundaryCondFull bc_type{
-      BoundaryCond{1, {1.52, -4.21, 7.21, 9.31, -1.53, 7.54}},
-      BoundaryCond{2, {-5.12, 8.21, 9.12, 5.12, 24.12, 9.42}}};
+      BoundaryCond{1, std::vector<value_type>{1.52, -4.21, 7.21, 9.31, -1.53, 7.54}},
+      BoundaryCond{2, std::vector<value_type>{-5.12, 8.21, 9.12, 5.12, 24.12, 9.42}}};
   ConstructCubicSpline(positions, times, bc_type);
   AssertSplineKnots();
   AssertSplineBoundaryConditions(bc_type);
@@ -132,8 +132,8 @@ TEST_F(CubicSpline, BadPositions) {
                                        {6.25, 8.12, 9.52, 5.21, 8.31},
                                        {7.31, 3.53, 8.41, 9.56, -3.15, 4.83}});
   BoundaryCondFull bc_type{
-      BoundaryCond{2, {1.52, -4.21, 7.21, 9.31, -1.53, 7.54}},
-      BoundaryCond{2, {-5.12, 8.21, 9.12, 5.12, 24.12, 9.42}}};
+      BoundaryCond{2, std::vector<value_type>{1.52, -4.21, 7.21, 9.31, -1.53, 7.54}},
+      BoundaryCond{2, std::vector<value_type>{-5.12, 8.21, 9.12, 5.12, 24.12, 9.42}}};
   ASSERT_THROW(ConstructCubicSpline(bad_positions, times, bc_type),
                std::runtime_error);
 
@@ -147,8 +147,8 @@ TEST_F(CubicSpline, BadPositions) {
 
 TEST_F(CubicSpline, BadTimes) {
   BoundaryCondFull bc_type{
-      BoundaryCond{2, {1.52, -4.21, 7.21, 9.31, -1.53, 7.54}},
-      BoundaryCond{2, {-5.12, 8.21, 9.12, 5.12, 24.12, 9.42}}};
+      BoundaryCond{2, std::vector<value_type>{1.52, -4.21, 7.21, 9.31, -1.53, 7.54}},
+      BoundaryCond{2, std::vector<value_type>{-5.12, 8.21, 9.12, 5.12, 24.12, 9.42}}};
   Vector bad_times(1);
   bad_times << 1;
   ASSERT_THROW(ConstructCubicSpline(positions, bad_times, bc_type),
@@ -167,8 +167,8 @@ TEST_F(CubicSpline, BadTimes) {
 
 TEST_F(CubicSpline, BadBoundaryConditions) {
   BoundaryCondFull bc_type{
-      BoundaryCond{2, {1.52, 7.21, 9.31, -1.53, 7.54}},
-      BoundaryCond{2, {-5.12, 8.21, 9.12, 5.12, 24.12, 9.42}}};
+      BoundaryCond{2, std::vector<value_type>{1.52, 7.21, 9.31, -1.53, 7.54}},
+      BoundaryCond{2, std::vector<value_type>{-5.12, 8.21, 9.12, 5.12, 24.12, 9.42}}};
   ASSERT_THROW(ConstructCubicSpline(positions, times, bc_type),
                std::runtime_error);
 
@@ -177,8 +177,8 @@ TEST_F(CubicSpline, BadBoundaryConditions) {
   ASSERT_THROW(ConstructCubicSpline(positions, times, bc_type),
                std::runtime_error);
 
-  bc_type = {BoundaryCond{3, {1.52, 7.21, 9.31, 2.52, 4.41, 5.54}},
-             BoundaryCond{3, {-5.12, 8.21, 9.12, -1.32, 3.53, 9.21}}};
+  bc_type = {BoundaryCond{3, std::vector<value_type>{1.52, 7.21, 9.31, 2.52, 4.41, 5.54}},
+             BoundaryCond{3, std::vector<value_type>{-5.12, 8.21, 9.12, -1.32, 3.53, 9.21}}};
   ASSERT_THROW(ConstructCubicSpline(positions, times, bc_type),
                std::runtime_error);
 }
