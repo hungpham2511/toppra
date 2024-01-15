@@ -116,6 +116,14 @@ LpSol1d solve_lp1d(const RowVector2& v, const Eigen::MatrixBase<Derived>& A)
     }
   }
 
+  // In case upper bound becomes less than lower bound and their difference is not more than
+  // 2*ABS_TOLERANCE, extend both bounds to not make the problem infeasible due to numerical
+  // errors.
+  if (cur_max < cur_min && cur_min - cur_max < 2 * ABS_TOLERANCE) {
+    cur_min -= ABS_TOLERANCE;
+    cur_max += ABS_TOLERANCE;
+  }
+
   if (   cur_min - cur_max > std::max(std::abs(cur_min),std::abs(cur_max))*REL_TOLERANCE
       || cur_min == infinity
       || cur_max == -infinity) {
