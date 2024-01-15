@@ -1,5 +1,8 @@
 # Changelog
 
+- [cpp]: fix: Seidel LP 1D: incoherent bounds (#244)
+- [cpp]: fix: Cannot convert from 'initializer list' to 'toppra::BoundaryCond' (#245)
+
 ## 0.6.2 (Sept 19 2023)
 
 ### Changed
