@@ -50,7 +50,7 @@ void JointTorque::computeParams_impl(const GeometricPath& path,
     computeInverseDynamics(cfg, zero, zero, c[i]);
     computeInverseDynamics(cfg, zero, acc, a[i]);
     a[i] -=  c[i];
-    computeInverseDynamics(cfg, vel, zero, b[i]);
+    computeInverseDynamics(cfg, vel, acc, b[i]);
     b[i] -=  c[i];
 
     if (m_frictionCoeffs.size() > 0)
