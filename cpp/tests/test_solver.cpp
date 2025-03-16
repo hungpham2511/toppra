@@ -288,7 +288,6 @@ TEST(SeidelFunctions_1D, infeasible_due_to_incoherent_bounds) {
   A << seidel::TINY / 2, 1;
   sol = seidel::solve_lp1d(v, A);
   EXPECT_FALSE(sol.feasible);
-  
 }
 
 TEST(SeidelFunctions_1D, feasible_with_a_and_b_small) {
@@ -346,6 +345,25 @@ TEST(SeidelFunctions_1D, feasible_but_with_tolerated_constraint_violation) {
 
   auto sol = seidel::solve_lp1d(v, A);
   EXPECT_TRUE(sol.feasible);
+
+  {
+    // Issue #244
+    v = { -65.960772491990838, 0.0 };
+    A.resize(8, 2);
+    A <<
+     -65.9607724919908,                      -0.0151605259038078,
+      65.9607724919908,                     -0.00782362866419491,
+     0.468679477393087,                      5.6843418860808e-14,
+    -0.468679477393087,                                    -1000,
+                     0, -std::numeric_limits<double>::infinity(),
+                     0, -std::numeric_limits<double>::infinity(),
+     -65.9607724919908,                                        0,
+      65.9607724919908,                      -0.0229841545680027;
+
+    auto sol = seidel::solve_lp1d(v, A);
+    EXPECT_TRUE(sol.feasible);
+    EXPECT_NEAR(0, sol.optvar, TOPPRA_ABS_TOL);
+  }
 }
 
 TEST(SeidelFunctions, seidel_2d) {
