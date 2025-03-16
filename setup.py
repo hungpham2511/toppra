@@ -14,13 +14,19 @@ with open("README.md", "r", encoding='UTF-8') as file_:
 
 URL = "https://github.com/hungpham2511/toppra"
 
-
 # setup requirements
 if sys.version[0] == '2':
     with open("requirements.txt", "r") as f:
-        REQUIRES = ["scipy==0.18.0", "numpy", "matplotlib",
-                    # only required on python2.7
-                    "pathlib2", "enum34", "strip_hints", "typing"]
+        REQUIRES = [
+            "scipy==0.18.0",
+            "numpy",
+            "matplotlib",
+            # only required on python2.7
+            "pathlib2",
+            "enum34",
+            "strip_hints",
+            "typing"
+        ]
         DEV_REQUIRES = [line.strip() for line in f if line.strip()]
 else:
     with open("requirements3.txt", "r") as f:
@@ -33,16 +39,13 @@ EMAIL = "hungpham2511@gmail.com"
 LICENSE = "MIT"
 
 SRC_DIR = "toppra"
-PACKAGES = ["toppra",
-            "toppra.constraint",
-            "toppra.algorithm",
-            "toppra.algorithm.reachabilitybased",
-            "toppra.solverwrapper",
-            "toppra.cpp"]
+PACKAGES = [
+    "toppra", "toppra.constraint", "toppra.algorithm",
+    "toppra.algorithm.reachabilitybased", "toppra.solverwrapper", "toppra.cpp"
+]
 
-ext_1 = Extension(SRC_DIR + "._CythonUtils",
-                  [SRC_DIR + "/_CythonUtils.pyx"],
-                  extra_compile_args=['-O1'],
+ext_1 = Extension(SRC_DIR + "._CythonUtils", [SRC_DIR + "/_CythonUtils.pyx"],
+                  extra_compile_args=['-O2'],
                   libraries=[],
                   include_dirs=[np.get_include()])
 
@@ -60,17 +63,20 @@ if sys.version[0] == '2' or sys.version[:3] == '3.5':
 # custom install command: strip type-hints before installing toppra
 # for python2.7 and pthon3.5
 class install2(install):
+
     def run(self, *args, **kwargs):
         # stripping
         if sys.version[0] == '2' or sys.version[:3] == '3.5':
             from strip_hints import strip_file_to_string
             import glob
             import os.path
+
             def process_file(f):
                 print(os.path.abspath(f))
                 out = strip_file_to_string(f)
                 with open(f, 'w') as fh:
                     fh.write(out)
+
             for f in glob.glob("%s/*/toppra/*/*.py" % self.build_base):
                 process_file(f)
             for f in glob.glob("%s/*/toppra/*.py" % self.build_base):
@@ -89,11 +95,11 @@ if __name__ == "__main__":
         setup_requires=["numpy", "cython"],
         extras_require={
             # Dependencies installed when running `pip install -e .[dev]`
-            
+
             # NOTE: This is deprecated in favour of the simpler workflow
             # of installing from requirements3.txt before installing
             # this pkg.
-            'dev': DEV_REQUIRES  
+            'dev': DEV_REQUIRES
         },
         packages=PACKAGES,
         zip_safe=False,
@@ -107,12 +113,14 @@ if __name__ == "__main__":
         url=URL,
         license=LICENSE,
 
-          # This is used to build the Cython modules. Will be run
+        # This is used to build the Cython modules. Will be run
         # automatically if not found by pip. Otherwise run
         #
         #      python setup.py build
         #
         # to trigger manually.
-          cmdclass={"build_ext": build_ext, "install": install2},
-        ext_modules=cythonize(EXTENSIONS)
-    )
+        cmdclass={
+            "build_ext": build_ext,
+            "install": install2
+        },
+        ext_modules=cythonize(EXTENSIONS))

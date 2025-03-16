@@ -5,8 +5,8 @@ from libc.math cimport abs, pow, isnan
 cimport cython
 from cpython.array cimport array, clone
 
-ctypedef np.int_t INT_t
-ctypedef np.float_t FLOAT_t
+ctypedef np.int64_t INT_t
+ctypedef np.float64_t FLOAT_t
 
 from ..constraint import ConstraintType
 
