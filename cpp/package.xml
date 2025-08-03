@@ -12,5 +12,5 @@
  <author>Hung Pham</author>
  <author>Joseph Mirabel</author>
 
- <buildtool_depend>catkin</buildtool_depend>
+ <buildtool_depend>ament_cmake</buildtool_depend>
 </package>
