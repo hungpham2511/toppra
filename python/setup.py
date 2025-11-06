@@ -15,23 +15,9 @@ with open("README.md", "r", encoding='UTF-8') as file_:
 URL = "https://github.com/hungpham2511/toppra"
 
 # setup requirements
-if sys.version[0] == '2':
-    with open("requirements.txt", "r") as f:
-        REQUIRES = [
-            "scipy==0.18.0",
-            "numpy",
-            "matplotlib",
-            # only required on python2.7
-            "pathlib2",
-            "enum34",
-            "strip_hints",
-            "typing"
-        ]
-        DEV_REQUIRES = [line.strip() for line in f if line.strip()]
-else:
-    with open("requirements3.txt", "r") as f:
-        REQUIRES = ["scipy>0.18", "numpy", "matplotlib"]
-        DEV_REQUIRES = [line.strip() for line in f if line.strip()]
+with open("requirements.txt", "r") as f:
+    REQUIRES = ["scipy>0.18", "numpy", "matplotlib"]
+    DEV_REQUIRES = [line.strip() for line in f if line.strip()]
 
 AUTHOR = "Hung Pham"
 EMAIL = "hungpham2511@gmail.com"
@@ -56,8 +42,6 @@ ext_2 = Extension(SRC_DIR + ".solverwrapper.cy_seidel_solverwrapper",
 
 EXTENSIONS = [ext_1, ext_2]
 SETUP_REQUIRES = ["numpy", "cython"]
-if sys.version[0] == '2' or sys.version[:3] == '3.5':
-    SETUP_REQUIRES = ["numpy", "cython", "strip_hints"]
 
 
 # custom install command: strip type-hints before installing toppra

@@ -103,11 +103,11 @@ def lint(c, pycodestyle=False, pydocstyle=False):
     """Run linting on selected source files."""
     c.run(
         "python -m pylint --rcfile=.pylintrc \
-                toppra/__init__.py \
-                toppra/utils.py \
-                toppra/interpolator.py \
-                toppra/exceptions.py \
-                toppra/parametrizer.py \
+                toppra/toppra/__init__.py \
+                toppra/toppra/utils.py \
+                toppra/toppra/interpolator.py \
+                toppra/toppra/exceptions.py \
+                toppra/toppra/parametrizer.py \
            "
     )
     # toppra/solverwrapper/solverwrapper.py
