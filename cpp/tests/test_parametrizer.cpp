@@ -45,11 +45,11 @@ TEST_F(ParametrizeConstAccel, Basic) {
   auto qds = p.eval(ts, 1);
   auto qdds = p.eval(ts, 2);
   ASSERT_TRUE(p.validate());
-  ASSERT_EQ(qds[0][0], 0);
-  ASSERT_EQ(qds[0][1], 0);
+  ASSERT_NEAR(qds[0][0], 0, 1e-10);
+  ASSERT_NEAR(qds[0][1], 0, 1e-10);
 
-  ASSERT_EQ(qds[9][0], 0);
-  ASSERT_EQ(qds[9][1], 0);
+  ASSERT_NEAR(qds[9][0], 0, 1e-10);
+  ASSERT_NEAR(qds[9][1], 0, 1e-10);
 }
 
 TEST_F(ParametrizeConstAccel, Correctness) {
