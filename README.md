@@ -35,8 +35,7 @@ pip install toppra
 To install from source for development:
 
 ``` shell
-pip install -r requirement3.txt
-pip install -e .
+pip install -e python
 ```
 
 # Support

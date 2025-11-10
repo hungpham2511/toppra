@@ -9,12 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.7, 3.8, 3.9, "3.10"]
+        python-version: ["3.8", "3.9", "3.10"]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -32,15 +32,15 @@ jobs:
       matrix:
         include:
           # This is because of pinocchio version on apt
-          - python-version: 3.6
-            os: ubuntu-18.04
-          - python-version: 3.8
+          - python-version: "3.8"
             os: ubuntu-20.04
+          - python-version: "3.10"
+            os: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
       - name: Set up Python 
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dep
@@ -53,7 +53,7 @@ jobs:
           sudo apt update
 
           PY_VER_LONG=${{ matrix.python-version }}
-          PY_VER="${PY_VER_LONG:0:1}${PY_VER_LONG:2:1}"
+          PY_VER="${PY_VER_LONG:0:1}${PY_VER_LONG:2}"
           sudo apt install -y cmake \
             clang-tidy \
             libeigen3-dev \
@@ -104,17 +104,17 @@ jobs:
         os: [ubuntu-latest]
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v6
         name: Install Python
         with:
-          python-version: '3.8'
+          python-version: "3.10"
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.1.1
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v5
         with:
           name: dist
           path: ./wheelhouse/*.whl
@@ -122,20 +122,21 @@ jobs:
   build-sdist:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v2
+      - uses: actions/checkout@v5
+      - name: Set up Python
+        uses: actions/setup-python@v6
         with:
-          python-version: 3.9
+          python-version: "3.10"
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install cython numpy setuptools wheel
+          cd python
           python setup.py sdist
 
       - name: Archive production artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v5
         with:
           name: dist
           path: |
@@ -150,7 +151,7 @@ jobs:
       - run: echo "Deploying to pypi on branch $GITHUB_REF"
 
       - name: Download all workflow run artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v5
 
       - run: ls dist
 

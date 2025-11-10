@@ -1,5 +1,4 @@
 if(${PYTHON_BINDINGS})
-  
   if(${BUILD_WITH_PINOCCHIO_PYTHON})
     set(PINOCCHIO_WITH_PYTHON_INTERFACE true)
   endif()
@@ -9,7 +8,7 @@ if(${PYTHON_BINDINGS})
     ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
   get_filename_component(TOPPRA_PYTHON_SOURCE_DIR
     ${TOPPRA_PYTHON_SOURCE_DIR} DIRECTORY)
-  set(TOPPRA_PYTHON_SOURCE_DIR ${TOPPRA_PYTHON_SOURCE_DIR}/toppra/cpp)
+  set(TOPPRA_PYTHON_SOURCE_DIR ${TOPPRA_PYTHON_SOURCE_DIR}/toppra/toppra/cpp)
   message(STATUS "Installing Python bindings to ${TOPPRA_PYTHON_SOURCE_DIR}")
 
   # Build bindings ###################################################

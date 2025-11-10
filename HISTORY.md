@@ -3,6 +3,7 @@
 - [cpp]: fix: Update parametrizer test comparisons (#264)
 - [cpp]: fix: Seidel LP 1D: incoherent bounds (#244)
 - [cpp]: fix: Cannot convert from 'initializer list' to 'toppra::BoundaryCond' (#245)
+- Move Python library to its own subfolder to support building as ROS 2 package (#266)
 
 ## 0.6.2 (Sept 19 2023)
 
