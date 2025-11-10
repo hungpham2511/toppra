@@ -9,6 +9,8 @@
 
 # Overview
 
+**Python support for the library will be dropped. Consider using the C++ version with bindings instead.**
+
 **toppra** is a library for computing the time-optimal path
 parametrization for robots subject to kinematic and dynamic
 constraints.  In general, given the inputs:
