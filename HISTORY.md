@@ -1,5 +1,7 @@
 # Changelog
 
+## 0.6.3 (Jan 23 2026)
+
 - [cpp]: fix: Update parametrizer test comparisons (#264)
 - [cpp]: fix: Seidel LP 1D: incoherent bounds (#244)
 - [cpp]: fix: Cannot convert from 'initializer list' to 'toppra::BoundaryCond' (#245)

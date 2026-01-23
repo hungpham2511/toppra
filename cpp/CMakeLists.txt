@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 project(toppra
-  VERSION 0.6.2
+  VERSION 0.6.3
   DESCRIPTION "Library computing the time-optimal path parameterization."
   LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 11)
