@@ -6,7 +6,6 @@ conic canonical linear constraints. Wrapppers considered include:
 import pytest
 import numpy as np
 import toppra
-import toppra.constraint as constraint
 import cvxpy
 from ..testing_flags import FOUND_MOSEK
 
