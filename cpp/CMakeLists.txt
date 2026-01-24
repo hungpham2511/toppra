@@ -4,7 +4,7 @@ project(toppra
   VERSION 0.6.2
   DESCRIPTION "Library computing the time-optimal path parameterization."
   LANGUAGES CXX)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Tests
 option(BUILD_TESTS "Build Gtests" ON)

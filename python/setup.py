@@ -1,5 +1,4 @@
 from setuptools import setup, Extension
-from distutils.command.install import install
 from Cython.Distutils import build_ext
 from Cython.Build import cythonize
 import sys

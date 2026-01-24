@@ -4,7 +4,7 @@
 - [cpp]: fix: Seidel LP 1D: incoherent bounds (#244)
 - [cpp]: fix: Cannot convert from 'initializer list' to 'toppra::BoundaryCond' (#245)
 - Move Python library to its own subfolder to support building as ROS 2 package (#266)
-- Fix Python CI (#270)
+- Fix Python and C++ CI, disable ECOS solver in tests (#270)
 
 ## 0.6.2 (Sept 19 2023)
 
