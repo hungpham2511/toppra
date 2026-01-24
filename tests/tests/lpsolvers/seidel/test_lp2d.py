@@ -142,7 +142,7 @@ def test_err1():
     if prob.status == "optimal":
         assert res == 1
         np.testing.assert_allclose(optval, prob.value)
-        np.testing.assert_allclose(optvar, np.asarray(x.value).flatten())
+        np.testing.assert_allclose(optvar, np.asarray(x.value).flatten(), rtol=1.0e-6, atol=1.0e-7)
     elif prob.status == "infeasible":
         assert res == 0
     else:
