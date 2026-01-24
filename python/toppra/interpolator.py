@@ -383,9 +383,9 @@ class SplineInterpolator(AbstractGeometricPath):
     """
 
     def __init__(
-        self, 
-        ss_waypoints, 
-        waypoints, 
+        self,
+        ss_waypoints,
+        waypoints,
         bc_type: str="not-a-knot"
     ) -> None:
         super(SplineInterpolator, self).__init__()
@@ -479,7 +479,7 @@ class SplineInterpolator(AbstractGeometricPath):
             Equivalent openrave trajectory.
         """
 
-        traj = orpy.RaveCreateTrajectory(robot.GetEnv(), "")
+        traj = orpy.RaveCreateTrajectory(robot.GetEnv(), "")  # pylint: disable=possibly-used-before-assignment
         spec = robot.GetActiveConfigurationSpecification("cubic")
         spec.AddDerivativeGroups(1, False)
         spec.AddDerivativeGroups(2, True)
