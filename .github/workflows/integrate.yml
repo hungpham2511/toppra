@@ -112,7 +112,8 @@ jobs:
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.1.1
-        working-directory: path/to/your/package
+        with:
+          package-dir: ./python
 
       - uses: actions/upload-artifact@v5
         with:
