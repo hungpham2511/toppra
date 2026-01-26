@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.6.3 (Jan 23 2026)
+## 0.6.4 (Jan 26 2026)
 
 - [cpp]: fix: Update parametrizer test comparisons (#264)
 - [cpp]: fix: Seidel LP 1D: incoherent bounds (#244)
