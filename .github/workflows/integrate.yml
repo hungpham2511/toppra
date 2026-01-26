@@ -112,8 +112,7 @@ jobs:
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.1.1
-        env:
-          CIBW_PROJECT_DIR: python
+        working-directory: path/to/your/package
 
       - uses: actions/upload-artifact@v5
         with:
