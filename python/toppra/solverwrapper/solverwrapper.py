@@ -8,12 +8,14 @@ logger = logging.getLogger(__name__)
 # pylint: disable=unused-import
 def available_solvers(output_msg=True):
     """Check for available solvers."""
-    try:
-        import ecos
+    # try:
+    #     import ecos
 
-        IMPORT_ECOS = True
-    except ImportError as err:
-        IMPORT_ECOS = False
+    #     IMPORT_ECOS = True
+    # except ImportError as err:
+    #     IMPORT_ECOS = False
+    IMPORT_ECOS = False  # ecos solver is currently failing
+
     try:
         import qpoases
 

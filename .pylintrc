@@ -30,10 +30,6 @@ persistent=yes
 # Specify a configuration file.
 #rcfile=
 
-# When enabled, pylint would attempt to guess common misconfiguration and emit
-# user-friendly hints instead of false-positive error messages
-suggestion-mode=yes
-
 # Allow loading of arbitrary C extensions. Extensions are imported into the
 # active Python interpreter and may run arbitrary code.
 unsafe-load-any-extension=no
@@ -55,96 +51,23 @@ confidence=
 # no Warning level messages displayed, use"--disable=all --enable=classes
 # --disable=W"
 disable=
-	fixme,anomalous-backslash-in-string
-	len-as-condition,
-	no-member,
-	parameter-unpacking,
-	superfluous-parens,
-	too-few-public-methods,
-	unsubscriptable-object,
-	useless-object-inheritance,
-        apply-builtin,
-        backtick,
-        bad-inline-option,
-        bad-python3-import,
-        basestring-builtin,
-        buffer-builtin,
-        cmp-builtin,
-        cmp-method,
-        coerce-builtin,
-        coerce-method,
-        comprehension-escape,
-        delslice-method,
-        deprecated-itertools-function,
-        deprecated-operator-function,
-        deprecated-pragma,
-        deprecated-str-translate-call,
-        deprecated-string-function,
-        deprecated-sys-function,
-        deprecated-types-field,
-        deprecated-urllib-function,
-        dict-items-not-iterating,
-        dict-iter-method,
-        dict-keys-not-iterating,
-        dict-values-not-iterating,
-        dict-view-method,
-        div-method,
-        eq-without-hash,
-        exception-escape,
-        exception-message-attribute,
-        execfile-builtin,
-        file-builtin,
-        file-ignored,
-        filter-builtin-not-iterating,
-        getslice-method,
-        hex-method,
-        idiv-method,
-        import-star-module-level,
-        indexing-exception,
-        input-builtin,
-        intern-builtin,
-        invalid-str-codec,
-        invalid-unicode-literal,
-        locally-disabled,
-        locally-enabled,
-        long-builtin,
-        long-suffix,
-        map-builtin-not-iterating,
-        metaclass-assignment,
-        next-method-called,
-        next-method-defined,
-        no-absolute-import,
-        non-ascii-bytes-literal,
-        nonzero-method,
-        oct-method,
-        old-division,
-        old-ne-operator,
-        old-octal-literal,
-        old-raise-syntax,
-        print-statement,
-        raising-string,
-        range-builtin-not-iterating,
-        raw-checker-failed,
-        raw_input-builtin,
-        rdiv-method,
-        reduce-builtin,
-        reload-builtin,
-        round-builtin,
-        setslice-method,
-        standarderror-builtin,
-        suppressed-message,
-        sys-max-int,
-        unichr-builtin,
-        unicode-builtin,
-        unpacking-in-except,
-        useless-suppression,
-        using-cmp-argument,
-        xrange-builtin,
-        xreadlines-attribute,
-        zip-builtin-not-iterating,
-	bad-continuation,
-	arguments-differ,
-	super-with-arguments
+      fixme,
+      anomalous-backslash-in-string,
+      len-as-condition,
+      no-member,
+      superfluous-parens,
+      too-few-public-methods,
+      unsubscriptable-object,
+      useless-object-inheritance,
+      bad-inline-option,
+      deprecated-pragma,
+      file-ignored,
+      locally-disabled,
+      raw-checker-failed,
+      suppressed-message,
+      useless-suppression,
+      arguments-differ,
+      super-with-arguments
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
@@ -425,13 +348,6 @@ max-line-length=120
 # Maximum number of lines in a module
 max-module-lines=1000
 
-# List of optional constructs for which whitespace checking is disabled. `dict-
-# separator` is used to allow tabulation in dicts, etc.: {1  : 1,\n222: 2}.
-# `trailing-comma` allows a space between comma and closing bracket: (a, ).
-# `empty-line` allows space-only lines.
-no-space-check=trailing-comma,
-               dict-separator
-
 # Allow the body of a class to be on the same line as the declaration if body
 # contains single statement.
 single-line-class-stmt=no
@@ -564,4 +480,4 @@ min-public-methods=2
 
 # Exceptions that will emit a warning when being caught. Defaults to
 # "Exception"
-overgeneral-exceptions=Exception
+overgeneral-exceptions=builtins.Exception

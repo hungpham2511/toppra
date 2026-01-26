@@ -1,9 +1,11 @@
 from setuptools import setup, Extension
-from distutils.command.install import install
 from Cython.Distutils import build_ext
 from Cython.Build import cythonize
-import numpy as np
 import sys
+
+def get_numpy_include():
+    import numpy
+    return numpy.get_include()
 
 NAME = "toppra"
 with open("VERSION", "r", encoding='UTF-8') as file_:
@@ -33,12 +35,12 @@ PACKAGES = [
 ext_1 = Extension(SRC_DIR + "._CythonUtils", [SRC_DIR + "/_CythonUtils.pyx"],
                   extra_compile_args=['-O2'],
                   libraries=[],
-                  include_dirs=[np.get_include()])
+                  include_dirs=[get_numpy_include()])
 
 ext_2 = Extension(SRC_DIR + ".solverwrapper.cy_seidel_solverwrapper",
                   [SRC_DIR + "/solverwrapper/cy_seidel_solverwrapper.pyx"],
                   extra_compile_args=['-O1'],
-                  include_dirs=[np.get_include()])
+                  include_dirs=[get_numpy_include()])
 
 EXTENSIONS = [ext_1, ext_2]
 SETUP_REQUIRES = ["numpy", "cython"]
