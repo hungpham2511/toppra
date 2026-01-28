@@ -50,8 +50,8 @@ def install_solvers(c, user=False):
     if path.exists():
         print("qpOASES install path already exists")
     else:
-        branch = "fix-long-deprecation"
-        c.run(f"git clone -b {branch} https://github.com/sea-bass/qpOASES.git {install_dir}")
+        branch = "master"
+        c.run(f"git clone -b {branch} https://github.com/hungpham2511/qpOASES.git {install_dir}")
         c.run(f"cd {install_dir} && mkdir bin && make")
     if user:
         flag = "--user"
