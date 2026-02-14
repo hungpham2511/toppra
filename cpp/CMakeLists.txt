@@ -115,3 +115,9 @@ install(EXPORT toppra::toppra
   NAMESPACE toppra::
   FILE toppraTargets.cmake
   DESTINATION "${CONFIG_INSTALL_DIR}")
+install(TARGETS toppra
+  EXPORT toppra::toppra
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  INCLUDES DESTINATION include)
