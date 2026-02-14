@@ -1,5 +1,9 @@
 # Changelog
 
+## Forthcoming
+
+- [cpp]: Install targets (fixes Windows builds) (#274)
+
 ## 0.6.4 (Jan 26 2026)
 
 - [cpp]: fix: Update parametrizer test comparisons (#264)
