@@ -1,5 +1,7 @@
 # Changelog
 
+- Go back to master branch of hungpham2511 qpOASES repo (#273)
+
 ## 0.6.4 (Jan 26 2026)
 
 - [cpp]: fix: Update parametrizer test comparisons (#264)
