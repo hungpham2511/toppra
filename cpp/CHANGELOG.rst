@@ -11,53 +11,22 @@ Changelog for package toppra
 0.6.4 (2026-01-26)
 ------------------
 * chore: Bump version to 0.6.4 (`#268 <https://github.com/hungpham2511/toppra/issues/268>`_)
-  * Bump version to 0.6.3
-  * Bump version to 0.6.4
 * Fix Python and C++ CI, disable ECOS solver in tests (`#270 <https://github.com/hungpham2511/toppra/issues/270>`_)
-  * Fix Python CI
-  * Patch tests
-  * Add Python 3.12 to Python CI
-  * Do not fail on first for now
-  * Disable ecos solver tests
-  * Add python 3.12 in cpp job too
 * build: Move Python library to its own subfolder to support building as ROS 2 package (`#266 <https://github.com/hungpham2511/toppra/issues/266>`_)
-  * Workaround to make colcon only build C++ library
-  * Move Python library to its own subfolder
-  * Update HISTORY.md
-  * Remove deprecated stuff
-  * Update tasks
-  * Some ci fixes
-  * Fix CI path
-  * Update tox.ini
-  * Add quotes around python3.12
-  * Update integrate.yml
-  * Update integrate.yml
-  * Doesnt work on python 3.12
 * fix(test): Use ASSERT_NEAR for 0 comparison in test_parametrizer.cpp (`#265 <https://github.com/hungpham2511/toppra/issues/265>`_)
-  * Use ASSERT_NEAR for 0 comparison in test_parametrizer.cpp
-  * Add note to history
 * fix(cpp): incoherent bounds seidel lp 1d (`#247 <https://github.com/hungpham2511/toppra/issues/247>`_)
-  * fix `#245 <https://github.com/hungpham2511/toppra/issues/245>`_: Cannot convert from initializer list to toppra::BoundaryCond
-  * fix `#244 <https://github.com/hungpham2511/toppra/issues/244>`_: Seidel LP 1D: incoherent bounds
-  * Update HISTORY.md
-* Merge pull request `#242 <https://github.com/hungpham2511/toppra/issues/242>`_ from jmirabel/develop
-  Release version 0.6.2
+* Release version 0.6.2 (`#242 <https://github.com/hungpham2511/toppra/issues/242>`_)
 * Contributors: Erik Holum, Joseph Mirabel, Maxim Skripnik, Sebastian Castro, Silvio Traversaro
 
 0.6.2 (2023-09-19)
 ------------------
 * chore: Bump toppra version: '0.6.1' --> '0.6.2'
-* Merge pull request `#241 <https://github.com/hungpham2511/toppra/issues/241>`_ from jmirabel/feat-logs
-  feat: warn when solver fails.
-* feat[cpp]: add error message to class Algo.
-* feat: warn when solver fails.
-* Merge pull request `#233 <https://github.com/hungpham2511/toppra/issues/233>`_ from jmirabel/develop
-  chore: Bump toppra version: '0.6.0' --> '0.6.1'
+* feat: warn when solver fails (`#241 <https://github.com/hungpham2511/toppra/issues/241>`_)
 * Contributors: Hung Pham (Phạm Tiến Hùng), Joseph Mirabel
 
 0.6.1 (2023-04-21)
 ------------------
-* chore: Bump toppra version: '0.6.0' --> '0.6.1'
+* chore: Bump toppra version: '0.6.0' --> '0.6.1' ( `#233 <https://github.com/hungpham2511/toppra/issues/233>`_)
 * fix: fix numerical issue in Seidel 1D solver.
 * Contributors: Joseph Mirabel
 
@@ -65,12 +34,7 @@ Changelog for package toppra
 ------------------
 * chore: Bump toppra version: '0.5.2' --> '0.6.0'
 * feat(cpp): Add initial gridpoints to proposeGridpoints (`#227 <https://github.com/hungpham2511/toppra/issues/227>`_)
-  * feat(cpp): add initial gridpoints to proposeGridpoints
-  * feat(cpp): add unit test for proposeGridpoints
-  * feat: improve Python bindings of PathParametrizationAlgorithm
 * feat(cpp,constraint): Make Interpolation the default method (`#225 <https://github.com/hungpham2511/toppra/issues/225>`_)
-  * feat(cpp,constraint): Make Interpolation the def discretization mthd
-  * fix tests
 * Contributors: Hung, Hung Pham (Phạm Tiến Hùng), Joseph Mirabel
 
 0.5.2 (2022-11-19)
@@ -78,15 +42,7 @@ Changelog for package toppra
 * Bump version: 0.5.1 → 0.5.2
 * chore: make C++ always define all installed symbols. (`#215 <https://github.com/hungpham2511/toppra/issues/215>`_)
 * feat: Allow setting N=0 to select gridpoints automatically (`#201 <https://github.com/hungpham2511/toppra/issues/201>`_)
-  * feat: Proposed gridpoints when N=0
-  This implementation uses forward list instead of vector for lower time
-  complexity.
-  * doc: Update docstring
 * feat: Improve the cubic spline, hermite spline factory methods (`#202 <https://github.com/hungpham2511/toppra/issues/202>`_)
-  * Homogenize CubicSpline and HermiteSpline constructor
-  * Refactor how boundary conditions are handled.
-  Also add support for clamped and natural boundary conditions.
-  * Add a few more test cases
 * doc,build: Minor adjustments to docstring for a clearer explaination
 * doc: Improve PiecewisePolyPath constructor docstring
 * Contributors: Hung, Hung Pham (Phạm Tiến Hùng), Joseph Mirabel
@@ -99,63 +55,27 @@ Changelog for package toppra
 0.5.0 (2022-07-14)
 ------------------
 * Bump version: 0.4.2 → 0.5.0
-* Merge pull request `#197 <https://github.com/hungpham2511/toppra/issues/197>`_ from jess-moss/make_path_times_public
-  Make path times public.
-* Added a comment and changed functions to override from final.
-* Made vitual function in parent class.
-* Changed name for convention.
-* Made function const and changed name for convention.
-* Fixed function name, made return reference.
-* Make path times public.
-* Merge pull request `#193 <https://github.com/hungpham2511/toppra/issues/193>`_ from hungpham2511/patch-185
-  Supersede `#185 <https://github.com/hungpham2511/toppra/issues/185>`_
-* Merge remote-tracking branch 'origin/develop' into patch-185
-* Make the const accel parametrizer more tolerance to numerical errs
-* Merge pull request `#192 <https://github.com/hungpham2511/toppra/issues/192>`_ from compscidr/patch-1
-  Google Test: master -> main
-* master -> main
-  https://github.com/google/googletest - doesn't seem to have a master branch but a main branch now
-* Merge pull request `#191 <https://github.com/hungpham2511/toppra/issues/191>`_ from hungpham2511/hung
-  CI works
+* Make path times public. (`#197 <https://github.com/hungpham2511/toppra/issues/197>`_)
+* Fixed bug in ConstAccel parametrizer where evaluating valid times can sometimes result in an exception being thrown. (`#193 <https://github.com/hungpham2511/toppra/issues/193>`_)
+* Google Test: master -> main (`#192 <https://github.com/hungpham2511/toppra/issues/192>`_)
+* CI works (`#191 <https://github.com/hungpham2511/toppra/issues/191>`_)
 * doc: Add some doc to compiling C++
-* Merge pull request `#190 <https://github.com/hungpham2511/toppra/issues/190>`_ from stevegolton/bugfix/seidel-wrong-variable
-  Fixes `#189 <https://github.com/hungpham2511/toppra/issues/189>`_. Fixed incorrect variable bug in seidel.cpp which was causing memory issues.
-* Fixes `#189 <https://github.com/hungpham2511/toppra/issues/189>`_. Fixed incorrect variable bug in seidel.cpp which was causing memory issues.
+* Fixed incorrect variable bug in seidel.cpp which was causing memory issues. (`#190 <https://github.com/hungpham2511/toppra/issues/190>`_)
 * Added a check to test the input times to the constaccel parametrizer are within the bounds of the parameterizer, and clampe resulting path values to the lower bound as well as the upper bound.
 * Chnaged path length in test to a more "usual" length value to avoid condusion
 * Clamp all path times to the upper bounds of the path in the const accel parametrizer. Fixes `#184 <https://github.com/hungpham2511/toppra/issues/184>`_.
-* Merge pull request `#178 <https://github.com/hungpham2511/toppra/issues/178>`_ from ahoarau/patch-1
-  Allow to build static library
-* Merge pull request `#181 <https://github.com/hungpham2511/toppra/issues/181>`_ from ahoarau/add-tests-option
-  Add BUILD_TESTS option
-* add build_shared_libs option defaults ON
-* add BUILD_TESTS option
-* set fPIC default on
-* Allow to build static library
-  passing -DBUILD_SHARED_LIBS=True or False allows users to build static or shared libraries
-* Merge pull request `#179 <https://github.com/hungpham2511/toppra/issues/179>`_ from ahoarau/win-fixes
-  Fixes for windows builds
-* fix all windows warnings
-* Update cpp/src/toppra/geometric_path/piecewise_poly_path.cpp
-  Co-authored-by: Joseph Mirabel <josephmirabel@gmail.com>
-* compiles on win64
+* Allow to build static library (`#178 <https://github.com/hungpham2511/toppra/issues/178>`_)
+* Add BUILD_TESTS option (`#181 <https://github.com/hungpham2511/toppra/issues/181>`_)
+* Fixes for windows builds (`#179 <https://github.com/hungpham2511/toppra/issues/179>`_)
 * Contributors: Antoine Hoarau, Hung, Hung Pham (Phạm Tiến Hùng), Jason Ernst, Jess Moss, Joseph Mirabel, Steve Golton
 
 0.4.2 (2021-08-08)
 ------------------
 * Bump version: 0.4.1 → 0.4.2
-* Merge pull request `#177 <https://github.com/hungpham2511/toppra/issues/177>`_ from kin-dergarten/speedup_poly_path
-  Replace for loop in piecewise poly path to find index by std::lower_bound.
-* Fixed off by one.
-* replace search for loop in piecewise poly path by std::lower_bound since the breakpoints are sorted
-* Merge branch 'hungpham2511:develop' into readme_invalid_chars
+* Replace for loop in piecewise poly path to find index by std::lower_bound. (`#177 <https://github.com/hungpham2511/toppra/issues/177>`_)
+* Remove invalid characters from README.md (`#173 <https://github.com/hungpham2511/toppra/pull/173>`_)
+* [CPP] Implement Spline Parametrizer (`#162 <https://github.com/hungpham2511/toppra/issues/162>`_)
 * Bump version: 0.4.0 → 0.4.1
-* [cpp]Add a comment to explain about grid point selection
-* Merge pull request `#162 <https://github.com/hungpham2511/toppra/issues/162>`_ from leonardoedgar/develop
-  [CPP] Implement Spline Parametrizer
-* remove unnecessary variables
-* add the test file for spline parametrizer
-* implement spline parametrizer
 * Contributors: Hung, Hung Pham (Phạm Tiến Hùng), Jakob LUDWIGER, John Wason, leonardoedgar
 
 0.4.0 (2021-03-16)
