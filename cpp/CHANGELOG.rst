@@ -4,7 +4,8 @@ Changelog for package toppra
 
 0.6.5 (2026-03-27)
 ------------------
-* Add `sea-bass` as maintainer to `package.xml`
+- [python]: Go back to master branch of hungpham2511 qpOASES repo (`#273 <https://github.com/hungpham2511/toppra/issues/273>`_)
+- Prepare for ROS build farm (`#277 <https://github.com/hungpham2511/toppra/issues/277>`_)
 * Contributors: Sebastian Castro
 
 0.6.4 (2026-01-26)
