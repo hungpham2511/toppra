@@ -2,8 +2,8 @@
 Changelog for package toppra
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.5 (2026-03-27)
+------------------
 * Add `sea-bass` as maintainer to `package.xml`
 * Contributors: Sebastian Castro
 
