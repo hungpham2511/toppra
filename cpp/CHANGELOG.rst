@@ -18,6 +18,11 @@ Changelog for package toppra
 * Release version 0.6.2 (`#242 <https://github.com/hungpham2511/toppra/issues/242>`_)
 * Contributors: Erik Holum, Joseph Mirabel, Maxim Skripnik, Sebastian Castro, Silvio Traversaro
 
+0.6.3 (2025-03-16)
+------------------
+* Updated interface for numpy > 2.0 (`#259 <https://github.com/hungpham2511/toppra/pull/259>`_)
+* Contributors: Zachary Kingston
+
 0.6.2 (2023-09-19)
 ------------------
 * chore: Bump toppra version: '0.6.1' --> '0.6.2'
