@@ -115,3 +115,9 @@ install(EXPORT toppra::toppra
   NAMESPACE toppra::
   FILE toppraTargets.cmake
   DESTINATION "${CONFIG_INSTALL_DIR}")
+
+# Handle the ROS case
+find_package(ament_cmake QUIET)
+if(ament_cmake_FOUND)
+  ament_package()
+endif()
