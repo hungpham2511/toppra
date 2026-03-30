@@ -58,12 +58,12 @@ if (OPT_MSGPACK)
   target_compile_definitions(toppra PRIVATE TOPPRA_OPT_MSGPACK)
 endif()
 
-if (${EIGEN3_VERSION_STRING} VERSION_LESS 3.3) 
+if ("${EIGEN3_VERSION_STRING}" VERSION_LESS 3.3) 
   target_compile_definitions     (toppra PUBLIC ${EIGEN3_DEFINITIONS} ) 
   target_include_directories (toppra PUBLIC ${EIGEN3_INCLUDE_DIRS} ) 
-else (${EIGEN3_VERSION_STRING} VERSION_LESS 3.3) 
+else()
   target_link_libraries(toppra PUBLIC Eigen3::Eigen) 
-endif (${EIGEN3_VERSION_STRING} VERSION_LESS 3.3) 
+endif()
 
 install(TARGETS toppra EXPORT toppra::toppra
   DESTINATION lib)
