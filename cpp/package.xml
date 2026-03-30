@@ -13,6 +13,7 @@
  <author>Hung Pham</author>
  <author>Joseph Mirabel</author>
 
+ <build_depend>eigen</build_depend>
  <build_depend>pybind11-dev</build_depend>
 
  <buildtool_depend>ament_cmake</buildtool_depend>
