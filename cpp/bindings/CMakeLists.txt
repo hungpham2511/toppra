@@ -33,4 +33,14 @@ if(${PYTHON_BINDINGS})
     endif()
   endif()
 
+  # Handle the ROS case
+  find_package(ament_cmake_python QUIET)
+  if(ament_cmake_python_FOUND)
+    ament_get_python_install_dir(PYTHON_INSTALL_DIR)
+    install(TARGETS toppra_int
+      LIBRARY DESTINATION "${PYTHON_INSTALL_DIR}/toppra_int"
+    )
+    ament_python_install_package(toppra_int)
+  endif()
+
 endif()

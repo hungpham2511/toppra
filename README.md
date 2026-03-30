@@ -9,7 +9,8 @@
 
 # Overview
 
-**Python support for the library will be dropped. Consider using the C++ version with bindings instead.**
+> [!NOTE]
+> **Python support for the library will be dropped. Consider using the C++ version with bindings instead.**
 
 **toppra** is a library for computing the time-optimal path
 parametrization for robots subject to kinematic and dynamic
@@ -59,6 +60,7 @@ Group](https://personal.ntu.edu.sg/cuong/)) and [Phạm Quang Cường](https://
 contributors:
 - [Joseph Mirabel](https://github.com/jmirabel) (C++ API)
 - EdsterG (Python3 support).
+- [Sebastian Castro](https://github.com/sea-bass) (ROS support and maintenance)
 
 If you have taken part in developing and supporting the library, feel
 free to add your name to the list.

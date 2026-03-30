@@ -1,6 +1,9 @@
 # Changelog
 
-- Go back to master branch of hungpham2511 qpOASES repo (#273)
+## 0.6.5 (Mar 28 2026)
+
+- [python]: Go back to master branch of hungpham2511 qpOASES repo (#273)
+- Prepare for ROS build farm (#277)
 
 ## 0.6.4 (Jan 26 2026)
 

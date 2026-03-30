@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 project(toppra
-  VERSION 0.6.4
+  VERSION 0.6.5
   DESCRIPTION "Library computing the time-optimal path parameterization."
   LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 14)
@@ -115,3 +115,9 @@ install(EXPORT toppra::toppra
   NAMESPACE toppra::
   FILE toppraTargets.cmake
   DESTINATION "${CONFIG_INSTALL_DIR}")
+
+# Handle the ROS case
+find_package(ament_cmake QUIET)
+if(ament_cmake_FOUND)
+  ament_package()
+endif()

@@ -113,3 +113,6 @@ build*
 cpp/doc/CMakeFiles/*
 cpp/doc/doc/*
 *.c
+
+# VSCode metadata
+.vscode

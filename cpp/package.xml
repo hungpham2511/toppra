@@ -1,10 +1,11 @@
 <?xml version='1.0'?>
 <package format='2'>
  <name>toppra</name>
- <version>0.6.4</version>
+ <version>0.6.5</version>
  <description>Time-Optimal Path Parameterization</description>
 
  <maintainer email="hungpham2511@gmail.com">Hung Pham</maintainer>
+ <maintainer email="sebas.a.castro@gmail.com">Sebastian Castro</maintainer>
  <license>MIT</license>
 
  <url type='website'>https://hungpham2511.github.io/toppra/index.html</url>
@@ -12,5 +13,8 @@
  <author>Hung Pham</author>
  <author>Joseph Mirabel</author>
 
+ <build_depend>pybind11-dev</build_depend>
+
  <buildtool_depend>ament_cmake</buildtool_depend>
+ <buildtool_depend>ament_cmake_python</buildtool_depend>
 </package>
