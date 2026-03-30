@@ -58,6 +58,7 @@ if (OPT_MSGPACK)
   target_compile_definitions(toppra PRIVATE TOPPRA_OPT_MSGPACK)
 endif()
 
+find_package(Eigen3 REQUIRED)
 if ("${EIGEN3_VERSION_STRING}" VERSION_LESS 3.3) 
   target_compile_definitions     (toppra PUBLIC ${EIGEN3_DEFINITIONS} ) 
   target_include_directories (toppra PUBLIC ${EIGEN3_INCLUDE_DIRS} ) 
