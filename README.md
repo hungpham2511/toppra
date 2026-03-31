@@ -3,7 +3,7 @@
 
 
 - [Overview](#overview)
-- [Supports](#supports)
+- [Support](#support)
 - [Citing `toppra`](#citing--toppra-)
 
 
