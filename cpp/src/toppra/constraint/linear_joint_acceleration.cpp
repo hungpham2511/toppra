@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include <toppra/constraint/linear_joint_acceleration.hpp>
 
 #include <toppra/geometric_path.hpp>

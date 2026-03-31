@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include <toppra/solver/seidel.hpp>
 #include <toppra/solver/seidel-internal.hpp>
 
