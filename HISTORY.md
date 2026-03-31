@@ -3,6 +3,7 @@
 ## Upcoming
 
 - [cpp] Update CMake syntax for Eigen3 version checking (#279)
+- [cpp] Add missing cassert includes (#280)
 
 ## 0.6.5 (Mar 28 2026)
 
