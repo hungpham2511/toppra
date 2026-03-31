@@ -2,6 +2,14 @@
 Changelog for package toppra
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [cpp] Add missing cassert includes (`#280 <https://github.com/hungpham2511/toppra/issues/280>`_)
+* [cpp] Fix CMake syntax for Eigen3 version check (`#279 <https://github.com/hungpham2511/toppra/issues/279>`_)
+* [ros] Add python3-dev and eigen as a dependency in package.xml (`#278 <https://github.com/hungpham2511/toppra/issues/278>`_)
+* 0.6.5 (`#277 <https://github.com/hungpham2511/toppra/issues/277>`_)
+* Contributors: Sebastian Castro
+
 0.6.5 (2026-03-27)
 ------------------
 - [python]: Go back to master branch of hungpham2511 qpOASES repo (`#273 <https://github.com/hungpham2511/toppra/issues/273>`_)

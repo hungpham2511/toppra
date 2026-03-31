@@ -2,6 +2,7 @@
 
 ## Upcoming
 
+- [ros] Add python3-dev and eigen as a dependency in package.xml (#278)
 - [cpp] Update CMake syntax for Eigen3 version checking (#279)
 - [cpp] Add missing cassert includes (#280)
 
