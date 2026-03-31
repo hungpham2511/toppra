@@ -1,5 +1,9 @@
 # Changelog
 
+## Upcoming
+
+- [cpp] Update CMake syntax for Eigen3 version checking (#279)
+
 ## 0.6.5 (Mar 28 2026)
 
 - [python]: Go back to master branch of hungpham2511 qpOASES repo (#273)
