@@ -2,8 +2,8 @@
 Changelog for package toppra
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.6 (2026-03-31)
+------------------
 * [cpp] Add missing cassert includes (`#280 <https://github.com/hungpham2511/toppra/issues/280>`_)
 * [cpp] Fix CMake syntax for Eigen3 version check (`#279 <https://github.com/hungpham2511/toppra/issues/279>`_)
 * [ros] Add python3-dev and eigen as a dependency in package.xml (`#278 <https://github.com/hungpham2511/toppra/issues/278>`_)
