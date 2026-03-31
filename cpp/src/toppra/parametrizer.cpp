@@ -1,3 +1,4 @@
+#include <cassert>
 #include <toppra/parametrizer.hpp>
 #include <toppra/toppra.hpp>
 

@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include <toppra/constraint.hpp>
 
 #include <toppra/geometric_path.hpp>
