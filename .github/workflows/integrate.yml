@@ -141,7 +141,7 @@ jobs:
         with:
           name: dist
           path: |
-            dist
+            python/dist
 
   release:
     needs: ["build-sdist", "build-wheels", "python", "cpp"]
