@@ -1,7 +1,8 @@
 # Changelog
 
-## Upcoming
+## 0.6.6 (Mar 31 2026)
 
+- [ros] Add python3-dev and eigen as a dependency in package.xml (#278)
 - [cpp] Update CMake syntax for Eigen3 version checking (#279)
 - [cpp] Add missing cassert includes (#280)
 

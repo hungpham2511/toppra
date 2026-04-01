@@ -2,10 +2,17 @@
 Changelog for package toppra
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.6 (2026-03-31)
+------------------
+* [cpp] Add missing cassert includes (`#280 <https://github.com/hungpham2511/toppra/issues/280>`_)
+* [cpp] Fix CMake syntax for Eigen3 version check (`#279 <https://github.com/hungpham2511/toppra/issues/279>`_)
+* [ros] Add python3-dev and eigen as a dependency in package.xml (`#278 <https://github.com/hungpham2511/toppra/issues/278>`_)
+* Contributors: Sebastian Castro
+
 0.6.5 (2026-03-27)
 ------------------
-- [python]: Go back to master branch of hungpham2511 qpOASES repo (`#273 <https://github.com/hungpham2511/toppra/issues/273>`_)
-- Prepare for ROS build farm (`#277 <https://github.com/hungpham2511/toppra/issues/277>`_)
+* [python]: Go back to master branch of hungpham2511 qpOASES repo (`#273 <https://github.com/hungpham2511/toppra/issues/273>`_)
+* Prepare for ROS build farm (`#277 <https://github.com/hungpham2511/toppra/issues/277>`_)
 * Contributors: Sebastian Castro
 
 0.6.4 (2026-01-26)
@@ -15,7 +22,6 @@ Changelog for package toppra
 * build: Move Python library to its own subfolder to support building as ROS 2 package (`#266 <https://github.com/hungpham2511/toppra/issues/266>`_)
 * fix(test): Use ASSERT_NEAR for 0 comparison in test_parametrizer.cpp (`#265 <https://github.com/hungpham2511/toppra/issues/265>`_)
 * fix(cpp): incoherent bounds seidel lp 1d (`#247 <https://github.com/hungpham2511/toppra/issues/247>`_)
-* Release version 0.6.2 (`#242 <https://github.com/hungpham2511/toppra/issues/242>`_)
 * Contributors: Erik Holum, Joseph Mirabel, Maxim Skripnik, Sebastian Castro, Silvio Traversaro
 
 0.6.3 (2025-03-16)
@@ -27,6 +33,7 @@ Changelog for package toppra
 ------------------
 * chore: Bump toppra version: '0.6.1' --> '0.6.2'
 * feat: warn when solver fails (`#241 <https://github.com/hungpham2511/toppra/issues/241>`_)
+* Release version 0.6.2 (`#242 <https://github.com/hungpham2511/toppra/issues/242>`_)
 * Contributors: Hung Pham (Phạm Tiến Hùng), Joseph Mirabel
 
 0.6.1 (2023-04-21)
