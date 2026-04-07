@@ -1,5 +1,6 @@
 # Check whether gtest is available. If not, build from source.
 find_package(GTest QUIET)
+find_package(ament_cmake_gtest QUIET)
 if(NOT GTest_FOUND)
   include(FetchContent)
   FetchContent_Declare(
