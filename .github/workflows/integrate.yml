@@ -139,7 +139,7 @@ jobs:
       - name: Archive production artifacts
         uses: actions/upload-artifact@v5
         with:
-          name: dist
+          name: dist-single-sdist
           path: |
             python/dist
 
