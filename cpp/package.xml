@@ -16,6 +16,8 @@
  <depend>eigen</depend>
  <build_depend>pybind11-dev</build_depend>
  <build_depend>python3-dev</build_depend>
+ 
+ <test_depend>ament_cmake_gtest</test_depend>
 
  <buildtool_depend>ament_cmake</buildtool_depend>
  <buildtool_depend>ament_cmake_python</buildtool_depend>

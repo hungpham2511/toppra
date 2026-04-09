@@ -1,5 +1,18 @@
+# Check whether gtest is available. If not, build from source.
+find_package(GTest QUIET)
+find_package(ament_cmake_gtest QUIET)
+if(NOT GTest_FOUND)
+  include(FetchContent)
+  FetchContent_Declare(
+    googletest
+    URL https://github.com/google/googletest/archive/refs/tags/v1.17.0.zip
+  )
+  # For Windows: Prevent overriding the parent project's compiler/linker settings
+  set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+  FetchContent_MakeAvailable(googletest)
+endif()
 
-# Now simply link against gtest or gtest_main as needed. Eg
+# Now simply link against gtest or gtest_main as needed.
 set(TEST_SOURCES
   gtest_main.cpp
   test_constraints.cpp
@@ -11,12 +24,11 @@ set(TEST_SOURCES
   test_parametrizer.cpp
   test_spline_parametrizer.cpp
   test_toppra_approach.cpp
-
   test_issue_198.cpp
   )
 
 add_executable(all_tests ${TEST_SOURCES})
-target_link_libraries(all_tests PUBLIC toppra gtest ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(all_tests PUBLIC toppra GTest::gtest ${CMAKE_THREAD_LIBS_INIT})
 target_include_directories(all_tests PRIVATE .)
 
 if(BUILD_WITH_PINOCCHIO)

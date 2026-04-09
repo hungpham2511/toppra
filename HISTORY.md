@@ -1,5 +1,9 @@
 # Changelog
 
+## Upcoming
+
+- [cpp] Modernize googletest CMake usage (#283)
+
 ## 0.6.6 (Mar 31 2026)
 
 - [ros] Add python3-dev and eigen as a dependency in package.xml (#278)
