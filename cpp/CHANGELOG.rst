@@ -2,6 +2,11 @@
 Changelog for package toppra
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* build(cpp): Modernize googletest CMake usage (`#283 <https://github.com/hungpham2511/toppra/issues/283>`_)
+* Contributors: Sebastian Castro
+
 0.6.6 (2026-03-31)
 ------------------
 * [cpp] Add missing cassert includes (`#280 <https://github.com/hungpham2511/toppra/issues/280>`_)
