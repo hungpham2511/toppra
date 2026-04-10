@@ -2,8 +2,8 @@
 Changelog for package toppra
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.7 (2026-04-09)
+------------------
 * build(cpp): Modernize googletest CMake usage (`#283 <https://github.com/hungpham2511/toppra/issues/283>`_)
 * Contributors: Sebastian Castro
 
