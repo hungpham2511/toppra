@@ -1,6 +1,6 @@
 # Changelog
 
-## Upcoming
+## 0.6.7 (April 9 2026)
 
 - [cpp] Modernize googletest CMake usage (#283)
 
