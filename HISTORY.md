@@ -1,5 +1,9 @@
 # Changelog
 
+## Upcoming
+
+- [cpp] Fix gtest target_link_libraries usage when fetching from source (#286)
+
 ## 0.6.7 (April 9 2026)
 
 - [cpp] Modernize googletest CMake usage (#283)
