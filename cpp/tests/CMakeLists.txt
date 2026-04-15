@@ -34,7 +34,7 @@ set(TEST_SOURCES
   )
 
 add_executable(all_tests ${TEST_SOURCES})
-target_link_libraries(all_tests PUBLIC toppra Gtest::gtest ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(all_tests PUBLIC toppra GTest::gtest ${CMAKE_THREAD_LIBS_INIT})
 target_include_directories(all_tests PRIVATE .)
 
 if(BUILD_WITH_PINOCCHIO)
