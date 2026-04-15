@@ -10,6 +10,12 @@ if(NOT GTest_FOUND)
   # For Windows: Prevent overriding the parent project's compiler/linker settings
   set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
   FetchContent_MakeAvailable(googletest)
+
+  # gtest target is non-namespaced whe built via FetchContent,
+  # so we will make an alias to correct this.
+  if(TARGET gtest AND NOT TARGET GTest::gtest)
+    add_library(GTest::gtest ALIAS gtest)
+  endif()
 endif()
 
 # Now simply link against gtest or gtest_main as needed.
@@ -28,7 +34,7 @@ set(TEST_SOURCES
   )
 
 add_executable(all_tests ${TEST_SOURCES})
-target_link_libraries(all_tests PUBLIC toppra gtest ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(all_tests PUBLIC toppra Gtest::gtest ${CMAKE_THREAD_LIBS_INIT})
 target_include_directories(all_tests PRIVATE .)
 
 if(BUILD_WITH_PINOCCHIO)
