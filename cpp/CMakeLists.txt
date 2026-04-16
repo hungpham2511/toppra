@@ -7,7 +7,7 @@ project(toppra
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Tests
-option(BUILD_TESTS "Build Gtests" ON)
+option(BUILD_TESTING "Build Gtests" ON)
 # Dynamics
 option(BUILD_WITH_PINOCCHIO "Compile with Pinocchio library" OFF)
 # Solvers
@@ -53,7 +53,7 @@ add_subdirectory(src)
 add_subdirectory(doc)
 add_subdirectory(bindings)
 
-if(BUILD_TESTS)
+if(BUILD_TESTING)
   enable_testing()
   add_subdirectory(tests)
 endif()
