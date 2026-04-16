@@ -53,6 +53,11 @@ add_subdirectory(src)
 add_subdirectory(doc)
 add_subdirectory(bindings)
 
+# Backward compatibility: support legacy BUILD_TESTS for downstream scripts.
+if(DEFINED BUILD_TESTS)
+  set(BUILD_TESTING "${BUILD_TESTS}" CACHE BOOL "Build Gtests" FORCE)
+  message(DEPRECATION "BUILD_TESTS is deprecated; use BUILD_TESTING.")
+endif()
 if(BUILD_TESTING)
   enable_testing()
   add_subdirectory(tests)
