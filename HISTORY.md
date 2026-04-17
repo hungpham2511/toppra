@@ -1,5 +1,7 @@
 # Changelog
 
+## Unreleased
+
 - [cpp] fix: pinocchio v4 compatibility
 
 ## 0.6.7 (April 9 2026)
