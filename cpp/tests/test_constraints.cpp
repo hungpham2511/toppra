@@ -4,7 +4,7 @@
 #ifdef BUILD_WITH_PINOCCHIO
 #include <toppra/constraint/joint_torque/pinocchio.hpp>
 #include <toppra/constraint/cartesian_velocity_norm/pinocchio.hpp>
-#include <pinocchio/parsers/sample-models.hpp>
+#include <pinocchio/multibody/sample-models.hpp>
 #endif
 
 #include <toppra/geometric_path.hpp>
