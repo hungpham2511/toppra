@@ -4,7 +4,7 @@
 #ifdef BUILD_WITH_PINOCCHIO
 #include <toppra/constraint/joint_torque/pinocchio.hpp>
 #include <toppra/constraint/cartesian_velocity_norm/pinocchio.hpp>
-#include <pinocchio/parsers/sample-models.hpp>
+#include <pinocchio/multibody/sample-models.hpp>
 #endif
 
 #include <toppra/geometric_path.hpp>
@@ -73,10 +73,7 @@ TEST_F(Constraint, jointTorquePinocchio) {
 
   JointTorque::Model model;
   pinocchio::buildModels::manipulator(model);
-#if PINOCCHIO_VERSION_AT_MOST(2,4,1)
-  // Work around bug solved by https://github.com/stack-of-tasks/pinocchio/pull/1155
-  model.effortLimit.setConstant(10);
-#endif
+
   Vector frictions (Vector::Constant(model.nv, 0.001));
   JointTorque constraint (model, frictions);
 
