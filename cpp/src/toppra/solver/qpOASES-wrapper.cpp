@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include <toppra/solver/qpOASES-wrapper.hpp>
 
 #ifdef BUILD_WITH_qpOASES

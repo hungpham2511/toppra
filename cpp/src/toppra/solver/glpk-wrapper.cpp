@@ -4,6 +4,7 @@
 # include <glpk.h>
 #endif
 
+#include <cassert>
 #include <iostream>
 
 namespace toppra {

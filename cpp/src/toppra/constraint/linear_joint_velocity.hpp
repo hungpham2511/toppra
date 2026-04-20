@@ -1,6 +1,8 @@
 #ifndef TOPPRA_CONSTRAINT_LINEAR_JOINT_VELOCITY_HPP
 #define TOPPRA_CONSTRAINT_LINEAR_JOINT_VELOCITY_HPP
 
+#include <cassert>
+
 #include <toppra/constraint.hpp>
 
 namespace toppra {
