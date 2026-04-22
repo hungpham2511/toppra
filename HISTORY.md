@@ -3,7 +3,7 @@
 ## Unreleased
 
 - [cpp] fix: pinocchio v4 compatibility
-- [cpp] Add missing cassert includes
+- [cpp] Fix missing cassert includes in headers
 
 ## 0.6.7 (April 9 2026)
 
