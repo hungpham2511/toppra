@@ -1,5 +1,3 @@
-#include <cassert>
-
 #include <toppra/constraint/linear_joint_velocity.hpp>
 
 #include <toppra/geometric_path.hpp>

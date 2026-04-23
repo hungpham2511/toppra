@@ -1,5 +1,3 @@
-#include <cassert>
-
 #include <toppra/constraint/joint_torque.hpp>
 
 #include <toppra/geometric_path.hpp>

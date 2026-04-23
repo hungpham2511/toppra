@@ -1,6 +1,8 @@
 #ifndef TOPPRA_CONSTRAINT_JOINT_TORQUE_HPP
 #define TOPPRA_CONSTRAINT_JOINT_TORQUE_HPP
 
+#include <cassert>
+
 #include <toppra/constraint.hpp>
 
 namespace toppra {
