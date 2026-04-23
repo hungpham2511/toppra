@@ -1,6 +1,6 @@
 # Changelog
 
-## Upcoming
+## 0.6.8 (April 23 2026)
 
 - [cpp] fix: pinocchio v4 compatibility
 - [cpp] Fix gtest target_link_libraries usage when fetching from source (#286)
