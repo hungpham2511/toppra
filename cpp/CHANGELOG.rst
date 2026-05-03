@@ -2,6 +2,13 @@
 Changelog for package toppra
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.8 (2026-04-23)
+------------------
+* [cpp] Fix missing cassert includes in headers (`#288 <https://github.com/hungpham2511/toppra/issues/288>`_)
+* [cpp] Fix gtest target_link_libraries usage when fetching from source (`#286 <https://github.com/hungpham2511/toppra/issues/286>`_)
+* [cpp] fix pinocchio 4 compatibility (`#287 <https://github.com/hungpham2511/toppra/issues/287>`_)
+* Contributors: Guilhem Saurel, Sebastian Castro
+
 0.6.7 (2026-04-09)
 ------------------
 * build(cpp): Modernize googletest CMake usage (`#283 <https://github.com/hungpham2511/toppra/issues/283>`_)
