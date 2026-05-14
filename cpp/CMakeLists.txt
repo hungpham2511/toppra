@@ -30,7 +30,7 @@ set(PYBIND11_PYTHON_VERSION "${PYTHON_VERSION}")
 include(CMakePrintHelpers)
 
 find_package (Threads)
-find_package (Eigen3 REQUIRED)
+find_package (Eigen3 3.4 REQUIRED)
 message(STATUS "Found Eigen version ${EIGEN3_VERSION_STRING}")
 
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")

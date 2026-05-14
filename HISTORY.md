@@ -2,7 +2,7 @@
 
 ## Upcoming
 
-- [cpp] Simplify vector typedefs by removing allocators
+- [cpp] Simplify vector typedefs by removing allocators and drop support for Eigen 3.3 and lower
 
 ## 0.6.8 (April 23 2026)
 
