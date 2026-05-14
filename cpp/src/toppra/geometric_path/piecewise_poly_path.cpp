@@ -210,6 +210,9 @@ PiecewisePolyPath::PiecewisePolyPath(const Matrices & coefficients,
   computeDerivativesCoefficients();
 }
 Bound PiecewisePolyPath::pathInterval() const {
+  std::cout << "BREAKPOINTS FOR PATH INTERVAL LENGTH " << m_breakpoints.size() << std::endl;
+  std::cout << "FRONT: " << m_breakpoints.front() << std::endl;
+  std::cout << "BACK: " << m_breakpoints.back() << std::endl;
   return Bound{m_breakpoints.front(), m_breakpoints.back()};
 };
 
