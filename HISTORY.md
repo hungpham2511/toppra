@@ -1,5 +1,9 @@
 # Changelog
 
+## Upcoming
+
+- [ci] Update Python/Ubuntu and cibuildwheel action versions (#295)
+
 ## 0.6.8 (April 23 2026)
 
 - [cpp] fix: pinocchio v4 compatibility
