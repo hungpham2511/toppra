@@ -36,7 +36,7 @@ jobs:
           - python-version: "3.12"
             os: ubuntu-24.04
           - python-version: "3.14"
-            os: ubuntu-26.04
+            os: ubuntu-24.04  # robotpkg has no mirror for ubuntu 26.04 yet
 
     steps:
       - uses: actions/checkout@v5
@@ -46,10 +46,11 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dep
         run: |
-          echo "deb [arch=amd64] http://robotpkg.openrobots.org/packages/debian/pub $(lsb_release -sc) robotpkg" \
+          sudo mkdir -p /etc/apt/keyrings
+          curl -sSL http://robotpkg.openrobots.org/packages/debian/robotpkg.asc | sudo tee /etc/apt/keyrings/robotpkg.asc > /dev/null
+
+          echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/robotpkg.asc] http://robotpkg.openrobots.org/packages/debian/pub $(lsb_release -sc) robotpkg" \
             | sudo tee /etc/apt/sources.list.d/robotpkg.list
-          curl http://robotpkg.openrobots.org/packages/debian/robotpkg.key \
-            | sudo apt-key add -
 
           sudo apt update
 
