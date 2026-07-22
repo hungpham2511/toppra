@@ -1,5 +1,9 @@
 # Changelog
 
+## Upcoming
+
+- [cpp] Add exports to fix Windows builds (#294)
+
 ## 0.6.8 (April 23 2026)
 
 - [cpp] fix: pinocchio v4 compatibility
