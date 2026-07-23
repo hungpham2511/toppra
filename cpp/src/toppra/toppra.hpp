@@ -45,9 +45,9 @@ namespace toppra {
   typedef Eigen::Matrix<value_type, Eigen::Dynamic, Eigen::Dynamic> Matrix;
 
   /// Vector of Vector
-  typedef std::vector<Vector, Eigen::aligned_allocator<Vector> > Vectors;
+  typedef std::vector<Vector> Vectors;
   /// Vector of Matrix
-  typedef std::vector<Matrix, Eigen::aligned_allocator<Matrix> > Matrices;
+  typedef std::vector<Matrix> Matrices;
 
   // internal data rep for Matrix
   typedef std::tuple<Eigen::Index, Eigen::Index, std::vector<value_type>> MatrixData;
@@ -56,7 +56,7 @@ namespace toppra {
   /// 2D vector that stores the upper and lower bound of a variable.
   typedef Eigen::Matrix<value_type, 1, 2> Bound;
   /// Vector of Bound
-  typedef std::vector<Bound, Eigen::aligned_allocator<Bound> > Bounds;
+  typedef std::vector<Bound> Bounds;
 
   class LinearConstraint;
   /// Shared pointer to a LinearConstraint

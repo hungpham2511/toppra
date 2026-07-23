@@ -17,8 +17,7 @@ class Approach : public testing::Test {
  public:
   Approach(){};
 
-  void formatVecToMat(const std::vector<Eigen::VectorXd,
-                                        Eigen::aligned_allocator<Eigen::VectorXd>>& vec,
+  void formatVecToMat(const toppra::Vectors& vec,
                       Eigen::MatrixXd& mat) {
     mat.resize(vec.at(0).rows(), vec.size());
     for (size_t i = 0; i < vec.size(); i++) {

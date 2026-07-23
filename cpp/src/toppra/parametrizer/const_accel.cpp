@@ -135,9 +135,7 @@ bool ConstAccel::validate_impl() const {
 }
 
 Bound ConstAccel::pathInterval_impl() const {
-  Bound b;
-  b << m_ts[0], m_ts[m_ts.size() - 1];
-  return b;
+  return Bound{m_ts[0], m_ts[m_ts.size() - 1]};
 }
 
 }  // namespace parametrizer
