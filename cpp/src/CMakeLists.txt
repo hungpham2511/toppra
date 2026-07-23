@@ -24,6 +24,7 @@ set(SOURCE_FILES
 
 add_library(toppra ${SOURCE_FILES})
 set_property(TARGET toppra PROPERTY POSITION_INDEPENDENT_CODE ON)
+set_property(TARGET toppra PROPERTY WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/toppra)
 generate_export_header(toppra
@@ -61,7 +62,9 @@ endif()
 target_link_libraries(toppra PUBLIC Eigen3::Eigen)
 
 install(TARGETS toppra EXPORT toppra::toppra
-  DESTINATION lib)
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+  RUNTIME DESTINATION bin)
 install(FILES
   toppra/algorithm.hpp
   toppra/constraint.hpp

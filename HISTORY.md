@@ -2,6 +2,7 @@
 
 ## Upcoming
 
+- [cpp] Add exports to fix Windows builds (#294)
 - [ci] Update Python/Ubuntu and cibuildwheel action versions (#295)
 - [cpp] Simplify vector typedefs by removing allocators and drop support for Eigen 3.3 and lower
 
