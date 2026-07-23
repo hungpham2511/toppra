@@ -1,6 +1,6 @@
 # Changelog
 
-## Upcoming
+## 0.6.9 (July 23 2026)
 
 - [cpp] Add exports to fix Windows builds (#294)
 - [ci] Update Python/Ubuntu and cibuildwheel action versions (#295)
