@@ -2,6 +2,12 @@
 Changelog for package toppra
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.9 (2026-07-23)
+------------------
+* [cpp] Add exports to fix Windows builds (`#294 <https://github.com/hungpham2511/toppra/issues/294>`_)
+* [cpp] Simplify vector typedefs by removing allocators and drop support for Eigen 3.3 and lower (`#290 <https://github.com/hungpham2511/toppra/issues/290>`_)
+* Contributors: Sebastian Castro
+
 0.6.8 (2026-04-23)
 ------------------
 * [cpp] Fix missing cassert includes in headers (`#288 <https://github.com/hungpham2511/toppra/issues/288>`_)
