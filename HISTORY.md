@@ -3,6 +3,7 @@
 ## Upcoming
 
 - [python] Avoid importing optional solvers when checking their availability (#298)
+- [python] Fix cvxpy matrix multiplication warnings (#300)
 
 ## 0.6.9 (July 23 2026)
 
