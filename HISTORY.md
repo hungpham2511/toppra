@@ -2,6 +2,7 @@
 
 ## Upcoming
 
+- [python] Avoid importing optional solvers when checking their availability (#298)
 - [ros] Fix ordering of find_package for ament_cmake (#299)
 
 ## 0.6.9 (July 23 2026)
