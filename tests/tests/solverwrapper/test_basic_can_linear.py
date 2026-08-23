@@ -143,8 +143,8 @@ def test_basic_correctness(basic_init_fixture, solver_name, i, H, g, x_ineq):
     cvxpy_constraints = [
         x <= xbound[i, 1],
         x >= xbound[i, 0],
-        F * v <= h,
-        F2[i] * v2 <= h2[i],
+        F @ v <= h,
+        F2[i] @ v2 <= h2[i],
         x + u * 2 * Di <= xnext_max,
         x + u * 2 * Di >= xnext_min,
     ]
@@ -152,9 +152,9 @@ def test_basic_correctness(basic_init_fixture, solver_name, i, H, g, x_ineq):
         cvxpy_constraints.append(x <= xmax)
         cvxpy_constraints.append(x >= xmin)
     if H is not None:
-        objective = cvxpy.Minimize(0.5 * cvxpy.quad_form(ux, H) + g * ux)
+        objective = cvxpy.Minimize(0.5 * cvxpy.quad_form(ux, H) + g @ ux)
     else:
-        objective = cvxpy.Minimize(g * ux)
+        objective = cvxpy.Minimize(g @ ux)
     problem = cvxpy.Problem(objective, cvxpy_constraints)
     problem.solve(verbose=True)  # test with the same solver as cvxpywrapper
     if problem.status == "optimal":
