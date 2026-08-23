@@ -2,7 +2,7 @@
 
 ## Upcoming
 
-- [python] Avoid importing optional solvers when checking their availability
+- [python] Avoid importing optional solvers when checking their availability (#298)
 
 ## 0.6.9 (July 23 2026)
 

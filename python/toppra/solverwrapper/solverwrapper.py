@@ -1,4 +1,5 @@
 """This module provides different solverwrapper implementations."""
+
 import importlib.util
 import logging
 import numpy as np
