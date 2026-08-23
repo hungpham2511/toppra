@@ -1,4 +1,6 @@
 """This module provides different solverwrapper implementations."""
+
+import importlib.util
 import logging
 import numpy as np
 
@@ -8,26 +10,12 @@ logger = logging.getLogger(__name__)
 # pylint: disable=unused-import
 def available_solvers(output_msg=True):
     """Check for available solvers."""
-    # try:
-    #     import ecos
 
-    #     IMPORT_ECOS = True
-    # except ImportError as err:
-    #     IMPORT_ECOS = False
+    # IMPORT_ECOS = importlib.util.find_spec("ecos") is not None
     IMPORT_ECOS = False  # ecos solver is currently failing
 
-    try:
-        import qpoases
-
-        IMPORT_QPOASES = True
-    except ImportError as err:
-        IMPORT_QPOASES = False
-    try:
-        import cvxpy
-
-        IMPORT_CVXPY = True
-    except ImportError as err:
-        IMPORT_CVXPY = False
+    IMPORT_QPOASES = importlib.util.find_spec("qpoases") is not None
+    IMPORT_CVXPY = importlib.util.find_spec("cvxpy") is not None
     solver_availability = (
         ("seidel", True),
         ("hotqpoases", IMPORT_QPOASES),
