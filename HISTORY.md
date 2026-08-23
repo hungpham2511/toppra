@@ -1,5 +1,9 @@
 # Changelog
 
+## Upcoming
+
+- [ros] Fix ordering of find_package for ament_cmake (#299)
+
 ## 0.6.9 (July 23 2026)
 
 - [cpp] Add exports to fix Windows builds (#294)
