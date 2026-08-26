@@ -52,15 +52,15 @@ def test_vel_robust_accel(vel_accel_robustaccel, path, solver_name, i, H, g, x_i
     for j in range(a.shape[1]):
         cvx_constraints.append(
             a[i, j] * u + b[i, j] * x + c[i, j]
-            + cvxpy.norm(P[i, j].T[:, :2] * ux + P[i, j].T[:, 2]) <= 0
+            + cvxpy.norm(P[i, j].T[:, :2] @ ux + P[i, j].T[:, 2]) <= 0
         )
     if not np.isnan(xmin):
         cvx_constraints.append(x <= xmax)
         cvx_constraints.append(x >= xmin)
     if H is not None:
-        objective = cvxpy.Minimize(0.5 * cvxpy.quad_form(ux, H) + g * ux)
+        objective = cvxpy.Minimize(0.5 * cvxpy.quad_form(ux, H) + g @ ux)
     else:
-        objective = cvxpy.Minimize(g * ux)
+        objective = cvxpy.Minimize(g @ ux)
     problem = cvxpy.Problem(objective, cvx_constraints)
     if FOUND_MOSEK:
         problem.solve(solver="MOSEK", verbose=True)

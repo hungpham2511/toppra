@@ -78,9 +78,9 @@ class cvxpyWrapper(SolverWrapper):
                 if a is not None:
                     v = a[i] * u + b[i] * x + c[i]
                     if constraint.identical:
-                        cvxpy_constraints.append(F * v <= h)
+                        cvxpy_constraints.append(F @ v <= h)
                     else:
-                        cvxpy_constraints.append(F[i] * v <= h[i])
+                        cvxpy_constraints.append(F[i] @ v <= h[i])
 
                 # ecos (via cvxpy in this class) is very bad at
                 # handling badly scaled problems. Problems with very
@@ -104,7 +104,7 @@ class cvxpyWrapper(SolverWrapper):
                             a[i, j] * u
                             + b[i, j] * x
                             + c[i, j]
-                            + cvxpy.norm(P[i, j].T[:, :2] * ux + P[i, j].T[:, 2])
+                            + cvxpy.norm(P[i, j].T[:, :2] @ ux + P[i, j].T[:, 2])
                             <= 0
                         )
 
@@ -119,7 +119,7 @@ class cvxpyWrapper(SolverWrapper):
         if H is None:
             H = np.zeros((self.get_no_vars(), self.get_no_vars()))
 
-        objective = cvxpy.Minimize(0.5 * cvxpy.quad_form(ux, H) + g * ux)
+        objective = cvxpy.Minimize(0.5 * cvxpy.quad_form(ux, H) + g @ ux)
         problem = cvxpy.Problem(objective, constraints=cvxpy_constraints)
         try:
             problem.solve(verbose=False)
