@@ -47,6 +47,10 @@ if(BUILD_WITH_GLPK)
     message(STATUS "Found glpk ${GLPK_LIBRARY} ${GLPK_INCLUDE_DIR}")
 endif(BUILD_WITH_GLPK)
 
+# Handle the ROS case
+# ament_cmake must be found before building the bindings subdirectory since this also depends on it.
+find_package(ament_cmake QUIET)
+
 add_subdirectory(src)
 add_subdirectory(doc)
 add_subdirectory(bindings)
@@ -84,8 +88,6 @@ install(EXPORT toppra::toppra
   FILE toppraTargets.cmake
   DESTINATION "${CONFIG_INSTALL_DIR}")
 
-# Handle the ROS case
-find_package(ament_cmake QUIET)
 if(ament_cmake_FOUND)
   ament_package()
 endif()
