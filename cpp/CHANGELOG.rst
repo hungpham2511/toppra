@@ -2,6 +2,11 @@
 Changelog for package toppra
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.6.10 (2026-08-25)
+-------------------
+* [ros] Fix ordering of find_package for ament_cmake (`#299 <https://github.com/hungpham2511/toppra/issues/299>`_)
+* Contributors: Sebastian Castro
+
 0.6.9 (2026-07-23)
 ------------------
 * [cpp] Add exports to fix Windows builds (`#294 <https://github.com/hungpham2511/toppra/issues/294>`_)
