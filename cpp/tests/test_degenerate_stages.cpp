@@ -97,3 +97,24 @@ TEST(DegenerateStages, ControllableSetsAlongNearlyParallelConstraints) {
   checkSpan(coefficients, 0.11183855169944042, 0.1118519922150172, velocity,
             acceleration, 0.0010668838839529022, 0.033);
 }
+
+// At the upper bound of the controllable set where the forward pass starts,
+// the stage admits a single control, but one joint, at rest along the path,
+// has a coefficient of the path acceleration that is rounding (-1.8e-16)
+// next to its curvature: solved again with the state fixed there, the stage
+// has no control (the forward pass failed at stage 0).
+TEST(DegenerateStages, ForwardPassFromTheUpperBoundOfAControllableSet) {
+  Matrix coefficients(6, 5);
+  coefficients <<
+    -2370457952906959.5, 243320965084031.53, 1883815053995587.8, -1883815054702169.8, 0,
+    619968412117.37317, -620245633071.05017, 620522885794.68921, -620522885771.57886, 0,
+    142129377.26969227, 13922.379463409125, -142157222.3064588, 142157222.30625778, 0,
+    -24557.222204312384, 24557.222204312384, -24557.22220431238, 24557.22220431238, 0,
+    -2.8284271247461898, -1.8093822187881339e-16, 2.8284271247461898, -2.8284271247461907, 1,
+    -0.10902681754516537, 0.035693247325073944, 0.037640322895017515, -0.037640322895017515, 0.23625306276186719;
+  Vector velocity(5), acceleration(5);
+  velocity << 1, 1, 1, 1, 0.059999999999999998;
+  acceleration << 40.200681829243933, 58.650764514538537, 77.100847199833169, 77.100847199833169, 1e12;
+  checkSpan(coefficients, 0.2362530627618672, 0.23626618074820144, velocity,
+            acceleration, 0.0011941652851974265, 0.03336501157674108);
+}

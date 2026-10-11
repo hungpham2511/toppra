@@ -53,6 +53,7 @@ ReturnCode PathParametrizationAlgorithm::computeControllableSets(
     }
 
     m_data.controllable_sets(i, 1) = solution[1];
+    m_data.controllable_upper_controls(i) = solution[0];
 
     solver_ret = m_solver->solveStagewiseOptim(i, H, g_lower, x, x_next, solution);
 
@@ -163,6 +164,7 @@ void PathParametrizationAlgorithm::initialize() {
   auto s = m_data.gridpoints.size();
   m_data.parametrization.resize(s);
   m_data.controllable_sets.resize(s, 2);
+  m_data.controllable_upper_controls.resize(s - 1);
   m_data.feasible_sets.resize(s, 2);
   m_solver->initialize(m_constraints, m_path, m_data.gridpoints);
   m_initialized = true;
