@@ -17,23 +17,25 @@
 namespace {
 using namespace toppra;
 
-// Times one span with 32 collocation stages from `vel_start` (squared) to
+// Times spans with 32 collocation stages each from `vel_start` (squared) to
 // `vel_end`, and checks that the result is within the controllable sets and
 // the acceleration limits of every joint but the last.
-void checkSpan(const Matrix& coefficients, value_type s0, value_type s1,
-               const Vector& velocity, const Vector& acceleration,
-               value_type vel_start, value_type vel_end) {
-  auto path = std::make_shared<PiecewisePolyPath>(Matrices{coefficients},
-                                                  std::vector<value_type>{s0, s1});
+void checkSpans(const Matrices& coefficients, const std::vector<value_type>& knots,
+                const Vector& velocity, const Vector& acceleration,
+                value_type vel_start, value_type vel_end) {
+  auto path = std::make_shared<PiecewisePolyPath>(coefficients, knots);
   LinearConstraintPtrs constraints{
     std::make_shared<constraint::LinearJointVelocity>(-velocity, velocity),
     std::make_shared<constraint::LinearJointAcceleration>(-acceleration, acceleration)};
   for (auto& c : constraints)
     c->discretizationType(DiscretizationType::Collocation);
 
-  Vector gridpoints(33);
-  for (int k = 0; k < 32; ++k) gridpoints[k] = s0 + (s1 - s0) * k / 32.0;
-  gridpoints[32] = s1;
+  const int spans = static_cast<int>(coefficients.size()), N = 32 * spans;
+  Vector gridpoints(N + 1);
+  for (int span = 0; span < spans; ++span)
+    for (int k = 0; k < 32; ++k)
+      gridpoints[32 * span + k] = knots[span] + (knots[span + 1] - knots[span]) * k / 32.0;
+  gridpoints[N] = knots[spans];
 
   algorithm::TOPPRA problem(constraints, path);
   problem.solver(std::make_shared<solver::Seidel>());
@@ -43,12 +45,12 @@ void checkSpan(const Matrix& coefficients, value_type s0, value_type s1,
     << problem.getErrorMessage();
 
   const auto& data = problem.getParameterizationData();
-  for (int i = 0; i < 33; ++i) {
+  for (int i = 0; i <= N; ++i) {
     EXPECT_GE(data.parametrization[i], data.controllable_sets(i, 0));
     EXPECT_LE(data.parametrization[i], data.controllable_sets(i, 1));
   }
-  EXPECT_NEAR(data.parametrization[32], vel_end * vel_end, 1e-12);
-  for (int i = 0; i < 32; ++i) {
+  EXPECT_NEAR(data.parametrization[N], vel_end * vel_end, 1e-12);
+  for (int i = 0; i < N; ++i) {
     const value_type u = (data.parametrization[i + 1] - data.parametrization[i])
       / (2 * (gridpoints[i + 1] - gridpoints[i]));
     const Vector qs = path->eval_single(gridpoints[i], 1);
@@ -57,6 +59,13 @@ void checkSpan(const Matrix& coefficients, value_type s0, value_type s1,
       EXPECT_LE(std::abs(qs[j] * u + qss[j] * data.parametrization[i]),
                 acceleration[j] * (1 + 1e-9)) << "stage " << i << ", joint " << j;
   }
+}
+
+void checkSpan(const Matrix& coefficients, value_type s0, value_type s1,
+               const Vector& velocity, const Vector& acceleration,
+               value_type vel_start, value_type vel_end) {
+  checkSpans(Matrices{coefficients}, {s0, s1}, velocity, acceleration,
+             vel_start, vel_end);
 }
 }  // namespace
 
@@ -117,4 +126,40 @@ TEST(DegenerateStages, ForwardPassFromTheUpperBoundOfAControllableSet) {
   acceleration << 40.200681829243933, 58.650764514538537, 77.100847199833169, 77.100847199833169, 1e12;
   checkSpan(coefficients, 0.2362530627618672, 0.23626618074820144, velocity,
             acceleration, 0.0011941652851974265, 0.03336501157674108);
+}
+
+// Holding the feed rate into a curve whose curvature limit is the upper bound
+// of the controllable sets: the step into stage 32 ended one rounding below
+// that bound instead of on it, where the stage is as degenerate as on it, and
+// the forward pass failed there.
+TEST(DegenerateStages, ForwardPassStepEndingOneRoundingBelowTheBound) {
+  Matrices coefficients(3, Matrix(6, 6));
+  coefficients[0] <<
+    -0.00731368052024886, -0.0024734896923367692, -0.022348961414256206, 0.022348961414256206, -0.022325972114443888, 0,
+    3.7776198808741251e-05, 9.5430908321258987e-06, 0.0001056421768004828, -0.0001056421768004828, 0.0001055128311554497, 0,
+    -5.493716764733474e-08, -6.0767980873115041e-09, -1.2999975105867079e-07, 1.2999975105867079e-07, -1.2978605981313577e-07, 0,
+    0, 0, 0, 0, 0, 0,
+    -2.8284271247461898, 0, -2.8284271247461898, 2.8284271247461898, -2.8284271247461898, 1,
+    -0.094488989463560435, 0.02878487687505963, -0.036919235713441134, 0.036919235713441134, -0.036919235713441134, 0.26940906365862388;
+  coefficients[1] <<
+    -262437176940018.84, 28814601672781.379, -204807986276830.75, 204807986276830.75, -204807986932763.19, 0,
+    118469904176.65001, -118536104238.72847, -118602303522.55927, 118602303522.55927, -118602303482.32393, 0,
+    47129687.181422733, 5769.9697412705636, 47141227.108169794, -47141227.108169794, 47141227.1075119, 0,
+    -14141.294984656979, 14141.294984657154, 14141.294984657328, -14141.294984657328, 14141.294984657328, 0,
+    -2.8284271247462249, 3.4921076822610987e-14, -2.8284271247461548, 2.8284271247461548, -2.8284271247461552, 1,
+    -0.099958454089538074, 0.028784876875059654, -0.042388700339418772, 0.042388700339418772, -0.042388700339418772, 0.27134281142186822;
+  coefficients[2] <<
+    -304336546491276.19, 84716701714344.047, -134903112719494.56, 134903112719494.56, -134903112390244.28, 0,
+    86101500659.994598, -114967639346.73045, -143833779895.41638, 143833779895.41638, -143833779915.61008, 0,
+    57171653.361353323, -11447384.825333232, 34276883.741155058, -34276883.741155058, 34276883.741485186, 0,
+    -10281.44369632266, 13717.498095760517, 17153.552495198368, -17153.552495198368, 17153.552495198372, 0,
+    -3.4309144400011986, 0.68725173161424813, -2.0564109767727028, 2.0564109767727028, -2.0564109767727028, 1,
+    -0.10003566029363888, 0.028793353820583529, -0.042448952652471846, 0.042448952652471846, -0.042448952652471846, 0.2713673565734912;
+  Vector velocity(6), acceleration(6);
+  velocity << 1, 1, 1, 1, 1, 0.059999999999999998;
+  acceleration << 40.200681829243933, 58.650764514538537, 77.100847199833169,
+    77.100847199833169, 77.100847199833169, 1e12;
+  checkSpans(coefficients,
+             {0.2694090636586239, 0.2713428114218682, 0.2713673565734912, 0.2713919017251142},
+             velocity, acceleration, 0, 0.04438962564361016);
 }
