@@ -26,6 +26,16 @@ ReturnCode TOPPRA::computeForwardPass(value_type vel_start) {
     x.setConstant(m_data.parametrization(i));
     x_next = m_data.controllable_sets.row(i + 1);
     solver_ret = m_solver->solveStagewiseOptim(i, H, g_upper, x, x_next, solution);
+    // At the upper bound of a controllable set the stage is degenerate: it is
+    // often a vertex where two constraints meet, admitting a single control.
+    // Solved again with x fixed, rounding can leave it no control at all, so
+    // use the one found there while computing the controllable sets.
+    if (!solver_ret && m_data.parametrization(i) == m_data.controllable_sets(i, 1)) {
+      TOPPRA_LOG_DEBUG("Forward pass, idx: " << i
+          << ", uses the control of the controllable set's upper bound.");
+      solution(0) = m_data.controllable_upper_controls(i);
+      solver_ret = true;
+    }
     if (!solver_ret) {
       TOPPRA_LOG_WARN("Fail: forward pass, idx: " << i);
       m_errorStream <<
