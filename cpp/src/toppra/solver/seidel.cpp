@@ -117,7 +117,17 @@ LpSol solve_lp2d(const RowVector2& v, const MatrixX3& A,
   // handle other constraints in a, b, c
   for (int i = 0; i < nrows; ++i) {
     // if current optimal variable satisfies the i-th constraint, continue
-    if (value(A.row(i), cur_optvar) < ABS_TOLERANCE)
+    value_type violation = value(A.row(i), cur_optvar);
+    if (violation < ABS_TOLERANCE)
+      continue;
+    // A violation within the authorized relative tolerance of the
+    // constraint's terms is rounding (the 1D problems accept as much). Moving
+    // onto the constraint's line for it would make a nearly parallel
+    // constraint bound the line through the rounding of its offset alone.
+    if (cur_optvar.allFinite()
+        && violation < REL_TOLERANCE * (std::abs(A(i, 0) * cur_optvar[0])
+                                        + std::abs(A(i, 1) * cur_optvar[1])
+                                        + std::abs(A(i, 2))))
       continue;
     // otherwise, project all constraints on the line defined by (a[i], b[i], c[i])
     sol.active_c[0] = i;
