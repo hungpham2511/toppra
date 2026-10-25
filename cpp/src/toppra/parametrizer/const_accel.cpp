@@ -44,7 +44,7 @@ bool ConstAccel::evalParams(const Vector& ts, Vector& ss, Vector& vs,
     // find k_grid s.t                     m_ts[k_grid] <= ts[i] < m_ts[k_grid + 1], or
     //      k_grid = 0 if                  ts[i] < m_ts[0], or
     //      k_grid = m_ts.size() - 2 if    ts[i] > m_ts
-    auto ptr = std::lower_bound(m_ts.data() + 1, m_ts.data() + m_ts.size() - 1, ts[i]);
+    auto ptr = std::upper_bound(m_ts.data() + 1, m_ts.data() + m_ts.size() - 1, ts[i]);
     k_grid = ptr - m_ts.data() - 1;
     TOPPRA_LOG_DEBUG("ts[i]=" << ts[i] << ", k_grid=" << k_grid);
 
