@@ -101,6 +101,27 @@ TEST_F(ParametrizeConstAccel, Correctness) {
   }
 }
 
+TEST_F(ParametrizeConstAccel, GridTimesUseFollowingSegment) {
+  // At the time of gridpoint k, the segment k is used (m_ts[k] <= t < m_ts[k + 1]),
+  // as in the Python implementation. Issue #230.
+  toppra::Vector gridpoints = toppra::Vector::LinSpaced(10, 0, 3);
+  toppra::Vector vsquared{10};
+  vsquared << 0, 0.1, 0.2, 0.3, 0.5, 0.5, 0.3, 0.2, 0.1, 0.0;
+  auto p = toppra::parametrizer::ConstAccel(path, gridpoints, vsquared);
+
+  toppra::Vector ts = p.getTimes();
+  auto qdds = p.eval(ts, 2);
+  for (int k = 0; k + 1 < gridpoints.size(); k++) {
+    toppra::value_type s = gridpoints[k], v = std::sqrt(vsquared[k]),
+                       u = 0.5 * (vsquared[k + 1] - vsquared[k]) /
+                           (gridpoints[k + 1] - gridpoints[k]);
+    toppra::Vector qdd = path->eval_single(s, 1) * u + path->eval_single(s, 2) * v * v;
+    for (int i = 0; i < 2; i++) {
+      ASSERT_NEAR(qdds[k][i], qdd[i], 1e-10) << "gridpoint " << k;
+    }
+  }
+}
+
 TEST(ParametrizeConstAccelNoFixture, BoundsViolation) {
     toppra::Vectors positions = {
       toppra::Vector::Zero(1),

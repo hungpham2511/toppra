@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- [cpp] ConstAccel uses the segment that starts at a gridpoint when evaluated at the gridpoint's time (#230)
+
 ## 0.6.10 (August 25 2026)
 
 - [python] Avoid importing optional solvers when checking their availability (#298)
