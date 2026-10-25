@@ -3,6 +3,7 @@
 ## Unreleased
 
 - [cpp] ConstAccel uses the segment that starts at a gridpoint when evaluated at the gridpoint's time (#230)
+- [cpp] Seidel: remove parallel constraint rows before solving, fixing failures at degenerate stages
 
 ## 0.6.10 (August 25 2026)
 

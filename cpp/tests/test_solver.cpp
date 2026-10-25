@@ -531,3 +531,40 @@ TEST(SeidelFunctions, seidel_2d) {
     check(true);
   }
 }
+
+TEST(SeidelFunctions, presolve) {
+  using namespace toppra::solver;
+  const RowVector3 removed (0, 0, -1);
+  MatrixX3 A (8, 3);
+  A <<      2,          0,  -1,  // before `first`: kept as is
+            3,          4, -10,  // normalized
+            1,          1,  -2,  // looser than the next row
+            2,          2,  -2,
+            1, 1 + 1e-12,  -4,  // parallel to the two above, looser
+             0,         5, -10,  // x <= 2
+           -1,          0,  -3,  // u >= -3
+            0,          0, -0.5; // always satisfied
+  Vector2 low (-seidel::infinity, 0), high (seidel::infinity, 10);
+
+  EXPECT_TRUE(seidel::presolve(A, low, high, 1));
+  EXPECT_EQ(A.row(0), RowVector3(2, 0, -1));
+  EXPECT_TRUE(A.row(1).isApprox(RowVector3(0.6, 0.8, -2)));
+  EXPECT_EQ(A.row(2), removed);
+  EXPECT_TRUE(A.row(3).isApprox(RowVector3(1, 1, -1) / std::sqrt(2)));
+  for (int k = 4; k < 8; ++k)
+    EXPECT_EQ(A.row(k), removed) << "row " << k;
+  EXPECT_EQ(low, Vector2(-3, 0));
+  EXPECT_EQ(high, Vector2(seidel::infinity, 2));
+
+  A.resize(1, 3);
+  A << 0, 0, 1;
+  EXPECT_FALSE(seidel::presolve(A, low, high, 0));
+
+  // Violated by less than ABS_TOLERANCE, so feasible as a row and once folded.
+  A << 1, 0, 5e-14;
+  low << 0, 0; high << 1, 1;
+  MatrixX2 A_1d (A.rows() + 4, 2);
+  EXPECT_TRUE(seidel::solve_lp2d(RowVector2(0, 1), A, low, high, A_1d).feasible);
+  EXPECT_TRUE(seidel::presolve(A, low, high, 0));
+  EXPECT_TRUE(seidel::solve_lp2d(RowVector2(0, 1), A, low, high, A_1d).feasible);
+}

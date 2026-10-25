@@ -186,6 +186,24 @@ LpSol solve_lp2d(const RowVector2& v, const MatrixX3& A,
     const Vector2& low, const Vector2& high,
     MatrixX2& A_1d);
 
+/**
+Presolve the rows of A from \p first on, in place, so that rounding in the
+coefficients does not make solve_lp2d fail on a feasible problem.
+
+- Each row is normalized, so that ABS_TOLERANCE bounds the distance to the
+  row's line, the same for every row.
+- Rows with a single variable are folded into \p low and \p high, which are
+  handled exactly. On a straight segment, every acceleration row bounds u alone.
+- Of rows with the same direction, only the tightest is kept. Projected onto
+  one another, such rows bound the line by the rounding of their offsets alone.
+  They arise on straight segments and for joints that move alike.
+
+Removed rows become [0, 0, -1].
+
+\return false if a row with no variable can not be satisfied.
+**/
+bool presolve(MatrixX3& A, Vector2& low, Vector2& high, int first);
+
 } // namespace seidel
 } // namespace solver
 } // namespace toppra
