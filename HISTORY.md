@@ -1,5 +1,9 @@
 # Changelog
 
+## Upcoming
+
+- [cpp] Seidel: remove parallel constraint rows before solving, fixing failures at degenerate stages
+
 ## 0.6.10 (August 25 2026)
 
 - [python] Avoid importing optional solvers when checking their availability (#298)

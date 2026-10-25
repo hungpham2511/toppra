@@ -76,7 +76,8 @@ LpSol solve_lp2d(const RowVector2& v, const MatrixX3& A,
     if (low[i] > high[i]) {
       // If the difference between low and high is sufficiently small, then
       // return infeasible.
-      if (   low[i] - high[i] > std::max(std::abs(low[i]),std::abs(high[i]))* REL_TOLERANCE
+      if (   low[i] - high[i] > std::max(2 * ABS_TOLERANCE,
+            std::max(std::abs(low[i]),std::abs(high[i]))* REL_TOLERANCE)
           || low[i] == infinity
           || high[i] == -infinity) {
         TOPPRA_SEIDEL_LP2D(WARN,
@@ -201,6 +202,41 @@ LpSol solve_lp2d(const RowVector2& v, const MatrixX3& A,
 
 #undef TOPPRA_SEIDEL_LP2D
 
+bool presolve(MatrixX3& A, Vector2& low, Vector2& high, int first)
+{
+  bool feasible = true;
+  for (int k = first; k < A.rows(); ++k) {
+    auto row = A.row(k);
+    value_type n = row.head<2>().norm();
+    if (n == 0) {
+      if (row[2] > ABS_TOLERANCE) feasible = false;
+      else row << 0, 0, -1;
+      continue;
+    }
+    row /= n;
+    for (int j = 0; j < 2; ++j)
+      if (row[1-j] == 0) {
+        if (row[j] > 0) high[j] = std::min(high[j], -row[2] / row[j]);
+        else            low [j] = std::max(low [j], -row[2] / row[j]);
+        row << 0, 0, -1;
+        break;
+      }
+  }
+
+  for (int k = first; k < A.rows(); ++k) {
+    if (A.row(k).head<2>().isZero(0)) continue;
+    for (int j = first; j < k; ++j) {
+      if (A.row(j).head<2>().isZero(0)
+          || (A.row(j).head<2>() - A.row(k).head<2>()).norm() > REL_TOLERANCE)
+        continue;
+      int looser = A(j, 2) < A(k, 2) ? j : k;
+      A.row(looser) << 0, 0, -1;
+      if (looser == k) break;
+    }
+  }
+  return feasible;
+}
+
 }
 
 void Seidel::initialize (const LinearConstraintPtrs& constraints, const GeometricPathPtr& path,
@@ -255,6 +291,15 @@ void Seidel::initialize (const LinearConstraintPtrs& constraints, const Geometri
         m_high(i, 1) = std::min(m_high(i, 1), p.x[i][1]);
       }
     }
+  }
+
+  // Rows 0 and 1, the next stage's bounds, change with each solve.
+  for (int i = 0; i < N+1; ++i) {
+    Vector2 low (m_low.row(i)), high (m_high.row(i));
+    if (!seidel::presolve(m_A[i], low, high, 2))
+      TOPPRA_LOG_WARN("Seidel: stage " << i << " has an unsatisfiable constraint on no variable.");
+    m_low.row(i) = low.transpose();
+    m_high.row(i) = high.transpose();
   }
 
   // init constraint coefficients for the 1d LPs
