@@ -541,7 +541,7 @@ TEST(SeidelFunctions, presolve) {
             1,          1,  -2,  // looser than the next row
             2,          2,  -2,
             1, 1 + 1e-12,  -4,  // parallel to the two above, looser
-        -1e-30,         5, -10,  // tiny coefficient: x <= 2
+             0,         5, -10,  // x <= 2
            -1,          0,  -3,  // u >= -3
             0,          0, -0.5; // always satisfied
   Vector2 low (-seidel::infinity, 0), high (seidel::infinity, 10);
@@ -559,4 +559,12 @@ TEST(SeidelFunctions, presolve) {
   A.resize(1, 3);
   A << 0, 0, 1;
   EXPECT_FALSE(seidel::presolve(A, low, high, 0));
+
+  // Violated by less than ABS_TOLERANCE, so feasible as a row and once folded.
+  A << 1, 0, 5e-14;
+  low << 0, 0; high << 1, 1;
+  MatrixX2 A_1d (A.rows() + 4, 2);
+  EXPECT_TRUE(seidel::solve_lp2d(RowVector2(0, 1), A, low, high, A_1d).feasible);
+  EXPECT_TRUE(seidel::presolve(A, low, high, 0));
+  EXPECT_TRUE(seidel::solve_lp2d(RowVector2(0, 1), A, low, high, A_1d).feasible);
 }

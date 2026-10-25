@@ -1,5 +1,4 @@
 #include <cassert>
-#include <limits>
 
 #include <toppra/solver/seidel.hpp>
 #include <toppra/solver/seidel-internal.hpp>
@@ -77,7 +76,8 @@ LpSol solve_lp2d(const RowVector2& v, const MatrixX3& A,
     if (low[i] > high[i]) {
       // If the difference between low and high is sufficiently small, then
       // return infeasible.
-      if (   low[i] - high[i] > std::max(std::abs(low[i]),std::abs(high[i]))* REL_TOLERANCE
+      if (   low[i] - high[i] > std::max(2 * ABS_TOLERANCE,
+            std::max(std::abs(low[i]),std::abs(high[i]))* REL_TOLERANCE)
           || low[i] == infinity
           || high[i] == -infinity) {
         TOPPRA_SEIDEL_LP2D(WARN,
@@ -214,9 +214,6 @@ bool presolve(MatrixX3& A, Vector2& low, Vector2& high, int first)
       continue;
     }
     row /= n;
-    for (int j = 0; j < 2; ++j)
-      if (std::abs(row[j]) <= std::numeric_limits<value_type>::epsilon())
-        row[j] = 0;
     for (int j = 0; j < 2; ++j)
       if (row[1-j] == 0) {
         if (row[j] > 0) high[j] = std::min(high[j], -row[2] / row[j]);

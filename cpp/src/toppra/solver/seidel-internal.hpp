@@ -192,9 +192,6 @@ coefficients does not make solve_lp2d fail on a feasible problem.
 
 - Each row is normalized, so that ABS_TOLERANCE bounds the distance to the
   row's line, the same for every row.
-- Coefficients below the rounding of the normalized row are zeroed. A joint at
-  rest along the path, for instance, has a path-acceleration coefficient that
-  is only rounding.
 - Rows with a single variable are folded into \p low and \p high, which are
   handled exactly. On a straight segment, every acceleration row bounds u alone.
 - Of rows with the same direction, only the tightest is kept. Projected onto
