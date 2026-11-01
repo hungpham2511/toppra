@@ -1,3 +1,6 @@
+#include <algorithm>
+#include <array>
+#include <cmath>
 #include <limits>
 #include <memory>
 #include <toppra/algorithm/toppra.hpp>
@@ -171,4 +174,78 @@ TEST(DegenerateStages, ForwardPassStepEndingOneRoundingBelowTheBound) {
   checkSpans(coefficients,
              {0.2694090636586239, 0.2713428114218682, 0.2713673565734912, 0.2713919017251142},
              velocity, acceleration, 0, 0.04438962564361016);
+}
+
+namespace {
+// Two lines joined by a circular arc that deviates at most `deviation` from
+// the corner, parametrized by arc length (roboplan's LinearBlendPath).
+class CornerBlendPath : public GeometricPath {
+ public:
+  CornerBlendPath(const Vector& a, const Vector& b, const Vector& c, value_type deviation)
+      : GeometricPath(static_cast<int>(a.size())) {
+    const Vector in = b - 0.5 * (a + b), out = 0.5 * (b + c) - b;
+    const Vector u_in = in.normalized(), u_out = out.normalized();
+    const value_type half = 0.5 * std::acos(std::min(std::max(u_in.dot(u_out), -1.0), 1.0));
+    const value_type dist = std::min({in.norm(), out.norm(),
+        deviation * std::sin(half) / (1.0 - std::cos(half))});
+    m_radius = dist / std::tan(half);
+    m_center = b + (u_out - u_in).normalized() * (m_radius / std::cos(half));
+    m_x = (b - dist * u_in - m_center).normalized();
+    m_y = u_in;
+    m_line0 = {a, b - dist * u_in};
+    m_line1 = {b + dist * u_out, c};
+    m_knots << 0, (m_line0[1] - a).norm(), 0, 0;
+    m_knots[2] = m_knots[1] + 2 * half * m_radius;
+    m_knots[3] = m_knots[2] + (c - m_line1[0]).norm();
+  }
+
+  Vector eval_single(value_type s, int order = 0) const override {
+    s = std::min(std::max(s, 0.0), m_knots[3]);
+    if (s < m_knots[1] || s >= m_knots[2]) {
+      const auto& l = s < m_knots[1] ? m_line0 : m_line1;
+      const value_type len = (l[1] - l[0]).norm(), u = s - m_knots[s < m_knots[1] ? 0 : 2];
+      const Vector d = (l[1] - l[0]) / len;
+      if (order == 0) return l[0] + u * d;
+      if (order == 1) return d;
+      return Vector::Zero(configSize());
+    }
+    const value_type t = (s - m_knots[1]) / m_radius;
+    if (order == 0) return m_center + m_radius * (m_x * std::cos(t) + m_y * std::sin(t));
+    if (order == 1) return -m_x * std::sin(t) + m_y * std::cos(t);
+    if (order == 2) return (-1.0 / m_radius) * (m_x * std::cos(t) + m_y * std::sin(t));
+    return Vector::Zero(configSize());
+  }
+
+  Bound pathInterval() const override { return Bound(0, m_knots[3]); }
+  Vector knots() const { return m_knots; }
+
+ private:
+  value_type m_radius;
+  Vector m_center, m_x, m_y;
+  std::array<Vector, 2> m_line0, m_line1;
+  Eigen::Vector4d m_knots;
+};
+}  // namespace
+
+// From https://gist.github.com/sea-bass/48cacaee82c9f6c0c61faf93b6c34c71
+// (case_00_franka): the forward pass reaches the upper bound of stage 120's
+// controllable set, a vertex where a row's path-acceleration coefficient is
+// 5.6e-5, and solved again there the stage had no control.
+TEST(DegenerateStages, ForwardPassAtTheUpperBoundOnACornerBlend) {
+  Vector a(7), b(7), c(7);
+  a << -1.4964286529696755, -0.92757880736655007, 0.35597239013785331, -1.6613642304192493,
+       2.0448851059425603, 3.3599181331464085, -1.2694354413179221;
+  b << -1.349862036160935, -0.80024976155651761, 0.36305347219510592, -1.4981976182525667,
+       1.9981188101837097, 3.4894267267580341, -1.3750672864107198;
+  c << -1.238434278003687, -0.67717180344092609, 0.37218371195179278, -1.3074581491277963,
+       2.0180510666453548, 3.5976213885093054, -1.5356673978691857;
+  auto path = std::make_shared<CornerBlendPath>(a, b, c, 0.00509585);
+  const Vector ones = Vector::Ones(7);
+  auto velocity = std::make_shared<constraint::LinearJointVelocity>(-3.14 * ones, 3.14 * ones);
+  auto acceleration = std::make_shared<constraint::LinearJointAcceleration>(-2.0 * ones, 2.0 * ones);
+  acceleration->discretizationType(DiscretizationType::Interpolation);
+
+  algorithm::TOPPRA problem({velocity, acceleration}, path);
+  problem.setGridpoints(path->proposeGridpoints(1e-5, 100, 0.02, 100, path->knots()));
+  EXPECT_EQ(problem.computePathParametrization(), ReturnCode::OK) << problem.getErrorMessage();
 }
