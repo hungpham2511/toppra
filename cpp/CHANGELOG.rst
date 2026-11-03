@@ -2,6 +2,13 @@
 Changelog for package toppra
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* [cpp] Forward pass: use the controllable set's control at its upper bound (`#305 <https://github.com/hungpham2511/toppra/issues/305>`_)
+* [cpp] ConstAccel: use the segment that starts at a gridpoint time (`#230 <https://github.com/hungpham2511/toppra/issues/230>`_) (`#304 <https://github.com/hungpham2511/toppra/issues/304>`_)
+* [cpp] Seidel: presolve constraint rows to fix failures at degenerate stages (`#303 <https://github.com/hungpham2511/toppra/issues/303>`_)
+* Contributors: Hung Pham (Phạm Tiến Hùng), Joao Matos, Syed Inayatullah
+
 0.6.10 (2026-08-25)
 -------------------
 * [ros] Fix ordering of find_package for ament_cmake (`#299 <https://github.com/hungpham2511/toppra/issues/299>`_)
