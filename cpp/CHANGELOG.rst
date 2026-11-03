@@ -2,8 +2,8 @@
 Changelog for package toppra
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.6.11 (2026-11-02)
+-------------------
 * [cpp] Forward pass: use the controllable set's control at its upper bound (`#305 <https://github.com/hungpham2511/toppra/issues/305>`_)
 * [cpp] ConstAccel: use the segment that starts at a gridpoint time (`#230 <https://github.com/hungpham2511/toppra/issues/230>`_) (`#304 <https://github.com/hungpham2511/toppra/issues/304>`_)
 * [cpp] Seidel: presolve constraint rows to fix failures at degenerate stages (`#303 <https://github.com/hungpham2511/toppra/issues/303>`_)
