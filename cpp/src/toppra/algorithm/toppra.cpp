@@ -1,5 +1,6 @@
 #include <toppra/algorithm/toppra.hpp>
 
+#include <limits>
 #include <memory>
 #include <toppra/algorithm.hpp>
 #include <toppra/toppra.hpp>
@@ -26,6 +27,16 @@ ReturnCode TOPPRA::computeForwardPass(value_type vel_start) {
     x.setConstant(m_data.parametrization(i));
     x_next = m_data.controllable_sets.row(i + 1);
     solver_ret = m_solver->solveStagewiseOptim(i, H, g_upper, x, x_next, solution);
+    // At the upper bound of a controllable set the stage is degenerate: it is
+    // often a vertex where two constraints meet, admitting a single control.
+    // Solved again with x fixed, rounding can leave it no control at all, so
+    // use the one found there while computing the controllable sets.
+    if (!solver_ret && m_data.parametrization(i) == m_data.controllable_sets(i, 1)) {
+      TOPPRA_LOG_DEBUG("Forward pass, idx: " << i
+          << ", uses the control of the controllable set's upper bound.");
+      solution(0) = m_data.controllable_upper_controls(i);
+      solver_ret = true;
+    }
     if (!solver_ret) {
       TOPPRA_LOG_WARN("Fail: forward pass, idx: " << i);
       m_errorStream <<
@@ -37,11 +48,17 @@ ReturnCode TOPPRA::computeForwardPass(value_type vel_start) {
       return ReturnCode::ERR_FAIL_FORWARD_PASS;
     }
     /// \todo This can be optimized further by solving a 1D problem instead of 2D
-    // Claim the output to be within the controllable sets.
+    // Claim the output to be within the controllable sets. A step that ends
+    // on the upper bound to within its own rounding lands on it, so that the
+    // next stage can use the bound's control.
+    value_type step = 2 * deltas(i) * solution(0),
+               x_end = m_data.parametrization(i) + step,
+               upper = m_data.controllable_sets(i + 1, 1);
+    if (upper - x_end <= 4 * std::numeric_limits<value_type>::epsilon()
+        * (std::abs(m_data.parametrization(i)) + std::abs(step)))
+      x_end = upper;
     m_data.parametrization(i + 1) =
-        std::min(m_data.controllable_sets(i + 1, 1),
-                 std::max(m_data.controllable_sets(i + 1, 0),
-                          m_data.parametrization(i) + 2 * deltas(i) * solution(0)));
+        std::min(upper, std::max(m_data.controllable_sets(i + 1, 0), x_end));
     TOPPRA_LOG_DEBUG("Ok: u[" << i << "]= " << solution(0) << "x[" << i + 1
                               << "]=" << m_data.parametrization(i + 1));
   }

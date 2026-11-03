@@ -43,6 +43,10 @@ struct ParametrizationData {
   Matrix controllable_sets;
   Matrix feasible_sets;
 
+  /// Path acceleration with which the upper bound of each controllable set
+  /// reaches the next controllable set, found while computing the sets.
+  Vector controllable_upper_controls;
+
   ///  Return code of the algorithm.
   ReturnCode ret_code = ReturnCode::ERR_UNINITIALIZED;
 };
