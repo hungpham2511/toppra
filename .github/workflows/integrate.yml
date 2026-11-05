@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - develop
+    tags:
+      - '*'
   pull_request:
 
 jobs:
